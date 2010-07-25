@@ -25,7 +25,7 @@ jet().add('base', function ($) {
 			}
 		};
 		Hash.each(B, copy);
-		if (B.prototype.constructor != Object) {
+		if (B.constructor != Object) {
 			Hash.each(B.prototype, copy);
 		}
 	};
@@ -208,8 +208,10 @@ jet().add('base', function ($) {
 			if (config.writeOnce && !config.readOnly) {
 				attrConfig[attrName].readOnly = TRUE;
 			}
-			return	!Lang.isValue(classConfig[attrName]) ? config.value :
-					config.getter ? config.getter(classConfig[attrName], attrName) :
+			if (!Lang.isValue(classConfig[attrName])) {
+				classConfig[attrName] = config.value;
+			}
+			return	config.getter ? config.getter(classConfig[attrName], attrName) :
 					classConfig[attrName];
 		};
 		/**

@@ -47,7 +47,8 @@
 		imageloader: [BASE],
 		anim: [BASE],
 		datasource: [BASE],
-		datatable: ['datasource']
+		datatable: ['datasource'],
+		plasma: ['anim']
 	};
 	
 	var ARRAY		= 'array',
@@ -403,67 +404,6 @@
 	var Core = function () {
 		var $;
 		
-		var NodeList = function (collection, doc) {
-			if (Lang.isString(collection)) {
-				collection = $(collection, doc).getNode();
-			}
-			if (!Lang.isArray(collection) && !collection.length) {
-				collection = [collection];
-			}
-			
-			var mySelf = this;
-			
-			mySelf.each = function (callback) {
-				var collecLength = collection.length;
-				for (var i = 0; i < collecLength; i++) {
-					callback.call(collection[i], collection[i], i);
-				}
-				return mySelf;
-			};
-			
-			mySelf.getNodes = function () {
-				return collection;
-			};
-			
-			mySelf.getNode = function () {
-				return collection[0];
-			};
-		};
-		
-		$ = function (query, root) {
-			if (root) {
-				$.context = root;
-				$.win = doc.defaultView || doc.parentWindow;
-			}
-			if (Lang.isString(query)) {
-				query = $.parseQuery(query, $.context);
-			}
-			if (Lang.isArray(query)) {
-				var i = 0;
-				while (i < query.length) {
-					if (query[i] instanceof NodeList) {
-						query.push.apply(query, query[i].getNodes());
-					}
-					if (!query[i].nodeType) {
-						query.splice(i, 1);
-					} else {
-						i++;
-					}
-				}
-			}
-			if (!(query instanceof NodeList)) {
-				query = new NodeList(query);
-			}
-			return query;
-		};
-		
-		$.win = win;
-		$.context = doc;
-		
-		if (win.JSON) {
-			$.JSON = win.JSON;
-		}
-		
 		var walkTheDOM = function (node, fn) {
 			fn(node);
 			node = node.firstChild;
@@ -475,7 +415,429 @@
 			}
 		};
 		
-		/*
+		var Node = function (node, root) {
+			root = root || $.context;
+			if (Lang.isString(node)) {
+				node = root.createElement(node);
+			} else if (!node.nodeType) {
+				throw new Error("Node must receive either a node name or a DOM node");
+			}
+			
+			this._node = node;
+		};
+		
+		Lang.isNode = function (o) {
+			return o instanceof Node;
+		};
+		mix(Node.prototype, {
+			hide: function () {
+				var myself = this;
+				var node = myself._node;
+				var display = node.style.display;
+				if (!node.JET_oDisplay && display != NONE) {
+					node.JET_oDisplay = display;
+				}
+				node.style.display = NONE;
+				return myself;
+			},
+			show: function () {
+				var myself = this;
+				var node = myself._node;
+				node.style.display = node.JET_oDisplay || "";
+				return myself;
+			},
+			toggle: function () {
+				var myself = this;
+				var node = myself._node;
+				var ns = node.style;
+				var oDisplay = node.LIB_oDisplay;
+				ns.display = ns.display != NONE ? NONE :
+							oDisplay ? oDisplay :
+							"";
+				return myself;
+			},
+			hasClass: function (sClass) {
+				var node = this._node;
+				return ArrayHelper.inArray(sClass, node.className ? node.className.split(" ") : []);
+			},
+			removeClass: function () {
+				var myself = this;
+				var node = myself._node;
+				ArrayHelper.each(arguments, function (sClass) {
+					node.className = ArrayHelper.remove(sClass, node.className ? node.className.split(" ") : []).join(" ");
+				});
+				return myelf;
+			},
+			addClass: function () {
+				var myself = this;
+				var node = myself._node;
+				ArrayHelper.each(arguments, function (sClass) {
+					var classes = node.className ? node.className.split(" ") : [];
+					if (!ArrayHelper.inArray(sClass, classes)) {
+						classes[classes.length] = sClass;
+						node.className = classes.join(" ");
+					}
+				});
+				return myelf;
+			},
+			toggleClass: function (sClass) {
+				var myself = this;
+				var node = myself._node;
+				var classes = node.className ? node.className.split(" ") : [];
+				if (!ArrayHelper.inArray(sClass, classes)) {
+					classes[classes.length] = sClass;
+				} else {
+					ArrayHelper.remove(sClass, classes);
+				}
+				node.className = classes.join(" ");
+				return myelf;
+			},
+			setClass: function (sClass) {
+				this._node.className = sClass;
+				return this;
+			},
+			offset: function () {
+				var node = this._node;
+				var offset = {
+					left: 0,
+					top: 0,
+					width: node.offsetWidth,
+					height: node.offsetHeight
+				};
+				var doc = node.ownerDocument;
+				if (node && doc) {
+					if (node.getBoundingClientRect) {
+						/*
+						 * getBoundingClientRect implementation from jQuery
+						 */
+						var box  = node.getBoundingClientRect();
+						var body = doc.body;
+						var de = doc[DOCUMENT_ELEMENT];
+						offset.left = box.left + this.scrollLeft() - (de.clientLeft || body.clientLeft || 0);
+						offset.top = box.top + this.scrollTop() - (de.clientTop || body.clientTop || 0);
+					} else if (node.offsetParent) {
+						/*
+						 * Not interested in supporting other browsers very well
+						 */
+						do {
+							offset.left += node.offsetLeft;
+							offset.top += node.offsetTop;
+							node = node.offsetParent;
+						} while (node);
+					}
+				} else {
+					offset = null;
+				}
+				
+				return offset;
+			},
+			width: function (width) {
+				var myself = this;
+				var node = myself._node;
+				if (Lang.isValue(width)) {
+					node.style.width = Lang.isString(width) ? width : width + "px";
+					return myself;
+				}
+				return node.offsetWidth;
+			},
+			height: function (height) {
+				var myself = this;
+				var node = myself._node;
+				if (Lang.isValue(width)) {
+					node.style.height = Lang.isString(height) ? height : height + "px";
+					return myself;
+				}
+				return node.offsetWidth;
+			},
+			clone: function (deep) {
+				deep = Lang.isValue(deep) ? deep : TRUE;
+				return new Node(this._node.cloneNode(deep));
+			},
+			append: function (node) {
+				if (node._node) {
+					node = node._node;
+				}
+				this._node.appendChild(node);
+				return this;
+			},
+			appendTo: function (target) {
+				if (target._node) {
+					target = target._node;
+				}
+				target.appendChild(this._node);
+				return this;
+			},
+			prepend: function (node) {
+				if (Lang.isNode(node)) {
+					node = node._node;
+				}
+				var mynode = this._node;
+				if (mynode.firstChild) {
+					mynode.insertBefore(node, mynode.firstChild);
+				} else {
+					mynode.appendChild(node);
+				}
+				return this;
+			},
+			prependTo: function (target) {
+				if (Lang.isNode(target)) {
+					target = target._node;
+				}
+				var node = this._node;
+				if (target.firstChild) {
+					target.insertBefore(node, target.firstChild);
+				} else {
+					target.appendChild(node);
+				}
+				return this;
+			},
+			insertBefore: function (before) {
+				if (Lang.isNode(before)) {
+					before = before._node;
+				}
+				if (before.parentNode) {
+					before.parentNode.insertBefore(this._node, before);
+				}
+				return this;
+			},
+			parent: function () {
+				return new Node(this._node.parentNode);
+			},
+			first: function () {
+				return new Node(this.children()._nodes.shift());
+			},
+			last: function () {
+				return new Node(this.children()._nodes.pop());
+			},
+			html: function (html) {
+				if (Lang.isValue(html)) {
+					this._node.innerHTML = html;
+					return this;
+				} else {
+					return this._node.innerHTML;
+				}
+			},
+			attr: function (key, value) {
+				key = key || {};
+				var node = this._node;
+				var attrs = {};
+				if (Lang.isHash(key)) {
+					attrs = key;
+				} else if (Lang.isValue(value)) {
+					attrs[key] = value;
+				} else {
+					return node[key];
+				}
+				Hash.each(attrs, function (name, val) {
+					node[name] = val;
+				});
+				return this;
+			},
+			css: function (key, value) {
+				var myself = this;
+				var node = myself._node;
+				var css = {};
+				if (Lang.isHash(key)) {
+					css = key;
+				} else if (Lang.isValue(value)) {
+					css[key] = value;
+				} else {
+					return this._node.style[key];
+				}
+				Hash.each(css, function (prop, value) {
+					if (prop == "opacity") {
+						node.style[prop] = value;
+						if ($.UA.ie < 7) {
+							var ieOpacity = Math.ceil(value * 100);
+							node.style["-ms-filter"] = "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + ieOpacity + ")";
+						} else {
+							node.style.filter = "alpha(opacity=" + ieOpacity + ")";
+						}
+					} else {
+						if (Lang.isNumber(value) && prop != "zIndex" && prop != "zoom") {
+							value += "px";
+						}
+						node.style[prop] = value;
+					}
+				});
+				return myself;
+			},
+			find: function (query) {
+				return $(query, this._node);
+			},
+			children: function (filter) {
+				filter = !Lang.isValue(filter) ? FALSE :
+						  Lang.isString(filter) ? filter.toUpperCase() : filter;
+				var result = [];
+				var myself = this;
+				var node = myself._node;
+				var children = node.childNodes;
+				var newChildren = [];
+				var length = children.length;
+				for (var i = 0; i < length; i++) {
+					if (children[i].nodeType != TEXT_NODE) {
+						newChildren[newChildren.length] = children[i];
+					}
+				}
+				if (filter !== FALSE) {
+					length = newChildren.length;
+					for (i = 0; i < length; i++) {
+						if (i == filter || newChildren[i].nodeName == filter) {
+							result[result.length] = newChildren[i];
+						}
+					}
+				} else {
+					result.push.apply(result, newChildren);
+				}
+				return new NodeList(result);
+			},
+			on: function (type, callback) {
+				addEvent(this._node, type, callback);
+				return this;
+			},
+			unbind: function (type, callback) {
+				removeEvent(this._node, type, callback);
+				return this;
+			},
+			unbindAll: function (crawl) {
+				var node = this._node;
+				if (crawl) {
+					walkTheDOM(node, EventCache.clear);
+				} else {
+					EventCache.clear(node);
+				}
+				return this;
+			},
+			remove: function (keepEvents) {
+				var node = this._node;
+				if (!keepEvents) {
+					walkTheDOM(node, EventCache.clear);
+				}
+				if (node.parentNode) {
+					node.parentNode.removeChild(node);
+				}
+				return this;
+			},
+			getDocument: function () {
+				var node = this._node;
+				if (node.nodeName == "IFRAME") {
+					return new Node(node.contentDocument ||
+									node.contentWindow.document ||
+									node.document ||
+									null);
+				}
+				return null;
+			},
+			currentStyle: function () {
+				var node = this._node;
+				return $.win[GET_COMPUTED_STYLE] ? $.win[GET_COMPUTED_STYLE](node, null) : 
+						node[CURRENT_STYLE] ? node[CURRENT_STYLE] : node.style;
+			}
+		});
+		
+		var NodeList = function () {
+			var collection = [];
+			var addToCollection = function (node) {
+				if (Lang.isNode(node)) {
+					collection[collection.length] = node;
+				} else if (node.nodeType || Lang.isString(node)) {
+					collection[collection.length] = new Node(node);
+				}
+			};
+			ArrayHelper.each(arguments, function (node) {
+				if (node.length) {
+					ArrayHelper.each(node, addToCollection);
+				} else {
+					addToCollection(node);
+				}
+			});
+			
+			this._nodes = collection;
+		};
+		var NodeListP = NodeList.prototype;
+		mix(NodeListP, {
+			each: function (callback) {
+				var nodes = this._nodes;
+				var length = nodes.length;
+				for (var i = 0; i < length; i++) {
+					callback.call(nodes[i], nodes[i], i);
+				}
+				return this;
+			},
+			eq: function (index) {
+				return new Node(this_nodes[index]);
+			},
+			notEq: function (index) {
+				var nodes = clone(this._nodes);
+				nodes.splice(i, 1);
+				return new NodeList(nodes);
+			}
+		});
+		
+		Lang.isNodeList = function (o) {
+			return o instanceof NodeList;
+		};
+		
+		NodeList.addSetter = function (name) {
+			NodeListP[name] = function () {
+				var args = arguments;
+				return this.each(function (node) {
+					node[name].apply(node, args);
+				});
+			};
+		};
+		ArrayHelper.each(['append', 'appendTo', 'preprend', 'prependTo', 'remove', 'on', 'unbind', 'unbindAll', 'addClass', 'removeClass', 'toggleClass', 'hide', 'show', 'toggle'], 
+						NodeList.addSetter);
+		NodeList.addGetter = function (name) {
+			NodeListP[name] = function () {
+				var args = arguments;
+				var results = [];
+				this.each(function (node) {
+					results[results.length] = node[name].apply(node, args);
+				});
+				return results;
+			};
+		};
+		ArrayHelper.each(['hasClass', 'offset', 'getDocument', 'currentStyle'], 
+						NodeList.addGetter);
+		NodeList.addListGetter = function (name) {
+			NodeListP[name] = function () {
+				var args = arguments;
+				var results = [];
+				this.each(function (node) {
+					ArrayHelper.each(node[name].apply(node, args), function (found) {
+						if (!ArrayHelper.inArray(found._node, results)) {
+							results[results.length] = found._node;
+						}
+					})
+				});
+				return new NodeList(results);
+			};
+		};
+		ArrayHelper.each(['children', 'first', 'last', 'parent', 'find', 'clone'], 
+						NodeList.addListGetter);
+		NodeList.addMixed = function (name) {
+			NodeListP[name] = function () {
+				var myself = this;
+				var args = arguments;
+				if (args.length === 0) {
+					var results = [];
+					myself.each(function (node) {
+						results[results.length] = node[name]();
+					});
+					return results;
+				} else {
+					return myself.each(function (node) {
+						node[name].apply(node, args);
+					});
+				}
+			};
+		};
+		ArrayHelper.each(['html', 'css', 'attr', 'widt', 'height'], 
+						NodeList.addMixed);
+
+
+/*
 		 * Rudimentary getElementsByClassName based on by Douglas Crockford's
 		 * https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1
 		 */
@@ -501,16 +863,35 @@
 			getByClass(className, root);
 		};
 		
-		$.readyList = [];
-		$.domReady = {};
+		$ = function (query, root) {
+			root = root || $.context || document;
+			$.context = root;
+			if (Lang.isString(query)) {
+				query = $.parseQuery(query, root);
+				query = !Lang.isValue(query) ? null :
+						query.length ? new NodeList(query) : new Node(query, root);
+			} else if (Lang.isArray(query)) {
+				query = new NodeList(query, root);
+			} else if (query.nodeType) {
+				query = new Node(query);
+			}
+			return query;
+		}
+		
+		$.win = win;
+		$.context = doc;
+		
+		if (win.JSON) {
+			$.JSON = win.JSON;
+		}
 		
 		$.parseQuery = function (query, root) {
 			root = root || $.context;
 			var c = query.substr(0, 1);
 			if (c == "<") {
-				var tmpDiv = root.createElement("div");
-				tmpDiv.innerHTML = query;
-				return $(tmpDiv).first().getNode();
+				var tmpDiv = new Node("div", root);
+				tmpDiv.html(query);
+				return tmpDiv._node;
 			} else {
 				return c == "#" ? root.getElementById(query.substr(1)) : 
 					   c == "." ? getByClass(query.substr(1), root) :
@@ -522,453 +903,6 @@
 			return Lang.isNumber(parseFloat(px)) ? parseFloat(px) :
 				   Lang.isString(px) ? parseFloat(px.substr(0, px.length - 2)) : px;
 		};
-		
-		var isNodeList = function (candidate) {
-			return candidate instanceof NodeList;
-		};
-		
-		var DOCUMENT_ELEMENT = "documentElement",
-			DEFAULT_VIEW	= "defaultView";
-		
-		var GET_COMPUTED_STYLE = "getComputedStyle",
-			CURRENT_STYLE = "currentStyle";
-			
-		var LEFT = "left",
-			RIGHT = "right",
-			TOP = "top",
-			BOTTOM = "bottom";
-			
-		var AUTO = "auto";
-			
-		var TEXT_NODE = 3;
-		
-		NodeList.prototype = {
-			constructor: NodeList,
-			hide: function () {
-				return this.each(function (node) {
-					var display = node.style.display;
-					if (!node.LIB_oDisplay && display != NONE) {
-						node.LIB_oDisplay = display;
-					}
-					node.style.display = NONE;
-				});
-			},
-			show: function () {
-				return this.each(function (node) {
-					node.style.display = node.LIB_oDisplay || "";
-				});
-			},
-			toggle: function () {
-				return this.each(function (node) {
-					var ns = node.style;
-					var oDisplay = node.LIB_oDisplay;
-					ns.display = ns.display != NONE ? NONE :
-								oDisplay ? oDisplay :
-								"";
-				});
-			},
-			hasClass: function (sClass) {
-				var node = this.getNode();
-				return ArrayHelper.inArray(sClass, node.className ? node.className.split(" ") : []);
-			},
-			removeClass: function () {
-				var args = arguments;
-				return this.each(function (node) {
-					ArrayHelper.each(args, function (sClass) {
-						node.className = ArrayHelper.remove(sClass, node.className ? node.className.split(" ") : []).join(" ");
-					});
-				});
-			},
-			addClass: function () {
-				var args = arguments;
-				return this.each(function (node) {
-					ArrayHelper.each(args, function (sClass) {
-						var classes = node.className ? node.className.split(" ") : [];
-						if (!ArrayHelper.inArray(sClass, classes)) {
-							classes[classes.length] = sClass;
-							node.className = classes.join(" ");
-						}
-					});
-				});
-			},
-			toggleClass: function (sClass) {
-				return this.each(function (node) {
-					var classes = node.className ? node.className.split(" ") : [];
-					if (!ArrayHelper.inArray(sClass, classes)) {
-						classes[classes.length] = sClass;
-					} else {
-						ArrayHelper.remove(sClass, classes);
-					}
-					node.className = classes.join(" ");
-				});
-			},
-			setClass: function (sClass) {
-				return this.each(function (node) {
-					node.className = sClass;
-				});
-			},
-			scrollLeft: function () {
-				var node = this.getNode();
-				var doc = !node ? $.context :
-						  node.ownerDocument ? node.ownerDocument : node;
-				var dv = doc[DEFAULT_VIEW];
-				return Math.max(doc[DOCUMENT_ELEMENT].scrollLeft, doc.body.scrollLeft, (dv) ? dv.pageXOffset : 0);
-			},
-			scrollTop: function () {
-				var node = this.getNode();
-				var doc = !node ? $.context :
-						  node.ownerDocument ? node.ownerDocument : node;
-				var dv = doc[DEFAULT_VIEW];
-				return Math.max(doc[DOCUMENT_ELEMENT].scrollTop, doc.body.scrollTop, (dv) ? dv.pageYOffset : 0);
-			},
-			offset: function () {
-				var node = this.getNode();
-				var offset = {
-					left: 0,
-					top: 0,
-					width: node.offsetWidth,
-					height: node.offsetHeight
-				};
-				var doc = node.ownerDocument;
-				if (node) {
-					if (node.getBoundingClientRect) {
-						var box  = node.getBoundingClientRect();
-						var body = doc.body;
-						var de = doc[DOCUMENT_ELEMENT];
-						offset.left = box.left + this.scrollLeft() - de.clientLeft || body.clientLeft || 0;
-						offset.top = box.top + this.scrollTop() - de.clientTop || body.clientTop || 0;
-					} else if (node.offsetParent) {
-						do {
-							offset.left += node.offsetLeft;
-							offset.top += node.offsetTop;
-							node = node.offsetParent;
-						} while (node);
-					}
-				}
-				return offset;
-			},
-			offsetLeft: function () {
-				return this.offset().left;
-			},
-			offsetTop: function () {
-				return this.offset().top;
-			},
-			width: function (width) {
-				if (Lang.isValue(width)) {
-					width = Lang.isString(width) ? width : width + "px";
-					return this.each(function (node) {
-						node.style.width = width;
-					});
-				}
-				return this.getNode().offsetWidth;
-			},
-			height: function (height) {
-				return Lang.isValue(height) ? this.each(function (node) {
-						node.style.height = Lang.isString(height) ? height : height + "px";
-					}) : this.getNode().offsetHeight;
-			},
-			clip: function (clipping) {
-				if (!clipping) {
-					clipping = this.getNode().style.clip;
-					clipping = clipping.substr(5, clipping.length - 1);
-					clipping = clipping.split(",");
-					return {
-						top:	clipping[0] == AUTO ? clipping[0] : pxToFloat(clipping[0]),
-						right:	clipping[1] == AUTO ? clipping[1] : pxToFloat(clipping[1]),
-						bottom:	clipping[2] == AUTO ? clipping[2] : pxToFloat(clipping[2]),
-						left:	clipping[3] == AUTO ? clipping[3] : pxToFloat(clipping[3])
-					};
-				} else {
-					ArrayHelper.each([TOP, RIGHT, BOTTOM, LEFT], function (name) {
-						clipping[name] = Lang.isValue(clipping[name]) ? clipping[name] : AUTO;
-						if (Lang.isNumber(clipping[name])) {
-							clipping[name] = clipping[name] + "px";
-						}
-					});
-					clipping = "rect(" + [clipping[TOP], clipping[RIGHT], clipping[BOTTOM], clipping[LEFT]].join(",") + ")";
-					return this.each(function (node) {
-						node.style.clip = clipping;
-					});
-				}
-			},
-			clone: function (deep) {
-				deep = deep || TRUE;
-				var result = [];
-				this.each(function (node) {
-					result[result.length] = node.cloneNode(deep);
-				});
-				return new NodeList(result);
-			},
-			appendTo: function (target) {
-				var myself = this;
-				if (target.nodeType) {
-					myself.each(function (node) {
-						target.appendChild(node);
-					});
-				} else if (isNodeList(target)) {
-					myself.each(function (node) {
-						target.each(function (subnode) {
-							subnode.appendChild(node);
-						});
-					});
-				}
-				return myself;
-			},
-			prependTo: function (target) {
-				var myself = this;
-				if (target.nodeType) {
-					myself.each(function (node) {
-						if (target.firstChild) {
-							target.insertBefore(node, target.firstChild);
-						} else {
-							target.appendChild(node);
-						}
-					});
-				} else if (isNodeList(target)) {
-					myself.each(function (node) {
-						target.each(function (subnode) {
-							if (subnode.firstChild) {
-								subnode.insertBefore(node, subnode.firstChild);
-							} else {
-								subnode.appendChild(node);
-							}
-						});
-					});
-				}
-				return myself;
-			},
-			append: function (nodes) {
-				if (nodes.nodeType) {
-					this.each(function (node) {
-						node.appendChild(nodes);
-					});
-				} else if (isNodeList(nodes)) {
-					this.each(function (node) {
-						nodes.each(function (subnode, i) {
-							node.appendChild(i === 0 ? subnode : subnode.cloneNode(TRUE));
-						});
-					});
-				} else if (Lang.isString(nodes)) {
-					this.each(function (node) {
-						node.appendChild($.context.createTextNode(nodes));
-					});
-				}
-				return this;
-			},
-			insertBefore: function (before) {
-				before = $(before);
-				return this.each(function (node) {
-					before.each(function (subnode) {
-						subnode.parentNode.insertBefore(node, subnode);
-					});
-				});
-			},
-			prepend: function (nodes) {
-				nodes = $(nodes);
-				return this.each(function (node) {
-					if (node.firstChild) {
-						nodes.insertBefore(node.firstChild);
-					} else {
-						nodes.appendTo(node);
-					}
-				});	
-			},
-			parent: function () {
-				var result = [];
-				this.each(function (node) {
-					node = node.parentNode;
-					if (node && !ArrayHelper.inArray(node, result)) {
-						result[result.length] = node;
-					}
-				});
-				return new NodeList(result);
-			},
-			first: function () {
-				var result = [];
-				this.each(function (node) {
-					result[result.length] = $(this).children().getNodes().shift();
-				});
-				return new NodeList(result);
-			},
-			last: function () {
-				var result = [];
-				this.each(function (node) {
-					result[result.length] = $(this).children().getNodes().pop();
-				});
-				return new NodeList(result);
-			},
-			html: function (html) {
-				return this.each(function (node) {
-					node.innerHTML = html;
-				});
-			},
-			attr: function (key, value) {
-				var attrs = {};
-				if (Lang.isHash(key)) {
-					attrs = key;
-				} else if (Lang.isValue(value)) {
-					attrs[key] = value;
-				} else {
-					return this.getNode()[key];
-				}
-				return this.each(function (node) {
-					Hash.each(attrs, function (name, val) {
-						node[name] = val;
-					});
-				});
-			},
-			css: function (key, value) {
-				var css = {};
-				if (Lang.isHash(key)) {
-					css = key;
-				} else if (Lang.isValue(value)) {
-					css[key] = value;
-				} else {
-					return this.getNode().style[key];
-				}
-				return this.each(function (node) {
-					Hash.each(css, function (prop, value) {
-						if (prop == "opacity") {
-							node.style[prop] = value;
-							if ($.UA.ie < 7) {
-								var ieOpacity = Math.ceil(value * 100);
-								node.style["-ms-filter"] = "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + ieOpacity + ")";
-							} else {
-								node.style.filter = "alpha(opacity=" + ieOpacity + ")";
-							}
-						} else {
-							if (Lang.isNumber(value) && prop != "zIndex" && prop != "zoom") {
-								value += "px";
-							}
-							node.style[prop] = value;
-						}
-					});
-				});
-			},
-			find: function (query) {
-				var result = [];
-				this.each(function (node) {
-					result.push.apply(result, $(query, node).getNodes());
-				});
-				return new NodeList(result);
-			},
-			children: function (filter) {
-				filter = !Lang.isValue(filter) ? FALSE :
-						  Lang.isString(filter) ? filter.toUpperCase() : filter;
-				var result = [];
-				this.each(function (node) {
-					var children = node.childNodes;
-					var newChildren = [];
-					var length = children.length;
-					for (var i = 0; i < length; i++) {
-						if (children[i].nodeType != TEXT_NODE) {
-							newChildren[newChildren.length] = children[i];
-						}
-					}
-					if (filter !== FALSE) {
-						length = newChildren.length;
-						for (i = 0; i < length; i++) {
-							if (i == filter || newChildren[i].nodeName == filter) {
-								result[result.length] = newChildren[i];
-							}
-						}
-					} else {
-						result.push.apply(result, newChildren);
-					}
-				});
-				return new NodeList(result);
-			},
-			eq: function (index) {
-				return new NodeList(this.getNodes()[index]);
-			},
-			notEq: function (index) {
-				return new NodeList(this.getNodes().slice(0, index).slice(1));
-			},
-			on: function (type, callback) {
-				return this.each(function (node) {
-					addEvent(node, type, callback);
-				});
-			},
-			unbind: function (type, callback) {
-				return this.each(function (node) {
-					removeEvent(node, type, callback);
-				});
-			},
-			unbindAll: function (crawl) {
-				return this.each(function (node) {
-					if (crawl) {
-						$.walkTheDOM(node, EventCache.clear);
-					} else {
-						EventCache.clear(node);
-					}
-				});
-			},
-			remove: function (keepEvents) {
-				return this.each(function (node) {
-					if (!keepEvents) {
-						$.walkTheDOM(node, EventCache.clear);
-					}
-					node.parentNode.removeChild(node);
-				});
-			},
-			getDocument: function () {
-				var result = [];
-				this.each(function (node) {
-					if (node.nodeName == "IFRAME") {
-						result[result.length] = node.contentDocument ||
-															node.contentWindow.document ||
-															node.document ||
-															null;
-					}
-				});
-				return new NodeList(result);
-			},
-			currentStyle: function () {
-				var node = this.getNode();
-				return $.win[GET_COMPUTED_STYLE] ? $.win[GET_COMPUTED_STYLE](node, null) : 
-						node[CURRENT_STYLE] ? node[CURRENT_STYLE] : node.style;
-			},
-			ready: function (callback) {
-				var that = this;
-				/*
-				 * Based on jQuery's ready() method
-				 */
-				return this.each(function (node) {
-					var root = node.ownerDocument;
-					var fn, i = 0;
-					if (!$.domReady[root]) {
-						if (callback) {
-							$.readyList[$.readyList.length] = {
-								fn: callback,
-								obj: node
-							};
-						}
-						if (!root.body) {
-							setTimeout(that.ready, 13);
-						} else {
-							// Remember that the DOM is ready
-							$.domReady[root] = TRUE;
-							var callb;
-							// If there are functions bound, to execute
-							if ($.readyList) {
-								// Execute all of them
-								while ((callb = $.readyList[i++])) {
-									callb.fn.call(callb.obj);
-								}
-								
-								// Reset the list of functions
-								$.readyList = null;
-							}
-						}
-					} else if (callback) {
-						callback.call(node);
-					}
-				});
-			}
-		};
-		
-		
-		var head = $("head");
 		
 		var add = function (o) {
 			mix($, o);
@@ -995,6 +929,7 @@
 			
 			Hash: Hash,
 			
+			Node: Node,
 			NodeList: NodeList,
 			
 			Get: {

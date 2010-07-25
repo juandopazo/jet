@@ -2,267 +2,212 @@ jet().add('anim', function ($) {
 	
 	var TRUE = true,
 		FALSE = false;
-		
-	var Lang = $.Lang,
-		Hash = $.Hash;
 	
-	var Anim = function () {
-		Anim.superclass.constructor.apply(this, arguments);
+	var PLAYING = "playing",
+		ENTER_FRAME = "enterFrame";
 		
-		var running = FALSE, paused = FALSE;
-		var interval;
-		var time = 0;
-		var iterationCount = 0;
-				
+	var TimeFrame = function () {
+		TimeFrame.superclass.constructor.apply(this, arguments);
+		
+		var paused = FALSE;
+		var playing = FALSE;
+		var tweens = [];
+		
 		var myself = this.addAttrs({
-			direction: {
-				value: "normal",
-				validator: function (value) {
-					return value == "normal" || value == "alternate";
-				}
-			},
 			node: {
-				required: TRUE,
+				writeOnce: TRUE,
 				setter: function (value) {
 					return $(value);
-				}
-			},
-			duration: {
-				value: 1000,
-				getter: function (value) {
-					return value == "fast" ? 500 :
-						   value == "slow" ? 4000 :
-						   Lang.isNumber(value) ? value :
-						   1000;
-				}
-			},
-			interations: {
-				value: 1
-			},
-			iterationCount: {
-				readOnly: TRUE,
-				getter: function () {
-					return iterationCount;
-				}
-			},
-			interval: {
-				value: 20,
-				readOnly: TRUE
-			},
-			from: {
-				value: {},
-				validator: Lang.isHash
-			},
-			to: {
-				value: {},
-				validator: Lang.isHash
-			},
-			easing: {
-				value: Anim.easing.DEFAULT
-			},
-			running: {
-				readOnly: TRUE,
-				getter: function () {
-					return !!running;
-				}
+				},
+				value: "<canvas/>"
 			},
 			paused: {
 				readOnly: TRUE,
 				getter: function () {
 					return !!paused;
 				}
+			},
+			playing: {
+				readOnly: TRUE,
+				getter: function () {
+					return !!playing;
+				}
+			},
+			tweens: {
+				readOnly: TRUE,
+				getter: function () {
+					return $.clone(tweens);
+				}
+			},
+			fps: {
+				validator: function () {
+					return !playing;
+				},
+				value: 50
 			}
 		});
-		var node = myself.get("node");
-		var currentStyle = $.clone(node.currentStyle());
 		
-		var frameLength = myself.get("interval");
-		var doAnim = function () {
-			var from = myself.get("from");
-			var to = myself.get("to");
-			var dur = myself.get("duration");
-			var tweenStyles = {};
-			Hash.each(to, function (name, end) {
-				from[name] = Lang.isNumber(from[name]) ? from[name] : $.pxToFloat(currentStyle[name]);
-				tweenStyles[name] = myself.get("easing")(time, from[name], end, dur);
-			});
-			myself.fire("tween", tweenStyles);
-			node.css(tweenStyles);
-			if (time >= dur) {
-				iterationCount++;
-				var iterations = myself.get("iterations");
-				if (iterationCount < iterations || iterations < 0) {
-					time = 0;
-					if (myself.get("direction") == "alternate") {
-						var oldFrom = $.clone(from);
-						myself.set("from", myself.get("to")).set("to", oldFrom);
-					}
-				} else {
-					myself.stop();
-				}
+		var interval;
+		var time = 0;
+		var frameLength = Math.round(1000 / myself.get("fps"));
+		
+		myself.play = function() {
+			paused = FALSE;
+			playing = TRUE;
+			if (interval) {
+				clearInterval(interval);
 			}
+			ArrayHelper.each(tweens, function (tween) {
+				tween.play(0, frameLength);
+			});
+			time = 0;
+			interval = setInterval(function () {
+				time += frameLength;
+				myself.fire(ENTER_FRAME, time);
+			}, frameLength);
+			return myself;
+		};
+		myself.stop = function () {
+			paused = playing = FALSE;
+			if (interval) {
+				clearInterval(interval);
+			}
+			return myself;
+		};
+		myself.pause = function () {
+			playing = FALSE;
+			paused = TRUE;
+			return myself;
 		};
 		
-		myself.start = function () {
-			if (myself.fire("start")) {
-				running = TRUE;
-				paused = FALSE;
-				time = 0;
-				interval = setInterval(function () {
-					time += frameLength;
-					doAnim();
-				}, frameLength);
-				doAnim(time);
+		myself.addTween = function (tween) {
+			tweens[tweens.length] = tween;
+			myself.on(ENTER_FRAME, tween.frame);
+			tween.on("stop", myself.stop);
+			return myself;
+		};
+		myself.removeTween = function (tween) {
+			myself.unbind(ENTER_FRAME, tween.frame);
+			ArrayHelper.remove(tween, tweens);
+			return myself;
+		};
+	};
+	$.extend(TimeFrame, $.Base);
+	
+	TimeFrame.easing = {
+        DEFAULT: function (x, y0, yf, dur) {
+            return (yf - y0) * x / dur + y0;
+        },
+        EASEIN: function (x, y0, yf, dur, pw) {
+            return yf + y0 - yf * Math.pow((dur - x) / dur, pw) + y0;
+        },
+        EASEOUT: function (x, y0, yf, dur, pw) {
+            return yf * Math.pow(x / dur, pw) + y0;
+        }
+    };
+	
+	var Tween = function () {
+		Tween.superclass.constructor.apply(this, arguments);
+		
+		var playing = FALSE;
+		var isPlaying = function () {
+			return !!playing;
+		};
+		
+		var myself = this.addAttrs({
+			node: {
+				required: TRUE,
+				setter: function (value) {
+					return $(value);
+				}
+			},
+			from: {
+				value: {},
+				validator: isPlaying
+			},
+			to: {
+				required: TRUE,
+				validator: isPlaying
+			},
+			easing: {
+				value: TimeFrame.easing.DEFAULT
+			},
+			easingStrength: {
+				value: 2,
+				setter: function (value) {
+					return Math.abs(value);
+				}
+			},
+			startFrame: {
+				value: 0
+			},
+			duration: {
+				value: 1000,
+                setter: function (value) {
+                    return value == "fast" ? 500 :
+                           value == "slow" ? 4000 :
+                           Lang.isNumber(value) ? value :
+                           1000; 
+                }
+			}
+		});
+		
+		var node = myself.get("node");
+		var height = myself.get("height");
+		if (height) {
+			node.height(height);
+		}
+		var width = myself.get("width");
+		if (width) {
+			node.height(width);
+		}
+		var currentStyle = node.currentStyle();
+		var time = 0;
+		var from, to, dur;
+		var timeFrame;
+		
+		myself.play = function (startTime, frameLength) {
+			playing = TRUE;
+			time = 0;
+			from = myself.get("from");
+            to = myself.get("to");
+            dur = myself.get("duration");
+			timeFrame = {};
+            Hash.each(to, function (name, end) {
+                from[name] = Lang.isNumber(from[name]) ? from[name] : $.pxToFloat(currentStyle[name]);
+            });
+			var strength = myself.get("easingStrength");
+			var easing = myself.get("easing");
+			for (var i = 0; i <= dur; i += frameLength) {
+				timeFrame[i] = {};
+				Hash.each(to, function (name, end) {
+					timeFrame[i][name] = easing(i, from[name], end, dur, strength);
+				})
 			}
 			return myself;
 		};
 		myself.stop = function () {
-			running = FALSE;
-			paused = FALSE;
-			time = 0;
-			clearInterval(interval);
-			myself.fire("stop");
+			playing = FALSE;
 			return myself;
 		};
 		myself.pause = function () {
-			running = FALSE;
-			paused = TRUE;
-			clearInterval(interval);
 			return myself;
 		};
-		myself.resume = function () {
-			running = TRUE;
-			paused = FALSE;
-			interval = setInterval(function () {
-				time += frameLength;
-				doAnim(time);
-			}, frameLength);
+		myself.frame = function (e, time) {
+			if (time > dur) {
+				playing = FALSE;
+				myself.fire("stop");
+			}
+			if (playing) {
+                node.css(timeFrame[time]);
+			}
 			return myself;
 		};
 	};
-	$.extend(Anim, $.Utility);
+	$.extend(Tween, $.Base);
 	
-	Anim.easing = {
-		DEFAULT: function (x, y0, yf, dur) {
-			return (yf - y0) * x / dur + y0;
-		},
-		EASEIN: function (x, y0, yf, dur) {
-			return (y0 - yf) * (x * x - 2 * dur * x) / (dur * dur) + y0;
-		},
-		EASEOUT: function (x, y0, yf, dur) {
-			y0 += yf;
-			return y0 * (1 - x * x / (dur * dur));
-		}
-	};
-	
-	$.Anim = Anim;
-	
-	var storeDisplayOverflow = function (node) {
-		var currentStyle = node.currentStyle();
-		return {
-			display: currentStyle.display,
-			overflow: currentStyle.overflow
-		};
-	};
-	var blockHidden = {
-		display: "block",
-		overflow: "hidden"
-	};
-	
-	$.mix($.NodeList.prototype, {
-		fadeIn: function (duration, callback) {
-			var myself = this;
-			var anim = new Anim({
-				node: myself,
-				duration: duration,
-				from: {
-					opacity: 0
-				},
-				to: {
-					opacity: 1
-				}
-			});
-			if (callback) {
-				anim.on("stop", function () {
-					callback.apply(myself, arguments);
-				});
-			}
-			anim.start();
-			return myself;
-		},
-		fadeOut: function (duration, callback) {
-			var myself = this;
-			var anim = new Anim({
-				node: myself,
-				duration: duration,
-				to: {
-					opacity: 0
-				}
-			});
-			if (callback) {
-				anim.on("stop", function () {
-					callback.apply(myself, arguments);
-				});
-			}
-			anim.start();
-			return myself.hide();
-		},
-		slideDown: function (duration, callback) {
-			var myself = this;
-			var oStyle = storeDisplayOverflow(myself);
-			myself.css(blockHidden);
-			var anim = new Anim({
-				node: myself,
-				duration: duration,
-				to: {
-					height: myself.getNode().originalHeight
-				}
-			});
-			if (callback) {
-				anim.on("stop", function () {
-					myself.css(oStyle);
-					callback.apply(myself, arguments);
-				});
-			}
-			anim.start();
-			return myself;
-		},
-		slideUp: function (duration, callback) {
-			var myself = this;
-			var oStyle = storeDisplayOverflow(myself);
-			myself.css(blockHidden);
-			myself.getNode().originalHeight = myself.height();
-			var anim = new Anim({
-				node: myself,
-				duration: duration,
-				to: {
-					height: 0
-				}
-			});
-			if (callback) {
-				anim.on("stop", function () {
-					myself.css(oStyle);
-					callback.apply(myself, arguments);
-				});
-			}
-			anim.start();
-			return myself;
-		},
-		animate: function (config, duration, callback) {
-			var myself = this;
-			var anim = new Anim({
-				node: myself,
-				duration: duration,
-				to: config
-			});
-			if (callback) {
-				anim.on("stop", function () {
-					callback.apply(myself, arguments);
-				});
-			}
-			anim.start();
-			return myself;
-		}
+	$.add({
+		TimeFrame: TimeFrame,
+		Tween: Tween
 	});
-	
 });
