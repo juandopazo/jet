@@ -18,19 +18,20 @@ jet().add('plasma', function ($) {
 		NP = Node.prototype;
 	
 	/*
-	 * IE apparently has two different ways to create VML nodes
+	 * IE apparently has two different ways of creating VML nodes.
+	 * Thanks to Dmitry Baranovskiy of Raphael.js for this bit I couldn't figure out
 	 */
 	var createIENode;
 	try {
-    	!document.namespaces.rvml && document.namespaces.add("rvml", "urn:schemas-microsoft-com:vml");
+    	!document.namespaces.vml && document.namespaces.add("vml", "urn:schemas-microsoft-com:vml");
     	createIENode = function(tagName) {
-			var node = $.context.createElement('<rvml:' + tagName + ' class="rvml">');
+			var node = $.context.createElement('<vml:' + tagName + ' class="vml">');
     		return node;
     	};
     } 
     catch (e) {
     	createIENode = function(tagName) {
-    		return $.context.createElement('<' + tagName + ' xmlns="urn:schemas-microsoft.com:vml" class="rvml">');
+    		return $.context.createElement('<' + tagName + ' xmlns="urn:schemas-microsoft.com:vml" class="vml">');
     	};
     }
 	
@@ -39,8 +40,8 @@ jet().add('plasma', function ($) {
 	 */
 	if (!UA_SUPPORTS_SVG) {
 		var styles = $.context.createStyleSheet();
-		styles.addRule(".rvml", "behavior:url(#default#VML)");
-		styles.addRule(".rvml", "display:inline-block");
+		styles.addRule(".vml", "behavior:url(#default#VML)");
+		styles.addRule(".vml", "display:inline-block");
 	}
 
 	/**
@@ -152,7 +153,9 @@ jet().add('plasma', function ($) {
 		
 		var node = myself.get(NODE);
 		myself._node = node.nodeType ? node : createIENode(node);
-		
+		if (!UA_SUPPORTS_SVG) {
+			myself._node.style.position = "absolute";
+		}
 	};
 	$.extend(Graphic, $.Attribute, {
 		rotate: function () {
@@ -244,8 +247,8 @@ jet().add('plasma', function ($) {
 					return value;
 				} : function (value) {
 					var ns = this._node.style;
-					ns.width = value;
-					ns.height = value;
+					ns.width = value * 2;
+					ns.height = value * 2;
 					return value;
 				}
 			}
@@ -337,6 +340,7 @@ jet().add('plasma', function ($) {
 		Plasma.superclass.constructor.apply(this, arguments);
 		
 		var box = new Node("div");
+		box.css("position", "relative");
 
 		var myself = this.addAttrs({
 			srcNode: {
@@ -368,24 +372,27 @@ jet().add('plasma', function ($) {
 		myself.get("srcNode").append(box);
 		
 	};
+	var appendToPlasma = function (shape, plasma) {
+		return shape.set(PLASMA, plasma).appendTo(plasma.get(BOUNDING_BOX));
+	};
 	$.extend(Plasma, $.TimeFrame, {
 		rectangle: function (config) {
-			return new Rectangle(config).set(PLASMA, this).appendTo(this.get(BOUNDING_BOX));
+			return appendToPlasma(new Rectangle(config), this);
 		},
 		circle: function (config) {
-			return new Circle(config).set(PLASMA, this).appendTo(this.get(BOUNDING_BOX));
+			return appendToPlasma(new Circle(config), this);
 		},
 		ellipse: function (config) {
-			return new Ellipse(config).set(PLASMA, this).appendTo(this.get(BOUNDING_BOX));
+			return appendToPlasma(new Ellipse(config), this);
 		},
 		image: function (config) {
-			return new ImageGraphic(config).set(PLASMA, this).appendTo(this.get(BOUNDING_BOX));
+			return appendToPlasma(new ImageGraphic(config), this);
 		},
 		text: function (config) {
-			return new Text(config).set(PLASMA, this).appendTo(this.get(BOUNDING_BOX));
+			return appendToPlasma(new Text(config), this);
 		},
 		path: function (config) {
-			return new Path(config).set(PLASMA, this).appendTo(this.get(BOUNDING_BOX));
+			return appendToPlasma(new Path(config), this);
 		},
 		link: function () {
 			return new GraphicList(arguments);

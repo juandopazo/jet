@@ -7,6 +7,17 @@ jet().add('base', function ($) {
 	var Hash = $.Hash,
 		Lang = $.Lang,
 		ArrayHelper = $.Array;
+	
+	/**
+	 * A more traditional random number function.
+	 * Returns an integer between 0 and "num"
+	 *  
+	 * @param {Number} integer
+	 */
+	$.random = function (num) {
+		num = Math.random() * num;
+		return num === 0 ? 0 : Math.ceil(num) - 1;
+	};
 		
 	/**
 	 * Copies every property from b into a's prototype, except for the "constructor" property

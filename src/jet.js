@@ -645,16 +645,15 @@
 					return this._node.style[key];
 				}
 				Hash.each(css, function (prop, value) {
-					if (prop == "opacity") {
-						node.style[prop] = value;
+					if (prop == "opacity" && $.UA.ie) {
+						var ieOpacity = Math.ceil(value * 100);
 						if ($.UA.ie < 7) {
-							var ieOpacity = Math.ceil(value * 100);
 							node.style["-ms-filter"] = "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + ieOpacity + ")";
 						} else {
 							node.style.filter = "alpha(opacity=" + ieOpacity + ")";
 						}
 					} else {
-						if (Lang.isNumber(value) && prop != "zIndex" && prop != "zoom") {
+						if (Lang.isNumber(value) && prop != "zIndex" && prop != "zoom" && prop != "opacity") {
 							value += "px";
 						}
 						node.style[prop] = value;
