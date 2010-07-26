@@ -169,7 +169,7 @@ jet().add('base', function ($) {
 				throw new Error("Missing required attribute: " + attrName);
 			}
 			if (isValue && config.setter) {
-				classConfig[attrName] = config.setter(classConfig[attrName]);
+				classConfig[attrName] = config.setter.call(myself, classConfig[attrName]);
 			}
 			return myself;
 		};
@@ -179,7 +179,7 @@ jet().add('base', function ($) {
 			var config = attrConfig[attrName];
 			if (!config.readOnly) {
 				if (!config.validator || config.validator(attrValue)) {
-					attrValue = config.setter ? config.setter(attrValue) : attrValue;
+					attrValue = config.setter ? config.setter.call(myself, attrValue) : attrValue;
 					if (!Lang.isValue(classConfig[attrName]) && config.value) {
 						classConfig[attrName] = config.value;
 					}
@@ -211,7 +211,7 @@ jet().add('base', function ($) {
 			if (!Lang.isValue(classConfig[attrName])) {
 				classConfig[attrName] = config.value;
 			}
-			return	config.getter ? config.getter(classConfig[attrName], attrName) :
+			return	config.getter ? config.getter.call(myself, classConfig[attrName], attrName) :
 					classConfig[attrName];
 		};
 		/**
@@ -255,7 +255,11 @@ jet().add('base', function ($) {
 		 * @return {Hash}
 		 */
 		myself.getAttrs = function () {
-			return $.clone(classConfig);
+			var result = {};
+			Hash.each(classConfig, function (key) {
+				result[key] = myself.get(key);
+			});
+			return result;
 		};
 		/**
 		 * Returns whether an attribute is set or not
