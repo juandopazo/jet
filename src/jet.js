@@ -975,13 +975,13 @@
 				var webkit = /KHTML/.test(ua) || /webkit/i.test(ua),
 					chrome = /chrome/i.test(ua),
 					opera = /opera/i.test(ua),
-					ie = !+"\v1"; // feature detection based on Andrea Giammarchi's solution: http://webreflection.blogspot.com/2009/01/32-bytes-to-know-if-your-browser-is-ie.html
+					ie = /(msie) ([\w.]+)/.exec(ua);
 				
                 return {
 					w3: !!(doc.getElementById && doc.getElementsByTagName && doc.createElement),
 					webkit: webkit,
 					chrome: chrome,
-					ie: ie ? doc.documentMode : FALSE,
+					ie: ie[1] && ie[2] ? parseFloat(ie[2]) : FALSE,
 					opera: opera,
 					gecko: !webkit && !opera && !ie && /Gecko/i.test(ua),
 					win: p ? /win/.test(p) : /win/.test(ua), 
