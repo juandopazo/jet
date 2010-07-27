@@ -1,5 +1,5 @@
 (function () {
-	var baseUrl = location.protocol + "//jet.googlecode.com/svn/trunk/src/";
+	var baseUrl = location.protocol + "//jet-js.googlecode.com/svn/trunk/src/";
 	
 	var win = window,
 		doc = document,
@@ -1050,6 +1050,7 @@
 				base = config.base;
 				base = base.substr(base.length - 1, 1) == "/" ? base : base + "/";
 			}
+			config.minify = Lang.isBoolean(config.minify) ? config.minify : FALSE;
 			var predef = mix(clone(predefinedModules), config.modules || {}, TRUE);
 			
 			var loadCssModule = function (module) {
