@@ -81,18 +81,20 @@ jet().add('plasma', function ($) {
 	/*
 	 * This attributes should map to styles in VML instead of DOM attributes
 	 */
-	var VML_STYLE_ATTRIBUTES = ['width', 'height'];
+	var VML_STYLE_ATTRIBUTES = ['width', 'height', 'left', 'top'];
 	/*
 	 * This attributes should always map to DOM attributes in both SVG and VML
 	 */
-	var ATTR_ATTRIBUTES = ['x', 'y', 'cx', 'cy', 'rx', 'ry', 'xmlns', 'version', 'fill'].concat(VML_STYLE_ATTRIBUTES);
+	var ATTR_ATTRIBUTES = ['x', 'y', 'rx', 'ry', 'xmlns', 'version', 'fill', 'opacity'].concat(VML_STYLE_ATTRIBUTES);
 	/*
 	 * Each key in this object is a SVG attribute and its value is its VML equivalent
 	 */
 	var VML_ATTR_MAPPING = {
 		fill: "fillcolor",
-		rx: "width",
-		ry: "height"
+		x: "left",
+		y: "top",
+		cx: "left",
+		cy: "top"
 	};
 	/*
 	 * Set up attributes according to its support
@@ -110,6 +112,49 @@ jet().add('plasma', function ($) {
 			getter: getDefaultGetter(mappedAttrName),
 			setter: getDefaultSetter(mappedAttrName)
 		}
+	});
+	
+	
+	var STROKE_ATTR_MAPPING = {
+		stroke: "color",
+		"stroke-width": "weight",
+		"stroke-opacity": "opacity",
+		"stroke-linecap": "endcap",
+		"stroke-linejoin": "joinstyle",
+		"stroke-miterlimit": "miterlimit",
+		"stroke-dasharray": "dashstyle"
+	};
+	var strokeAttributesGetter = function (name) {
+		if (UA_SUPPORTS_SVG) {
+			return function (value) {
+				this._node.getAttribute(name);
+			};
+		} else {
+			return function (value) {
+				return this.get("stroke")[STROKE_ATTR_MAPPING[name]];
+			};
+		}
+	};
+	var strokeAttributesSetter = function (name) {
+		if (UA_SUPPORTS_SVG) {
+			return function (value) {
+				this._node.setAttribute(name, value);
+				return value;
+			};
+		} else {
+			return function (value) {
+				var strkNode = this.get("stroke-node");
+				strkNode.on = true;
+				strkNode[STROKE_ATTR_MAPPING[name]] = value;
+				return value;
+			};
+		}
+	};
+	Hash.each(STROKE_ATTR_MAPPING, function (asvg) {
+		Graphic_ATTRS[asvg] = {
+			getter: strokeAttributesGetter(asvg),
+			setter: strokeAttributesSetter(asvg)
+		};
 	});
 	
 	/**
@@ -131,10 +176,18 @@ jet().add('plasma', function ($) {
 				return myself._node;
 			}
 		});
-		myself.addAttrs(Graphic_ATTRS);
-		
 		var node = myself.get(NODE);
 		myself._node = node.nodeType ? node : $.context.createElementNS(NAMESPACE_URI, node);
+		
+		myself.addAttrs(Graphic_ATTRS).addAttr("fill-opacity", {
+			getter: function () {
+				return this.get(NODE).getAttribute("fill-opacity");
+			},
+			setter: function (value) {
+				this.get(NODE).setAttribute("opacity", value);
+				return value;
+			}
+		});
 		
 	} : function () {
 		Graphic.superclass.constructor.apply(this, arguments);
@@ -149,13 +202,26 @@ jet().add('plasma', function ($) {
 				return myself._node;
 			}
 		});
-		myself.addAttrs(Graphic_ATTRS);
-		
 		var node = myself.get(NODE);
 		myself._node = node.nodeType ? node : createIENode(node);
-		if (!UA_SUPPORTS_SVG) {
-			myself._node.style.position = "absolute";
-		}
+		node.style.position = "absolute";
+		var stroke = createIENode("stroke");
+		stroke.on = false;
+		node.appendChild(stroke);
+		myself.set("stroke-node", stroke);
+		var fill = createIENode("fill");
+		node.appendChild(fill);
+		myself.set("fill-node", fill);
+
+		myself.addAttrs(Graphic_ATTRS).addAttr("fill-opacity", {
+			getter: function () {
+				return this.get("fill-node")["opacity"];
+			},
+			setter: function (value) {
+				this.get("fill-node")["opacity"] = value;
+				return value;
+			}
+		});;
 	};
 	$.extend(Graphic, $.Attribute, {
 		rotate: function () {
@@ -174,7 +240,7 @@ jet().add('plasma', function ($) {
 	 * but we don't need every method from Node either
 	 */
 	A.each(['append', 'appendTo', 'on', 'unbind',
-					  'unbindAll', 'remove', 'hide', 'show'], function (method) {
+					  'unbindAll', 'remove', 'hide', 'show', 'children'], function (method) {
 		Graphic.prototype[method] = NP[method];
 	});
 	
@@ -232,6 +298,69 @@ jet().add('plasma', function ($) {
 	 * 
 	 * @param {Object} config
 	 */
+	var Ellipse = function (config) {
+		config.node = UA_SUPPORTS_SVG ? "ellipse" : "oval";
+		Ellipse.superclass.constructor.apply(this, arguments);
+		
+		var myself = this.addAttrs({
+			rx: {
+				getter: UA_SUPPORTS_SVG ? function () {
+					return this._node.getAttribute("rx");
+				} : function () {
+					return $.pxToFloat(this._node.style.width) / 2;
+				},
+				setter: UA_SUPPORTS_SVG ? function (value) {
+					this._node.setAttribute("rx", value);
+					return value;
+				} : function (value) {
+					this._node.style.width = value * 2;
+					return value;
+				}
+			},
+			ry: {
+				getter: UA_SUPPORTS_SVG ? function () {
+					return this._node.getAttribute("ry");
+				} : function () {
+					return $.pxToFloat(this._node.style.width) / 2;
+				},
+				setter: UA_SUPPORTS_SVG ? function (value) {
+					this._node.setAttribute("ry", value);
+					return value;
+				} : function (value) {
+					this._node.style.height = value * 2;
+					return value;
+				}
+			}		
+		});
+		myself.addAttrs({
+			cx: {
+				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING["cx"] ? VML_ATTR_MAPPING["cx"] : "cx"),
+				setter: UA_SUPPORTS_SVG ? function (value) {
+					this._node.setAttribute("cx", value);
+					return value;
+				} : function (value) {
+					this._node.style.left = (value - $.pxToFloat(myself.get("rx"))) + "px";
+					return value;
+				}
+			},
+			cy: {
+				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING["cy"] ? VML_ATTR_MAPPING["cy"] : "cy"),
+				setter: UA_SUPPORTS_SVG ? function (value) {
+					this._node.setAttribute("cy", value);
+					return value;
+				} : function (value) {
+					this._node.style.top = (value - $.pxToFloat(myself.get("ry")) / 2) + "px";
+					return value;
+				}
+			}
+		});
+	};
+	$.extend(Ellipse, Graphic);
+	
+	/**
+	 * 
+	 * @param {Object} config
+	 */
 	var Circle = function (config) {
 		config.node = UA_SUPPORTS_SVG ? "circle" : "oval";
 		Circle.superclass.constructor.apply(this, arguments);
@@ -253,18 +382,30 @@ jet().add('plasma', function ($) {
 				}
 			}
 		});
+		myself.addAttrs({
+			cx: {
+				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING["cx"] ? VML_ATTR_MAPPING["cx"] : "cx"),
+				setter: UA_SUPPORTS_SVG ? function (value) {
+					this._node.setAttribute("cx", value);
+					return value;
+				} : function (value) {
+					this._node.style.left = (value - $.pxToFloat(myself.get("r")) / 2) + "px";
+					return value;
+				}
+			},
+			cy: {
+				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING["cy"] ? VML_ATTR_MAPPING["cy"] : "cy"),
+				setter: UA_SUPPORTS_SVG ? function (value) {
+					this._node.setAttribute("cy", value);
+					return value;
+				} : function (value) {
+					this._node.style.top = (value - $.pxToFloat(myself.get("r")) / 2) + "px";
+					return value;
+				}
+			}
+		});
 	};
 	$.extend(Circle, Graphic);
-	
-	/**
-	 * 
-	 * @param {Object} config
-	 */
-	var Ellipse = function (config) {
-		config.node = UA_SUPPORTS_SVG ? "ellipse" : "oval";
-		Ellipse.superclass.constructor.apply(this, arguments);
-	};
-	$.extend(Ellipse, Graphic);
 	
 	/**
 	 * 
@@ -340,7 +481,10 @@ jet().add('plasma', function ($) {
 		Plasma.superclass.constructor.apply(this, arguments);
 		
 		var box = new Node("div");
-		box.css("position", "relative");
+		box.css({
+			position: "relative",
+			overflow: "hidden"
+		});
 
 		var myself = this.addAttrs({
 			srcNode: {
@@ -396,6 +540,9 @@ jet().add('plasma', function ($) {
 		},
 		link: function () {
 			return new GraphicList(arguments);
+		},
+		clear: function () {
+			this.get(BOUNDING_BOX).children().remove();
 		}
 	});
 	

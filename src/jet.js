@@ -403,6 +403,7 @@
 	 */
 	var Core = function () {
 		var $;
+		var TEXT_NODE = 3;
 		
 		var walkTheDOM = function (node, fn) {
 			fn(node);
