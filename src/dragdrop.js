@@ -60,6 +60,8 @@ jet().add('dragdrop', function ($) {
 		var handlers = myself.get(HANDLERS);
 		if (handlers) {
 			setupHandler(handlers);
+		} else {
+			setupHandler(myself.get(NODE));
 		}
 		
 		$($.context).on("mouseup", function () {

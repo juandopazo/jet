@@ -16,6 +16,39 @@ jet().add('plasma', function ($) {
 	
 	var Node = $.Node,
 		NP = Node.prototype;
+		
+	/*
+	 * Parsing functions
+	 */
+	var decToHex = function (dec) {
+		return dec.toString(16);
+	};
+	var hexToDec = function (hex) {
+		return parseInt(hex, 16);
+	};
+	var colorHexToArray = function (hexColor) {
+		if (hexColor.substr(0, 1) == "#") {
+			hexColor = hexColor.substr(1);
+		}
+		if (hexColor.length == 3) {
+			hexColor = [hexColor.substr(0, 1) + hexColor.substr(0, 1), hexColor.substr(1, 1) + hexColor.substr(1, 1), hexColor.substr(2, 1) + hexColor.substr(2, 1)]
+		} else {
+			hexColor = [hexColor.substr(0, 2), hexColor.substr(2, 2), hexColor.substr(4, 2)];
+		}
+		A.each(hexColor, function (val, i) {
+			hexColor[i] = hexToDec(val);
+		});
+		return hexColor;
+	};
+	var colorArrayToHex = function (arr) {
+		for (var i = 0; i < 3; i++) {
+			arr[i] = decToHex(arr[i]);
+			if (arr[i] < 10) {
+				arr[i] = "0" + arr[i];
+			}
+		}
+		return "#" + arr.join("");
+	};
 	
 	/*
 	 * IE apparently has two different ways of creating VML nodes.
@@ -553,6 +586,10 @@ jet().add('plasma', function ($) {
 	Plasma.Path = Path;
 	
 	$.add({
-		Plasma: Plasma
+		Plasma: Plasma,
+		decToHex: decToHex,
+		hexToDec: hexToDec,
+		colorHexToArray: colorHexToArray,
+		colorArrayToHex: colorArrayToHex
 	});
 });

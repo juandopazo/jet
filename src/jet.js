@@ -404,6 +404,7 @@
 	var Core = function () {
 		var $;
 		var TEXT_NODE = 3;
+		var DOCUMENT_ELEMENT = "documentElement";
 		
 		var walkTheDOM = function (node, fn) {
 			fn(node);
@@ -420,7 +421,7 @@
 			root = root || $.context;
 			if (Lang.isString(node)) {
 				node = root.createElement(node);
-			} else if (!node.nodeType) {
+			} else if (!node.nodeType && node != $.win) {
 				throw new Error("Node must receive either a node name or a DOM node");
 			}
 			
@@ -496,6 +497,24 @@
 			setClass: function (sClass) {
 				this._node.className = sClass;
 				return this;
+			},
+			scrollLeft: function (value) {
+				if (Lang.isValue) {
+					$.win.scrollTo(value, this.scrollTop());
+				} else {
+					var doc = $.context;
+					var dv = doc.defaultView;
+			        return Math.max(doc[DOCUMENT_ELEMENT].scrollLeft, doc.body.scrollLeft, (dv) ? dv.pageXOffset : 0);
+				}
+			},
+			scrollTop: function (value) {
+				if (Lang.isValue) {
+					$.win.scrollTo(this.scrollTop(), value);
+				} else {
+					var doc = $.context;
+					var dv = doc.defaultView;
+			        return Math.max(doc[DOCUMENT_ELEMENT].scrollTop, doc.body.scrollTop, (dv) ? dv.pageYOffset : 0);
+				}
 			},
 			offset: function () {
 				var node = this._node;
@@ -872,7 +891,7 @@
 						query.length ? new NodeList(query) : new Node(query, root);
 			} else if (Lang.isArray(query)) {
 				query = new NodeList(query, root);
-			} else if (query.nodeType) {
+			} else {
 				query = new Node(query);
 			}
 			return query;
