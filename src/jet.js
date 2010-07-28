@@ -11,6 +11,7 @@
 		FALSE = false,
 		BASE = "base";
 	
+	var cssExtension = ".css";
 	/*
 	 * These modules can be called by the jet().use() method without defining a path
 	 */
@@ -23,30 +24,30 @@
 		forms: TRUE,
 		sizzle: TRUE,
 		tabs: [BASE],
-		resize: [BASE/*, {
+		resize: [BASE, {
 			name: 'resize-css',
 			type: 'css',
-			path: 'resize.css',
+			path: 'resize' + cssExtension,
 			beacon: {
 				name: 'borderLeftStyle',
 				value: 'solid'
 			}
-		}*/],
+		}],
 		xsl: TRUE,
 		flash: TRUE,
-		container: [BASE/*, {
+		container: [BASE, {
 			name: 'container-css',
 			type: 'css',
-			path: 'container.css',
+			path: 'container' + cssExtension,
 			beacon: {
 				name: 'borderRightStyle',
 				value: 'solid'
 			}
-		}*/],
+		}],
 		dragdrop: [BASE],
 		imageloader: [BASE],
 		anim: [BASE],
-		datasource: [BASE],
+		datasource: [BASE, 'ajax'],
 		datatable: ['datasource'],
 		plasma: ['anim']
 	};
@@ -1073,15 +1074,21 @@
 		win.jet = function (config) {
 			config = config || {};
 			var base = baseUrl;
+			var cssBase = cssBaseUrl;
 			if (config.base) {
 				base = config.base;
 				base = base.substr(base.length - 1, 1) == "/" ? base : base + "/";
+			}
+			if (config.cssBase) {
+				cssBase = config.cssBase;
+				cssBase = cssBase.substr(cssBase.length - 1, 1) == "/" ? cssBase : cssBase + "/";
 			}
 			config.minify = Lang.isBoolean(config.minify) ? config.minify : FALSE;
 			var predef = mix(clone(predefinedModules), config.modules || {}, TRUE);
 			
 			var loadCssModule = function (module) {
-				loadCSS(module.fullpath || (base + module.path));
+				console.log(module.fullpath || (cssBase + module.path));
+				loadCSS(module.fullpath || (cssBase + module.path));
 				var t = setInterval(function () {
 					if (getCurrentStyle(trackerDiv)[module.beacon.name] == module.beacon.value) {
 						clearInterval(t);
