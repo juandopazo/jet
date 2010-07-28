@@ -20,6 +20,10 @@ jet().add('plasma', function ($) {
 	/*
 	 * Parsing functions
 	 */
+	var parseDec = function (str) {
+		var num = parseInt(str, 10);
+		return Lang.isValue(num) ? num : str;
+	};
 	var decToHex = function (dec) {
 		return dec.toString(16);
 	};
@@ -83,11 +87,11 @@ jet().add('plasma', function ($) {
 	 */
 	var getDefaultGetter = function (attrName) {
 		return UA_SUPPORTS_SVG ?  function () {
-			return this._node.getAttribute(attrName);
+			return parseDec(this._node.getAttribute(attrName));
 		} : A.inArray(attrName, VML_STYLE_ATTRIBUTES) ? function () {
-			return this._node.style[attrName];
+			return parseDec(this._node.style[attrName]);
 		} : function () {
-			return this._node[attrName];
+			return parseDec(this._node[attrName]);
 		};
 	};
 	/**
@@ -201,6 +205,7 @@ jet().add('plasma', function ($) {
 		var myself = this;
 		myself.addAttr(NODE, {
 			required: TRUE,
+			writeOnce: TRUE,
 			getter: function () {
 				return myself._node;
 			},
@@ -210,7 +215,10 @@ jet().add('plasma', function ($) {
 			}
 		});
 		var node = myself.get(NODE);
-		myself._node = node.nodeType ? node : $.context.createElementNS(NAMESPACE_URI, node);
+		
+		A.each(['on', 'unbind', 'unbindAll'], function (method) {
+			myself[method] = NP[method];
+		});
 		
 		myself.addAttrs(Graphic_ATTRS).addAttr("fill-opacity", {
 			getter: function () {
@@ -222,11 +230,14 @@ jet().add('plasma', function ($) {
 			}
 		});
 		
+		A.each()
+		
 	} : function () {
 		Graphic.superclass.constructor.apply(this, arguments);
 		var myself = this;
 		myself.addAttr(NODE, {
 			required: TRUE,
+			writeOnce: TRUE,
 			getter: function () {
 				return myself._node;
 			},
@@ -235,16 +246,20 @@ jet().add('plasma', function ($) {
 				return myself._node;
 			}
 		});
-		var node = myself.get(NODE);
-		myself._node = node.nodeType ? node : createIENode(node);
-		node.style.position = "absolute";
 		var stroke = createIENode("stroke");
 		stroke.on = false;
-		node.appendChild(stroke);
 		myself.set("stroke-node", stroke);
 		var fill = createIENode("fill");
-		node.appendChild(fill);
 		myself.set("fill-node", fill);
+		
+		var node = myself.get(NODE);
+		node.style.position = "absolute";
+		node.appendChild(stroke);
+		node.appendChild(fill);
+		
+		A.each(['on', 'unbind', 'unbindAll'], function (method) {
+			myself[method] = NP[method];
+		});
 
 		myself.addAttrs(Graphic_ATTRS).addAttr("fill-opacity", {
 			getter: function () {
@@ -257,9 +272,6 @@ jet().add('plasma', function ($) {
 		});;
 	};
 	$.extend(Graphic, $.Attribute, {
-		rotate: function () {
-			
-		},
 		translate: function () {
 			
 		},
@@ -272,8 +284,7 @@ jet().add('plasma', function ($) {
 	 * After all, SVG and VML elements are DOM nodes and we don't want them to have custom events,
 	 * but we don't need every method from Node either
 	 */
-	A.each(['append', 'appendTo', 'on', 'unbind',
-					  'unbindAll', 'remove', 'hide', 'show', 'children'], function (method) {
+	A.each(['append', 'appendTo', 'remove', 'css', 'hide', 'show', 'children'], function (method) {
 		Graphic.prototype[method] = NP[method];
 	});
 	
@@ -302,8 +313,7 @@ jet().add('plasma', function ($) {
 	$.extend(GraphicList, $.Attribute, {
 		
 	});
-	A.each(['each', 'append', 'appendTo', 'on', 'unbind',
-					  'unbindAll', 'remove', 'hide', 'show'], function (method) {
+	A.each(['each', 'append', 'appendTo', 'on', 'unbind', 'unbindAll', 'remove', 'hide', 'show'], function (method) {
 		GraphicList.prototype[method] = NP[method];
 	});
 	
@@ -315,7 +325,15 @@ jet().add('plasma', function ($) {
 		config.node = "rect";
 		Rectangle.superclass.constructor.apply(this, arguments);
 	};
-	$.extend(Rectangle, Graphic);
+	$.extend(Rectangle, Graphic, {
+		rotate: UA_SUPPORTS_SVG ? function(angle) {
+			var myself = this;
+			myself._node.setAttribute("transform", "rotate(" + angle + " " + (myself.get("x") + myself.get("width") / 2) + " " + (myself.get("y") + myself.get("height") / 2) + ")");
+			return myself;
+		} : function() {
+		
+		}
+	});
 	
 	/**
 	 * 
@@ -439,6 +457,35 @@ jet().add('plasma', function ($) {
 		});
 	};
 	$.extend(Circle, Graphic);
+	
+	/**
+	 * 
+	 * @param {Object} config
+	 */
+	var Line = function (config) {
+		config.node = "line";
+		Line.superclass.constructor.apply(this, arguments);
+		
+		this.addAttrs({
+			x1: {
+				getter: getDefaultGetter("x1"),
+				setter: getDefaultSetter("x1")
+			},
+			x2: {
+				getter: getDefaultGetter("x2"),
+				setter: getDefaultSetter("x2")
+			},
+			y1: {
+				getter: getDefaultGetter("y1"),
+				setter: getDefaultSetter("y1")
+			},
+			y2: {
+				getter: getDefaultGetter("y2"),
+				setter: getDefaultSetter("y2")
+			}
+		});
+	};
+	$.extend(Line, Graphic);
 	
 	/**
 	 * 
@@ -568,6 +615,9 @@ jet().add('plasma', function ($) {
 		text: function (config) {
 			return appendToPlasma(new Text(config), this);
 		},
+		line: function (config) {
+			return appendToPlasma(new Line(config), this);
+		},
 		path: function (config) {
 			return appendToPlasma(new Path(config), this);
 		},
@@ -590,6 +640,7 @@ jet().add('plasma', function ($) {
 		decToHex: decToHex,
 		hexToDec: hexToDec,
 		colorHexToArray: colorHexToArray,
-		colorArrayToHex: colorArrayToHex
+		colorArrayToHex: colorArrayToHex,
+		Graphic: Graphic
 	});
 });

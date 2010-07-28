@@ -563,7 +563,7 @@
 			height: function (height) {
 				var myself = this;
 				var node = myself._node;
-				if (Lang.isValue(width)) {
+				if (Lang.isValue(height)) {
 					node.style.height = Lang.isString(height) ? height : height + "px";
 					return myself;
 				}
@@ -981,7 +981,7 @@
 					w3: !!(doc.getElementById && doc.getElementsByTagName && doc.createElement),
 					webkit: webkit,
 					chrome: chrome,
-					ie: ie[1] && ie[2] ? parseFloat(ie[2]) : FALSE,
+					ie: ie && ie[1] && ie[2] ? parseFloat(ie[2]) : FALSE,
 					opera: opera,
 					gecko: !webkit && !opera && !ie && /Gecko/i.test(ua),
 					win: p ? /win/.test(p) : /win/.test(ua), 
