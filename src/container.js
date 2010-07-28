@@ -302,7 +302,7 @@ jet().add("container", function ($) {
 						myself.dd.addHandler(head);
 					}
 				} else {
-					throw new Error("The 'draggable' property needs the DragDrop module");
+					$.error("The 'draggable' property needs the DragDrop module");
 				}
 			}
 		});

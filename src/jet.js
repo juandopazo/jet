@@ -417,12 +417,18 @@
 			}
 		};
 		
+		var error = function (msg) {
+			if (console) {
+				console.error(msg);
+			}
+		};
+		
 		var Node = function (node, root) {
 			root = root || $.context;
 			if (Lang.isString(node)) {
 				node = root.createElement(node);
 			} else if (!node.nodeType && node != $.win) {
-				throw new Error("Node must receive either a node name or a DOM node");
+				error("Node must receive either a node name or a DOM node");
 			}
 			
 			this._node = node;
@@ -928,6 +934,8 @@
 		};
 		
 		add({
+			
+			error: error,
 			
 			mix: mix,
 			

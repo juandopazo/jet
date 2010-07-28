@@ -78,7 +78,7 @@ jet().add('base', function ($) {
     var extend = function (r, s, px) {
         if (!s || !r) {
             // @TODO error symbols
-            throw new Error("extend failed, verify dependencies");
+            $.error("extend failed, verify dependencies");
         }
 
         var sp = s.prototype, rp = $.Object(sp);
@@ -171,13 +171,13 @@ jet().add('base', function ($) {
 			attrConfig[attrName] = config;
 			var isValue = Lang.isValue(classConfig[attrName]);
 			if (config.required && config.readOnly) {
-				throw new Error("You can't have both 'required' and 'readOnly'");
+				$.error("You can't have both 'required' and 'readOnly'");
 			}
 			if (config.readOnly && isValue) {
 				delete classConfig[attrName];
 			}
 			if (config.required && !isValue) {
-				throw new Error("Missing required attribute: " + attrName);
+				$.error("Missing required attribute: " + attrName);
 			}
 			if (isValue && config.setter) {
 				classConfig[attrName] = config.setter.call(myself, classConfig[attrName]);
@@ -202,7 +202,7 @@ jet().add('base', function ($) {
 					attrConfig[attrName].readOnly = TRUE;
 				}
 			} else {
-				throw new Error(attrName + " is a " + (config.writeOnce ? "write-once" : "read-only") + " attribute");
+				$.error(attrName + " is a " + (config.writeOnce ? "write-once" : "read-only") + " attribute");
 			}
 		};
 		
