@@ -15,11 +15,12 @@ jet().add('datasource', function ($) {
 	
 	var Lang = $.Lang,
 		Hash = $.Hash,
-		ArrayHelper = $.Array;
+		A = $.Array;
 
 	var RESPONSE_TYPE_JSON		= 1,
 		RESPONSE_TYPE_XML		= 2,
-		RESPONSE_TYPE_JSARRAY	= 3;
+		RESPONSE_TYPE_JSARRAY	= 3,
+		RESPONSE_TYPE_TEXT		= 4;
 	
 	var SOURCE_TYPE_XHR			= 1,
 		SOURCE_TYPE_JSONP		= 2,
@@ -49,12 +50,6 @@ jet().add('datasource', function ($) {
 			responseSchema: {
 				required: TRUE
 			},
-			schema: {
-				required: TRUE
-			},
-			parser: {
-				writeOnce: TRUE
-			},
 			requestLogic: {
 				writeOnce: TRUE
 			},
@@ -64,6 +59,82 @@ jet().add('datasource', function ($) {
 			}
 		});
 		
+		var parser = function (rawData) {
+			var responseType = myself.get("responseType");
+			var responseSchema = myself.get("responseSchema");
+			
+			var data = [];
+			
+			/*
+			 * Text schema, ie: a comma delimited value file.
+			 * This essentially splits the string and then acts as if it where a RESPONSE_TYPE_ARRAY
+			 */
+			if (responseType == RESPONSE_TYPE_TEXT) {
+				rawData = rawData.split(responseSchema.recordDelim);
+				A.each(rawData, function (str, i) {
+					rawData[i] = str.split(responseSchema.fieldDelim);
+				});
+				responseType = RESPONSE_TYPE_JSARRAY;
+			}
+			/*
+			 * A JSARRAY response type assumes the following response shape:
+			 * 
+			 * //All records are listed as an array
+			 * [
+			 *     ['value1', 'value2', 'value3'], //one record
+			 *     ['another1', 'another2', 'another3'] //another record
+			 * ]
+			 */
+			if (responseType == RESPONSE_TYPE_JSARRAY) {
+				var fields = responseSchema.fields
+				A.each(rawData, function (val, i) {
+					data[i] = {};
+					A.each(fields, function (fieldName, j) {
+						data[j][fieldName] = rawData[i][j];
+					});
+				});
+				
+			/*
+			 * A JSON Schema 
+			 */
+			} else if (responseType == RESPONSE_TYPE_JSON) {
+				var resultList = responseSchema.resultList.split(".");
+				var found = TRUE;
+				var root = rawData;
+				A.each(resultList, function (key) {
+					if (!root[key]) {
+						found = FALSE;
+					} else {
+						root = root[key];
+					}
+				});
+				if (found) {
+					A.each(root, function (record, i) {
+						data[i] = {};
+						A.each(responseSchema.fields, function (field) {
+							/*
+							 * A field key can be defined with dot notation
+							 */
+							var nested = field.key.split(".");
+							var valueFound = TRUE;
+							A.each(nested, function (key) {
+								if (value[key]) {
+									value = value[key];
+								} else {
+									valueFound = FALSE;
+								}
+							});
+							data[i][field.key] = valueFound ? value : null;
+						});
+					});
+				} else {
+					myself.fire("parserError", "Result list not found");
+				}
+			}
+			
+			return data;
+		};
+		
 		/**
 		 * 
 		 * @param {Object} request
@@ -71,11 +142,13 @@ jet().add('datasource', function ($) {
 		 */
 		myself.sendRequest = function (request, ignoreCache) {
 			myself.get(REQUEST_LOGIC)(request, function (rawData) {
+				
 				myself.set(TEMP_DATA, rawData);
 				var tempData = rawData;
 				if (internal.fire("beforeParse", rawData)) {
-					tempData = myself.get(PARSER)(myself.get(TEMP_DATA));
+					tempData = parser(myself.get(TEMP_DATA));
 				}
+				
 				myself.fire("update", tempData);
 				Hash.each(tempData, function (key, val) {
 					if (!recordSet[key]) {
@@ -86,6 +159,7 @@ jet().add('datasource', function ($) {
 						myself.fire("recordUpdate", key, val);
 					}
 				});
+				
 			}, function (reason) {
 				myself.fire(ERROR, {
 					message: REQUEST_FAILED_MSG,
@@ -122,22 +196,14 @@ jet().add('datasource', function ($) {
 		});
 		
 		myself.set(REQUEST_LOGIC, function (request, success, failure) {
+			var type = myself.get(RESPONSE_TYPE);
 			$.ajax({
 				url: myself.get(URL),
 				data: request,
-				dataType: myself.get(RESPONSE_TYPE) == RESPONSE_TYPE_XML ? "xml" : "json",
+				dataType: type == RESPONSE_TYPE_XML ? "xml" : type == RESPONSE_TYPE_TEXT ? "text" : "json",
 				success: success,
-				failure: failure
+				error: failure
 			});
-		});
-		
-		myself.set(PARSER, function (rawData) {
-			switch (myself.get(RESPONSE_TYPE)) {
-				case RESPONSE_TYPE_JSON:
-					break;
-				case RESPONSE_TYPE_XML:
-					break; 
-			}
 		});
 		
 	};
@@ -194,9 +260,6 @@ jet().add('datasource', function ($) {
 			}, myself.get(TIMEOUT));
 		});
 		
-		myself.set(PARSER, function (rawData) {
-			
-		});
 	};
 	$.extend(JSONP, DataSource);
 	
@@ -223,21 +286,14 @@ jet().add('datasource', function ($) {
 			success(recordSet);
 		});
 		
-		myself.set(PARSER, function (rawData) {
-			
-		});
 	};
 	$.extend(Local, DataSource);
 	
 	$.DataSource = {
-		sourceType: {
-			XHR: SOURCE_TYPE_XHR,
-			JSONP: SOURCE_TYPE_JSONP,
-			LOCAL: SOURCE_TYPE_LOCAL 
-		},
 		responseType: {
 			JSON: RESPONSE_TYPE_JSON,
 			XML: RESPONSE_TYPE_XML,
+			TEXT: RESPONSE_TYPE_TEXT,
 			JSARRAY: RESPONSE_TYPE_JSARRAY
 		},
 		XHR: XHR,
