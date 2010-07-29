@@ -123,7 +123,7 @@ jet().add('base', function ($) {
 		
 		myself.fire = function (eventType) {
 			var handlers = collection[eventType] || [];
-			var prevent = TRUE;
+			var returnValue = TRUE;
 			if (collection["*"]) {
 				handlers = handlers.concat(collection["*"]);
 			}
@@ -134,7 +134,7 @@ jet().add('base', function ($) {
 					stop = TRUE;
 				},
 				preventDefault: function () {
-					prevent = FALSE;
+					returnValue = FALSE;
 				},
 				type: eventType
 			});
@@ -144,7 +144,7 @@ jet().add('base', function ($) {
 					break;
 				}
 			}
-			return prevent;
+			return returnValue;
 		};
 		myself.unbindAll = function () {
 			collection = {};

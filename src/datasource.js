@@ -3,11 +3,8 @@ jet().add('datasource', function ($) {
 	if (!jet.DataSource) {
 		jet.DataSource = {};
 	}
-	if (!jet.DataSource.jsonp) {
-		jet.DataSource.jsonp = {};
-	}
-	if (!jet.DataSource.jsonp.callbacks) {
-		jet.DataSource.jsonp.callbacks = [];
+	if (!jet.DataSource.jsonpCallbacks) {
+		jet.DataSource.jsonpCallbacks = [];
 	}
 	
 	var FALSE = false,
@@ -37,13 +34,42 @@ jet().add('datasource', function ($) {
 		TIMEOUT = "timeout",
 		TEMP_DATA = "tempData";
 
+	/*
+	 * @DRAFT
+	 */
+	var Record = function () {
+		
+	};
+	
+	/*
+	 * @DRAFT
+	 */
+	var RecordSet = function () {
+		RecordSet.superclass.constructor.apply(this, arguments);
+		
+		var myself = this.addAttrs({
+			data: {
+				value: []
+			}
+		});
+		
+	};
+	$.extend(RecordSet, $.Base);
+		
 	/**
 	 * @extends Utility
 	 */
 	var DataSource = function () {
 		DataSource.superclass.constructor.apply(this, arguments);
 		
+		var recordSet = [];
 		var myself = this.addAttrs({
+			recordSet: {
+				readOnly: TRUE,
+				getter: function () {
+					return recordSet;
+				}
+			},
 			responseType: {
 				required: TRUE
 			},
@@ -66,7 +92,7 @@ jet().add('datasource', function ($) {
 			var data = [];
 			
 			/*
-			 * Text schema, ie: a comma delimited value file.
+			 * Text schema, ie: a comma separated value file.
 			 * This essentially splits the string and then acts as if it where a RESPONSE_TYPE_ARRAY
 			 */
 			if (responseType == RESPONSE_TYPE_TEXT) {
@@ -90,7 +116,7 @@ jet().add('datasource', function ($) {
 				A.each(rawData, function (val, i) {
 					data[i] = {};
 					A.each(fields, function (fieldName, j) {
-						data[j][fieldName] = rawData[i][j];
+						data[i][fieldName] = rawData[i][j];
 					});
 				});
 				
@@ -131,6 +157,9 @@ jet().add('datasource', function ($) {
 					myself.fire("parserError", "Result list not found");
 				}
 			}
+			/*
+			 * @TODO XML Parsing
+			 */
 			
 			return data;
 		};
@@ -145,7 +174,7 @@ jet().add('datasource', function ($) {
 				
 				myself.set(TEMP_DATA, rawData);
 				var tempData = rawData;
-				if (internal.fire("beforeParse", rawData)) {
+				if (myself.get("internalEvents").fire("beforeParse", rawData)) {
 					tempData = parser(myself.get(TEMP_DATA));
 				}
 				
@@ -176,20 +205,10 @@ jet().add('datasource', function ($) {
 	};
 	$.extend(DataSource, $.Utility);
 	
-	var XHR = function () {
-		XHR.superclass.constructor.apply(this, arguments);
+	var Ajax = function () {
+		Ajax.superclass.constructor.apply(this, arguments);
 		
-		var recordSet = {};
 		var myself = this.addAttrs({
-			recordSet: {
-				readOnly: TRUE,
-				getter: function () {
-					return recordSet;
-				}
-			},
-			responseType: {
-				value: RESPONSE_TYPE_XML
-			},
 			url: {
 				required: TRUE
 			}
@@ -207,19 +226,12 @@ jet().add('datasource', function ($) {
 		});
 		
 	};
-	$.extend(XHR, DataSource);
+	$.extend(Ajax, DataSource);
 	
 	var JSONP = function () {
 		JSONP.superclass.constructor.apply(this, arguments);
 		
-		var recordSet = {};
 		var myself = this.addAttrs({
-			recordSet: {
-				readOnly: TRUE,
-				getter: function () {
-					return recordSet;
-				}
-			},
 			jsonCallbackParam: {
 				value: "p"
 			},
@@ -243,13 +255,13 @@ jet().add('datasource', function ($) {
 		};
 		
 		myself.set(REQUEST_LOGIC, function (request, success, failure) {
-			var index = jet.DataSource.jsonp.callbacks.length;
+			var index = jet.DataSource.jsonpCallbacks.length;
 			var loaded = FALSE;
-			jet.DataSource.jsonp.callbacks[index] = function (data) {
+			jet.DataSource.jsonpCallbacks[index] = function (data) {
 				loaded = TRUE;
 				success(data)
 			};
-			$.Get.script(myself.get(URL) + prepareRequest(request) + AMPERSAND + myself.get("jsonCallbackParam") + EQUAL_SIGN + "jet.DataSource.jsonp.callbacks[" + index + "]");
+			$.Get.script(myself.get(URL) + prepareRequest(request) + AMPERSAND + myself.get("jsonCallbackParam") + EQUAL_SIGN + "jet.DataSource.jsonpCallbacks[" + index + "]");
 			setTimeout(function () {
 				if (!loaded) {
 					myself.fire(ERROR, {
@@ -266,24 +278,17 @@ jet().add('datasource', function ($) {
 	var Local = function () {
 		Local.superclass.constructor.apply(this, arguments);
 		
-		var recordSet = {};
-		var myself = this.addAttrs({
-			recordSet: {
-				readOnly: TRUE,
-				getter: function () {
-					return recordSet;
-				}
-			},
-			localData: {
-				required: TRUE
-			},
-			responseType: {
-				value: RESPONSE_TYPE_JSARRAY
-			}
+		var myself = this.addAttr("localData", {
+			required: TRUE
 		});
 		
 		myself.set(REQUEST_LOGIC, function (request, success, failure) {
-			success(recordSet);
+			var recordSet = myself.get("localData");
+			if (Lang.isFunction(recordSet)) {
+				success(recordSet(request));
+			} else {
+				success(recordSet);
+			}
 		});
 		
 	};
@@ -296,7 +301,7 @@ jet().add('datasource', function ($) {
 			TEXT: RESPONSE_TYPE_TEXT,
 			JSARRAY: RESPONSE_TYPE_JSARRAY
 		},
-		XHR: XHR,
+		Ajax: Ajax,
 		JSONP: JSONP,
 		Local: Local
 	};

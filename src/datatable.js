@@ -8,30 +8,69 @@ jet().add('datatable', function ($) {
 	
 	var Lang = $.Lang,
 		Hash = $.Hash,
-		ArrayHelper = $.Array;	
+		A = $.Array;	
 	
 	/**
-	 * 
+	 * @class
 	 * @extends $.Widget
 	 */
 	var DataTable = function () {
 		DataTable.superclass.constructor.apply(this, arguments);
 		
-		var table = $(document.createElement("table")).attr("id", "testtable");
-		var tbody = $(document.createElement("tbody")).appendTo(table);
+		var myself = this.addAttrs({
+			dataSource: {
+				required: TRUE
+			},
+			columnDefinitions: {
+				required: TRUE,
+				validator: Lang.isArray
+			}
+		});
+		
+		var fields;
+		var recordSet;
+		
+		var table = $("<table/>").attr("id", "testtable");
+		var thead = $("<thead/>").appendTo(table);
+		var tbody = $("<tbody/>").appendTo(table);
+				
+		/**
+		 * 
+		 * @param {EventFacade} e
+		 * @param {DataSource} newDataSource
+		 */
+		myself.onDataSourceChangeReplaceHeaders = function (e, newDataSource) {
+			thead.children().remove();
+			A.each(myself.get("columnDefinitions"), function (colDef) {
+				thead.append($("<th/>").html(colDef.label || colDef.key));
+			});
+		};
+		myself.onDataSourceChangeReplaceHeaders(null, myself.get("dataSource"));
 		
 		var rowAddingDelay;
 		var rowsToBeAdded = [];
 		var readyToAddRows = function () {
 			var rows = [];
-			ArrayHelper.each(rowsToBeAdded, function (row) {
+			A.each(rowsToBeAdded, function (row) {
 				rows[rows.length] = "<tr><td>" + row.join("</td><td>") + "</td></tr>";
 			});
 			tbody.getNode().innerHTML += rows.join("");
 			rowsToBeAdded = [];
 		};
 		
-		this.addRow = function (row) {
+		/**
+		 * Adds a row
+		 * 
+		 * @param {Record|HTMLRowElement|Array} row
+		 */
+		myself.addRow = function (row) {
+			var tmpRow = [];
+			if (Lang.isHash(row)) {
+				A.each(myself.get("columnDefinitions"), function (colDef) {
+					tmpRow[tmpRow.length] = row[colDef.key];
+				});
+				row = tmpRow;
+			}
 			rowsToBeAdded[rowsToBeAdded.length] = row;
 			if (rowAddingDelay) {
 				clearTimeout(rowAddingDelay);
@@ -39,14 +78,27 @@ jet().add('datatable', function ($) {
 			rowAddingDelay = setTimeout(readyToAddRows, 0);
 		};
 		
-		this.on("render", function () {
-			this.get("boundingBox").append(table);
+		/**
+		 * Replace all rows when the DataSource updates
+		 * 
+		 * @param {EventFacade} e
+		 * @param {RecordSet} recordSet
+		 */
+		myself.onDataReturnReplaceRows = function (e, newRecordSet) {
+			recordSet = newRecordSet;
+			tbody.children().remove();
+			A.each(recordSet, function (record) {
+				myself.addRow(record);
+			});
+		};
+		
+		myself.on("render", function () {
+			myself.get("boundingBox").append(table);
 		});
 	};
 	$.extend(DataTable, $.Widget);
 	
 	$.add({
-		DataSource: DataSource,
 		DataTable: DataTable
 	});
 });

@@ -127,7 +127,11 @@ jet().add('ajax', function ($) {
 				case XSL:
 					return parseXML(xhr, contentType, settings.error);
 				case TYPE_JSON:
-					return $.JSON.parse(xhr.responseText);
+					try {
+						return $.JSON.parse(xhr.responseText);
+					} catch (e) {
+						$.error(e);
+					}
 				default:					
 					return xhr.responseText;
 				}

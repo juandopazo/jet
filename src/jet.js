@@ -486,7 +486,7 @@
 						node.className = classes.join(" ");
 					}
 				});
-				return myelf;
+				return myself;
 			},
 			toggleClass: function (sClass) {
 				var myself = this;
@@ -714,7 +714,7 @@
 				} else {
 					result.push.apply(result, newChildren);
 				}
-				return new NodeList(result);
+				return result.length == 1 ? new Node(result[0]) : new NodeList(result);
 			},
 			on: function (type, callback) {
 				addEvent(this._node, type, callback);
@@ -916,7 +916,7 @@
 			if (c == "<") {
 				var tmpDiv = new Node("div", root);
 				tmpDiv.html(query);
-				return tmpDiv._node;
+				return tmpDiv.children(0)._node;
 			} else {
 				return c == "#" ? root.getElementById(query.substr(1)) : 
 					   c == "." ? getByClass(query.substr(1), root) :
