@@ -100,7 +100,6 @@ jet().add('datatable', function ($) {
 		 * @param {RecordSet} newRecordSet
 		 */
 		myself.onDataReturnAddRows = function (e, newRecordSet) {
-			console.log("add");
 			A.each(newRecordSet, function (record) {
 				myself.addRow(record);
 			});

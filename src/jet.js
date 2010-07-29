@@ -910,7 +910,7 @@
 						query.length ? new NodeList(query) : new Node(query, root);
 			} else if (Lang.isArray(query)) {
 				query = new NodeList(query, root);
-			} else {
+			} else if (query.nodeType) {
 				query = new Node(query);
 			}
 			return query;

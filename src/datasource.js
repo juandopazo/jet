@@ -124,16 +124,18 @@ jet().add('datasource', function ($) {
 			 * A JSON Schema 
 			 */
 			} else if (responseType == RESPONSE_TYPE_JSON) {
-				var resultList = responseSchema.resultList.split(".");
 				var found = TRUE;
 				var root = rawData;
-				A.each(resultList, function (key) {
-					if (!root[key]) {
-						found = FALSE;
-					} else {
-						root = root[key];
-					}
-				});
+				if (responseSchema.resultList) {
+					var resultList = responseSchema.resultList.split(".");
+					A.each(resultList, function (key) {
+						if (!root[key]) {
+							found = FALSE;
+						} else {
+							root = root[key];
+						}
+					});
+				}
 				if (found) {
 					A.each(root, function (record, i) {
 						data[i] = {};
@@ -266,8 +268,8 @@ jet().add('datasource', function ($) {
 	};
 	$.extend(Ajax, DataSource);
 	
-	var JSONP = function () {
-		JSONP.superclass.constructor.apply(this, arguments);
+	var Get = function () {
+		Get.superclass.constructor.apply(this, arguments);
 		
 		var myself = this.addAttrs({
 			jsonCallbackParam: {
@@ -311,7 +313,7 @@ jet().add('datasource', function ($) {
 		});
 		
 	};
-	$.extend(JSONP, DataSource);
+	$.extend(Get, DataSource);
 	
 	var Local = function () {
 		Local.superclass.constructor.apply(this, arguments);
@@ -340,7 +342,7 @@ jet().add('datasource', function ($) {
 			JSARRAY: RESPONSE_TYPE_JSARRAY
 		},
 		Ajax: Ajax,
-		JSONP: JSONP,
+		Get: Get,
 		Local: Local
 	};
 });
