@@ -47,7 +47,15 @@
 		imageloader: [BASE],
 		anim: [BASE],
 		datasource: [BASE, 'ajax'],
-		datatable: ['datasource'],
+		datatable: ['datasource', {
+			name: 'datatable-css',
+			type: 'css',
+			fileName: 'datatable',
+			beacon: {
+				name: 'borderTopStyle',
+				value: 'solid'
+			}
+		}],
 		plasma: ['anim']
 	};
 	
@@ -419,7 +427,7 @@
 		
 		var error = function (msg) {
 			if (console) {
-				console.error(msg);
+				console.error(msg, arguments.callee.caller.name || arguments.callee.caller, TOSTRING.call(arguments.callee.caller.arguments));
 			}
 		};
 		
@@ -474,7 +482,7 @@
 				ArrayHelper.each(arguments, function (sClass) {
 					node.className = ArrayHelper.remove(sClass, node.className ? node.className.split(" ") : []).join(" ");
 				});
-				return myelf;
+				return myself;
 			},
 			addClass: function () {
 				var myself = this;
@@ -498,7 +506,7 @@
 					ArrayHelper.remove(sClass, classes);
 				}
 				node.className = classes.join(" ");
-				return myelf;
+				return myself;
 			},
 			setClass: function (sClass) {
 				this._node.className = sClass;
@@ -714,7 +722,7 @@
 				} else {
 					result.push.apply(result, newChildren);
 				}
-				return result.length == 1 ? new Node(result[0]) : new NodeList(result);
+				return new NodeList(result);
 			},
 			on: function (type, callback) {
 				addEvent(this._node, type, callback);
@@ -778,6 +786,11 @@
 			});
 			
 			this._nodes = collection;
+			var _DOMNodes = [];
+			ArrayHelper.each(collection, function (node) {
+				_DOMNodes[_DOMNodes.length] = node._node;
+			});
+			this._DOMNodes = _DOMNodes;
 		};
 		var NodeListP = NodeList.prototype;
 		mix(NodeListP, {
@@ -790,7 +803,7 @@
 				return this;
 			},
 			eq: function (index) {
-				return new Node(this_nodes[index]);
+				return new Node(this._nodes[index]);
 			},
 			notEq: function (index) {
 				var nodes = clone(this._nodes);
@@ -910,13 +923,30 @@
 			$.JSON = win.JSON;
 		}
 		
+		var nodeCreation = {
+			table: ["thead", "tbody", "tfooter", "tr"],
+			tr: ["th", "td"],
+		};
+		
 		$.parseQuery = function (query, root) {
 			root = root || $.context;
 			var c = query.substr(0, 1);
 			if (c == "<") {
-				var tmpDiv = new Node("div", root);
-				tmpDiv.html(query);
-				return tmpDiv.children(0)._node;
+				if (query.match(/</g).length == 1) {
+					return root.createElement(query.substr(1, query.length - 3));
+				} else {
+					var baseNode = "div";
+					Hash.each(nodeCreation, function (replacement, list) {
+						ArrayHelper.each(list, function (c) {
+							if (query.search(c + "/") == 1) {
+								baseNode = replacement;
+							}
+						});
+					});
+					var tmpDiv = new Node(baseNode, root);
+					tmpDiv.html(query);
+					return tmpDiv.children(0)._node;
+				}
 			} else {
 				return c == "#" ? root.getElementById(query.substr(1)) : 
 					   c == "." ? getByClass(query.substr(1), root) :

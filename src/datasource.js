@@ -112,7 +112,7 @@ jet().add('datasource', function ($) {
 			 * ]
 			 */
 			if (responseType == RESPONSE_TYPE_JSARRAY) {
-				var fields = responseSchema.fields
+				var fields = responseSchema.fields;
 				A.each(rawData, function (val, i) {
 					data[i] = {};
 					A.each(fields, function (fieldName, j) {
@@ -142,15 +142,13 @@ jet().add('datasource', function ($) {
 							 * A field key can be defined with dot notation
 							 */
 							var nested = field.key.split(".");
-							var valueFound = TRUE;
+							var value = null;
 							A.each(nested, function (key) {
-								if (value[key]) {
-									value = value[key];
-								} else {
-									valueFound = FALSE;
+								if (record[key]) {
+									value = record[key];
 								}
 							});
-							data[i][field.key] = valueFound ? value : null;
+							data[i][field.key] = value;
 						});
 					});
 				} else {
@@ -158,8 +156,50 @@ jet().add('datasource', function ($) {
 				}
 			}
 			/*
-			 * @TODO XML Parsing
+			 * XML Schema.
+			 * Example: 
+			 * 
+			 * responseSchema: {
+			 *     resultNode: "rootNode", // every result field will be looked for between this node's children
+			 *     fields: [
+			 *         { key: "keyName", node: "nodeName" }, // in this case, the value of the field will be the node's value
+			 *         { key: "otherKey", node: "otherNode", attr: "type" }, // in this other case, the field value will be the "type" attribute
+			 *         { key: "aNumber", node: "someNode", parser: "Float" } // this value will be parsed as a Float
+			 *     ]
+			 * }
 			 */
+			else if (responseType == RESPONSE_TYPE_XML) {
+
+				var resultNode = $(rawData).find(responseSchema.resultNode)._nodes[0];
+				A.each(resultNode.children()._nodes, function (node) {
+					var record = {};
+					A.each(responseSchema.fields, function (field) {
+						var value;
+						if (node._node.nodeName != field.node) {
+							value = node.find(field.node)._DOMNodes[0];
+						} else {
+							value = node._node
+						}
+						if (field.attr) {
+							value = value.getAttribute(field.attr)
+						} else {
+							value = value.firstChild.nodeValue;
+						}
+						if (field.parser) {
+							switch (field.parser.toLowerCase()) {
+								case "float":
+									value = parseFloat(value);
+									break;
+								case "10":
+									value = parseInt(value, 10);
+									break; 
+							}
+						}
+						record[field.key] = value;
+					});
+					data[data.length] = record;
+				});
+			}
 			
 			return data;
 		};
@@ -171,13 +211,11 @@ jet().add('datasource', function ($) {
 		 */
 		myself.sendRequest = function (request, ignoreCache) {
 			myself.get(REQUEST_LOGIC)(request, function (rawData) {
-				
 				myself.set(TEMP_DATA, rawData);
 				var tempData = rawData;
 				if (myself.get("internalEvents").fire("beforeParse", rawData)) {
 					tempData = parser(myself.get(TEMP_DATA));
 				}
-				
 				myself.fire("update", tempData);
 				Hash.each(tempData, function (key, val) {
 					if (!recordSet[key]) {
@@ -283,11 +321,11 @@ jet().add('datasource', function ($) {
 		});
 		
 		myself.set(REQUEST_LOGIC, function (request, success, failure) {
-			var recordSet = myself.get("localData");
-			if (Lang.isFunction(recordSet)) {
-				success(recordSet(request));
+			var localData = myself.get("localData");
+			if (Lang.isFunction(localData)) {
+				success(localData(request));
 			} else {
-				success(recordSet);
+				success(localData);
 			}
 		});
 		

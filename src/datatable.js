@@ -24,38 +24,40 @@ jet().add('datatable', function ($) {
 			columnDefinitions: {
 				required: TRUE,
 				validator: Lang.isArray
+			},
+			className: {
+				writeOnce: TRUE,
+				value: "dt"
 			}
 		});
 		
 		var fields;
-		var recordSet;
+		var recordSet = [];
 		
-		var table = $("<table/>").attr("id", "testtable");
+		var prefix = myself.get("classPrefix");
+		var className = myself.get("className")
+		var prefixClass = prefix + className + "-";
+		var table = $("<table/>");
 		var thead = $("<thead/>").appendTo(table);
-		var tbody = $("<tbody/>").appendTo(table);
+		var tbody = $("<tbody/>").addClass(prefixClass + "data").appendTo(table);
 				
-		/**
-		 * 
-		 * @param {EventFacade} e
-		 * @param {DataSource} newDataSource
-		 */
-		myself.onDataSourceChangeReplaceHeaders = function (e, newDataSource) {
-			thead.children().remove();
-			A.each(myself.get("columnDefinitions"), function (colDef) {
-				thead.append($("<th/>").html(colDef.label || colDef.key));
-			});
-		};
-		myself.onDataSourceChangeReplaceHeaders(null, myself.get("dataSource"));
+		A.each(myself.get("columnDefinitions"), function (colDef) {
+			thead.append($("<th/>").append($("<div/>").addClass(prefixClass + "liner").append($("<span/>").addClass(prefixClass + "label").html(colDef.label || colDef.key))));
+		});
 		
 		var rowAddingDelay;
 		var rowsToBeAdded = [];
 		var readyToAddRows = function () {
 			var rows = [];
+			var colDefs = myself.get("columnDefinitions");
 			A.each(rowsToBeAdded, function (row) {
-				rows[rows.length] = "<tr><td>" + row.join("</td><td>") + "</td></tr>";
+				rows[rows.length] = '<tr><td class="' + prefix + className + "0-" + colDefs[0].key + '"><div class="' + prefixClass + "liner" + '">' + row.join('</div></td><td><div class="' + prefixClass + "liner" + '">') + "</div></td></tr>";
 			});
-			tbody.getNode().innerHTML += rows.join("");
+			tbody._node.innerHTML += rows.join("");
 			rowsToBeAdded = [];
+			tbody.children().removeClass(prefixClass + "even", prefixClass + "odd").each(function (row, i) {
+				row.addClass(i % 2 == 0 ? prefixClass + "even" : prefixClass + "odd");
+			});
 		};
 		
 		/**
@@ -85,15 +87,28 @@ jet().add('datatable', function ($) {
 		 * @param {RecordSet} recordSet
 		 */
 		myself.onDataReturnReplaceRows = function (e, newRecordSet) {
-			recordSet = newRecordSet;
 			tbody.children().remove();
 			A.each(recordSet, function (record) {
 				myself.addRow(record);
 			});
+			recordSet = newRecordSet;
+		};
+		
+		/**
+		 * When the DataSource updates, treat the returned data as additions to the table's recordSet
+		 * @param {EventFacade} e
+		 * @param {RecordSet} newRecordSet
+		 */
+		myself.onDataReturnAddRows = function (e, newRecordSet) {
+			console.log("add");
+			A.each(newRecordSet, function (record) {
+				myself.addRow(record);
+			});
+			recordSet.push.apply(recordSet, newRecordSet);
 		};
 		
 		myself.on("render", function () {
-			myself.get("boundingBox").append(table);
+			myself.get("boundingBox").addClass(prefix + className).append(table);
 		});
 	};
 	$.extend(DataTable, $.Widget);
