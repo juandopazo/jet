@@ -10,6 +10,10 @@ jet().add('datatable', function ($) {
 		Hash = $.Hash,
 		A = $.Array;	
 	
+	var Column = function () {
+		
+	};
+	
 	/**
 	 * @class
 	 * @extends $.Widget
@@ -51,7 +55,7 @@ jet().add('datatable', function ($) {
 			var rows = [];
 			var colDefs = myself.get("columnDefinitions");
 			A.each(rowsToBeAdded, function (row) {
-				rows[rows.length] = '<tr><td class="' + prefix + className + "0-" + colDefs[0].key + '"><div class="' + prefixClass + "liner" + '">' + row.join('</div></td><td><div class="' + prefixClass + "liner" + '">') + "</div></td></tr>";
+				rows[rows.length] = ['<tr><td class="', prefix, className, "0-", colDefs[0].key, '"><div class="', prefixClass, "liner", '">', row.join('</div></td><td><div class="' + prefixClass + "liner" + '">'), "</div></td></tr>"].join("");
 			});
 			tbody._node.innerHTML += rows.join("");
 			rowsToBeAdded = [];
@@ -80,6 +84,82 @@ jet().add('datatable', function ($) {
 			rowAddingDelay = setTimeout(readyToAddRows, 0);
 		};
 		
+		myself.addRows = function () {
+			
+		};
+		
+		myself.deleteRow = function () {
+			
+		};
+		
+		myself.deleteRows = function () {
+			
+		};
+		
+		myself.getColumn = function () {
+			
+		};
+		
+		myself.getFirstTr = function () {
+			
+		};
+		
+		myself.getNextTr = function (tr) {
+			
+		};
+		
+		myself.getFirstTd = function (row) {
+			
+		};
+		
+		myself.getNextTd = function (td) {
+			
+		};
+		
+		myself.getSelectedCell = function () {
+			
+		};
+		
+		myself.getSelectedRow = function () {
+			
+		};
+		
+		myself.getSelectedColumn = function () {
+			
+		};
+		
+		myself.selectCell = function (cell) {
+			
+		};
+		
+		myself.selectRow = function (row) {
+			
+		};
+		
+		myself.selectColumn = function (col) {
+			
+		};
+		
+		myself.unselectCell = function (cell) {
+			
+		};
+		
+		myself.unselectRow = function (row) {
+			
+		};
+		
+		myself.unselectColumn = function (col) {
+			
+		};
+		
+		myself.unselectAll = function () {
+			
+		};
+		
+		myself.on("sortedByChange", function (e) {
+			
+		});
+		
 		/**
 		 * Replace all rows when the DataSource updates
 		 * 
@@ -88,7 +168,7 @@ jet().add('datatable', function ($) {
 		 */
 		myself.onDataReturnReplaceRows = function (e, newRecordSet) {
 			tbody.children().remove();
-			A.each(recordSet, function (record) {
+			A.each(newRecordSet, function (record) {
 				myself.addRow(record);
 			});
 			recordSet = newRecordSet;
@@ -107,6 +187,7 @@ jet().add('datatable', function ($) {
 		};
 		
 		myself.on("render", function () {
+			myself.onDataReturnAddRows(null, myself.get("dataSource").get("recordSet"));
 			myself.get("boundingBox").addClass(prefix + className).append(table);
 		});
 	};

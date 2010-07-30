@@ -333,7 +333,7 @@ jet().add('base', function ($) {
 				setter: $
 			},
 			classPrefix: {
-				value: "yui-"
+				value: Widget.CSS_PREFIX + "-"
 			},
 			className: {
 				value: "widget"
@@ -367,14 +367,12 @@ jet().add('base', function ($) {
 			return myself;
 		},
 		render: function (target) {
-			console.log("render");
 			var myself = this;
 			if (target) {
 				myself.set(SRC_NODE, target);
 			}
 			if (myself.fire("render")) {
 				var node = myself.get(SRC_NODE);
-				console.log(node._node);
 				myself.get(BOUNDING_BOX).addClass(myself.get("classPrefix") + myself.get("className") + "-container").appendTo(node).css(VISIBILITY, "visible");
 				myself.set("rendered", TRUE);
 				myself.fire("afterRender");
@@ -397,6 +395,7 @@ jet().add('base', function ($) {
 			}
 		}
 	});
+	Widget.CSS_PREFIX = "yui";
 	
 	var MouseTracker = function () {
 		MouseTracker.superclass.constructor.apply(this, arguments);

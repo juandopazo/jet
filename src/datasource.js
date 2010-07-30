@@ -34,11 +34,26 @@ jet().add('datasource', function ($) {
 		TIMEOUT = "timeout",
 		TEMP_DATA = "tempData";
 
+	if (!jet.Record) {
+		jet.Record = {};
+	}
+	if (!jet.Record.ids) {
+		jet.Record.ids = 0;
+	}
+	
 	/*
 	 * @DRAFT
 	 */
-	var Record = function () {
+	var Record = function (data) {
+		var id = ++jet.Record.ids;
+		var myself = this;
 		
+		myself.getId = function () {
+			return id;
+		};
+		myself.getData = function () {
+			return data;
+		};
 	};
 	
 	/*
@@ -265,6 +280,7 @@ jet().add('datasource', function ($) {
 			});
 		});
 		
+		myself.sendRequest(myself.get("initialRequest"));
 	};
 	$.extend(Ajax, DataSource);
 	
@@ -312,6 +328,7 @@ jet().add('datasource', function ($) {
 			}, myself.get(TIMEOUT));
 		});
 		
+		myself.sendRequest(myself.get("initialRequest"));
 	};
 	$.extend(Get, DataSource);
 	
@@ -331,6 +348,7 @@ jet().add('datasource', function ($) {
 			}
 		});
 		
+		myself.sendRequest(myself.get("initialRequest"));
 	};
 	$.extend(Local, DataSource);
 	

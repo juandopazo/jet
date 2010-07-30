@@ -413,6 +413,7 @@
 		var $;
 		var TEXT_NODE = 3;
 		var DOCUMENT_ELEMENT = "documentElement";
+		var GET_COMPUTED_STYLE = "getComputedStyle";
 		
 		var walkTheDOM = function (node, fn) {
 			fn(node);
@@ -427,7 +428,7 @@
 		
 		var error = function (msg) {
 			if (console) {
-				console.error(msg, arguments.callee.caller.name || arguments.callee.caller, TOSTRING.call(arguments.callee.caller.arguments));
+				console.error(msg);
 			}
 		};
 		
@@ -910,7 +911,8 @@
 						query.length ? new NodeList(query) : new Node(query, root);
 			} else if (Lang.isArray(query)) {
 				query = new NodeList(query, root);
-			} else if (query.nodeType) {
+				/* weird way of allowing window and document to be nodes (for using events). Not sure it is a good idea */
+			} else if (query.nodeType || query.navigator || query.body) {
 				query = new Node(query);
 			}
 			return query;
