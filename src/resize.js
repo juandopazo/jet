@@ -163,7 +163,9 @@ jet().add('resize', function ($) {
 				   size;
 		};
 		
-		var tracker = new $.utils.MouseTracker();
+		var tracker = new $.utils.MouseTracker({
+			shim: myself.get("shim")
+		});
 				
 		var stopResize = function (e, x, y) {
 			if (!myself.get(LOCKED)) {

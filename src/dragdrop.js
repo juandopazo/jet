@@ -37,7 +37,9 @@ jet().add('dragdrop', function ($) {
 		var startX, startY, startLeft, startTop;
 		var currentX, currentY;
 		
-		var tracker = new $.utils.MouseTracker();
+		var tracker = new $.utils.MouseTracker({
+			shim: myself.get("shim")
+		});
 		
 		var setupHandler = function (list) {
 			list.css(CURSOR, myself.get(CURSOR)).on("mousedown", function (e) {

@@ -20,7 +20,7 @@
 		ajax: ['json'],
 		json: TRUE,
 		cookie: TRUE,
-		forms: TRUE,
+		forms: [BASE],
 		sizzle: TRUE,
 		tabs: [BASE],
 		resize: [BASE, {
@@ -514,7 +514,7 @@
 				return this;
 			},
 			scrollLeft: function (value) {
-				if (Lang.isValue) {
+				if (Lang.isValue(value)) {
 					$.win.scrollTo(value, this.scrollTop());
 				} else {
 					var doc = $.context;
@@ -523,7 +523,7 @@
 				}
 			},
 			scrollTop: function (value) {
-				if (Lang.isValue) {
+				if (Lang.isValue(value)) {
 					$.win.scrollTo(this.scrollTop(), value);
 				} else {
 					var doc = $.context;
@@ -810,6 +810,22 @@
 				var nodes = clone(this._nodes);
 				nodes.splice(i, 1);
 				return new NodeList(nodes);
+			},
+			link: function (nodes, createNewList) {
+				var myself = this;
+				if (Lang.isNodeList(nodes)) {
+					nodes = nodes._nodes;
+				} else if (Lang.isNode(nodes)) {
+					nodes = [nodes];
+				} else if (nodes.nodeType) {
+					nodes = [new Node(nodes)];
+				}
+				if (createNewList) {
+					return new NodeList(myself._nodes.concat(nodes));
+				} else {
+					myself._nodes = myself._nodes.concat(nodes);
+					return myself;
+				}
 			}
 		});
 		
@@ -908,7 +924,7 @@
 			if (Lang.isString(query)) {
 				query = $.parseQuery(query, root);
 				query = !Lang.isValue(query) ? null :
-						query.length ? new NodeList(query) : new Node(query, root);
+						Lang.isNumber(query.length) ? new NodeList(query) : new Node(query, root);
 			} else if (Lang.isArray(query)) {
 				query = new NodeList(query, root);
 				/* weird way of allowing window and document to be nodes (for using events). Not sure it is a good idea */
@@ -927,7 +943,7 @@
 		
 		var nodeCreation = {
 			table: ["thead", "tbody", "tfooter", "tr"],
-			tr: ["th", "td"],
+			tr: ["th", "td"]
 		};
 		
 		$.parseQuery = function (query, root) {
@@ -990,6 +1006,8 @@
 			
 			Node: Node,
 			NodeList: NodeList,
+			
+			utils: {},
 			
 			Get: {
 				script: loadScript,

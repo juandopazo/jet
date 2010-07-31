@@ -407,32 +407,34 @@ jet().add('base', function ($) {
 		var interval;
 		var capturing = FALSE;
 		
-		var shim = $("<div/>").css({
-			position: "absolute",
-			top: "0px",
-			left: "0px",
-			zIndex: 2147483647
-		});
-		
-		myself.addAttr("shim", {
-			readOnly: TRUE,
-			value: shim
-		}).addAttr(TRACKING, {
+		var shim = new $.NodeList([]);
+		if (myself.get("shim")) {
+			$("iframe").each(function (iframe) {
+				var offset = iframe.offset();
+				shim._nodes.push($("<div/>").css({
+					position: "absolute",
+					left: offset.left + "px",
+					top: offset.top + "px",
+					width: offset.width + "px",
+					height: offset.height + "px"
+				}).appendTo(iframe.parent()));
+			});
+		}
+		myself.addAttr(TRACKING, {
 			value: FALSE,
 			validator: Lang.isBoolean
 			
 		}).on(TRACKING + "Change", function (e, value) {
 			if (value) {
 				if (!capturing) {
-					var screenSize = $.screenSize();
-					shim.height(screenSize.height).width(screenSize.width).appendTo($.context.body);
+					shim.show();
 					interval = setInterval(function () {
 						myself.fire(MOUSEMOVE, clientX, clientY);
 					}, myself.get(FREQUENCY));
 					capturing = TRUE;
 				}
 			} else {
-				shim.remove(TRUE);
+				shim.hide();
 				clearInterval(interval);
 				capturing = FALSE;
 			}
@@ -443,7 +445,8 @@ jet().add('base', function ($) {
 				e.preventDefault();
 			}
 		});
-		shim.on(MOUSEMOVE, function (e) {
+
+		shim.link($($.context), TRUE).on(MOUSEMOVE, function (e) {
 			clientX = e.clientX;
 			clientY = e.clientY;
 		}).on("mouseup", function () {
