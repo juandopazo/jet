@@ -414,6 +414,7 @@
 		var TEXT_NODE = 3;
 		var DOCUMENT_ELEMENT = "documentElement";
 		var GET_COMPUTED_STYLE = "getComputedStyle";
+		var CURRENT_STYLE = "currentStyle";
 		
 		var walkTheDOM = function (node, fn) {
 			fn(node);

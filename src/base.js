@@ -72,8 +72,8 @@ jet().add('base', function ($) {
      * @method extend
      * @param {Function} r   the object to modify
      * @param {Function} s the object to inherit
-     * @param {Object} px prototype properties to add/override
-     * @param {Object} sx static properties to add/override
+     * @param {Object} [px] prototype properties to add/override
+     * @param {Object} [sx] static properties to add/override
      */
     var extend = function (r, s, px) {
         if (!s || !r) {
@@ -101,6 +101,9 @@ jet().add('base', function ($) {
 	
 	/**
 	 * A class designed to be inherited or augmented into other classes and provide custom events
+	 * 
+	 * @classDescription  Custom events provider
+	 * @constructor
 	 * 
 	 */
 	var EventTarget = function () {
@@ -153,12 +156,14 @@ jet().add('base', function ($) {
 	};
 	
 	/**
-	 * ATTRIBUTE PROVIDER
-	 * 
 	 * Provides get() and set() methods, along with getters, setters and options for configuration attributres
 	 * 
-	 * @class Attribute
+	 * @classDescription Attribute provider
+	 * @return {Attribute}
+	 * @type {Object}
 	 * @param {Object} classConfig
+	 * @inherits EventTarget
+	 * @constructor
 	 */
 	var Attribute = function (classConfig) {
 		Attribute.superclass.constructor.apply(this);
@@ -207,7 +212,8 @@ jet().add('base', function ($) {
 		};
 		
 		/**
-		 * 
+		 * @method
+		 * @memberOf Attribute
 		 * @param {String} attrName
 		 */	
 		myself.get = function (attrName) {
@@ -226,7 +232,8 @@ jet().add('base', function ($) {
 					classConfig[attrName];
 		};
 		/**
-		 * 
+		 * @method
+		 * @memberOf Attribute
 		 * @param {String} attrName
 		 * @param {Object} attrValue
 		 */
@@ -241,19 +248,23 @@ jet().add('base', function ($) {
 			return myself;
 		};
 		/**
-		 * 
+		 * @method
+		 * @memberOf Attribute
 		 * @param {String} attrName
 		 */
 		myself.unset = function (attrName) {
 			delete classConfig[attrName];
 		};
 		/**
+		 * @method
+		 * @memberOf Attribute
 		 * @param {String} attrName
 		 * @param {Hash} config
 		 */
 		myself.addAttr = addAttr;
 		/**
-		 * 
+		 * @method
+		 * @memberOf Attribute
 		 * @param {Hash} config - key/value pairs of attribute names and configs
 		 */
 		myself.addAttrs = function (config) {
@@ -263,6 +274,8 @@ jet().add('base', function ($) {
 		/**
 		 * Returns a key/value paired object with all attributes
 		 * 
+		 * @method
+		 * @memberOf Attribute
 		 * @return {Hash}
 		 */
 		myself.getAttrs = function () {
@@ -275,6 +288,8 @@ jet().add('base', function ($) {
 		/**
 		 * Returns whether an attribute is set or not
 		 * 
+		 * @method
+		 * @memberOf Attribute
 		 * @param {String} attrName
 		 * @return {Boolean}
 		 */
@@ -408,24 +423,25 @@ jet().add('base', function ($) {
 		var capturing = FALSE;
 		
 		var shim = new $.NodeList([]);
-		if (myself.get("shim")) {
-			$("iframe").each(function (iframe) {
-				var offset = iframe.offset();
-				shim._nodes.push($("<div/>").css({
-					position: "absolute",
-					left: offset.left + "px",
-					top: offset.top + "px",
-					width: offset.width + "px",
-					height: offset.height + "px"
-				}).appendTo(iframe.parent()));
-			});
-		}
+		var iframes;
+		
 		myself.addAttr(TRACKING, {
 			value: FALSE,
 			validator: Lang.isBoolean
 			
 		}).on(TRACKING + "Change", function (e, value) {
 			if (value) {
+				if (myself.get("shim")) {
+					shim._nodes = [];
+					iframes = $("iframe").each(function (iframe) {
+						var offset = iframe.offset();
+						shim._nodes.push($("<div/>").height(offset.height).width(offset.width).css({
+							position: "absolute",
+							left: offset.left,
+							top: offset.top
+						}).hide().appendTo(iframe.parent()));
+					});
+				}
 				if (!capturing) {
 					shim.show();
 					interval = setInterval(function () {
@@ -449,6 +465,15 @@ jet().add('base', function ($) {
 		shim.link($($.context), TRUE).on(MOUSEMOVE, function (e) {
 			clientX = e.clientX;
 			clientY = e.clientY;
+			if (myself.get(TRACKING) && myself.get("shim")) {
+				iframes.each(function (iframe, i) {
+					var offset = iframe.offset();
+					shim._nodes[i].height(offset.height).width(offset.width).css({
+						left: offset.left + "px",
+						top: offset.top + "px"
+					});
+				});
+			}
 		}).on("mouseup", function () {
 			myself.set(TRACKING, FALSE).fire("mouseup", clientX, clientY);
 		});
@@ -457,11 +482,15 @@ jet().add('base', function ($) {
 			shim.unbindAll();
 		});
 	};
-	extend(MouseTracker, Utility);
+	extend(MouseTracker, Utility, {
+		start: function () {
+			return this.set(TRACKING, TRUE);
+		},
+		stop: function () {
+			return this.set(TRACKING, FALSE);
+		}
+	});
 	
-	if (!$.utils) {
-		$.utils = {};
-	}
 	$.utils.MouseTracker = MouseTracker;
 	
 	$.add({
