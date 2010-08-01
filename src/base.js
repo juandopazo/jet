@@ -52,7 +52,7 @@ jet().add('base', function ($) {
 	
 	/**
 	 * Object function by Douglas Crockford
-	 * https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1
+	 * <a href="https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1">link</a>
 	 * 
 	 * @param {Object} o
 	 */
@@ -69,11 +69,10 @@ jet().add('base', function ($) {
      * support an inheritance strategy that can chain constructors and methods.
      * Static members will not be inherited.
      *
-     * @method extend
-     * @param {Function} r   the object to modify
-     * @param {Function} s the object to inherit
-     * @param {Object} [px] prototype properties to add/override
-     * @param {Object} [sx] static properties to add/override
+     * @param {Function} r	the object to modify
+     * @param {Function} s	the object to inherit
+     * @param {Object} [px]	prototype properties to add/override
+     * @param {Object} [sx]	static properties to add/override
      */
     var extend = function (r, s, px) {
         if (!s || !r) {
@@ -111,6 +110,13 @@ jet().add('base', function ($) {
 		
 		var myself = this;
 		
+		/**
+		 * Adds an event listener
+		 * @method
+		 * @memberOf EventTarget
+		 * @param {String} eventType
+		 * @param {Function} callback
+		 */
 		myself.on = function (eventType, callback) {
 			if (!collection[eventType]) {
 				collection[eventType] = [];
@@ -119,11 +125,25 @@ jet().add('base', function ($) {
 			return myself;
 		};
 		
+		/**
+		 * Removes and event listener
+		 * @method
+		 * @memberOf EventTarget
+		 * @param {String} eventType
+		 * @param {Function} callback
+		 */
 		myself.unbind = function (eventType, callback) {
 			$.Array.remove(callback, collection[eventType] || []);
 			return myself;
 		};
 		
+		/**
+		 * Fires an event, executing all its listeners
+		 * @method
+		 * @memberOf EventTarget
+		 * @param {String} eventType
+		 * @param [...] Extra parameters will be passed to all event listeners
+		 */
 		myself.fire = function (eventType) {
 			var handlers = collection[eventType] || [];
 			var returnValue = TRUE;
@@ -149,6 +169,12 @@ jet().add('base', function ($) {
 			}
 			return returnValue;
 		};
+		
+		/**
+		 * Removes all event listeners of all types
+		 * @method
+		 * @memberOf EventTarget
+		 */
 		myself.unbindAll = function () {
 			collection = {};
 			return myself;
@@ -160,7 +186,6 @@ jet().add('base', function ($) {
 	 * 
 	 * @classDescription Attribute provider
 	 * @return {Attribute}
-	 * @type {Object}
 	 * @param {Object} classConfig
 	 * @inherits EventTarget
 	 * @constructor
@@ -212,7 +237,8 @@ jet().add('base', function ($) {
 		};
 		
 		/**
-		 * @method
+		 * Returns a configuration attribute
+		 * 
 		 * @memberOf Attribute
 		 * @param {String} attrName
 		 */	
@@ -232,7 +258,8 @@ jet().add('base', function ($) {
 					classConfig[attrName];
 		};
 		/**
-		 * @method
+		 * Sets a configuration attribute
+		 * 
 		 * @memberOf Attribute
 		 * @param {String} attrName
 		 * @param {Object} attrValue
@@ -248,7 +275,8 @@ jet().add('base', function ($) {
 			return myself;
 		};
 		/**
-		 * @method
+		 * Unsets a configuration attribute
+		 * 
 		 * @memberOf Attribute
 		 * @param {String} attrName
 		 */
@@ -256,14 +284,16 @@ jet().add('base', function ($) {
 			delete classConfig[attrName];
 		};
 		/**
-		 * @method
+		 * Adds a configuration attribute, along with its options
+		 * 
 		 * @memberOf Attribute
 		 * @param {String} attrName
 		 * @param {Hash} config
 		 */
 		myself.addAttr = addAttr;
 		/**
-		 * @method
+		 * Adds several configuration attributes
+		 * 
 		 * @memberOf Attribute
 		 * @param {Hash} config - key/value pairs of attribute names and configs
 		 */
@@ -367,6 +397,12 @@ jet().add('base', function ($) {
 		}); 
 	};
 	extend(Widget, Base, {
+		/**
+		 * Hides the widget
+		 * @alias Widget.hide
+		 * @method
+		 * @memberOf Widget
+		 */
 		hide: function () {
 			var myself = this;
 			if (myself.fire("hide")) {

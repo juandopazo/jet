@@ -1,5 +1,5 @@
 jet().add('ajax', function ($) {
-	var win = window;
+	var win = $.win;
 	
 	var TRUE = true,
 	FALSE = false,

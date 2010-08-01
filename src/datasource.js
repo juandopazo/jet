@@ -41,11 +41,11 @@ jet().add('datasource', function ($) {
 		jet.Record.ids = 0;
 	}
 	
-	/*
-	 * @DRAFT
+	/**
+	 * A record is a Hash width a unique id
 	 */
 	var Record = function (data) {
-		var id = ++jet.Record.ids;
+		var id = jet.Record.ids++;
 		var myself = this;
 		
 		myself.getId = function () {
@@ -54,22 +54,81 @@ jet().add('datasource', function ($) {
 		myself.getData = function () {
 			return data;
 		};
+		myself.get = function (key) {
+			return data[key];
+		};
 	};
 	
-	/*
-	 * @DRAFT
-	 */
-	var RecordSet = function () {
-		RecordSet.superclass.constructor.apply(this, arguments);
-		
-		var myself = this.addAttrs({
-			data: {
-				value: []
+	var quicksortSet = function (set, key, order) {
+		if (set.length <= 1) {
+			return set;
+		}
+		var lesser = [], greater = [];
+		var pivot = set.splice(Math.round(set.length / 2), 1)[0];
+		var length = set.length;
+		for (var i = 0; i < length; i++) {
+			if (order == "asc") {
+				if (set[i].get(key) <= pivot.get(key)) {
+					lesser[lesser.length] = set[i];
+				} else {
+					greater[greater.length] = set[i];
+				}
+			} else {
+				if (set[i].get(key) <= pivot.get(key)) {
+					greater[greater.length] = set[i];
+				} else {
+					lesser[lesser.length] = set[i];
+				}
 			}
+		}
+		return quicksortSet(lesser, key, order).concat([pivot]).concat(quicksortSet(greater, key, order));
+	};
+	
+	/**
+	 * A collections of Records
+	 * 
+	 * @param {Array} data If data is passed, it is converted into several Records
+	 */
+	var RecordSet = function (data) {
+		
+		var records = [];
+		var sortedBy = FALSE;
+		var order;
+		
+		var myself = this;
+		
+		A.each(data, function (recordData) {
+			records[records.length] = new Record(recordData);
 		});
 		
+		myself.getRecords = function () {
+			return records;
+		};
+		
+		myself.getCount = function () {
+			return recods.length;
+		};
+		
+		myself.sortBy =  function (key, newOrder) {
+			var myself = this;
+			if (records.length > 1) {
+				records = quicksortSet(records, key, newOrder);
+				sortedBy = key;
+				order = newOrder;
+			}
+			return myself;
+		}
+		
+		myself.push = function (data) {
+			if (data instanceof RecordSet) {
+				data = data.getRecords();
+			} else if (!lang.isArray(data)) {
+				data = [data];
+			}
+			records = records.concat(data);
+			return sortedBy ? myself.sortBy(sortedBy, order) : myself;
+		};
 	};
-	$.extend(RecordSet, $.Base);
 		
 	/**
 	 * @extends Utility
@@ -77,7 +136,7 @@ jet().add('datasource', function ($) {
 	var DataSource = function () {
 		DataSource.superclass.constructor.apply(this, arguments);
 		
-		var recordSet = [];
+		var recordSet = new RecordSet([]);
 		var myself = this.addAttrs({
 			recordSet: {
 				readOnly: TRUE,
@@ -218,7 +277,7 @@ jet().add('datasource', function ($) {
 				});
 			}
 			
-			return data;
+			return new RecordSet(data);
 		};
 		
 		/**
@@ -233,8 +292,9 @@ jet().add('datasource', function ($) {
 				if (myself.get("internalEvents").fire("beforeParse", rawData)) {
 					tempData = parser(myself.get(TEMP_DATA));
 				}
+				recordSet = tempData;
 				myself.fire("update", tempData);
-				Hash.each(tempData, function (key, val) {
+				/*Hash.each(tempData, function (key, val) {
 					if (!recordSet[key]) {
 						recordSet[key] = val;
 						myself.fire("recordAdded", key, val);
@@ -242,7 +302,7 @@ jet().add('datasource', function ($) {
 						recordSet[key] = val;
 						myself.fire("recordUpdate", key, val);
 					}
-				});
+				});*/
 				
 			}, function (reason) {
 				myself.fire(ERROR, {
@@ -352,15 +412,19 @@ jet().add('datasource', function ($) {
 	};
 	$.extend(Local, DataSource);
 	
-	$.DataSource = {
-		responseType: {
-			JSON: RESPONSE_TYPE_JSON,
-			XML: RESPONSE_TYPE_XML,
-			TEXT: RESPONSE_TYPE_TEXT,
-			JSARRAY: RESPONSE_TYPE_JSARRAY
+	$.add({
+		DataSource: {
+			responseType: {
+				JSON: RESPONSE_TYPE_JSON,
+				XML: RESPONSE_TYPE_XML,
+				TEXT: RESPONSE_TYPE_TEXT,
+				JSARRAY: RESPONSE_TYPE_JSARRAY
+			},
+			Ajax: Ajax,
+			Get: Get,
+			Local: Local
 		},
-		Ajax: Ajax,
-		Get: Get,
-		Local: Local
-	};
+		Record: Record,
+		RecordSet: RecordSet
+	});
 });

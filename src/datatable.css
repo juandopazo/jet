@@ -165,10 +165,10 @@ background: url(http://yui.yahooapis.com/2.8.1/build/assets/skins/sam/sprite.png
 margin-right: 10px;
 }
 .yui-skin-sam th.yui-dt-asc .yui-dt-liner {
-background: url(http: //yui.yahooapis.com/2.8.1/build/datatable/assets/skins/sam/dt-arrow-up.png) no-repeat right;
+background: url(http://yui.yahooapis.com/2.8.1/build/datatable/assets/skins/sam/dt-arrow-up.png) no-repeat right;
 }
 .yui-skin-sam th.yui-dt-desc .yui-dt-liner {
-background: url(http: //yui.yahooapis.com/2.8.1/build/datatable/assets/skins/sam/dt-arrow-dn.png) no-repeat right;
+background: url(http://yui.yahooapis.com/2.8.1/build/datatable/assets/skins/sam/dt-arrow-dn.png) no-repeat right;
 }
 tbody .yui-dt-editable {
 cursor: pointer;

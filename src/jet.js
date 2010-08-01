@@ -920,11 +920,11 @@
 		};
 		
 		$ = function (query, root) {
-			root = root || $.context || document;
-			$.context = root;
+			root = root || $.context;
+			$.context = root.ownerDocument || $.context;
 			if (Lang.isString(query)) {
 				query = $.parseQuery(query, root);
-				query = !Lang.isValue(query) ? null :
+				query = !Lang.isValue(query) ? new NodeList([]) :
 						Lang.isNumber(query.length) ? new NodeList(query) : new Node(query, root);
 			} else if (Lang.isArray(query)) {
 				query = new NodeList(query, root);
