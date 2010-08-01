@@ -1,3 +1,7 @@
+/*
+ * Very early stages
+ * 
+ */
 jet().add('flash', function ($) {
 	
 	var Lang = $.Lang;

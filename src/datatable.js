@@ -104,7 +104,7 @@ jet().add('datatable', function ($) {
 		/**
 		 * Adds a row
 		 * 
-		 * @param {Record, HTMLRowElement, Array} row
+		 * @param {Record|HTMLRowElement|Array} row
 		 */
 		myself.addRow = function (row) {
 			if (!(row instanceof $.Record)) {

@@ -56,10 +56,9 @@ jet().add("tabs", function ($) {
 	$.extend(Tab, $.Attribute, {
 		select: function (silent) {
 			silent = silent || FALSE;
-			var myself = this;
+			var myself = this.set(SELECTED, TRUE);
 			myself.get(LABEL).addClass(SELECTED);
 			myself.get(PANEL).show();
-			myself.set(SELECTED, TRUE);
 			if (!silent) {
 				myself.fire(SELECTED);
 			}
@@ -67,10 +66,9 @@ jet().add("tabs", function ($) {
 		},
 		unselect: function (silent) {
 			silent = silent || FALSE;
-			var myself = this;
+			var myself = this.set(SELECTED, FALSE);
 			myself.get(LABEL).removeClass(SELECTED);
 			myself.get(PANEL).hide();
-			myself.set(SELECTED, FALSE);
 			if (!silent) {
 				myself.fire("un" + SELECTED);
 			}

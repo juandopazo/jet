@@ -1,5 +1,5 @@
 (function () {
-	var baseUrl = location.protocol + "//jet-js.googlecode.com/svn/trunk/src/";
+	var baseUrl = location.protocol + "//jet-js.googlecode.com/svn/trunk/build/";
 	
 	var win = window,
 		doc = document,
@@ -20,7 +20,7 @@
 		ajax: ['json'],
 		json: TRUE,
 		cookie: TRUE,
-		forms: TRUE,
+		forms: [BASE],
 		sizzle: TRUE,
 		tabs: [BASE],
 		resize: [BASE, {
@@ -47,7 +47,15 @@
 		imageloader: [BASE],
 		anim: [BASE],
 		datasource: [BASE, 'ajax'],
-		datatable: ['datasource'],
+		datatable: ['datasource', {
+			name: 'datatable-css',
+			type: 'css',
+			fileName: 'datatable',
+			beacon: {
+				name: 'borderTopStyle',
+				value: 'solid'
+			}
+		}],
 		plasma: ['anim']
 	};
 	
@@ -405,6 +413,8 @@
 		var $;
 		var TEXT_NODE = 3;
 		var DOCUMENT_ELEMENT = "documentElement";
+		var GET_COMPUTED_STYLE = "getComputedStyle";
+		var CURRENT_STYLE = "currentStyle";
 		
 		var walkTheDOM = function (node, fn) {
 			fn(node);
@@ -474,7 +484,7 @@
 				ArrayHelper.each(arguments, function (sClass) {
 					node.className = ArrayHelper.remove(sClass, node.className ? node.className.split(" ") : []).join(" ");
 				});
-				return myelf;
+				return myself;
 			},
 			addClass: function () {
 				var myself = this;
@@ -486,7 +496,7 @@
 						node.className = classes.join(" ");
 					}
 				});
-				return myelf;
+				return myself;
 			},
 			toggleClass: function (sClass) {
 				var myself = this;
@@ -498,14 +508,14 @@
 					ArrayHelper.remove(sClass, classes);
 				}
 				node.className = classes.join(" ");
-				return myelf;
+				return myself;
 			},
 			setClass: function (sClass) {
 				this._node.className = sClass;
 				return this;
 			},
 			scrollLeft: function (value) {
-				if (Lang.isValue) {
+				if (Lang.isValue(value)) {
 					$.win.scrollTo(value, this.scrollTop());
 				} else {
 					var doc = $.context;
@@ -514,7 +524,7 @@
 				}
 			},
 			scrollTop: function (value) {
-				if (Lang.isValue) {
+				if (Lang.isValue(value)) {
 					$.win.scrollTo(this.scrollTop(), value);
 				} else {
 					var doc = $.context;
@@ -778,6 +788,11 @@
 			});
 			
 			this._nodes = collection;
+			var _DOMNodes = [];
+			ArrayHelper.each(collection, function (node) {
+				_DOMNodes[_DOMNodes.length] = node._node;
+			});
+			this._DOMNodes = _DOMNodes;
 		};
 		var NodeListP = NodeList.prototype;
 		mix(NodeListP, {
@@ -790,12 +805,28 @@
 				return this;
 			},
 			eq: function (index) {
-				return new Node(this_nodes[index]);
+				return new Node(this._nodes[index]);
 			},
 			notEq: function (index) {
 				var nodes = clone(this._nodes);
 				nodes.splice(i, 1);
 				return new NodeList(nodes);
+			},
+			link: function (nodes, createNewList) {
+				var myself = this;
+				if (Lang.isNodeList(nodes)) {
+					nodes = nodes._nodes;
+				} else if (Lang.isNode(nodes)) {
+					nodes = [nodes];
+				} else if (nodes.nodeType) {
+					nodes = [new Node(nodes)];
+				}
+				if (createNewList) {
+					return new NodeList(myself._nodes.concat(nodes));
+				} else {
+					myself._nodes = myself._nodes.concat(nodes);
+					return myself;
+				}
 			}
 		});
 		
@@ -876,10 +907,8 @@
 					var result = [];
 					walkTheDOM(root, function (node) {
 						var a, c = node.className, i;
-						if (c) {
-							if (ArrayHelper.indexOf(className, c.split(" "))) {
-								result[result.length] = node;
-							}
+						if (c && ArrayHelper.indexOf(className, c.split(" ")) > -1) {
+							result[result.length] = node;
 						}
 					});
 					return result;
@@ -889,15 +918,16 @@
 		};
 		
 		$ = function (query, root) {
-			root = root || $.context || document;
-			$.context = root;
+			root = root || $.context;
+			$.context = root.ownerDocument || $.context;
 			if (Lang.isString(query)) {
 				query = $.parseQuery(query, root);
-				query = !Lang.isValue(query) ? null :
-						query.length ? new NodeList(query) : new Node(query, root);
+				query = !Lang.isValue(query) ? new NodeList([]) :
+						Lang.isNumber(query.length) ? new NodeList(query) : new Node(query, root);
 			} else if (Lang.isArray(query)) {
 				query = new NodeList(query, root);
-			} else {
+				/* weird way of allowing window and document to be nodes (for using events). Not sure it is a good idea */
+			} else if (query.nodeType || query.navigator || query.body) {
 				query = new Node(query);
 			}
 			return query;
@@ -910,13 +940,30 @@
 			$.JSON = win.JSON;
 		}
 		
+		var nodeCreation = {
+			table: ["thead", "tbody", "tfooter", "tr"],
+			tr: ["th", "td"]
+		};
+		
 		$.parseQuery = function (query, root) {
 			root = root || $.context;
 			var c = query.substr(0, 1);
 			if (c == "<") {
-				var tmpDiv = new Node("div", root);
-				tmpDiv.html(query);
-				return tmpDiv._node;
+				if (query.match(/</g).length == 1) {
+					return root.createElement(query.substr(1, query.length - 3));
+				} else {
+					var baseNode = "div";
+					Hash.each(nodeCreation, function (replacement, list) {
+						ArrayHelper.each(list, function (c) {
+							if (query.search(c + "/") == 1) {
+								baseNode = replacement;
+							}
+						});
+					});
+					var tmpDiv = new Node(baseNode, root);
+					tmpDiv.html(query);
+					return tmpDiv.children(0)._node;
+				}
 			} else {
 				return c == "#" ? root.getElementById(query.substr(1)) : 
 					   c == "." ? getByClass(query.substr(1), root) :
@@ -958,6 +1005,8 @@
 			
 			Node: Node,
 			NodeList: NodeList,
+			
+			utils: {},
 			
 			Get: {
 				script: loadScript,
@@ -1077,7 +1126,7 @@
 				base = config.base;
 				base = base.substr(base.length - 1, 1) == "/" ? base : base + "/";
 			}
-			config.minify = Lang.isBoolean(config.minify) ? config.minify : FALSE;
+			config.minify = Lang.isBoolean(config.minify) ? config.minify : TRUE;
 			var predef = mix(clone(predefinedModules), config.modules || {}, TRUE);
 			
 			var loadCssModule = function (module) {

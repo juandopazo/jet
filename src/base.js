@@ -142,7 +142,7 @@ jet().add('base', function ($) {
 		 * @method
 		 * @memberOf EventTarget
 		 * @param {String} eventType
-		 * @param [...] Extra parameters will be passed to all event listeners
+		 * Extra parameters will be passed to all event listeners
 		 */
 		myself.fire = function (eventType) {
 			var handlers = collection[eventType] || [];

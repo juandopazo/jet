@@ -52,7 +52,7 @@ jet().add('base', function ($) {
 	
 	/**
 	 * Object function by Douglas Crockford
-	 * https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1
+	 * <a href="https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1">link</a>
 	 * 
 	 * @param {Object} o
 	 */
@@ -69,11 +69,10 @@ jet().add('base', function ($) {
      * support an inheritance strategy that can chain constructors and methods.
      * Static members will not be inherited.
      *
-     * @method extend
-     * @param {Function} r   the object to modify
-     * @param {Function} s the object to inherit
-     * @param {Object} px prototype properties to add/override
-     * @param {Object} sx static properties to add/override
+     * @param {Function} r	the object to modify
+     * @param {Function} s	the object to inherit
+     * @param {Object} [px]	prototype properties to add/override
+     * @param {Object} [sx]	static properties to add/override
      */
     var extend = function (r, s, px) {
         if (!s || !r) {
@@ -102,12 +101,22 @@ jet().add('base', function ($) {
 	/**
 	 * A class designed to be inherited or augmented into other classes and provide custom events
 	 * 
+	 * @classDescription  Custom events provider
+	 * @constructor
+	 * 
 	 */
 	var EventTarget = function () {
 		var collection = {};
 		
 		var myself = this;
 		
+		/**
+		 * Adds an event listener
+		 * @method
+		 * @memberOf EventTarget
+		 * @param {String} eventType
+		 * @param {Function} callback
+		 */
 		myself.on = function (eventType, callback) {
 			if (!collection[eventType]) {
 				collection[eventType] = [];
@@ -116,14 +125,28 @@ jet().add('base', function ($) {
 			return myself;
 		};
 		
+		/**
+		 * Removes and event listener
+		 * @method
+		 * @memberOf EventTarget
+		 * @param {String} eventType
+		 * @param {Function} callback
+		 */
 		myself.unbind = function (eventType, callback) {
 			$.Array.remove(callback, collection[eventType] || []);
 			return myself;
 		};
 		
+		/**
+		 * Fires an event, executing all its listeners
+		 * @method
+		 * @memberOf EventTarget
+		 * @param {String} eventType
+		 * Extra parameters will be passed to all event listeners
+		 */
 		myself.fire = function (eventType) {
 			var handlers = collection[eventType] || [];
-			var prevent = TRUE;
+			var returnValue = TRUE;
 			if (collection["*"]) {
 				handlers = handlers.concat(collection["*"]);
 			}
@@ -134,7 +157,7 @@ jet().add('base', function ($) {
 					stop = TRUE;
 				},
 				preventDefault: function () {
-					prevent = FALSE;
+					returnValue = FALSE;
 				},
 				type: eventType
 			});
@@ -144,8 +167,14 @@ jet().add('base', function ($) {
 					break;
 				}
 			}
-			return prevent;
+			return returnValue;
 		};
+		
+		/**
+		 * Removes all event listeners of all types
+		 * @method
+		 * @memberOf EventTarget
+		 */
 		myself.unbindAll = function () {
 			collection = {};
 			return myself;
@@ -153,12 +182,13 @@ jet().add('base', function ($) {
 	};
 	
 	/**
-	 * ATTRIBUTE PROVIDER
-	 * 
 	 * Provides get() and set() methods, along with getters, setters and options for configuration attributres
 	 * 
-	 * @class Attribute
+	 * @classDescription Attribute provider
+	 * @return {Attribute}
 	 * @param {Object} classConfig
+	 * @inherits EventTarget
+	 * @constructor
 	 */
 	var Attribute = function (classConfig) {
 		Attribute.superclass.constructor.apply(this);
@@ -207,7 +237,9 @@ jet().add('base', function ($) {
 		};
 		
 		/**
+		 * Returns a configuration attribute
 		 * 
+		 * @memberOf Attribute
 		 * @param {String} attrName
 		 */	
 		myself.get = function (attrName) {
@@ -226,7 +258,9 @@ jet().add('base', function ($) {
 					classConfig[attrName];
 		};
 		/**
+		 * Sets a configuration attribute
 		 * 
+		 * @memberOf Attribute
 		 * @param {String} attrName
 		 * @param {Object} attrValue
 		 */
@@ -241,19 +275,26 @@ jet().add('base', function ($) {
 			return myself;
 		};
 		/**
+		 * Unsets a configuration attribute
 		 * 
+		 * @memberOf Attribute
 		 * @param {String} attrName
 		 */
 		myself.unset = function (attrName) {
 			delete classConfig[attrName];
 		};
 		/**
+		 * Adds a configuration attribute, along with its options
+		 * 
+		 * @memberOf Attribute
 		 * @param {String} attrName
 		 * @param {Hash} config
 		 */
 		myself.addAttr = addAttr;
 		/**
+		 * Adds several configuration attributes
 		 * 
+		 * @memberOf Attribute
 		 * @param {Hash} config - key/value pairs of attribute names and configs
 		 */
 		myself.addAttrs = function (config) {
@@ -263,6 +304,8 @@ jet().add('base', function ($) {
 		/**
 		 * Returns a key/value paired object with all attributes
 		 * 
+		 * @method
+		 * @memberOf Attribute
 		 * @return {Hash}
 		 */
 		myself.getAttrs = function () {
@@ -275,6 +318,8 @@ jet().add('base', function ($) {
 		/**
 		 * Returns whether an attribute is set or not
 		 * 
+		 * @method
+		 * @memberOf Attribute
 		 * @param {String} attrName
 		 * @return {Boolean}
 		 */
@@ -333,7 +378,7 @@ jet().add('base', function ($) {
 				setter: $
 			},
 			classPrefix: {
-				value: "yui-"
+				value: Widget.CSS_PREFIX + "-"
 			},
 			className: {
 				value: "widget"
@@ -352,6 +397,12 @@ jet().add('base', function ($) {
 		}); 
 	};
 	extend(Widget, Base, {
+		/**
+		 * Hides the widget
+		 * @alias Widget.hide
+		 * @method
+		 * @memberOf Widget
+		 */
 		hide: function () {
 			var myself = this;
 			if (myself.fire("hide")) {
@@ -395,6 +446,7 @@ jet().add('base', function ($) {
 			}
 		}
 	});
+	Widget.CSS_PREFIX = "yui";
 	
 	var MouseTracker = function () {
 		MouseTracker.superclass.constructor.apply(this, arguments);
@@ -406,32 +458,35 @@ jet().add('base', function ($) {
 		var interval;
 		var capturing = FALSE;
 		
-		var shim = $("<div/>").css({
-			position: "absolute",
-			top: "0px",
-			left: "0px",
-			zIndex: 2147483647
-		});
+		var shim = new $.NodeList([]);
+		var iframes;
 		
-		myself.addAttr("shim", {
-			readOnly: TRUE,
-			value: shim
-		}).addAttr(TRACKING, {
+		myself.addAttr(TRACKING, {
 			value: FALSE,
 			validator: Lang.isBoolean
 			
 		}).on(TRACKING + "Change", function (e, value) {
 			if (value) {
+				if (myself.get("shim")) {
+					shim._nodes = [];
+					iframes = $("iframe").each(function (iframe) {
+						var offset = iframe.offset();
+						shim._nodes.push($("<div/>").height(offset.height).width(offset.width).css({
+							position: "absolute",
+							left: offset.left,
+							top: offset.top
+						}).hide().appendTo(iframe.parent()));
+					});
+				}
 				if (!capturing) {
-					var screenSize = $.screenSize();
-					shim.height(screenSize.height).width(screenSize.width).appendTo($.context.body);
+					shim.show();
 					interval = setInterval(function () {
 						myself.fire(MOUSEMOVE, clientX, clientY);
 					}, myself.get(FREQUENCY));
 					capturing = TRUE;
 				}
 			} else {
-				shim.remove(TRUE);
+				shim.hide();
 				clearInterval(interval);
 				capturing = FALSE;
 			}
@@ -442,9 +497,19 @@ jet().add('base', function ($) {
 				e.preventDefault();
 			}
 		});
-		shim.on(MOUSEMOVE, function (e) {
+
+		shim.link($($.context), TRUE).on(MOUSEMOVE, function (e) {
 			clientX = e.clientX;
 			clientY = e.clientY;
+			if (myself.get(TRACKING) && myself.get("shim")) {
+				iframes.each(function (iframe, i) {
+					var offset = iframe.offset();
+					shim._nodes[i].height(offset.height).width(offset.width).css({
+						left: offset.left + "px",
+						top: offset.top + "px"
+					});
+				});
+			}
 		}).on("mouseup", function () {
 			myself.set(TRACKING, FALSE).fire("mouseup", clientX, clientY);
 		});
@@ -453,11 +518,15 @@ jet().add('base', function ($) {
 			shim.unbindAll();
 		});
 	};
-	extend(MouseTracker, Utility);
+	extend(MouseTracker, Utility, {
+		start: function () {
+			return this.set(TRACKING, TRUE);
+		},
+		stop: function () {
+			return this.set(TRACKING, FALSE);
+		}
+	});
 	
-	if (!$.utils) {
-		$.utils = {};
-	}
 	$.utils.MouseTracker = MouseTracker;
 	
 	$.add({

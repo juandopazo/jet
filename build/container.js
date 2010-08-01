@@ -4,7 +4,7 @@ jet().add("container", function ($) {
 		FALSE = false,
 		Lang = $.Lang,
 		Hash = $.Hash,
-		ArrayHelper = $.Array;
+		A = $.Array;
 		
 	var BOUNDING_BOX = "boundingBox",
 		CONTENT_BOX = "contentBox",
@@ -39,7 +39,10 @@ jet().add("container", function ($) {
 		SCROLL = "scroll",
 		NEW_SPAN = "<span/>",
 		TYPE = "type",
-		PRESSED = "pressed";
+		PRESSED = "pressed",
+		OPTION = "option",
+		OPTIONS = "options",
+		COMBO = "combo";
 	
 	var UA_SUPPORTS_FIXED = (!$.UA.ie || $.UA.ie < 8);
 		
@@ -82,7 +85,7 @@ jet().add("container", function ($) {
 			}).on("blur", function () {
 				boundingBox.removeClass(prefix + Button.NAME + "-focus", prefix + type + Button.NAME + "-focus");
 			}).on(CLICK, function (e) {
-				node.getNode().blur();
+				node._node.blur();
 				if (myself.fire(PRESSED)) {
 					e.preventDefault();
 				}
@@ -106,6 +109,110 @@ jet().add("container", function ($) {
 		},
 		focus: function () {
 			
+		}
+	});
+	
+	var addOption = function (combo, text, value) {
+		/* Note by jdopazo:
+		 Lazy initialization for the function _add()
+		 I create a <select> element that I never attach to the dom
+		 and try to attach an <OPTION> element to it with try...catch
+		 This way I avoid using try...catch every time this function is called */
+		var doc = $.context,
+			testSelect = doc.createElement("select"),
+			testOption = doc.createElement(OPTION),
+			standards = FALSE;
+		try {
+			testSelect.add(testOption, null); //standards compliant
+			standards = TRUE;
+		} catch (ex) {
+			testSelect.add(testOption); // IE only
+		}
+		if (standards) {
+			addOption = function (combo, text, value) {
+				var newOption = doc.createElement(OPTION);
+				newOption.text = text;
+				if (value) {
+					newOption.value = value;
+				}
+				combo.add(newOption, null);
+			};
+		} else {
+			addOption = function (combo, text, value) {
+				var newOption = doc.createElement(OPTION);
+				newOption.text = text;
+				if (value) {
+					newOption.value = value;
+				}
+				combo.add(newOption);
+			};
+		}
+		addOption(combo, text, value);
+	};
+	
+	var ComboBox = function () {
+		ComboBox.superclass.constructor.apply(this, arguments);
+		
+		var myself = this.addAttrs({
+			options: {
+				value: []
+			},
+			combo: {
+				readOnly: TRUE,
+				value: $("<select/>")
+			}
+		});
+		
+		var setOptions = function (combo, opts) {
+			A.each(opts, function (value) {
+				if (Lang.isHash(value)) {
+					Hash.each(value, function (text, val) {
+						addOption(combo, text, val)
+					});
+				} else {
+					addOption(combo, value);
+				}
+			});
+		};
+		
+		myself.on("optionsChange", function (e, newOptions) {
+			var combo = myself.get(COMBO)._node;
+			combo.options.length = 0;
+			setOptions(combo, newOptions);
+		});
+		setOptions(myself.get(COMBO)._node, myself.get(OPTIONS));
+		
+		myself.on("render", function () {
+			myself.get(COMBO).appendTo(myself.get(BOUNDING_BOX));
+		});
+	};
+	$.extend(ComboBox, $.Widget, {
+		add: function (text, value) {
+			var myself = this;
+			var opt;
+			if (value) {
+				opt = {};
+				opt[text] = value;
+			} else {
+				opt = text;
+			}
+			myself.get("options").push(opt);
+			addOption(myself.get(COMBO)._node, text, value);
+			return myself;
+		},
+		fill: function (values) {
+			var myself = this;
+			if (Lang.isArray(values)) {
+				A.each(values, function (t) {
+					myself.add(t);
+				});
+			} else {
+				Hash.each(values, myself.add);
+			}
+			return myself;
+		},
+		clear: function () {
+			return myself.set("options", []);
 		}
 	});
 	
@@ -219,7 +326,7 @@ jet().add("container", function ($) {
 			});
 		};
 		
-		ArrayHelper.each([HEIGHT, WIDTH], function (size) {
+		A.each([HEIGHT, WIDTH], function (size) {
 			myself.on(size + "Change", function (e, value) {
 				var boundingBox = myself.get(BOUNDING_BOX)[size](value);
 				if (myself.get(CENTER)) {
@@ -230,7 +337,7 @@ jet().add("container", function ($) {
 		
 		var setPosition = function (boundingBox) {
 			var bodyStyle = $($.context.body).currentStyle();
-			ArrayHelper.each([LEFT, TOP, BOTTOM, RIGHT], function (position) {
+			A.each([LEFT, TOP, BOTTOM, RIGHT], function (position) {
 				var orientation = position.substr(0, 1).toUpperCase() + position.substr(1);
 				var bodyMargin = $.pxToFloat(bodyStyle["padding" + orientation]) + $.pxToFloat(bodyStyle["margin" + orientation]);
 				if (UA_SUPPORTS_FIXED) {
@@ -405,7 +512,7 @@ jet().add("container", function ($) {
 		myself.on(RENDER, function (e) {
 			myself.get(BOUNDING_BOX).addClass(myself.get(CLASS_PREFIX) + SimpleDialog.NAME);
 			var buttonArea = $(NEW_DIV).addClass("button-group");
-			ArrayHelper.each(myself.get("buttons"), function (config, i) {
+			A.each(myself.get("buttons"), function (config, i) {
 				var button = new Button(config);
 				if (i === 0) {
 					button.get(BOUNDING_BOX).addClass("default");
@@ -425,7 +532,8 @@ jet().add("container", function ($) {
 		Overlay: Overlay,
 		Panel: Panel,
 		SimpleDialog: SimpleDialog,
-		Button: Button
+		Button: Button,
+		ComboBox: ComboBox
 	});
 	
 });

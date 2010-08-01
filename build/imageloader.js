@@ -142,6 +142,10 @@ jet().add('imageloader', function ($) {
 	};
 	$.extend(ImageLoader, $.Base);
 	
+	/*
+	 * @TODO: fixPNG method for Node and NodeList
+	 */
+	
 	$.add({
 		Image: Img,
 		ImageLoader: ImageLoader
