@@ -195,7 +195,18 @@ jet().add('datasource', function ($) {
 				});
 				
 			/*
-			 * A JSON Schema 
+			 * A JSON Schema
+			 * Example:
+			 * 
+			 *	responseSchema = {
+				    resultsList : "Response.Results", // String pointer to result data
+				    // Field order doesn't matter and not all data is required to have a field
+				    fields : [
+				        { key: "id" },                    // simple location
+				        { key: "obj.nested" },            // dot notation works
+				        { key: "['arr'][1]['nested 2']" } // bracket notation works
+				    ]
+				}
 			 */
 			} else if (responseType == RESPONSE_TYPE_JSON) {
 				var found = TRUE;

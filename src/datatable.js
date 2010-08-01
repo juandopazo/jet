@@ -47,8 +47,7 @@ jet().add('datatable', function ($) {
 		var thead = $("<thead/>").appendTo(table);
 		var tbody = $("<tbody/>").addClass(prefixClass + DATA).appendTo(table);
 		
-		var sort = function () {
-			var th = $(this);
+		var sort = function (th) {
 			var order, unorder, i;
 			var key = th.attr("id").split("-").pop();
 			if (th.hasClass(prefixClass + "desc")) {
@@ -75,6 +74,7 @@ jet().add('datatable', function ($) {
 				after = $("#" + prefix + "rec" + records[i + 1].getId());
 				before.addClass(i % 2 == 0 ? even : odd).removeClass(i % 2 == 0 ? odd : even).insertBefore(after);
 			}
+			console.log(tbody.find("." + prefixClass + "desc")._DOMNodes.length);
 			tbody.find("." + prefixClass + "desc").removeClass(prefixClass + "desc");
 			tbody.find("." + prefixClass + "col-" + key).addClass(prefixClass + "desc");
 		};
@@ -92,32 +92,14 @@ jet().add('datatable', function ($) {
 				th.addClass(prefixClass + "last");
 			}
 			if (colDef.sortable) {
-				th.addClass(prefixClass + "sortable").on("click", sort);
+				th.addClass(prefixClass + "sortable").on("click", function (e) {
+					e.stopPropagation();
+					e.preventDefault();
+					sort(th);
+				});
 			}
 			thead.append(th);
 		});
-		
-		var rowAddingDelay;
-		var rowsToBeAdded = [];
-		var readyToAddRows = function () {
-			var rows = [];
-			var colDefs = myself.get("columnDefinitions");
-			A.each(rowsToBeAdded, function (row) {
-				var id = row.getId();
-				var data = row.getData();
-				row = ['<tr id="', prefix, 'rec', id, '">'];
-				A.each(colDefs, function (colDef) {
-					row.push('<td class="', prefix, className, "-col-", colDef.key, '"><div class="', prefixClass, "liner", '">', data[colDef.key], '</div></td>');
-				});
-				row[row.length] = "</tr>";
-				rows[rows.length] = row.join("");
-			});
-			tbody._node.innerHTML += rows.join("");
-			rowsToBeAdded = [];
-			tbody.children().removeClass(prefixClass + "even", prefixClass + "odd").each(function (row, i) {
-				row.addClass(i % 2 == 0 ? prefixClass + "even" : prefixClass + "odd");
-			});
-		};
 		
 		/**
 		 * Adds a row
@@ -125,15 +107,14 @@ jet().add('datatable', function ($) {
 		 * @param {Record, HTMLRowElement, Array} row
 		 */
 		myself.addRow = function (row) {
-			var tmpRow = [];
 			if (!(row instanceof $.Record)) {
 				row = new $.Record(row);
 			}
-			rowsToBeAdded[rowsToBeAdded.length] = row;
-			if (rowAddingDelay) {
-				clearTimeout(rowAddingDelay);
-			}
-			rowAddingDelay = setTimeout(readyToAddRows, 0);
+			var tr = $("<tr/>").attr("id", prefix + 'rec' + row.getId());
+			A.each(myself.get("columnDefinitions"), function (colDef) {
+				tr.append($("<td/>").addClass(prefix + className + "-col-" + colDef.key).append($("<div/>").addClass(prefixClass + "liner").html(row.get(colDef.key))));
+			});
+			tr.addClass(tbody.children()._nodes.length % 2 == 0 ? (prefixClass + "even") : (prefixClass + "odd")).appendTo(tbody);
 		};
 		
 		myself.addRows = function () {

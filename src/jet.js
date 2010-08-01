@@ -907,10 +907,8 @@
 					var result = [];
 					walkTheDOM(root, function (node) {
 						var a, c = node.className, i;
-						if (c) {
-							if (ArrayHelper.indexOf(className, c.split(" "))) {
-								result[result.length] = node;
-							}
+						if (c && ArrayHelper.indexOf(className, c.split(" ")) > -1) {
+							result[result.length] = node;
 						}
 					});
 					return result;
