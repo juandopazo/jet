@@ -74,7 +74,6 @@ jet().add('datatable', function ($) {
 				after = $("#" + prefix + "rec" + records[i + 1].getId());
 				before.addClass(i % 2 == 0 ? even : odd).removeClass(i % 2 == 0 ? odd : even).insertBefore(after);
 			}
-			console.log(tbody.find("." + prefixClass + "desc")._DOMNodes.length);
 			tbody.find("." + prefixClass + "desc").removeClass(prefixClass + "desc");
 			tbody.find("." + prefixClass + "col-" + key).addClass(prefixClass + "desc");
 		};
