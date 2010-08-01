@@ -41,7 +41,7 @@ jet().add('datatable', function ($) {
 		var recordSet = myself.get("dataSource").get("recordSet");
 		
 		var prefix = myself.get("classPrefix");
-		var className = myself.get("className")
+		var className = myself.get("className");
 		var prefixClass = prefix + className + "-";
 		var table = $("<table/>");
 		var thead = $("<thead/>").appendTo(table);
@@ -66,13 +66,13 @@ jet().add('datatable', function ($) {
 			var records = recordSet.getRecords();
 			var length = records.length;
 			var before, after;
-			var even = prefixClass + (length % 2 == 0 ? "even" : "odd");
-			var odd = prefixClass + (length % 2 == 0 ? "odd" : "even");
-			$("#" + prefix + "rec" + records[length - 1].getId()).addClass(length % 2 == 0 ? odd : even).removeClass(length % 2 == 0 ? even : odd);
+			var even = prefixClass + (length % 2 === 0 ? "even" : "odd");
+			var odd = prefixClass + (length % 2 === 0 ? "odd" : "even");
+			$("#" + prefix + "rec" + records[length - 1].getId()).addClass(length % 2 === 0 ? odd : even).removeClass(length % 2 === 0 ? even : odd);
 			for (i = length - 2; i >= 0; i--) {
 				before = $("#" + prefix + "rec" + records[i].getId());
 				after = $("#" + prefix + "rec" + records[i + 1].getId());
-				before.addClass(i % 2 == 0 ? even : odd).removeClass(i % 2 == 0 ? odd : even).insertBefore(after);
+				before.addClass(i % 2 === 0 ? even : odd).removeClass(i % 2 === 0 ? odd : even).insertBefore(after);
 			}
 			tbody.find("." + prefixClass + "desc").removeClass(prefixClass + "desc");
 			tbody.find("." + prefixClass + "col-" + key).addClass(prefixClass + "desc");
@@ -85,7 +85,7 @@ jet().add('datatable', function ($) {
 		A.each(colDefs, function (colDef, i) {
 			var th = $("<th/>").append($("<div/>").addClass(prefixClass + "liner").append($("<span/>").addClass(prefixClass + "label").html(colDef.label || colDef.key)));
 			th.attr("id", prefixClass + "0-th-" + colDef.key);
-			if (i == 0) {
+			if (i === 0) {
 				th.addClass(prefixClass + "first");
 			} else if (i == colDefs.length - 1) {
 				th.addClass(prefixClass + "last");
@@ -113,7 +113,7 @@ jet().add('datatable', function ($) {
 			A.each(myself.get("columnDefinitions"), function (colDef) {
 				tr.append($("<td/>").addClass(prefix + className + "-col-" + colDef.key).append($("<div/>").addClass(prefixClass + "liner").html(row.get(colDef.key))));
 			});
-			tr.addClass(tbody.children()._nodes.length % 2 == 0 ? (prefixClass + "even") : (prefixClass + "odd")).appendTo(tbody);
+			tr.addClass(tbody.children()._nodes.length % 2 === 0 ? (prefixClass + "even") : (prefixClass + "odd")).appendTo(tbody);
 		};
 		
 		myself.addRows = function () {

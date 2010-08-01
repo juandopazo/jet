@@ -106,7 +106,7 @@ jet().add('datasource', function ($) {
 		};
 		
 		myself.getCount = function () {
-			return recods.length;
+			return records.length;
 		};
 		
 		myself.sortBy =  function (key, newOrder) {
@@ -117,12 +117,12 @@ jet().add('datasource', function ($) {
 				order = newOrder;
 			}
 			return myself;
-		}
+		};
 		
 		myself.push = function (data) {
 			if (data instanceof RecordSet) {
 				data = data.getRecords();
-			} else if (!lang.isArray(data)) {
+			} else if (!Lang.isArray(data)) {
 				data = [data];
 			}
 			records = records.concat(data);
@@ -265,21 +265,21 @@ jet().add('datasource', function ($) {
 						if (node._node.nodeName != field.node) {
 							value = node.find(field.node)._DOMNodes[0];
 						} else {
-							value = node._node
+							value = node._node;
 						}
 						if (field.attr) {
-							value = value.getAttribute(field.attr)
+							value = value.getAttribute(field.attr);
 						} else {
 							value = value.firstChild.nodeValue;
 						}
 						if (field.parser) {
 							switch (field.parser.toLowerCase()) {
-								case "float":
-									value = parseFloat(value);
-									break;
-								case "10":
-									value = parseInt(value, 10);
-									break; 
+							case "float":
+								value = parseFloat(value);
+								break;
+							case "10":
+								value = parseInt(value, 10);
+								break; 
 							}
 						}
 						record[field.key] = value;
@@ -386,7 +386,7 @@ jet().add('datasource', function ($) {
 			var loaded = FALSE;
 			jet.DataSource.jsonpCallbacks[index] = function (data) {
 				loaded = TRUE;
-				success(data)
+				success(data);
 			};
 			$.Get.script(myself.get(URL) + prepareRequest(request) + AMPERSAND + myself.get("jsonCallbackParam") + EQUAL_SIGN + "jet.DataSource.jsonpCallbacks[" + index + "]");
 			setTimeout(function () {

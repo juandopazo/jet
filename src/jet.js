@@ -433,6 +433,8 @@
 			}
 		};
 		
+		var NodeList;
+		
 		var Node = function (node, root) {
 			root = root || $.context;
 			if (Lang.isString(node)) {
@@ -770,7 +772,7 @@
 			}
 		});
 		
-		var NodeList = function () {
+		NodeList = function () {
 			var collection = [];
 			var addToCollection = function (node) {
 				if (Lang.isNode(node)) {
@@ -809,7 +811,7 @@
 			},
 			notEq: function (index) {
 				var nodes = clone(this._nodes);
-				nodes.splice(i, 1);
+				nodes.splice(index, 1);
 				return new NodeList(nodes);
 			},
 			link: function (nodes, createNewList) {
@@ -865,7 +867,7 @@
 						if (!ArrayHelper.inArray(found._node, results)) {
 							results[results.length] = found._node;
 						}
-					})
+					});
 				});
 				return new NodeList(results);
 			};
@@ -931,7 +933,7 @@
 				query = new Node(query);
 			}
 			return query;
-		}
+		};
 		
 		$.win = win;
 		$.context = doc;

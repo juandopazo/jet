@@ -167,7 +167,7 @@ jet().add("container", function ($) {
 			A.each(opts, function (value) {
 				if (Lang.isHash(value)) {
 					Hash.each(value, function (text, val) {
-						addOption(combo, text, val)
+						addOption(combo, text, val);
 					});
 				} else {
 					addOption(combo, value);
@@ -212,7 +212,7 @@ jet().add("container", function ($) {
 			return myself;
 		},
 		clear: function () {
-			return myself.set("options", []);
+			return this.set("options", []);
 		}
 	});
 	
