@@ -248,7 +248,7 @@
 		if (!keep) {
 			setTimeout(function () {
 				head.removeChild(script);
-			}, 100);
+			}, 10000);
 		}
 	};
 	
@@ -258,6 +258,35 @@
 			rel: "stylesheet",
 			href: url
 		}));
+	};
+	
+	/*
+	 * DOM ready logic copyright jQuery
+	 */
+	var isReady = FALSE;
+	var readyList = [];
+	
+	var domReady = function (fn, lib) {
+		if (isReady) {
+			fn.call(doc, lib);
+		} else {
+			if (Lang.isFunction(fn)) {
+				readyList.push({
+					fn: fn,
+					lib: lib
+				});
+			}
+			if (!doc.body) {
+				return setTimeout(domReady, 13);
+			}
+			isReady = TRUE;
+			if (readyList.length) {
+				ArrayHelper.each(readyList, function (callback) {
+					callback.fn.call(doc, callback.lib);
+				});
+				readyList = [];
+			}
+		}
 	};
 	
 	var getCurrentStyle = function (node) {
@@ -365,26 +394,24 @@
 		
 		$.parseQuery = function (query, root) {
 			root = root || $.context;
-			var c = query.substr(0, 1);
+			var c = query.substr(0, 1), test, node;
 			if (c == "<") {
 				if (query.match(/</g).length == 1) {
 					return root.createElement(query.substr(1, query.length - 3));
-				} /*
-					@TODO: have this check by a regular expression if it is a node with a content,
-							create that node and then insert the rest in the innerHTML
-				else {
-					var baseNode = "div";
-					Hash.each(nodeCreation, function (replacement, list) {
-						ArrayHelper.each(list, function (c) {
-							if (query.search(c + "/") == 1) {
-								baseNode = replacement;
-							}
-						});
-					});
-					var tmpDiv = new $.Node(baseNode, root);
-					tmpDiv.html(query);
-					return tmpDiv.children(0)._node;
-				}*/
+				} else {
+					/*
+					 * Check for strings like "<div><span><a/></span></div>"
+					 */
+					test = query.match(new RegExp("<([a-z]+)>(.+)<\/([a-z]+)>", "i"));
+					node = null;
+					if (test.length == 4 && test[1] == test[3]) {
+						node = root.createElement(test[1]);
+						node.innerHTML = test[2];
+					} else {
+						$.error("Wrong element creation string");
+					}
+					return node;
+				}
 			} else {
 				return c == "#" ? root.getElementById(query.substr(1)) : 
 					   c == "." ? getByClass(query.substr(1), root) :
@@ -461,10 +488,7 @@
 				for (j = 0; j < requiredLength; j++) {
 					modules[required[j].name](core);
 				}
-				queueList.splice(i, 1)[0].main(core);
-				/*
-				 * remove the queue from the queue list
-				 */
+				domReady(queueList.splice(i, 1)[0].main, core);
 			} else {
 				i++;
 			}
@@ -473,17 +497,19 @@
 		
 	if (!win.jet) {
 		
-		var trackerDiv = createNode("div", {
-			id: "jet-tracker"
-		}, {
-			position: "absolute",
-			width: "1px",
-			height: "1px",
-			top: "-1000px",
-			left: "-1000px",
-			visibility: "hidden"
+		domReady(function () {
+			var trackerDiv = createNode("div", {
+				id: "jet-tracker"
+			}, {
+				position: "absolute",
+				width: "1px",
+				height: "1px",
+				top: "-1000px",
+				left: "-1000px",
+				visibility: "hidden"
+			});
+			doc.body.appendChild(trackerDiv);
 		});
-		doc.body.appendChild(trackerDiv);
 			
 		/**
 		 * Global function. Returns an object with 2 methods: use() and add().
@@ -585,7 +611,7 @@
 							if (!module.type || module.type == "js") {
 								loadScript(module.fullpath || (base + module.path)); 
 							} else if (module.type == "css") {
-								loadCssModule(module);
+								domReady(loadCssModule, module);
 							}
 							queuedScripts[module.name] = 1;
 						}
@@ -618,7 +644,7 @@
 
 jet().add('log', function ($) {
 	
-	$.error = console ? console.error : function (msg) {
+	$.error = function (msg) {
 		throw new Error(msg);
 	};
 
