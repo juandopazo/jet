@@ -56,7 +56,6 @@
 			}
 		}],
 		plasma: ['anim'],
-		paginator: ['datasource'],
 		"simple-progressbar": TRUE
 	};
 	
@@ -1189,9 +1188,7 @@
 										j++;
 									}
 								}
-								console.log(request);
 								AP.splice.apply(request, m);
-								console.log(request);
 								i--;
 							}
 							module = predef[module.toLowerCase()];
