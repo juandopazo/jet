@@ -141,7 +141,8 @@ jet().add('datatable', function ($) {
 			var tr = $("<tr/>").attr(ID, recordIdPrefix + row.getId());
 			A.each(myself.get(COLUMN_DEFINITIONS), function (colDef) {
 				var text = row.get(colDef.key);
-				tr.append($("<td/>").addClass(prefix + className + "-col-" + colDef.key).append($(NEW_DIV).addClass(prefixClass + LINER).html(colDef.formatter ? colDef.formatter(text, row.getData()) : text)));
+				var td = $("<td/>").addClass(prefix + className + "-col-" + colDef.key);
+				td.append($(NEW_DIV).addClass(prefixClass + LINER).html(colDef.formatter ? colDef.formatter(text, row.getData(), td) : text)).appendTo(tr)
 			});
 			tr.addClass(tbody.children()._nodes.length % 2 === 0 ? (prefixClass + EVEN) : (prefixClass + ODD)).appendTo(tbody);
 		};

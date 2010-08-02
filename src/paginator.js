@@ -8,7 +8,11 @@ jet().add('paginator', function ($) {
 		A = $.Array;
 		
 	var RECORDSET = "recordSet",
-		NEW_SPAN = "<span/>";
+		NEW_SPAN = "<span/>",
+		ACTIVE = "active",
+		INACTIVE = "inactive",
+		CLICK = "click",
+		ID = "id";
 		
 	if (!jet.Paginator) {
 		jet.Paginator = {};
@@ -85,41 +89,39 @@ jet().add('paginator', function ($) {
 		};
 		myself.goTo = goTo;
 		
-		var prefix = myself.get("classPrefix");
-		var className = myself.get("className");
-		prefix += className;
-		
-		var spanFirst, spanPrev, spanNext, spanLast, pagesContainer;
-		
 		myself.on("render", function () {
+			var prefix = myself.get("classPrefix");
+			var className = myself.get("className");
+			var spanFirst, spanPrev, spanNext, spanLast, pagesContainer;
+			prefix += className;
 			
 			var boundingBox = myself.get("boundingBox");
-			spanFirst = $(NEW_SPAN).attr("id", prefix + id + "-first").addClass(prefix + "-first", "inactive").on("click", function () {
-				if ($(this).hasClass("active")) {
+			spanFirst = $(NEW_SPAN).attr(ID, prefix + id + "-first").addClass(prefix + "-first", INACTIVE).on(CLICK, function () {
+				if ($(this).hasClass(ACTIVE)) {
 					goTo(0);
 				}
 			}).html(myself.get("firstText")).appendTo(boundingBox);
-			spanPrev = $(NEW_SPAN).attr("id", prefix + id + "-previous").addClass(prefix + "-previous", "inactive").on("click", function () {
-				if ($(this).hasClass("active")) {
+			spanPrev = $(NEW_SPAN).attr(ID, prefix + id + "-previous").addClass(prefix + "-previous", INACTIVE).on(CLICK, function () {
+				if ($(this).hasClass(ACTIVE)) {
 					goTo(myself.get("currentPage") - 1);
 				}
 			}).html(myself.get("prevText")).appendTo(boundingBox);
 			pagesContainer = $(NEW_SPAN).addClass(prefix + "-pages").appendTo(boundingBox);
 			console.log(currentPage, currentPage + pageCount);
 			for (var i = currentPage + 1; i < currentPage + pageCount + 1; i++) {
-				$(NEW_SPAN).addClass(prefix + "-page", i == currentPage + 1 ? prefix + "-current-page" : "", i == currentPage + 1 ? "active" : "inactive").attr("id", prefix + "-page" + i).html(i).on("click", (function (index) {
+				$(NEW_SPAN).addClass(prefix + "-page", i == currentPage + 1 ? prefix + "-current-page" : "", i == currentPage + 1 ? ACTIVE : INACTIVE).attr(ID, prefix + "-page" + i).html(i).on(CLICK, (function (index) {
 					return function () {
 						goTo(index);
 					};
 				}(i))).appendTo(pagesContainer);
 			}
-			spanNext = $(NEW_SPAN).attr("id", prefix + id + "-next").addClass(prefix + "-next", "inactive").on("click", function () {
-				if ($(this).hasClass("active")) {
+			spanNext = $(NEW_SPAN).attr(ID, prefix + id + "-next").addClass(prefix + "-next", INACTIVE).on(CLICK, function () {
+				if ($(this).hasClass(ACTIVE)) {
 					goTo(myself.get("currentPage") + 1);
 				}
 			}).html(myself.get("nextText")).appendTo(boundingBox);
-			spanLast = $(NEW_SPAN).attr("id", prefix + id + "-last").addClass(prefix + "-last", "inactive").on("click", function () {
-				if ($(this).hasClass("active")) {
+			spanLast = $(NEW_SPAN).attr(ID, prefix + id + "-last").addClass(prefix + "-last", INACTIVE).on(CLICK, function () {
+				if ($(this).hasClass(ACTIVE)) {
 					goTo(myself.get("pagesCount") - 1);
 				}
 			}).html(myself.get("lastText")).appendTo(boundingBox);

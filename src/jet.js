@@ -369,7 +369,10 @@
 			if (c == "<") {
 				if (query.match(/</g).length == 1) {
 					return root.createElement(query.substr(1, query.length - 3));
-				} else {
+				} /*
+					@TODO: have this check by a regular expression if it is a node with a content,
+							create that node and then insert the rest in the innerHTML
+				else {
 					var baseNode = "div";
 					Hash.each(nodeCreation, function (replacement, list) {
 						ArrayHelper.each(list, function (c) {
@@ -381,7 +384,7 @@
 					var tmpDiv = new $.Node(baseNode, root);
 					tmpDiv.html(query);
 					return tmpDiv.children(0)._node;
-				}
+				}*/
 			} else {
 				return c == "#" ? root.getElementById(query.substr(1)) : 
 					   c == "." ? getByClass(query.substr(1), root) :
@@ -623,20 +626,17 @@ jet().add('log', function ($) {
 
 jet().add('ua', function ($) {
 	$.UA = (function () {
-		var doc = $.context,
-			nav = $.win.navigator,
+		var nav = $.win.navigator,
 			ua = nav.userAgent.toLowerCase(),
         	p = nav.platform.toLowerCase();
 
 		var webkit = /KHTML/.test(ua) || /webkit/i.test(ua),
-			chrome = /chrome/i.test(ua),
 			opera = /opera/i.test(ua),
 			ie = /(msie) ([\w.]+)/.exec(ua);
 		
         return {
-			w3: !!(doc.getElementById && doc.getElementsByTagName && doc.createElement),
 			webkit: webkit,
-			chrome: chrome,
+			chrome:  /chrome/i.test(ua),
 			ie: ie && ie[1] && ie[2] ? parseFloat(ie[2]) : false,
 			opera: opera,
 			gecko: !webkit && !opera && !ie && /Gecko/i.test(ua),

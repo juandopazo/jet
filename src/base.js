@@ -14,7 +14,7 @@ jet().add('base', function ($) {
 	 *  
 	 * @param {Number} integer
 	 */
-	$.random = function (num) {
+	var random = function (num) {
 		num = Math.random() * num;
 		return num === 0 ? 0 : Math.ceil(num) - 1;
 	};
@@ -56,7 +56,7 @@ jet().add('base', function ($) {
 	 * 
 	 * @param {Object} o
 	 */
-	$.Object = function (o) {
+	var Obj = function (o) {
 		var F = function () {};
 		F.prototype = o;
 		return new F();
@@ -80,7 +80,7 @@ jet().add('base', function ($) {
             $.error("extend failed, verify dependencies");
         }
 
-        var sp = s.prototype, rp = $.Object(sp);
+        var sp = s.prototype, rp = Obj(sp);
         r.prototype = rp;
 
         rp.constructor = r;
@@ -536,6 +536,7 @@ jet().add('base', function ($) {
 		Widget: Widget,
 		EventTarget: EventTarget,
 		augment: augment,
-		extend: extend
+		extend: extend,
+		random: random
 	});
 });
