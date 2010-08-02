@@ -132,6 +132,7 @@ jet().add('ajax', function ($) {
 					} catch (e) {
 						$.error(e);
 					}
+					break;
 				default:					
 					return xhr.responseText;
 				}

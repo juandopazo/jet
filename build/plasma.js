@@ -35,7 +35,7 @@ jet().add('plasma', function ($) {
 			hexColor = hexColor.substr(1);
 		}
 		if (hexColor.length == 3) {
-			hexColor = [hexColor.substr(0, 1) + hexColor.substr(0, 1), hexColor.substr(1, 1) + hexColor.substr(1, 1), hexColor.substr(2, 1) + hexColor.substr(2, 1)]
+			hexColor = [hexColor.substr(0, 1) + hexColor.substr(0, 1), hexColor.substr(1, 1) + hexColor.substr(1, 1), hexColor.substr(2, 1) + hexColor.substr(2, 1)];
 		} else {
 			hexColor = [hexColor.substr(0, 2), hexColor.substr(2, 2), hexColor.substr(4, 2)];
 		}
@@ -60,14 +60,16 @@ jet().add('plasma', function ($) {
 	 */
 	var createIENode;
 	try {
-    	!document.namespaces.vml && document.namespaces.add("vml", "urn:schemas-microsoft-com:vml");
-    	createIENode = function(tagName) {
+		if (!document.namespaces.vml) {
+			document.namespaces.add("vml", "urn:schemas-microsoft-com:vml");
+		}
+    	createIENode = function (tagName) {
 			var node = $.context.createElement('<vml:' + tagName + ' class="vml">');
     		return node;
     	};
     } 
     catch (e) {
-    	createIENode = function(tagName) {
+    	createIENode = function (tagName) {
     		return $.context.createElement('<' + tagName + ' xmlns="urn:schemas-microsoft.com:vml" class="vml">');
     	};
     }
@@ -81,36 +83,6 @@ jet().add('plasma', function ($) {
 		styles.addRule(".vml", "display:inline-block");
 	}
 
-	/**
-	 * Create a default getter function
-	 * @param {String} attrName
-	 */
-	var getDefaultGetter = function (attrName) {
-		return UA_SUPPORTS_SVG ?  function () {
-			return parseDec(this._node.getAttribute(attrName));
-		} : A.inArray(attrName, VML_STYLE_ATTRIBUTES) ? function () {
-			return parseDec(this._node.style[attrName]);
-		} : function () {
-			return parseDec(this._node[attrName]);
-		};
-	};
-	/**
-	 * Create a default setter function 
-	 * @param {Object} attrName
-	 */
-	var getDefaultSetter = function (attrName) {
-		return UA_SUPPORTS_SVG ? function (value) {
-			this._node.setAttribute(attrName, value);
-			return value;
-		} : A.inArray(attrName, VML_STYLE_ATTRIBUTES) ? function (value) {
-			this._node.style[attrName] = value;
-			return value;
-		} : function (value) {
-			this._node[attrName] = value;
-			return value;
-		};
-	};
-	
 	/*
 	 * Graphic class attribute definitions
 	 */
@@ -143,12 +115,42 @@ jet().add('plasma', function ($) {
 		ATTR_ATTRIBUTES = ATTR_ATTRIBUTES.concat(VML_STYLE_ATTRIBUTES);
 
 	}
+	/**
+	 * Create a default getter function
+	 * @param {String} attrName
+	 */
+	var getDefaultGetter = function (attrName) {
+		return UA_SUPPORTS_SVG ?  function () {
+			return parseDec(this._node.getAttribute(attrName));
+		} : A.inArray(attrName, VML_STYLE_ATTRIBUTES) ? function () {
+			return parseDec(this._node.style[attrName]);
+		} : function () {
+			return parseDec(this._node[attrName]);
+		};
+	};
+	/**
+	 * Create a default setter function 
+	 * @param {Object} attrName
+	 */
+	var getDefaultSetter = function (attrName) {
+		return UA_SUPPORTS_SVG ? function (value) {
+			this._node.setAttribute(attrName, value);
+			return value;
+		} : A.inArray(attrName, VML_STYLE_ATTRIBUTES) ? function (value) {
+			this._node.style[attrName] = value;
+			return value;
+		} : function (value) {
+			this._node[attrName] = value;
+			return value;
+		};
+	};
+	
 	A.each(ATTR_ATTRIBUTES, function (attrName) {
 		var mappedAttrName = !UA_SUPPORTS_SVG && VML_ATTR_MAPPING[attrName] ? VML_ATTR_MAPPING[attrName] : attrName;
 		Graphic_ATTRS[attrName] = {
 			getter: getDefaultGetter(mappedAttrName),
 			setter: getDefaultSetter(mappedAttrName)
-		}
+		};
 	});
 	
 	
@@ -230,8 +232,6 @@ jet().add('plasma', function ($) {
 			}
 		});
 		
-		A.each()
-		
 	} : function () {
 		Graphic.superclass.constructor.apply(this, arguments);
 		var myself = this;
@@ -263,13 +263,13 @@ jet().add('plasma', function ($) {
 
 		myself.addAttrs(Graphic_ATTRS).addAttr("fill-opacity", {
 			getter: function () {
-				return this.get("fill-node")["opacity"];
+				return this.get("fill-node").opacity;
 			},
 			setter: function (value) {
-				this.get("fill-node")["opacity"] = value;
+				this.get("fill-node").opacity = value;
 				return value;
 			}
-		});;
+		});
 	};
 	$.extend(Graphic, $.Attribute, {
 		translate: function () {
@@ -293,22 +293,22 @@ jet().add('plasma', function ($) {
 	 */
 	var GraphicList = function () {
 		var collection = [];
-			var addToCollection = function (node) {
-				if (node instanceof Graphic) {
-					collection[collection.length] = node;
-				} else if (node.nodeType || Lang.isString(node)) {
-					collection[collection.length] = new Graphic(node);
-				}
-			};
-			A.each(arguments, function (node) {
-				if (node.length) {
-					A.each(node, addToCollection);
-				} else {
-					addToCollection(node);
-				}
-			});
-			
-			this._nodes = collection;
+		var addToCollection = function (node) {
+			if (node instanceof Graphic) {
+				collection[collection.length] = node;
+			} else if (node.nodeType || Lang.isString(node)) {
+				collection[collection.length] = new Graphic(node);
+			}
+		};
+		A.each(arguments, function (node) {
+			if (node.length) {
+				A.each(node, addToCollection);
+			} else {
+				addToCollection(node);
+			}
+		});
+		
+		this._nodes = collection;
 	};
 	$.extend(GraphicList, $.Attribute, {
 		
@@ -326,11 +326,11 @@ jet().add('plasma', function ($) {
 		Rectangle.superclass.constructor.apply(this, arguments);
 	};
 	$.extend(Rectangle, Graphic, {
-		rotate: UA_SUPPORTS_SVG ? function(angle) {
+		rotate: UA_SUPPORTS_SVG ? function (angle) {
 			var myself = this;
 			myself._node.setAttribute("transform", "rotate(" + angle + " " + (myself.get("x") + myself.get("width") / 2) + " " + (myself.get("y") + myself.get("height") / 2) + ")");
 			return myself;
-		} : function() {
+		} : function () {
 		
 		}
 	});
@@ -385,7 +385,7 @@ jet().add('plasma', function ($) {
 		});
 		myself.addAttrs({
 			cx: {
-				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING["cx"] ? VML_ATTR_MAPPING["cx"] : "cx"),
+				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING.cx ? VML_ATTR_MAPPING.cx : "cx"),
 				setter: UA_SUPPORTS_SVG ? function (value) {
 					this._node.setAttribute("cx", value);
 					return value;
@@ -395,7 +395,7 @@ jet().add('plasma', function ($) {
 				}
 			},
 			cy: {
-				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING["cy"] ? VML_ATTR_MAPPING["cy"] : "cy"),
+				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING.cy ? VML_ATTR_MAPPING.cy : "cy"),
 				setter: UA_SUPPORTS_SVG ? function (value) {
 					this._node.setAttribute("cy", value);
 					return value;
@@ -435,7 +435,7 @@ jet().add('plasma', function ($) {
 		});
 		myself.addAttrs({
 			cx: {
-				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING["cx"] ? VML_ATTR_MAPPING["cx"] : "cx"),
+				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING.cx ? VML_ATTR_MAPPING.cx : "cx"),
 				setter: UA_SUPPORTS_SVG ? function (value) {
 					this._node.setAttribute("cx", value);
 					return value;
@@ -445,7 +445,7 @@ jet().add('plasma', function ($) {
 				}
 			},
 			cy: {
-				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING["cy"] ? VML_ATTR_MAPPING["cy"] : "cy"),
+				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING.cy ? VML_ATTR_MAPPING.cy : "cy"),
 				setter: UA_SUPPORTS_SVG ? function (value) {
 					this._node.setAttribute("cy", value);
 					return value;

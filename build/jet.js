@@ -5,7 +5,8 @@
 		doc = document,
 		nav = navigator,
 		OP = Object.prototype,
-		SLICE = Array.prototype.slice,
+		AP = Array.prototype,
+		SLICE = AP.slice,
 		TOSTRING = OP.toString,
 		TRUE = true,
 		FALSE = false,
@@ -15,12 +16,10 @@
 	 * These modules can be called by the jet().use() method without defining a path
 	 */
 	var predefinedModules = {
-		dom: TRUE,
 		base: TRUE,
 		ajax: ['json'],
 		json: TRUE,
 		cookie: TRUE,
-		forms: [BASE],
 		sizzle: TRUE,
 		tabs: [BASE],
 		resize: [BASE, {
@@ -56,7 +55,9 @@
 				value: 'solid'
 			}
 		}],
-		plasma: ['anim']
+		plasma: ['anim'],
+		paginator: ['datasource'],
+		"simple-progressbar": TRUE
 	};
 	
 	var ARRAY		= 'array',
@@ -433,8 +434,13 @@
 			}
 		};
 		
+		var NodeList;
+		
 		var Node = function (node, root) {
 			root = root || $.context;
+			if (Lang.isNode(node)) {
+				return node;
+			}
 			if (Lang.isString(node)) {
 				node = root.createElement(node);
 			} else if (!node.nodeType && node != $.win) {
@@ -642,6 +648,22 @@
 			first: function () {
 				return new Node(this.children()._nodes.shift());
 			},
+			next: function () {
+				var next = this._node;
+				do {
+					next = next.nextSibling;
+				}
+				while (next && next.nodeType == TEXT_NODE);
+				return next ? new Node(next) : null;
+			},
+			previous: function () {
+				var previous = this._node;
+				do {
+					previous = previous.previousSibling;
+				}
+				while (previous && previous.nodeType == TEXT_NODE);
+				return previous ? new Node(previous) : null;
+			},
 			last: function () {
 				return new Node(this.children()._nodes.pop());
 			},
@@ -770,7 +792,7 @@
 			}
 		});
 		
-		var NodeList = function () {
+		NodeList = function () {
 			var collection = [];
 			var addToCollection = function (node) {
 				if (Lang.isNode(node)) {
@@ -805,11 +827,11 @@
 				return this;
 			},
 			eq: function (index) {
-				return new Node(this._nodes[index]);
+				return this._nodes[index];
 			},
 			notEq: function (index) {
 				var nodes = clone(this._nodes);
-				nodes.splice(i, 1);
+				nodes.splice(index, 1);
 				return new NodeList(nodes);
 			},
 			link: function (nodes, createNewList) {
@@ -865,7 +887,7 @@
 						if (!ArrayHelper.inArray(found._node, results)) {
 							results[results.length] = found._node;
 						}
-					})
+					});
 				});
 				return new NodeList(results);
 			};
@@ -931,7 +953,7 @@
 				query = new Node(query);
 			}
 			return query;
-		}
+		};
 		
 		$.win = win;
 		$.context = doc;
@@ -1079,6 +1101,9 @@
 					ready++;
 				}
 			}
+			if (Lang.isFunction(queueList[i].onProgress)) {
+				queueList[i].onProgress(ready / requiredLength);
+			}
 			if (ready == requiredLength) {
 				/*
 				 * Create a new instance of the core, call each module and the queue's callback 
@@ -1087,11 +1112,10 @@
 				for (j = 0; j < requiredLength; j++) {
 					modules[required[j].name](core);
 				}
-				queueList[i].main(core);
+				queueList.splice(i, 1)[0].main(core);
 				/*
 				 * remove the queue from the queue list
 				 */
-				queueList.splice(i, 1);
 			} else {
 				i++;
 			}
@@ -1154,16 +1178,31 @@
 					for (i = 0; i < request.length - 1; i++) {
 						module = request[i];
 						if (Lang.isString(module)) {
-							request[i] = module.toLowerCase();
-						}
-						module = predef[request[i]];
-						if (module && Lang.isArray(module)) {
-							ArrayHelper.each(module, function (val) {
-								if (!ArrayHelper.inArray(val, request)) {
-									request.splice(i, 0, val);
-									i--;
+							if (module == "*") {
+								var m = Hash.keys(predef);
+								m.unshift(i, 1);
+								j = i + 1;
+								while (j < request.length) {
+									if (Lang.isString(request[j])) {
+										request.splice(j, 1);
+									} else {
+										j++;
+									}
 								}
-							});
+								console.log(request);
+								AP.splice.apply(request, m);
+								console.log(request);
+								i--;
+							}
+							module = predef[module.toLowerCase()];
+							if (module && Lang.isArray(module)) {
+								ArrayHelper.each(module, function (val) {
+									if (!ArrayHelper.inArray(val, request)) {
+										request.splice(i, 0, val);
+										i--;
+									}
+								});
+							}
 						}
 					}
 					if (win.JSON) {
@@ -1186,7 +1225,7 @@
 							}
 						}
 						request[i] = module;
-						if (!modules[module.name] && !queuedScripts[module.name]) {
+						if (!(modules[module.name] || queuedScripts[module.name])) {
 							if (!module.type || module.type == "js") {
 								loadScript(module.fullpath || (base + module.path)); 
 							} else if (module.type == "css") {
@@ -1195,10 +1234,14 @@
 							queuedScripts[module.name] = 1;
 						}
 					}
-					queueList.push({
+					var queue = {
 						main: request.pop(),
 						req: request
-					});
+					};
+					if (config.onProgress) {
+						queue.onProgress = config.onProgress;
+					}
+					queueList.push(queue);
 					update();
 				},
 				/**

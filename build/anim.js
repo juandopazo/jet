@@ -2,6 +2,10 @@ jet().add('anim', function ($) {
 	
 	var TRUE = true,
 		FALSE = false;
+		
+	var Lang = $.Lang,
+		Hash = $.Hash,
+		ArrayHelper = $.Array;
 	
 	var PLAYING = "playing",
 		ENTER_FRAME = "enterFrame";
@@ -51,7 +55,7 @@ jet().add('anim', function ($) {
 		var time = 0;
 		var frameLength = Math.round(1000 / myself.get("fps"));
 		
-		myself.play = function() {
+		myself.play = function () {
 			paused = FALSE;
 			playing = TRUE;
 			if (interval) {
@@ -182,7 +186,7 @@ jet().add('anim', function ($) {
 				timeFrame[i] = {};
 				Hash.each(to, function (name, end) {
 					timeFrame[i][name] = easing(i, from[name], end, dur, strength);
-				})
+				});
 			}
 			return myself;
 		};

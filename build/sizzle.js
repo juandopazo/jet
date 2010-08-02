@@ -1062,15 +1062,29 @@ var posProcess = function(selector, context){
 };
 
 // EXPOSE
-LIBRERIA().add('sizzle', function ($) {
-    $.parseQuery = function (query, context) {
-		context = context || $.context;
-		if (query.substr(0, 1) == "<") {
-			var tmpDiv = context.createElement("div");
-			tmpDiv.innerHTML = query;
-			return $(tmpDiv).first().getNode();
+jet().add('sizzle', function ($) {
+    $.parseQuery = function (query, root) {
+		root = root || $.context;
+		var c = query.substr(0, 1);
+		if (c == "<") {
+			if (query.match(/</g).length == 1) {
+				return root.createElement(query.substr(1, query.length - 3));
+			} else {
+				var baseNode = "div";
+				Hash.each(nodeCreation, function (replacement, list) {
+					ArrayHelper.each(list, function (c) {
+						if (query.search(c + "/") == 1) {
+							baseNode = replacement;
+						}
+					});
+				});
+				var tmpDiv = new Node(baseNode, root);
+				tmpDiv.html(query);
+				return tmpDiv.children(0)._node;
+			}
 		} else {
-			return Sizzle(query, context);
+			var result = Sizzle(query, root);
+			return result.length == 1 ? result[0] : result;
 		}
 	};
 });

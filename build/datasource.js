@@ -58,6 +58,9 @@ jet().add('datasource', function ($) {
 			return data[key];
 		};
 	};
+	Lang.isRecord = function (o) {
+		return o instanceof Record;
+	};
 	
 	var quicksortSet = function (set, key, order) {
 		if (set.length <= 1) {
@@ -90,7 +93,7 @@ jet().add('datasource', function ($) {
 	 * @param {Array} data If data is passed, it is converted into several Records
 	 */
 	var RecordSet = function (data) {
-		
+		RecordSet.superclass.constructor.call(this);
 		var records = [];
 		var sortedBy = FALSE;
 		var order;
@@ -106,7 +109,7 @@ jet().add('datasource', function ($) {
 		};
 		
 		myself.getCount = function () {
-			return recods.length;
+			return records.length;
 		};
 		
 		myself.sortBy =  function (key, newOrder) {
@@ -117,17 +120,32 @@ jet().add('datasource', function ($) {
 				order = newOrder;
 			}
 			return myself;
-		}
+		};
 		
-		myself.push = function (data) {
-			if (data instanceof RecordSet) {
+		var toData = function (data) {
+			if (Lang.isRecordSet(data)) {
 				data = data.getRecords();
-			} else if (!lang.isArray(data)) {
+			} else if (!Lang.isArray(data)) {
 				data = [data];
 			}
-			records = records.concat(data);
+			return data;
+		};
+		
+		myself.replace = function (data) {
+			data = toData(data);
+			myself.fire("replace", data);
 			return sortedBy ? myself.sortBy(sortedBy, order) : myself;
 		};
+		
+		myself.push = function (data) {
+			records = records.concat(toData(data));
+			myself.fire("push", records, data);
+			return sortedBy ? myself.sortBy(sortedBy, order) : myself;
+		};
+	};
+	$.extend(RecordSet, $.EventTarget);
+	Lang.isRecordSet = function (o) {
+		return o instanceof RecordSet;
 	};
 		
 	/**
@@ -265,21 +283,21 @@ jet().add('datasource', function ($) {
 						if (node._node.nodeName != field.node) {
 							value = node.find(field.node)._DOMNodes[0];
 						} else {
-							value = node._node
+							value = node._node;
 						}
 						if (field.attr) {
-							value = value.getAttribute(field.attr)
+							value = value.getAttribute(field.attr);
 						} else {
 							value = value.firstChild.nodeValue;
 						}
 						if (field.parser) {
 							switch (field.parser.toLowerCase()) {
-								case "float":
-									value = parseFloat(value);
-									break;
-								case "10":
-									value = parseInt(value, 10);
-									break; 
+							case "float":
+								value = parseFloat(value);
+								break;
+							case "10":
+								value = parseInt(value, 10);
+								break; 
 							}
 						}
 						record[field.key] = value;
@@ -386,7 +404,7 @@ jet().add('datasource', function ($) {
 			var loaded = FALSE;
 			jet.DataSource.jsonpCallbacks[index] = function (data) {
 				loaded = TRUE;
-				success(data)
+				success(data);
 			};
 			$.Get.script(myself.get(URL) + prepareRequest(request) + AMPERSAND + myself.get("jsonCallbackParam") + EQUAL_SIGN + "jet.DataSource.jsonpCallbacks[" + index + "]");
 			setTimeout(function () {
