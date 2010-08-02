@@ -32,6 +32,9 @@ jet().add('datatable', function ($) {
 		jet.DataTable.ids = 0;
 	}
 	
+	/*
+	 * @TODO
+	 */
 	var Column = function () {
 		
 	};
@@ -74,15 +77,16 @@ jet().add('datatable', function ($) {
 		
 		var sortedBy;
 		
-		var sort = function (th) {
-			var order, unorder, i;
+		var sort = function (th, keepOrder) {
 			var key = th.attr(ID).split("-").pop();
-			if (th.hasClass(prefixClass + DESC)) {
-				order = ASC;
-				unorder = DESC;
-			} else {
-				unorder = ASC;
-				order = DESC;
+			var isDesc = th.hasClass(prefixClass + DESC);
+			var order = isDesc ? DESC : ASC;
+			var unorder = isDesc ? ASC : DESC;
+			var i;
+			if (!keepOrder) {
+				i = order;
+				order = unorder;
+				unorder = i;
 			}
 			/*
 			 * Add/remove respective classes
@@ -136,7 +140,8 @@ jet().add('datatable', function ($) {
 			}
 			var tr = $("<tr/>").attr(ID, recordIdPrefix + row.getId());
 			A.each(myself.get(COLUMN_DEFINITIONS), function (colDef) {
-				tr.append($("<td/>").addClass(prefix + className + "-col-" + colDef.key).append($(NEW_DIV).addClass(prefixClass + LINER).html(row.get(colDef.key))));
+				var text = row.get(colDef.key);
+				tr.append($("<td/>").addClass(prefix + className + "-col-" + colDef.key).append($(NEW_DIV).addClass(prefixClass + LINER).html(colDef.formatter ? colDef.formatter(text, row.getData()) : text)));
 			});
 			tr.addClass(tbody.children()._nodes.length % 2 === 0 ? (prefixClass + EVEN) : (prefixClass + ODD)).appendTo(tbody);
 		};
@@ -164,10 +169,10 @@ jet().add('datatable', function ($) {
 			}
 			A.each(rows, addRow);
 			if (sortedBy) {
-				sort($(NUMERAL + thIdPrefix + sortedBy));
+				sort($(NUMERAL + thIdPrefix + sortedBy), TRUE);
 			}
 		};
-		
+		/*@TODO
 		myself.deleteRow = function () {
 			
 		};
@@ -178,7 +183,7 @@ jet().add('datatable', function ($) {
 		
 		myself.getColumn = function () {
 			
-		};
+		};*/
 		
 		myself.getFirstTr = function () {
 			return tbody.children().eq(0);
@@ -207,7 +212,7 @@ jet().add('datatable', function ($) {
 		myself.getNextTd = function (td) {
 			return td.next();
 		};
-		
+		/*@TODO
 		myself.getSelectedCell = function () {
 			
 		};
@@ -246,7 +251,7 @@ jet().add('datatable', function ($) {
 		
 		myself.unselectAll = function () {
 			
-		};
+		};*/
 		
 		/**
 		 * Replace all rows when the DataSource updates

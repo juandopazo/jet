@@ -3,24 +3,27 @@
 	
 	var win = window,
 		doc = document,
-		nav = navigator,
 		OP = Object.prototype,
 		AP = Array.prototype,
 		SLICE = AP.slice,
 		TOSTRING = OP.toString,
 		TRUE = true,
 		FALSE = false,
-		BASE = "base";
+		BASE = "base",
+		NODE = "node";
 	
 	/*
 	 * These modules can be called by the jet().use() method without defining a path
 	 */
 	var predefinedModules = {
-		base: TRUE,
+		ua: TRUE,
+		log: TRUE,
+		node: ['log', 'ua'],
+		base: [NODE],
 		ajax: ['json'],
-		json: TRUE,
-		cookie: TRUE,
-		sizzle: TRUE,
+		json: [NODE],
+		cookie: [NODE],
+		sizzle: [NODE],
 		tabs: [BASE],
 		resize: [BASE, {
 			name: 'resize-css',
@@ -31,8 +34,8 @@
 				value: 'solid'
 			}
 		}],
-		xsl: TRUE,
-		flash: TRUE,
+		xsl: [NODE],
+		flash: [NODE],
 		container: [BASE, {
 			name: 'container-css',
 			type: 'css',
@@ -56,8 +59,7 @@
 			}
 		}],
 		plasma: ['anim'],
-		paginator: ['datasource'],
-		"simple-progressbar": TRUE
+		"simple-progressbar": [NODE]
 	};
 	
 	var ARRAY		= 'array',
@@ -285,9 +287,364 @@
 		}
 		return n;
 	};
+	Lang.clone = clone;
+	
+	/*
+	 * Base object for the library.
+	 */
+	var Core = function () {
+		
+		var walkTheDOM = function (node, fn) {
+			fn(node);
+			node = node.firstChild;
+			while (node) {
+				if (node.nodeType != 3) {
+					walkTheDOM(node, fn);
+				}
+				node = node.nextSibling;
+			}
+		};
+		
+		/*
+		 * Rudimentary getElementsByClassName based on by Douglas Crockford's
+		 * https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1
+		 */
+		var getByClass = function (className, root) {
+			if (root.getElementsByClassName) {
+				getByClass = function (className, root) {
+					return root.getElementsByClassName(className);
+				};
+			} else {
+				getByClass = function (className, root) {
+					var result = [];
+					walkTheDOM(root, function (node) {
+						var a, c = node.className, i;
+						if (c && ArrayHelper.indexOf(className, c.split(" ")) > -1) {
+							result[result.length] = node;
+						}
+					});
+					return result;
+				};
+			}
+			getByClass(className, root);
+		};
+		
+		var $ = function (query, root) {
+			root = root || $.context;
+			$.context = root.ownerDocument || $.context;
+			if (Lang.isString(query)) {
+				query = $.parseQuery(query, root);
+				query = !Lang.isValue(query) ? new $.NodeList([]) :
+						Lang.isNumber(query.length) ? new $.NodeList(query) : new $.Node(query, root);
+			} else if (Lang.isArray(query)) {
+				query = new $.NodeList(query, root);
+				/* weird way of allowing window and document to be nodes (for using events). Not sure it is a good idea */
+			} else if (query.nodeType || query.navigator || query.body) {
+				query = new $.Node(query);
+			}
+			return query;
+		};
+		
+		$.win = win;
+		$.context = doc;
+		
+		if (win.JSON) {
+			$.JSON = win.JSON;
+		}
+		
+		var nodeCreation = {
+			table: ["thead", "tbody", "tfooter", "tr"],
+			tr: ["th", "td"]
+		};
+		
+		$.parseQuery = function (query, root) {
+			root = root || $.context;
+			var c = query.substr(0, 1);
+			if (c == "<") {
+				if (query.match(/</g).length == 1) {
+					return root.createElement(query.substr(1, query.length - 3));
+				} else {
+					var baseNode = "div";
+					Hash.each(nodeCreation, function (replacement, list) {
+						ArrayHelper.each(list, function (c) {
+							if (query.search(c + "/") == 1) {
+								baseNode = replacement;
+							}
+						});
+					});
+					var tmpDiv = new $.Node(baseNode, root);
+					tmpDiv.html(query);
+					return tmpDiv.children(0)._node;
+				}
+			} else {
+				return c == "#" ? root.getElementById(query.substr(1)) : 
+					   c == "." ? getByClass(query.substr(1), root) :
+					   root.getElementsByTagName(query);
+			}
+		};
+		
+		var add = function (o) {
+			mix($, o, TRUE);
+		};
+		
+		add({
 			
-	var NONE = "none",
-		ON = "on";
+			mix: mix,
+			
+			add: add,
+			
+			walkTheDOM: walkTheDOM,
+			
+			Lang: Lang,
+			
+			"Array": ArrayHelper,
+			
+			Hash: Hash,
+			
+			utils: {},
+			
+			Get: {
+				script: loadScript,
+				css: loadCSS
+			}
+		});
+		
+		return $;
+	};
+	
+	/*
+	 * Variables used by the loader to hold states and information.
+	 * - "queueList" contains the requests made to the loader. 
+	 *   Once a request is delivered, it is deleted from this array.
+	 * - "queuedScripts" keeps track of which scripts were started to load, 
+	 *   so as not to insert them twice in the page if the loader is called before
+	 *   the script loaded
+	 * - "modules" contains all the modules already loaded 
+	 */
+	var queueList = [], queuedScripts = {}, modules = {};
+	
+	/**
+	 * Checks the state of each queue. If a queue has finished loading it executes it
+	 * @private
+	 */
+	var update = function () {
+		var core, i = 0, j, required, requiredLength, ready;
+		while (i < queueList.length) {
+			required = queueList[i].req;
+			requiredLength = required.length;
+			ready = 0;
+			/*
+			 * Check if every module in this queue was loaded 
+			 */
+			for (j = 0; j < requiredLength; j++) {
+				if (modules[required[j].name]) {
+					ready++;
+				}
+			}
+			if (Lang.isFunction(queueList[i].onProgress)) {
+				queueList[i].onProgress(ready / requiredLength);
+			}
+			if (ready == requiredLength) {
+				/*
+				 * Create a new instance of the core, call each module and the queue's callback 
+				 */
+				core = new Core();
+				for (j = 0; j < requiredLength; j++) {
+					modules[required[j].name](core);
+				}
+				queueList.splice(i, 1)[0].main(core);
+				/*
+				 * remove the queue from the queue list
+				 */
+			} else {
+				i++;
+			}
+		}
+	};
+		
+	if (!win.jet) {
+		
+		var trackerDiv = createNode("div", {
+			id: "jet-tracker"
+		}, {
+			position: "absolute",
+			width: "1px",
+			height: "1px",
+			top: "-1000px",
+			left: "-1000px",
+			visibility: "hidden"
+		});
+		doc.body.appendChild(trackerDiv);
+			
+		/**
+		 * Global function. Returns an object with 2 methods: use() and add().
+		 * See the comments at the beginning for more information on this object and its use. 
+		 * 
+		 * @param {Object} config
+		 */
+		win.jet = function (config) {
+			config = config || {};
+			var base = baseUrl;
+			if (config.base) {
+				base = config.base;
+				base = base.substr(base.length - 1, 1) == "/" ? base : base + "/";
+			}
+			config.minify = Lang.isBoolean(config.minify) ? config.minify : FALSE;
+			var predef = mix(clone(predefinedModules), config.modules || {}, TRUE);
+			
+			var loadCssModule = function (module) {
+				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + (config.minify ? ".min.css" : ".css")));
+				loadCSS(url);
+				var t = setInterval(function () {
+					if (getCurrentStyle(trackerDiv)[module.beacon.name] == module.beacon.value) {
+						clearInterval(t);
+						jet().add(module.name, function () {});
+					}
+				}, 50);
+			};
+			
+			return {
+				/**
+				 * Allows to load modules and obtain a unique reference to the library augmented by the requested modules 
+				 * 
+				 * This method works by overloading its parameters. It takes names (String) of predefined modules
+				 * or objects defining name and path/fullpath of a module. The last parameter must be a function 
+				 * that contains the main logic of the application. 
+				 */
+				use: function () {
+					var request = SLICE.call(arguments);
+					var i = 0, j, k, module, moveForward;
+					while (i < request.length - 1) {
+						module = request[i];
+						if (Lang.isString(module)) {
+							/*if (module == "*") {
+								var m = Hash.keys(predef);
+								m.unshift(i, 1);
+								j = i + 1;
+								while (j < request.length) {
+									if (Lang.isString(request[j])) {
+										request.splice(j, 1);
+									} else {
+										j++;
+									}
+								}
+								AP.splice.apply(request, m);
+								i--;
+							}*/
+							module = predef[module.toLowerCase()];
+							if (module && Lang.isArray(module)) {
+								moveForward = 1;
+								for (j = module.length - 1; j >= 0; j--) {
+									if (!ArrayHelper.inArray(module[j], request)) {
+										request.splice(i, 0, module[j]);
+										moveForward = 0;
+									}
+								}
+								i += moveForward;
+							} else {
+								i++;
+							}
+						} else {
+							i++;
+						}
+					}
+					if (win.JSON) {
+						ArrayHelper.remove("json", request);
+					}
+					for (i = 0; i < request.length - 1; i++) {
+						module = request[i];
+						/*
+						 * If a module is a string, it is considered a predefined module.
+						 * If it isn't defined, it's probably a mistake and will lead to errors
+						 */
+						if (Lang.isString(module) && predef[module]) {
+							if (Lang.isHash(predef[module])) {
+								module = predef[module];
+							} else {
+								request[i] = module = {
+									name: module,
+									path: module + (config.minify ? ".min.js" : ".js")
+								};
+							}
+						}
+						request[i] = module;
+						if (!(modules[module.name] || queuedScripts[module.name])) {
+							if (!module.type || module.type == "js") {
+								loadScript(module.fullpath || (base + module.path)); 
+							} else if (module.type == "css") {
+								loadCssModule(module);
+							}
+							queuedScripts[module.name] = 1;
+						}
+					}
+					var queue = {
+						main: request.pop(),
+						req: request
+					};
+					if (config.onProgress) {
+						queue.onProgress = config.onProgress;
+					}
+					queueList.push(queue);
+					update();
+				},
+				/**
+				 * Adds a module to the loaded module list and calls update() to check if a queue is ready to fire
+				 * This method must be called from a module to register it
+				 * 
+				 * @param {String} moduleName
+				 * @param {Function} expose
+				 */
+				add: function (moduleName, expose) {
+					modules[moduleName] = expose;
+					update();
+				}
+			};
+		};
+	}
+}());
+
+jet().add('log', function ($) {
+	
+	$.error = console ? console.error : function (msg) {
+		throw new Error(msg);
+	};
+
+});
+
+jet().add('ua', function ($) {
+	$.UA = (function () {
+		var doc = $.context,
+			nav = $.win.navigator,
+			ua = nav.userAgent.toLowerCase(),
+        	p = nav.platform.toLowerCase();
+
+		var webkit = /KHTML/.test(ua) || /webkit/i.test(ua),
+			chrome = /chrome/i.test(ua),
+			opera = /opera/i.test(ua),
+			ie = /(msie) ([\w.]+)/.exec(ua);
+		
+        return {
+			w3: !!(doc.getElementById && doc.getElementsByTagName && doc.createElement),
+			webkit: webkit,
+			chrome: chrome,
+			ie: ie && ie[1] && ie[2] ? parseFloat(ie[2]) : false,
+			opera: opera,
+			gecko: !webkit && !opera && !ie && /Gecko/i.test(ua),
+			win: p ? /win/.test(p) : /win/.test(ua), 
+			mac: p ? /mac/.test(p) : /mac/.test(ua)
+		};
+    }());
+});
+
+jet().add('node', function ($) {
+	
+	var TRUE = true,
+		FALSE = false,
+		NONE = "none",
+		ON = "on",
+		Lang = $.Lang,
+		Hash = $.Hash,
+		A = $.Array;
 		
 	var EventCache = (function () {
 		var cache = {};
@@ -351,7 +708,7 @@
 				}
 			},
 			remove: function (obj, type, fn) {
-				ArrayHelper.remove(getCache(type), {
+				A.remove(getCache(type), {
 					obj: obj,
 					fn: fn
 				});
@@ -407,855 +764,515 @@
 		removeEvent(obj, type, callback);
 	};
 	
-	/*
-	 * Base object for the library.
-	 */
-	var Core = function () {
-		var $;
-		var TEXT_NODE = 3;
-		var DOCUMENT_ELEMENT = "documentElement";
-		var GET_COMPUTED_STYLE = "getComputedStyle";
-		var CURRENT_STYLE = "currentStyle";
+	
+	var TEXT_NODE = 3;
+	var DOCUMENT_ELEMENT = "documentElement";
+	var GET_COMPUTED_STYLE = "getComputedStyle";
+	var CURRENT_STYLE = "currentStyle";
 		
-		var walkTheDOM = function (node, fn) {
-			fn(node);
-			node = node.firstChild;
-			while (node) {
-				if (node.nodeType != 3) {
-					walkTheDOM(node, fn);
-				}
-				node = node.nextSibling;
+	var NodeList;
+	
+	var Node = function (node, root) {
+		root = root || $.context;
+		if (Lang.isNode(node)) {
+			return node;
+		}
+		if (Lang.isString(node)) {
+			node = root.createElement(node);
+		} else if (!node.nodeType && node != $.win) {
+			$.error("Node must receive either a node name or a DOM node");
+		}
+		
+		this._node = node;
+	};
+	
+	Lang.isNode = function (o) {
+		return o instanceof Node;
+	};
+	$.mix(Node.prototype, {
+		hide: function () {
+			var myself = this;
+			var node = myself._node;
+			var display = node.style.display;
+			if (!node.JET_oDisplay && display != NONE) {
+				node.JET_oDisplay = display;
 			}
-		};
-		
-		var error = function (msg) {
-			if (console) {
-				console.error(msg);
-			}
-		};
-		
-		var NodeList;
-		
-		var Node = function (node, root) {
-			root = root || $.context;
-			if (Lang.isNode(node)) {
-				return node;
-			}
-			if (Lang.isString(node)) {
-				node = root.createElement(node);
-			} else if (!node.nodeType && node != $.win) {
-				error("Node must receive either a node name or a DOM node");
-			}
-			
-			this._node = node;
-		};
-		
-		Lang.isNode = function (o) {
-			return o instanceof Node;
-		};
-		mix(Node.prototype, {
-			hide: function () {
-				var myself = this;
-				var node = myself._node;
-				var display = node.style.display;
-				if (!node.JET_oDisplay && display != NONE) {
-					node.JET_oDisplay = display;
-				}
-				node.style.display = NONE;
-				return myself;
-			},
-			show: function () {
-				var myself = this;
-				var node = myself._node;
-				node.style.display = node.JET_oDisplay || "";
-				return myself;
-			},
-			toggle: function () {
-				var myself = this;
-				var node = myself._node;
-				var ns = node.style;
-				var oDisplay = node.LIB_oDisplay;
-				ns.display = ns.display != NONE ? NONE :
-							oDisplay ? oDisplay :
-							"";
-				return myself;
-			},
-			hasClass: function (sClass) {
-				var node = this._node;
-				return ArrayHelper.inArray(sClass, node.className ? node.className.split(" ") : []);
-			},
-			removeClass: function () {
-				var myself = this;
-				var node = myself._node;
-				ArrayHelper.each(arguments, function (sClass) {
-					node.className = ArrayHelper.remove(sClass, node.className ? node.className.split(" ") : []).join(" ");
-				});
-				return myself;
-			},
-			addClass: function () {
-				var myself = this;
-				var node = myself._node;
-				ArrayHelper.each(arguments, function (sClass) {
-					var classes = node.className ? node.className.split(" ") : [];
-					if (!ArrayHelper.inArray(sClass, classes)) {
-						classes[classes.length] = sClass;
-						node.className = classes.join(" ");
-					}
-				});
-				return myself;
-			},
-			toggleClass: function (sClass) {
-				var myself = this;
-				var node = myself._node;
+			node.style.display = NONE;
+			return myself;
+		},
+		show: function () {
+			var myself = this;
+			var node = myself._node;
+			node.style.display = node.JET_oDisplay || "";
+			return myself;
+		},
+		toggle: function () {
+			var myself = this;
+			var node = myself._node;
+			var ns = node.style;
+			var oDisplay = node.LIB_oDisplay;
+			ns.display = ns.display != NONE ? NONE :
+						oDisplay ? oDisplay :
+						"";
+			return myself;
+		},
+		hasClass: function (sClass) {
+			var node = this._node;
+			return A.inArray(sClass, node.className ? node.className.split(" ") : []);
+		},
+		removeClass: function () {
+			var myself = this;
+			var node = myself._node;
+			A.each(arguments, function (sClass) {
+				node.className = A.remove(sClass, node.className ? node.className.split(" ") : []).join(" ");
+			});
+			return myself;
+		},
+		addClass: function () {
+			var myself = this;
+			var node = myself._node;
+			A.each(arguments, function (sClass) {
 				var classes = node.className ? node.className.split(" ") : [];
-				if (!ArrayHelper.inArray(sClass, classes)) {
+				if (!A.inArray(sClass, classes)) {
 					classes[classes.length] = sClass;
-				} else {
-					ArrayHelper.remove(sClass, classes);
-				}
-				node.className = classes.join(" ");
-				return myself;
-			},
-			setClass: function (sClass) {
-				this._node.className = sClass;
-				return this;
-			},
-			scrollLeft: function (value) {
-				if (Lang.isValue(value)) {
-					$.win.scrollTo(value, this.scrollTop());
-				} else {
-					var doc = $.context;
-					var dv = doc.defaultView;
-			        return Math.max(doc[DOCUMENT_ELEMENT].scrollLeft, doc.body.scrollLeft, (dv) ? dv.pageXOffset : 0);
-				}
-			},
-			scrollTop: function (value) {
-				if (Lang.isValue(value)) {
-					$.win.scrollTo(this.scrollTop(), value);
-				} else {
-					var doc = $.context;
-					var dv = doc.defaultView;
-			        return Math.max(doc[DOCUMENT_ELEMENT].scrollTop, doc.body.scrollTop, (dv) ? dv.pageYOffset : 0);
-				}
-			},
-			offset: function () {
-				var node = this._node;
-				var offset = {
-					left: 0,
-					top: 0,
-					width: node.offsetWidth,
-					height: node.offsetHeight
-				};
-				var doc = node.ownerDocument;
-				if (node && doc) {
-					if (node.getBoundingClientRect) {
-						/*
-						 * getBoundingClientRect implementation from jQuery
-						 */
-						var box  = node.getBoundingClientRect();
-						var body = doc.body;
-						var de = doc[DOCUMENT_ELEMENT];
-						offset.left = box.left + this.scrollLeft() - (de.clientLeft || body.clientLeft || 0);
-						offset.top = box.top + this.scrollTop() - (de.clientTop || body.clientTop || 0);
-					} else if (node.offsetParent) {
-						/*
-						 * Not interested in supporting other browsers very well
-						 */
-						do {
-							offset.left += node.offsetLeft;
-							offset.top += node.offsetTop;
-							node = node.offsetParent;
-						} while (node);
-					}
-				} else {
-					offset = null;
-				}
-				
-				return offset;
-			},
-			width: function (width) {
-				var myself = this;
-				var node = myself._node;
-				if (Lang.isValue(width)) {
-					node.style.width = Lang.isString(width) ? width : width + "px";
-					return myself;
-				}
-				return node.offsetWidth;
-			},
-			height: function (height) {
-				var myself = this;
-				var node = myself._node;
-				if (Lang.isValue(height)) {
-					node.style.height = Lang.isString(height) ? height : height + "px";
-					return myself;
-				}
-				return node.offsetWidth;
-			},
-			clone: function (deep) {
-				deep = Lang.isValue(deep) ? deep : TRUE;
-				return new Node(this._node.cloneNode(deep));
-			},
-			append: function (node) {
-				if (node._node) {
-					node = node._node;
-				}
-				this._node.appendChild(node);
-				return this;
-			},
-			appendTo: function (target) {
-				if (target._node) {
-					target = target._node;
-				}
-				target.appendChild(this._node);
-				return this;
-			},
-			prepend: function (node) {
-				if (Lang.isNode(node)) {
-					node = node._node;
-				}
-				var mynode = this._node;
-				if (mynode.firstChild) {
-					mynode.insertBefore(node, mynode.firstChild);
-				} else {
-					mynode.appendChild(node);
-				}
-				return this;
-			},
-			prependTo: function (target) {
-				if (Lang.isNode(target)) {
-					target = target._node;
-				}
-				var node = this._node;
-				if (target.firstChild) {
-					target.insertBefore(node, target.firstChild);
-				} else {
-					target.appendChild(node);
-				}
-				return this;
-			},
-			insertBefore: function (before) {
-				if (Lang.isNode(before)) {
-					before = before._node;
-				}
-				if (before.parentNode) {
-					before.parentNode.insertBefore(this._node, before);
-				}
-				return this;
-			},
-			parent: function () {
-				return new Node(this._node.parentNode);
-			},
-			first: function () {
-				return new Node(this.children()._nodes.shift());
-			},
-			next: function () {
-				var next = this._node;
-				do {
-					next = next.nextSibling;
-				}
-				while (next && next.nodeType == TEXT_NODE);
-				return next ? new Node(next) : null;
-			},
-			previous: function () {
-				var previous = this._node;
-				do {
-					previous = previous.previousSibling;
-				}
-				while (previous && previous.nodeType == TEXT_NODE);
-				return previous ? new Node(previous) : null;
-			},
-			last: function () {
-				return new Node(this.children()._nodes.pop());
-			},
-			html: function (html) {
-				if (Lang.isValue(html)) {
-					this._node.innerHTML = html;
-					return this;
-				} else {
-					return this._node.innerHTML;
-				}
-			},
-			attr: function (key, value) {
-				key = key || {};
-				var node = this._node;
-				var attrs = {};
-				if (Lang.isHash(key)) {
-					attrs = key;
-				} else if (Lang.isValue(value)) {
-					attrs[key] = value;
-				} else {
-					return node[key];
-				}
-				Hash.each(attrs, function (name, val) {
-					node[name] = val;
-				});
-				return this;
-			},
-			css: function (key, value) {
-				var myself = this;
-				var node = myself._node;
-				var css = {};
-				if (Lang.isHash(key)) {
-					css = key;
-				} else if (Lang.isValue(value)) {
-					css[key] = value;
-				} else {
-					return this._node.style[key];
-				}
-				Hash.each(css, function (prop, value) {
-					if (prop == "opacity" && $.UA.ie) {
-						var ieOpacity = Math.ceil(value * 100);
-						if ($.UA.ie < 7) {
-							node.style["-ms-filter"] = "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + ieOpacity + ")";
-						} else {
-							node.style.filter = "alpha(opacity=" + ieOpacity + ")";
-						}
-					} else {
-						if (Lang.isNumber(value) && prop != "zIndex" && prop != "zoom" && prop != "opacity") {
-							value += "px";
-						}
-						node.style[prop] = value;
-					}
-				});
-				return myself;
-			},
-			find: function (query) {
-				return $(query, this._node);
-			},
-			children: function (filter) {
-				filter = !Lang.isValue(filter) ? FALSE :
-						  Lang.isString(filter) ? filter.toUpperCase() : filter;
-				var result = [];
-				var myself = this;
-				var node = myself._node;
-				var children = node.childNodes;
-				var newChildren = [];
-				var length = children.length;
-				for (var i = 0; i < length; i++) {
-					if (children[i].nodeType != TEXT_NODE) {
-						newChildren[newChildren.length] = children[i];
-					}
-				}
-				if (filter !== FALSE) {
-					length = newChildren.length;
-					for (i = 0; i < length; i++) {
-						if (i == filter || newChildren[i].nodeName == filter) {
-							result[result.length] = newChildren[i];
-						}
-					}
-				} else {
-					result.push.apply(result, newChildren);
-				}
-				return new NodeList(result);
-			},
-			on: function (type, callback) {
-				addEvent(this._node, type, callback);
-				return this;
-			},
-			unbind: function (type, callback) {
-				removeEvent(this._node, type, callback);
-				return this;
-			},
-			unbindAll: function (crawl) {
-				var node = this._node;
-				if (crawl) {
-					walkTheDOM(node, EventCache.clear);
-				} else {
-					EventCache.clear(node);
-				}
-				return this;
-			},
-			remove: function (keepEvents) {
-				var node = this._node;
-				if (!keepEvents) {
-					walkTheDOM(node, EventCache.clear);
-				}
-				if (node.parentNode) {
-					node.parentNode.removeChild(node);
-				}
-				return this;
-			},
-			getDocument: function () {
-				var node = this._node;
-				if (node.nodeName == "IFRAME") {
-					return new Node(node.contentDocument ||
-									node.contentWindow.document ||
-									node.document ||
-									null);
-				}
-				return null;
-			},
-			currentStyle: function () {
-				var node = this._node;
-				return $.win[GET_COMPUTED_STYLE] ? $.win[GET_COMPUTED_STYLE](node, null) : 
-						node[CURRENT_STYLE] ? node[CURRENT_STYLE] : node.style;
-			}
-		});
-		
-		NodeList = function () {
-			var collection = [];
-			var addToCollection = function (node) {
-				if (Lang.isNode(node)) {
-					collection[collection.length] = node;
-				} else if (node.nodeType || Lang.isString(node)) {
-					collection[collection.length] = new Node(node);
-				}
-			};
-			ArrayHelper.each(arguments, function (node) {
-				if (node.length) {
-					ArrayHelper.each(node, addToCollection);
-				} else {
-					addToCollection(node);
+					node.className = classes.join(" ");
 				}
 			});
+			return myself;
+		},
+		toggleClass: function (sClass) {
+			var myself = this;
+			var node = myself._node;
+			var classes = node.className ? node.className.split(" ") : [];
+			if (!A.inArray(sClass, classes)) {
+				classes[classes.length] = sClass;
+			} else {
+				A.remove(sClass, classes);
+			}
+			node.className = classes.join(" ");
+			return myself;
+		},
+		setClass: function (sClass) {
+			this._node.className = sClass;
+			return this;
+		},
+		scrollLeft: function (value) {
+			if (Lang.isValue(value)) {
+				$.win.scrollTo(value, this.scrollTop());
+			} else {
+				var doc = $.context;
+				var dv = doc.defaultView;
+		        return Math.max(doc[DOCUMENT_ELEMENT].scrollLeft, doc.body.scrollLeft, (dv) ? dv.pageXOffset : 0);
+			}
+		},
+		scrollTop: function (value) {
+			if (Lang.isValue(value)) {
+				$.win.scrollTo(this.scrollTop(), value);
+			} else {
+				var doc = $.context;
+				var dv = doc.defaultView;
+		        return Math.max(doc[DOCUMENT_ELEMENT].scrollTop, doc.body.scrollTop, (dv) ? dv.pageYOffset : 0);
+			}
+		},
+		offset: function () {
+			var node = this._node;
+			var offset = {
+				left: 0,
+				top: 0,
+				width: node.offsetWidth,
+				height: node.offsetHeight
+			};
+			var doc = node.ownerDocument;
+			if (node && doc) {
+				if (node.getBoundingClientRect) {
+					/*
+					 * getBoundingClientRect implementation from jQuery
+					 */
+					var box  = node.getBoundingClientRect();
+					var body = doc.body;
+					var de = doc[DOCUMENT_ELEMENT];
+					offset.left = box.left + this.scrollLeft() - (de.clientLeft || body.clientLeft || 0);
+					offset.top = box.top + this.scrollTop() - (de.clientTop || body.clientTop || 0);
+				} else if (node.offsetParent) {
+					/*
+					 * Not interested in supporting other browsers very well
+					 */
+					do {
+						offset.left += node.offsetLeft;
+						offset.top += node.offsetTop;
+						node = node.offsetParent;
+					} while (node);
+				}
+			} else {
+				offset = null;
+			}
 			
-			this._nodes = collection;
-			var _DOMNodes = [];
-			ArrayHelper.each(collection, function (node) {
-				_DOMNodes[_DOMNodes.length] = node._node;
-			});
-			this._DOMNodes = _DOMNodes;
-		};
-		var NodeListP = NodeList.prototype;
-		mix(NodeListP, {
-			each: function (callback) {
-				var nodes = this._nodes;
-				var length = nodes.length;
-				for (var i = 0; i < length; i++) {
-					callback.call(nodes[i], nodes[i], i);
-				}
+			return offset;
+		},
+		width: function (width) {
+			var myself = this;
+			var node = myself._node;
+			if (Lang.isValue(width)) {
+				node.style.width = Lang.isString(width) ? width : width + "px";
+				return myself;
+			}
+			return node.offsetWidth;
+		},
+		height: function (height) {
+			var myself = this;
+			var node = myself._node;
+			if (Lang.isValue(height)) {
+				node.style.height = Lang.isString(height) ? height : height + "px";
+				return myself;
+			}
+			return node.offsetWidth;
+		},
+		clone: function (deep) {
+			deep = Lang.isValue(deep) ? deep : TRUE;
+			return new Node(this._node.cloneNode(deep));
+		},
+		append: function (node) {
+			if (node._node) {
+				node = node._node;
+			}
+			this._node.appendChild(node);
+			return this;
+		},
+		appendTo: function (target) {
+			if (target._node) {
+				target = target._node;
+			}
+			target.appendChild(this._node);
+			return this;
+		},
+		prepend: function (node) {
+			if (Lang.isNode(node)) {
+				node = node._node;
+			}
+			var mynode = this._node;
+			if (mynode.firstChild) {
+				mynode.insertBefore(node, mynode.firstChild);
+			} else {
+				mynode.appendChild(node);
+			}
+			return this;
+		},
+		prependTo: function (target) {
+			if (Lang.isNode(target)) {
+				target = target._node;
+			}
+			var node = this._node;
+			if (target.firstChild) {
+				target.insertBefore(node, target.firstChild);
+			} else {
+				target.appendChild(node);
+			}
+			return this;
+		},
+		insertBefore: function (before) {
+			if (Lang.isNode(before)) {
+				before = before._node;
+			}
+			if (before.parentNode) {
+				before.parentNode.insertBefore(this._node, before);
+			}
+			return this;
+		},
+		parent: function () {
+			return new Node(this._node.parentNode);
+		},
+		first: function () {
+			return new Node(this.children()._nodes.shift());
+		},
+		next: function () {
+			var next = this._node;
+			do {
+				next = next.nextSibling;
+			}
+			while (next && next.nodeType == TEXT_NODE);
+			return next ? new Node(next) : null;
+		},
+		previous: function () {
+			var previous = this._node;
+			do {
+				previous = previous.previousSibling;
+			}
+			while (previous && previous.nodeType == TEXT_NODE);
+			return previous ? new Node(previous) : null;
+		},
+		last: function () {
+			return new Node(this.children()._nodes.pop());
+		},
+		html: function (html) {
+			if (Lang.isValue(html)) {
+				this._node.innerHTML = html;
 				return this;
-			},
-			eq: function (index) {
-				return this._nodes[index];
-			},
-			notEq: function (index) {
-				var nodes = clone(this._nodes);
-				nodes.splice(index, 1);
-				return new NodeList(nodes);
-			},
-			link: function (nodes, createNewList) {
-				var myself = this;
-				if (Lang.isNodeList(nodes)) {
-					nodes = nodes._nodes;
-				} else if (Lang.isNode(nodes)) {
-					nodes = [nodes];
-				} else if (nodes.nodeType) {
-					nodes = [new Node(nodes)];
-				}
-				if (createNewList) {
-					return new NodeList(myself._nodes.concat(nodes));
+			} else {
+				return this._node.innerHTML;
+			}
+		},
+		attr: function (key, value) {
+			key = key || {};
+			var node = this._node;
+			var attrs = {};
+			if (Lang.isHash(key)) {
+				attrs = key;
+			} else if (Lang.isValue(value)) {
+				attrs[key] = value;
+			} else {
+				return node[key];
+			}
+			Hash.each(attrs, function (name, val) {
+				node[name] = val;
+			});
+			return this;
+		},
+		css: function (key, value) {
+			var myself = this;
+			var node = myself._node;
+			var css = {};
+			if (Lang.isHash(key)) {
+				css = key;
+			} else if (Lang.isValue(value)) {
+				css[key] = value;
+			} else {
+				return this._node.style[key];
+			}
+			Hash.each(css, function (prop, value) {
+				if (prop == "opacity" && $.UA.ie) {
+					var ieOpacity = Math.ceil(value * 100);
+					if ($.UA.ie < 7) {
+						node.style["-ms-filter"] = "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + ieOpacity + ")";
+					} else {
+						node.style.filter = "alpha(opacity=" + ieOpacity + ")";
+					}
 				} else {
-					myself._nodes = myself._nodes.concat(nodes);
-					return myself;
+					if (Lang.isNumber(value) && prop != "zIndex" && prop != "zoom" && prop != "opacity") {
+						value += "px";
+					}
+					node.style[prop] = value;
 				}
+			});
+			return myself;
+		},
+		find: function (query) {
+			return $(query, this._node);
+		},
+		children: function (filter) {
+			filter = !Lang.isValue(filter) ? FALSE :
+					  Lang.isString(filter) ? filter.toUpperCase() : filter;
+			var result = [];
+			var myself = this;
+			var node = myself._node;
+			var children = node.childNodes;
+			var newChildren = [];
+			var length = children.length;
+			for (var i = 0; i < length; i++) {
+				if (children[i].nodeType != TEXT_NODE) {
+					newChildren[newChildren.length] = children[i];
+				}
+			}
+			if (filter !== FALSE) {
+				length = newChildren.length;
+				for (i = 0; i < length; i++) {
+					if (i == filter || newChildren[i].nodeName == filter) {
+						result[result.length] = newChildren[i];
+					}
+				}
+			} else {
+				result.push.apply(result, newChildren);
+			}
+			return new NodeList(result);
+		},
+		on: function (type, callback) {
+			addEvent(this._node, type, callback);
+			return this;
+		},
+		unbind: function (type, callback) {
+			removeEvent(this._node, type, callback);
+			return this;
+		},
+		unbindAll: function (crawl) {
+			var node = this._node;
+			if (crawl) {
+				$.walkTheDOM(node, EventCache.clear);
+			} else {
+				EventCache.clear(node);
+			}
+			return this;
+		},
+		remove: function (keepEvents) {
+			var node = this._node;
+			if (!keepEvents) {
+				$.walkTheDOM(node, EventCache.clear);
+			}
+			if (node.parentNode) {
+				node.parentNode.removeChild(node);
+			}
+			return this;
+		},
+		getDocument: function () {
+			var node = this._node;
+			if (node.nodeName == "IFRAME") {
+				return new Node(node.contentDocument ||
+								node.contentWindow.document ||
+								node.document ||
+								null);
+			}
+			return null;
+		},
+		currentStyle: function () {
+			var node = this._node;
+			return $.win[GET_COMPUTED_STYLE] ? $.win[GET_COMPUTED_STYLE](node, null) : 
+					node[CURRENT_STYLE] ? node[CURRENT_STYLE] : node.style;
+		}
+	});
+	
+	NodeList = function () {
+		var collection = [];
+		var addToCollection = function (node) {
+			if (Lang.isNode(node)) {
+				collection[collection.length] = node;
+			} else if (node.nodeType || Lang.isString(node)) {
+				collection[collection.length] = new Node(node);
+			}
+		};
+		A.each(arguments, function (node) {
+			if (node.length) {
+				A.each(node, addToCollection);
+			} else {
+				addToCollection(node);
 			}
 		});
 		
-		Lang.isNodeList = function (o) {
-			return o instanceof NodeList;
+		this._nodes = collection;
+		var _DOMNodes = [];
+		A.each(collection, function (node) {
+			_DOMNodes[_DOMNodes.length] = node._node;
+		});
+		this._DOMNodes = _DOMNodes;
+	};
+	var NodeListP = NodeList.prototype;
+	$.mix(NodeListP, {
+		each: function (callback) {
+			var nodes = this._nodes;
+			var length = nodes.length;
+			for (var i = 0; i < length; i++) {
+				callback.call(nodes[i], nodes[i], i);
+			}
+			return this;
+		},
+		eq: function (index) {
+			return this._nodes[index];
+		},
+		notEq: function (index) {
+			var nodes = Lang.clone(this._nodes);
+			nodes.splice(index, 1);
+			return new NodeList(nodes);
+		},
+		link: function (nodes, createNewList) {
+			var myself = this;
+			if (Lang.isNodeList(nodes)) {
+				nodes = nodes._nodes;
+			} else if (Lang.isNode(nodes)) {
+				nodes = [nodes];
+			} else if (nodes.nodeType) {
+				nodes = [new Node(nodes)];
+			}
+			if (createNewList) {
+				return new NodeList(myself._nodes.concat(nodes));
+			} else {
+				myself._nodes = myself._nodes.concat(nodes);
+				return myself;
+			}
+		}
+	});
+	
+	Lang.isNodeList = function (o) {
+		return o instanceof NodeList;
+	};
+	
+	NodeList.addSetter = function (name) {
+		NodeListP[name] = function () {
+			var args = arguments;
+			return this.each(function (node) {
+				node[name].apply(node, args);
+			});
 		};
-		
-		NodeList.addSetter = function (name) {
-			NodeListP[name] = function () {
-				var args = arguments;
-				return this.each(function (node) {
-					node[name].apply(node, args);
+	};
+	A.each(['append', 'appendTo', 'preprend', 'prependTo', 'remove', 'on', 'unbind', 'unbindAll', 'addClass', 'removeClass', 'toggleClass', 'hide', 'show', 'toggle'], 
+					NodeList.addSetter);
+	NodeList.addGetter = function (name) {
+		NodeListP[name] = function () {
+			var args = arguments;
+			var results = [];
+			this.each(function (node) {
+				results[results.length] = node[name].apply(node, args);
+			});
+			return results;
+		};
+	};
+	A.each(['hasClass', 'offset', 'getDocument', 'currentStyle'], 
+					NodeList.addGetter);
+	NodeList.addListGetter = function (name) {
+		NodeListP[name] = function () {
+			var args = arguments;
+			var results = [];
+			this.each(function (node) {
+				A.each(node[name].apply(node, args), function (found) {
+					if (!A.inArray(found._node, results)) {
+						results[results.length] = found._node;
+					}
 				});
-			};
+			});
+			return new NodeList(results);
 		};
-		ArrayHelper.each(['append', 'appendTo', 'preprend', 'prependTo', 'remove', 'on', 'unbind', 'unbindAll', 'addClass', 'removeClass', 'toggleClass', 'hide', 'show', 'toggle'], 
-						NodeList.addSetter);
-		NodeList.addGetter = function (name) {
-			NodeListP[name] = function () {
-				var args = arguments;
+	};
+	A.each(['children', 'first', 'last', 'parent', 'find', 'clone'], NodeList.addListGetter);
+	
+	NodeList.addMixed = function (name) {
+		NodeListP[name] = function () {
+			var myself = this;
+			var args = arguments;
+			if (args.length === 0) {
 				var results = [];
-				this.each(function (node) {
-					results[results.length] = node[name].apply(node, args);
+				myself.each(function (node) {
+					results[results.length] = node[name]();
 				});
 				return results;
-			};
-		};
-		ArrayHelper.each(['hasClass', 'offset', 'getDocument', 'currentStyle'], 
-						NodeList.addGetter);
-		NodeList.addListGetter = function (name) {
-			NodeListP[name] = function () {
-				var args = arguments;
-				var results = [];
-				this.each(function (node) {
-					ArrayHelper.each(node[name].apply(node, args), function (found) {
-						if (!ArrayHelper.inArray(found._node, results)) {
-							results[results.length] = found._node;
-						}
-					});
+			} else {
+				return myself.each(function (node) {
+					node[name].apply(node, args);
 				});
-				return new NodeList(results);
-			};
+			}
 		};
-		ArrayHelper.each(['children', 'first', 'last', 'parent', 'find', 'clone'], 
-						NodeList.addListGetter);
-		NodeList.addMixed = function (name) {
-			NodeListP[name] = function () {
-				var myself = this;
-				var args = arguments;
-				if (args.length === 0) {
-					var results = [];
-					myself.each(function (node) {
-						results[results.length] = node[name]();
-					});
-					return results;
-				} else {
-					return myself.each(function (node) {
-						node[name].apply(node, args);
-					});
-				}
-			};
-		};
-		ArrayHelper.each(['html', 'css', 'attr', 'widt', 'height'], 
-						NodeList.addMixed);
+	};
+	A.each(['html', 'css', 'attr', 'widt', 'height'], NodeList.addMixed);
 
-
-/*
-		 * Rudimentary getElementsByClassName based on by Douglas Crockford's
-		 * https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1
-		 */
-		var getByClass = function (className, root) {
-			if (root.getElementsByClassName) {
-				getByClass = function (className, root) {
-					return root.getElementsByClassName(className);
-				};
-			} else {
-				getByClass = function (className, root) {
-					var result = [];
-					walkTheDOM(root, function (node) {
-						var a, c = node.className, i;
-						if (c && ArrayHelper.indexOf(className, c.split(" ")) > -1) {
-							result[result.length] = node;
-						}
-					});
-					return result;
-				};
-			}
-			getByClass(className, root);
-		};
+	$.add({
+		Node: Node,
+		NodeList: NodeList,
 		
-		$ = function (query, root) {
-			root = root || $.context;
-			$.context = root.ownerDocument || $.context;
-			if (Lang.isString(query)) {
-				query = $.parseQuery(query, root);
-				query = !Lang.isValue(query) ? new NodeList([]) :
-						Lang.isNumber(query.length) ? new NodeList(query) : new Node(query, root);
-			} else if (Lang.isArray(query)) {
-				query = new NodeList(query, root);
-				/* weird way of allowing window and document to be nodes (for using events). Not sure it is a good idea */
-			} else if (query.nodeType || query.navigator || query.body) {
-				query = new Node(query);
-			}
-			return query;
-		};
+		getWindowFromDocument: function (doc) {
+			doc = doc || $.context;
+			return doc.defaultView || doc.parentWindow || $.win;
+		},
 		
-		$.win = win;
-		$.context = doc;
+		screenSize: function () {
+			var doc = $.context,
+				de = doc.documentElement,
+				db = doc.body;
+			return {
+				height: de.clientHeight || $.win.innerHeight || db.clientHeight,
+				width: de.clientWidth || $.win.innerWidth || db.clientWidth
+			};
+		},
 		
-		if (win.JSON) {
-			$.JSON = win.JSON;
-		}
-		
-		var nodeCreation = {
-			table: ["thead", "tbody", "tfooter", "tr"],
-			tr: ["th", "td"]
-		};
-		
-		$.parseQuery = function (query, root) {
-			root = root || $.context;
-			var c = query.substr(0, 1);
-			if (c == "<") {
-				if (query.match(/</g).length == 1) {
-					return root.createElement(query.substr(1, query.length - 3));
-				} else {
-					var baseNode = "div";
-					Hash.each(nodeCreation, function (replacement, list) {
-						ArrayHelper.each(list, function (c) {
-							if (query.search(c + "/") == 1) {
-								baseNode = replacement;
-							}
-						});
-					});
-					var tmpDiv = new Node(baseNode, root);
-					tmpDiv.html(query);
-					return tmpDiv.children(0)._node;
-				}
-			} else {
-				return c == "#" ? root.getElementById(query.substr(1)) : 
-					   c == "." ? getByClass(query.substr(1), root) :
-					   root.getElementsByTagName(query);
-			}
-		};
-		
-		var pxToFloat = function (px) {
+		pxToFloat: function (px) {
 			return Lang.isNumber(parseFloat(px)) ? parseFloat(px) :
 				   Lang.isString(px) ? parseFloat(px.substr(0, px.length - 2)) : px;
-		};
-		
-		var add = function (o) {
-			mix($, o);
-		};
-		
-		add({
-			
-			error: error,
-			
-			mix: mix,
-			
-			add: add,
-			
-			clone: clone,
-			
-			walkTheDOM: walkTheDOM,
-			
-			getWindowFromDocument: function (doc) {
-				doc = doc || $.context;
-				return doc.defaultView || doc.parentWindow || $.win;
-			},
-			
-			Lang: Lang,
-			
-			"Array": ArrayHelper,
-			
-			Hash: Hash,
-			
-			Node: Node,
-			NodeList: NodeList,
-			
-			utils: {},
-			
-			Get: {
-				script: loadScript,
-				css: loadCSS
-			},
-			
-			screenSize: function () {
-				var doc = $.context,
-					de = doc.documentElement,
-					db = doc.body;
-				return {
-					height: de.clientHeight || $.win.innerHeight || db.clientHeight,
-					width: de.clientWidth || $.win.innerWidth || db.clientWidth
-				};
-			},
-			
-			pxToFloat: pxToFloat,
-			
-			UA: (function () {
-				var ua = nav.userAgent.toLowerCase(),
-                	p = nav.platform.toLowerCase();
-
-				var webkit = /KHTML/.test(ua) || /webkit/i.test(ua),
-					chrome = /chrome/i.test(ua),
-					opera = /opera/i.test(ua),
-					ie = /(msie) ([\w.]+)/.exec(ua);
-				
-                return {
-					w3: !!(doc.getElementById && doc.getElementsByTagName && doc.createElement),
-					webkit: webkit,
-					chrome: chrome,
-					ie: ie && ie[1] && ie[2] ? parseFloat(ie[2]) : FALSE,
-					opera: opera,
-					gecko: !webkit && !opera && !ie && /Gecko/i.test(ua),
-					win: p ? /win/.test(p) : /win/.test(ua), 
-					mac: p ? /mac/.test(p) : /mac/.test(ua)
-				};
-	        }())
-		});
-		
-		return $;
-	};
-	
-	/*
-	 * Variables used by the loader to hold states and information.
-	 * - "queueList" contains the requests made to the loader. 
-	 *   Once a request is delivered, it is deleted from this array.
-	 * - "queuedScripts" keeps track of which scripts were started to load, 
-	 *   so as not to insert them twice in the page if the loader is called before
-	 *   the script loaded
-	 * - "modules" contains all the modules already loaded 
-	 */
-	var queueList = [], queuedScripts = {}, modules = {};
-	
-	/**
-	 * Checks the state of each queue. If a queue has finished loading it executes it
-	 * @private
-	 */
-	var update = function () {
-		var core, i = 0, j, required, requiredLength, ready;
-		while (i < queueList.length) {
-			required = queueList[i].req;
-			requiredLength = required.length;
-			ready = 0;
-			/*
-			 * Check if every module in this queue was loaded 
-			 */
-			for (j = 0; j < requiredLength; j++) {
-				if (modules[required[j].name]) {
-					ready++;
-				}
-			}
-			if (Lang.isFunction(queueList[i].onProgress)) {
-				queueList[i].onProgress(ready / requiredLength);
-			}
-			if (ready == requiredLength) {
-				/*
-				 * Create a new instance of the core, call each module and the queue's callback 
-				 */
-				core = new Core();
-				for (j = 0; j < requiredLength; j++) {
-					modules[required[j].name](core);
-				}
-				queueList.splice(i, 1)[0].main(core);
-				/*
-				 * remove the queue from the queue list
-				 */
-			} else {
-				i++;
-			}
 		}
-	};
-		
-	if (!win.jet) {
-		addEvent(win, "unload", EventCache.flush);
-		
-		var trackerDiv = createNode("div", {
-			id: "jet-tracker"
-		}, {
-			position: "absolute",
-			width: "1px",
-			height: "1px",
-			top: "-1000px",
-			left: "-1000px",
-			visibility: "hidden"
-		});
-		doc.body.appendChild(trackerDiv);
-			
-		/**
-		 * Global function. Returns an object with 2 methods: use() and add().
-		 * See the comments at the beginning for more information on this object and its use. 
-		 * 
-		 * @param {Object} config
-		 */
-		win.jet = function (config) {
-			config = config || {};
-			var base = baseUrl;
-			if (config.base) {
-				base = config.base;
-				base = base.substr(base.length - 1, 1) == "/" ? base : base + "/";
-			}
-			config.minify = Lang.isBoolean(config.minify) ? config.minify : FALSE;
-			var predef = mix(clone(predefinedModules), config.modules || {}, TRUE);
-			
-			var loadCssModule = function (module) {
-				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + (config.minify ? ".min.css" : ".css")));
-				loadCSS(url);
-				var t = setInterval(function () {
-					if (getCurrentStyle(trackerDiv)[module.beacon.name] == module.beacon.value) {
-						clearInterval(t);
-						jet().add(module.name, function () {});
-					}
-				}, 50);
-			};
-			
-			return {
-				/**
-				 * Allows to load modules and obtain a unique reference to the library augmented by the requested modules 
-				 * 
-				 * This method works by overloading its parameters. It takes names (String) of predefined modules
-				 * or objects defining name and path/fullpath of a module. The last parameter must be a function 
-				 * that contains the main logic of the application. 
-				 */
-				use: function () {
-					var request = SLICE.call(arguments);
-					var i, j, k, module;
-					for (i = 0; i < request.length - 1; i++) {
-						module = request[i];
-						if (Lang.isString(module)) {
-							if (module == "*") {
-								var m = Hash.keys(predef);
-								m.unshift(i, 1);
-								j = i + 1;
-								while (j < request.length) {
-									if (Lang.isString(request[j])) {
-										request.splice(j, 1);
-									} else {
-										j++;
-									}
-								}
-								console.log(request);
-								AP.splice.apply(request, m);
-								console.log(request);
-								i--;
-							}
-							module = predef[module.toLowerCase()];
-							if (module && Lang.isArray(module)) {
-								ArrayHelper.each(module, function (val) {
-									if (!ArrayHelper.inArray(val, request)) {
-										request.splice(i, 0, val);
-										i--;
-									}
-								});
-							}
-						}
-					}
-					if (win.JSON) {
-						ArrayHelper.remove("json", request);
-					}
-					for (i = 0; i < request.length - 1; i++) {
-						module = request[i];
-						/*
-						 * If a module is a string, it is considered a predefined module.
-						 * If it isn't defined, it's probably a mistake and will lead to errors
-						 */
-						if (Lang.isString(module) && predef[module]) {
-							if (Lang.isHash(predef[module])) {
-								module = predef[module];
-							} else {
-								request[i] = module = {
-									name: module,
-									path: module + (config.minify ? ".min.js" : ".js")
-								};
-							}
-						}
-						request[i] = module;
-						if (!(modules[module.name] || queuedScripts[module.name])) {
-							if (!module.type || module.type == "js") {
-								loadScript(module.fullpath || (base + module.path)); 
-							} else if (module.type == "css") {
-								loadCssModule(module);
-							}
-							queuedScripts[module.name] = 1;
-						}
-					}
-					var queue = {
-						main: request.pop(),
-						req: request
-					};
-					if (config.onProgress) {
-						queue.onProgress = config.onProgress;
-					}
-					queueList.push(queue);
-					update();
-				},
-				/**
-				 * Adds a module to the loaded module list and calls update() to check if a queue is ready to fire
-				 * This method must be called from a module to register it
-				 * 
-				 * @param {String} moduleName
-				 * @param {Function} expose
-				 */
-				add: function (moduleName, expose) {
-					modules[moduleName] = expose;
-					update();
-				}
-			};
-		};
-	}
-}());
+	});
+	
+	addEvent($.win, "unload", EventCache.flush);
+});
