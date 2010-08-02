@@ -238,12 +238,18 @@
 	 * @private
 	 * @param {String} url
 	 */
-	var loadScript = function (url) {
-		head.appendChild(createNode("script", {
+	var loadScript = function (url, keep) {
+		var script = createNode("script", {
 			type: "text/javascript",
 			asyng: TRUE,
 			src: url
-		}));
+		});
+		head.appendChild(script);
+		if (!keep) {
+			setTimeout(function () {
+				head.removeChild(script);
+			}, 100);
+		}
 	};
 	
 	var loadCSS = function (url) {
@@ -490,6 +496,7 @@
 				base = base.substr(base.length - 1, 1) == "/" ? base : base + "/";
 			}
 			config.minify = Lang.isBoolean(config.minify) ? config.minify : FALSE;
+			config.loadCss = Lang.isBoolean(config.loadCss) ? config.loadCss : TRUE;
 			var predef = mix(clone(predefinedModules), config.modules || {}, TRUE);
 			
 			var loadCssModule = function (module) {
@@ -568,7 +575,10 @@
 							}
 						}
 						request[i] = module;
-						if (!(modules[module.name] || queuedScripts[module.name])) {
+						if (module.type == "css" && !config.loadCss) {
+							request.splice(i, 1);
+							i--;
+						} else if (!(modules[module.name] || queuedScripts[module.name])) {
 							if (!module.type || module.type == "js") {
 								loadScript(module.fullpath || (base + module.path)); 
 							} else if (module.type == "css") {
@@ -1200,8 +1210,11 @@ jet().add('node', function ($) {
 			});
 		};
 	};
-	A.each(['append', 'appendTo', 'preprend', 'prependTo', 'remove', 'on', 'unbind', 'unbindAll', 'addClass', 'removeClass', 'toggleClass', 'hide', 'show', 'toggle'], 
-					NodeList.addSetter);
+	A.each(['append', 'appendTo', 'preprend', 'prependTo', 'insertBefore', 'remove', 
+			'on', 'unbind', 'unbindAll', 
+			'addClass', 'removeClass', 'toggleClass', 
+			'hide', 'show', 'toggle'], NodeList.addSetter);
+			
 	NodeList.addGetter = function (name) {
 		NodeListP[name] = function () {
 			var args = arguments;
@@ -1212,8 +1225,8 @@ jet().add('node', function ($) {
 			return results;
 		};
 	};
-	A.each(['hasClass', 'offset', 'getDocument', 'currentStyle'], 
-					NodeList.addGetter);
+	A.each(['hasClass', 'offset', 'getDocument', 'currentStyle'], NodeList.addGetter);
+	
 	NodeList.addListGetter = function (name) {
 		NodeListP[name] = function () {
 			var args = arguments;
