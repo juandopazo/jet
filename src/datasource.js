@@ -58,6 +58,9 @@ jet().add('datasource', function ($) {
 			return data[key];
 		};
 	};
+	Lang.isRecord = function (o) {
+		return o instanceof Record;
+	};
 	
 	var quicksortSet = function (set, key, order) {
 		if (set.length <= 1) {
@@ -90,7 +93,7 @@ jet().add('datasource', function ($) {
 	 * @param {Array} data If data is passed, it is converted into several Records
 	 */
 	var RecordSet = function (data) {
-		
+		RecordSet.superclass.constructor.call(this);
 		var records = [];
 		var sortedBy = FALSE;
 		var order;
@@ -119,15 +122,30 @@ jet().add('datasource', function ($) {
 			return myself;
 		};
 		
-		myself.push = function (data) {
-			if (data instanceof RecordSet) {
+		var toData = function (data) {
+			if (Lang.isRecordSet(data)) {
 				data = data.getRecords();
 			} else if (!Lang.isArray(data)) {
 				data = [data];
 			}
-			records = records.concat(data);
+			return data;
+		};
+		
+		myself.replace = function (data) {
+			data = toData(data);
+			myself.fire("replace", data);
 			return sortedBy ? myself.sortBy(sortedBy, order) : myself;
 		};
+		
+		myself.push = function (data) {
+			records = records.concat(toData(data));
+			myself.fire("push", records, data);
+			return sortedBy ? myself.sortBy(sortedBy, order) : myself;
+		};
+	};
+	$.extend(RecordSet, $.EventTarget);
+	Lang.isRecordSet = function (o) {
+		return o instanceof RecordSet;
 	};
 		
 	/**

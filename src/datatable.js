@@ -10,7 +10,27 @@ jet().add('datatable', function ($) {
 		Hash = $.Hash,
 		A = $.Array;	
 		
-	var DATA = "data";
+	var DATA = "data",
+		ASC = "asc",
+		DESC = "desc",
+		ODD = "odd",
+		EVEN = "even",
+		REC = "rec",
+		LINER = "liner",
+		NUMERAL = "#",
+		DOT = ".",
+		ID = "id",
+		SORTABLE = "sortable",
+		NEW_DIV = "<div/>";
+		
+	var COLUMN_DEFINITIONS = "columnDefinitions";
+		
+	if (!jet.DataTable) {
+		jet.DataTable = {};
+	}
+	if (!Lang.isNumber(jet.DataTable.ids)) {
+		jet.DataTable.ids = 0;
+	}
 	
 	var Column = function () {
 		
@@ -37,61 +57,71 @@ jet().add('datatable', function ($) {
 			}
 		});
 		
+		var id = jet.DataTable.ids++;
+		
 		var fields;
 		var recordSet = myself.get("dataSource").get("recordSet");
 		
 		var prefix = myself.get("classPrefix");
 		var className = myself.get("className");
 		var prefixClass = prefix + className + "-";
-		var table = $("<table/>");
+		var recordIdPrefix = prefixClass + id + REC;
+		var thIdPrefix = prefixClass + id + "th-";
+		
+		var table = $("<table/>").attr(ID, prefixClass + id);
 		var thead = $("<thead/>").appendTo(table);
 		var tbody = $("<tbody/>").addClass(prefixClass + DATA).appendTo(table);
 		
+		var sortedBy;
+		
 		var sort = function (th) {
 			var order, unorder, i;
-			var key = th.attr("id").split("-").pop();
-			if (th.hasClass(prefixClass + "desc")) {
-				order = "asc";
-				unorder = "desc";
+			var key = th.attr(ID).split("-").pop();
+			if (th.hasClass(prefixClass + DESC)) {
+				order = ASC;
+				unorder = DESC;
 			} else {
-				unorder = "asc";
-				order = "desc";
+				unorder = ASC;
+				order = DESC;
 			}
 			/*
 			 * Add/remove respective classes
 			 */
 			thead.find("th").removeClass(prefixClass + order, prefixClass + unorder);
 			th.addClass(prefixClass + order).removeClass(prefixClass + unorder);
+			// Sort recordset
 			recordSet.sortBy(key, order);
+			sortedBy = key;
+			
 			var records = recordSet.getRecords();
 			var length = records.length;
 			var before, after;
-			var even = prefixClass + (length % 2 === 0 ? "even" : "odd");
-			var odd = prefixClass + (length % 2 === 0 ? "odd" : "even");
-			$("#" + prefix + "rec" + records[length - 1].getId()).addClass(length % 2 === 0 ? odd : even).removeClass(length % 2 === 0 ? even : odd);
+			var even = prefixClass + (length % 2 === 0 ? EVEN : ODD);
+			var odd = prefixClass + (length % 2 === 0 ? ODD : EVEN);
+			$(NUMERAL + recordIdPrefix + records[length - 1].getId()).addClass(length % 2 === 0 ? odd : even).removeClass(length % 2 === 0 ? even : odd);
 			for (i = length - 2; i >= 0; i--) {
-				before = $("#" + prefix + "rec" + records[i].getId());
-				after = $("#" + prefix + "rec" + records[i + 1].getId());
+				before = $(NUMERAL + recordIdPrefix + records[i].getId());
+				after = $(NUMERAL + recordIdPrefix + records[i + 1].getId());
 				before.addClass(i % 2 === 0 ? even : odd).removeClass(i % 2 === 0 ? odd : even).insertBefore(after);
 			}
-			tbody.find("." + prefixClass + "desc").removeClass(prefixClass + "desc");
-			tbody.find("." + prefixClass + "col-" + key).addClass(prefixClass + "desc");
+			tbody.find(DOT + prefixClass + DESC).removeClass(prefixClass + DESC);
+			tbody.find(DOT + prefixClass + "col-" + key).addClass(prefixClass + DESC);
 		};
 		
 		/*
 		 * Set up table headers
 		 */
-		var colDefs = myself.get("columnDefinitions");
+		var colDefs = myself.get(COLUMN_DEFINITIONS);
 		A.each(colDefs, function (colDef, i) {
-			var th = $("<th/>").append($("<div/>").addClass(prefixClass + "liner").append($("<span/>").addClass(prefixClass + "label").html(colDef.label || colDef.key)));
-			th.attr("id", prefixClass + "0-th-" + colDef.key);
+			var th = $("<th/>").append($(NEW_DIV).addClass(prefixClass + LINER).append($("<span/>").addClass(prefixClass + "label").html(colDef.label || colDef.key)));
+			th.attr(ID, thIdPrefix + colDef.key);
 			if (i === 0) {
 				th.addClass(prefixClass + "first");
 			} else if (i == colDefs.length - 1) {
 				th.addClass(prefixClass + "last");
 			}
 			if (colDef.sortable) {
-				th.addClass(prefixClass + "sortable").on("click", function (e) {
+				th.addClass(prefixClass + SORTABLE).on("click", function (e) {
 					e.stopPropagation();
 					e.preventDefault();
 					sort(th);
@@ -100,24 +130,42 @@ jet().add('datatable', function ($) {
 			thead.append(th);
 		});
 		
+		var addRow = function (row) {
+			if (!Lang.isRecord(row)) {
+				row = new $.Record(row);
+			}
+			var tr = $("<tr/>").attr(ID, recordIdPrefix + row.getId());
+			A.each(myself.get(COLUMN_DEFINITIONS), function (colDef) {
+				tr.append($("<td/>").addClass(prefix + className + "-col-" + colDef.key).append($(NEW_DIV).addClass(prefixClass + LINER).html(row.get(colDef.key))));
+			});
+			tr.addClass(tbody.children()._nodes.length % 2 === 0 ? (prefixClass + EVEN) : (prefixClass + ODD)).appendTo(tbody);
+		};
 		/**
 		 * Adds a row
 		 * 
 		 * @param {Record|HTMLRowElement|Array} row
 		 */
 		myself.addRow = function (row) {
-			if (!(row instanceof $.Record)) {
-				row = new $.Record(row);
+			addRow(row);
+			if (sortedBy) {
+				sort($(NUMERAL + thIdPrefix + sortedBy));
 			}
-			var tr = $("<tr/>").attr("id", prefix + 'rec' + row.getId());
-			A.each(myself.get("columnDefinitions"), function (colDef) {
-				tr.append($("<td/>").addClass(prefix + className + "-col-" + colDef.key).append($("<div/>").addClass(prefixClass + "liner").html(row.get(colDef.key))));
-			});
-			tr.addClass(tbody.children()._nodes.length % 2 === 0 ? (prefixClass + "even") : (prefixClass + "odd")).appendTo(tbody);
 		};
 		
-		myself.addRows = function () {
-			
+		myself.addRows = function (rows) {
+			if (Lang.isArray(rows)) {
+				A.each(rows, function (row) {
+					if (!Lang.isRecord(row)) {
+						row = new $.Record(row);
+					}
+				});
+			} else if (Lang.isRecordSet(rows)) {
+				rows = rows.getRecords();
+			}
+			A.each(rows, addRow);
+			if (sortedBy) {
+				sort($(NUMERAL + thIdPrefix + sortedBy));
+			}
 		};
 		
 		myself.deleteRow = function () {
@@ -133,19 +181,31 @@ jet().add('datatable', function ($) {
 		};
 		
 		myself.getFirstTr = function () {
-			
+			return tbody.children().eq(0);
 		};
 		
 		myself.getNextTr = function (tr) {
-			
+			if (Lang.isRecord(tr)) {
+				tr = tr.getId();
+			}
+			if (Lang.isNumber(tr)) {
+				tr = tbody.find(NUMERAL + recordIdPrefix + tr);
+			}
+			return tr.next();
 		};
 		
 		myself.getFirstTd = function (row) {
-			
+			if (Lang.isRecord(row)) {
+				row = row.getId();
+			}
+			if (Lang.isNumber(row)) {
+				row = tbody.find(NUMERAL + recordIdPrefix + row);
+			}
+			return row.children().eq(0);
 		};
 		
 		myself.getNextTd = function (td) {
-			
+			return td.next();
 		};
 		
 		myself.getSelectedCell = function () {
@@ -196,10 +256,8 @@ jet().add('datatable', function ($) {
 		 */
 		myself.onDataReturnReplaceRows = function (e, newRecordSet) {
 			tbody.children().remove();
-			A.each(newRecordSet.getRecords(), function (record) {
-				myself.addRow(record);
-			});
-			recordSet = newRecordSet;
+			myself.addRows(newRecordSet);
+			recordSet.replace(newRecordSet);
 		};
 		
 		/**
@@ -208,12 +266,7 @@ jet().add('datatable', function ($) {
 		 * @param {RecordSet} newRecordSet
 		 */
 		myself.onDataReturnAddRows = function (e, newRecordSet) {
-			/*
-			 * @TODO remove "sorted" state
-			 */
-			A.each(newRecordSet.getRecords(), function (record) {
-				myself.addRow(record);
-			});
+			myself.addRows(newRecordSet);
 			recordSet.push(newRecordSet);
 		};
 		
