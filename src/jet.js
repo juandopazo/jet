@@ -260,32 +260,13 @@
 		}));
 	};
 	
-	/*
-	 * DOM ready logic copyright jQuery
-	 */
-	var isReady = FALSE;
-	var readyList = [];
-	
 	var domReady = function (fn, lib) {
-		if (isReady) {
+		if (doc.body) {
 			fn.call(doc, lib);
 		} else {
-			if (Lang.isFunction(fn)) {
-				readyList.push({
-					fn: fn,
-					lib: lib
-				});
-			}
-			if (!doc.body) {
-				return setTimeout(domReady, 13);
-			}
-			isReady = TRUE;
-			if (readyList.length) {
-				ArrayHelper.each(readyList, function (callback) {
-					callback.fn.call(doc, callback.lib);
-				});
-				readyList = [];
-			}
+			setTimeout(function () {
+				domReady(fn, lib);
+			}, 13);
 		}
 	};
 	
@@ -550,6 +531,9 @@
 				use: function () {
 					var request = SLICE.call(arguments);
 					var i = 0, j, k, module, moveForward;
+					if (ArrayHelper.indexOf('node', request) == -1) {
+						request.unshift('node');
+					}
 					while (i < request.length - 1) {
 						module = request[i];
 						if (Lang.isString(module)) {
