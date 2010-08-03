@@ -477,9 +477,9 @@
 	};
 		
 	if (!win.jet) {
-		
+		var trackerDiv;
 		domReady(function () {
-			var trackerDiv = createNode("div", {
+			trackerDiv = createNode("div", {
 				id: "jet-tracker"
 			}, {
 				position: "absolute",
@@ -809,6 +809,18 @@ jet().add('node', function ($) {
 	Lang.isNode = function (o) {
 		return o instanceof Node;
 	};
+	var ready = function (fn) {
+		var myself = this;
+		if ((myself._node.ownerDocument || myself._node).body) {
+			fn.call(myself);
+		} else {
+			setTimeout(function () {
+				ready(fn);
+			}, 13);
+		}
+		return myself;
+	};
+	
 	$.mix(Node.prototype, {
 		hide: function () {
 			var myself = this;
@@ -1145,7 +1157,8 @@ jet().add('node', function ($) {
 			var node = this._node;
 			return $.win[GET_COMPUTED_STYLE] ? $.win[GET_COMPUTED_STYLE](node, null) : 
 					node[CURRENT_STYLE] ? node[CURRENT_STYLE] : node.style;
-		}
+		},
+		ready: ready
 	});
 	
 	NodeList = function () {
