@@ -1,3 +1,67 @@
+/*
+ * MODULE LOADER
+ * 25/06/2010
+ * Based on YUI3's namespace
+ * 
+ * This script allows to load different modules asynchronously and to reuse
+ * them when they were already loaded. Its basic use looks like:
+ * 
+ * jet().use("node", function ($) {
+ *	 //do something with $
+ * });
+ * 
+ * This snippet will load the Node module, and when it finishes loading it'll execute
+ * the function. Each module must call the jet().add() method to tell the loader
+ * it has finished loading:
+ * 
+ * jet().add("node", function ($) {
+ *	 $.method = function () {};
+ * });
+ * 
+ * A variable is passed to every module and the function defined in the use() method. 
+ * This variable acts as a main library and is shared by each module and the main
+ * function, but not between different calls to the "use" method. Ie:
+ * 
+ * jet().use("node", function ($) {
+ *	 $.testProperty = "test";
+ * });
+ * 
+ * jet().use("node", function ($) {
+ *	 alert($.testProperty); //alerts "undefined"
+ * });
+ * 
+ * Since it is a parameter, it can have any name but it still acts the same way. Also,
+ * each module is called in the order defined by the "use" method. So:
+ * 
+ * jet().use("node", "anim", function (L) {
+ *	 // Here the L variable contains both Node and Anim
+ *	 // The Node module is called first on L and the Anim module after,
+ *	 // so it can overwrite anything Node did, extend classes, etc
+ * });
+ * 
+ * New modules can be defined by passing an object literal instead of a string to the
+ * "use" method with a "name" property and a "path" or "fullpath" property. 
+ * 
+ * jet().use("node", {name:"myModule", fullpath:"http://localhost/myModule.js"}, function ($) {
+ *	 //do something
+ * });
+ * 
+ * If "path" is defined instead of "fullpath", the loader will append "path"
+ * to a predefined base URL. This base URL can be modified by passing
+ * the jet() function an object literal with a "base" property:
+ * 
+ *  jet({
+ *	  base: "http://www.mydomain.com/modules/"
+ *  }).use("node", function ($) {
+ *	  //in this case the "core" module is loaded from http://www.mydomain.com/modules/node.min.js
+ *  });
+ * 
+ * Other configuration options:
+ * - minify {Boolean} defines whether predefined modules should be minified or not. TRUE by default
+ * - loadCss {Boolean} if TRUE, css modules are loaded. TRUE by default
+ * - modules {Array} allows to define your own modules. Currently the same as using object literals in the use() method
+ * 
+ */
 (function () {
 	var baseUrl = location.protocol + "//jet-js.googlecode.com/svn/trunk/src/";
 	
@@ -13,75 +77,81 @@
 		NODE = "node";
 	
 	/*
-	 * These modules can be called by the jet().use() method without defining a path
+	 * These modules can be called by the jet().use() method without defining a path.
+	 * Each module should be defined after its requirements
 	 */
 	var predefinedModules = {
 		ua: TRUE,
 		log: TRUE,
-		node: ['log', 'ua'],
-		base: [NODE],
-		ajax: ['json'],
+		node: ["log", "ua"],
+		xsl: [NODE],
+		flash: [NODE],
+		"simple-progressbar": [NODE],
 		json: [NODE],
 		cookie: [NODE],
 		sizzle: [NODE],
+		base: [NODE],
+		ajax: ["json"],
 		tabs: [BASE],
 		resize: [BASE, {
-			name: 'resize-css',
-			type: 'css',
-			fileName: 'resize',
+			name: "resize-css",
+			type: "css",
+			fileName: "resize",
 			beacon: {
-				name: 'borderLeftStyle',
-				value: 'solid'
+				name: "borderLeftStyle",
+				value: "solid"
 			}
 		}],
-		xsl: [NODE],
-		flash: [NODE],
 		container: [BASE, {
-			name: 'container-css',
-			type: 'css',
-			fileName: 'container',
+			name: "container-css",
+			type: "css",
+			fileName: "container",
 			beacon: {
-				name: 'borderRightStyle',
-				value: 'solid'
+				name: "borderRightStyle",
+				value: "solid"
 			}
 		}],
 		dragdrop: [BASE],
 		imageloader: [BASE],
 		anim: [BASE],
-		datasource: [BASE, 'ajax'],
-		datatable: ['datasource', {
-			name: 'datatable-css',
-			type: 'css',
-			fileName: 'datatable',
+		datasource: [BASE, "ajax"],
+		datatable: ["datasource", {
+			name: "datatable-css",
+			type: "css",
+			fileName: "datatable",
 			beacon: {
-				name: 'borderTopStyle',
-				value: 'solid'
+				name: "borderTopStyle",
+				value: "solid"
 			}
 		}],
-		plasma: ['anim'],
-		"simple-progressbar": [NODE]
+		plasma: ["anim"]
 	};
 	
-	var ARRAY		= 'array',
-		BOOLEAN		= 'boolean',
-		FUNCTION	= 'function',
-		OBJECT		= 'object',
-		HASH		= 'hash',
-		NULL		= 'null',
-		NUMBER		= 'number',
-		STRING		= 'string',
-		UNDEFINED	= 'undefined';
+	/*
+	 * Lang module. Includes Lang, ArrayHelper and Hash.
+	 * A couple of functions of this module are used throughout the Loader.
+	 * Should this be defined as any other module with the jet().add() method?
+	 */
+	var ARRAY		= "array",
+		BOOLEAN		= "boolean",
+		FUNCTION	= "function",
+		OBJECT		= "object",
+		HASH		= "hash",
+		NULL		= "null",
+		NUMBER		= "number",
+		STRING		= "string",
+		UNDEFINED	= "undefined";
 		
 	var Lang = (function () {
 		
 		var types = {
-			'number'			: NUMBER,
-			'string'			: STRING,
-			'undefined'			: UNDEFINED,
-			'[object Object]'	: HASH,
-			'[object Function]' : FUNCTION,
-			'[object Array]'	: ARRAY,
-			'boolean'           : BOOLEAN
+			"number"			: NUMBER,
+			"string"			: STRING,
+			"undefined"			: UNDEFINED,
+			"[object Object]"	: HASH,
+			"[object Function]" : FUNCTION,
+			"[object Array]"	: ARRAY,
+			"boolean"           : BOOLEAN
 		};
 		
 		/*
@@ -138,7 +208,7 @@
 			 * @return {string} the trimmed string
 			 */
 			trim: function (str) {
-				str = str.replace(/^\s\s*/, '');
+				str = str.replace(/^\s\s*/, "");
 				var ws = /\s/,
 				i = str.length;
 				while (ws.test(str.charAt(--i))) {}
@@ -345,6 +415,7 @@
 			getByClass(className, root);
 		};
 		
+		// @TODO: consider moving this to the Node module
 		var $ = function (query, root) {
 			root = root || $.context;
 			$.context = root.ownerDocument || $.context;
@@ -361,50 +432,45 @@
 			return query;
 		};
 		
-		$.win = win;
-		$.context = doc;
+		var add = function (o) {
+			mix($, o, TRUE);
+		};
 		
 		if (win.JSON) {
 			$.JSON = win.JSON;
 		}
 		
-		var nodeCreation = {
-			table: ["thead", "tbody", "tfooter", "tr"],
-			tr: ["th", "td"]
-		};
-		
-		$.parseQuery = function (query, root) {
-			root = root || $.context;
-			var c = query.substr(0, 1), test, node;
-			if (c == "<") {
-				if (query.match(/</g).length == 1) {
-					return root.createElement(query.substr(1, query.length - 3));
-				} else {
-					/*
-					 * Check for strings like "<div><span><a/></span></div>"
-					 */
-					test = query.match(new RegExp("<([a-z]+)>(.+)<\/([a-z]+)>", "i"));
-					node = null;
-					if (test.length == 4 && test[1] == test[3]) {
-						node = root.createElement(test[1]);
-						node.innerHTML = test[2];
-					} else {
-						$.error("Wrong element creation string");
-					}
-					return node;
-				}
-			} else {
-				return c == "#" ? root.getElementById(query.substr(1)) : 
-					   c == "." ? getByClass(query.substr(1), root) :
-					   root.getElementsByTagName(query);
-			}
-		};
-		
-		var add = function (o) {
-			mix($, o, TRUE);
-		};
-		
 		add({
+			
+			win: win,
+			context: doc,
+			
+			parseQuery: function (query, root) {
+				root = root || $.context;
+				var c = query.substr(0, 1), test, node;
+				if (c == "<") {
+					if (query.match(/</g).length == 1) {
+						return root.createElement(query.substr(1, query.length - 3));
+					} else {
+						/*
+						 * Check for strings like "<div><span><a/></span></div>"
+						 */
+						test = query.match(new RegExp("<([a-z]+)>(.+)<\/([a-z]+)>", "i"));
+						node = null;
+						if (test.length == 4 && test[1] == test[3]) {
+							node = root.createElement(test[1]);
+							node.innerHTML = test[2];
+						} else {
+							$.error("Wrong element creation string");
+						}
+						return node;
+					}
+				} else {
+					return c == "#" ? root.getElementById(query.substr(1)) : 
+						   c == "." ? getByClass(query.substr(1), root) :
+						   root.getElementsByTagName(query);
+				}
+			},
 			
 			mix: mix,
 			
@@ -529,48 +595,51 @@
 				 * that contains the main logic of the application. 
 				 */
 				use: function () {
+					
+					// @TODO: clean up this mess of a function (way too many iterations)
 					var request = SLICE.call(arguments);
-					var i = 0, j, k, module, moveForward;
-					if (ArrayHelper.indexOf('node', request) == -1) {
-						request.unshift('node');
+					var i = 0, j = 0, k, module, moveForward;
+					
+					// if "*" is used, include everything
+					if (ArrayHelper.indexOf("*", request) > -1) {
+						while (j < request.length) {
+							if (Lang.isString(request[j])) {
+								request.splice(j, 1);
+							} else {
+								j++;
+							}
+						}
+						AP.unshift.apply(request, Hash.keys(predef));
+						
+					// add node by default
+					} else if (ArrayHelper.indexOf("node", request) == -1) {
+						request.unshift("node");
 					}
+					
+					// handle requirements
 					while (i < request.length - 1) {
 						module = request[i];
+						moveForward = 1;
 						if (Lang.isString(module)) {
-							/*if (module == "*") {
-								var m = Hash.keys(predef);
-								m.unshift(i, 1);
-								j = i + 1;
-								while (j < request.length) {
-									if (Lang.isString(request[j])) {
-										request.splice(j, 1);
-									} else {
-										j++;
-									}
-								}
-								AP.splice.apply(request, m);
-								i--;
-							}*/
 							module = predef[module.toLowerCase()];
 							if (module && Lang.isArray(module)) {
-								moveForward = 1;
 								for (j = module.length - 1; j >= 0; j--) {
 									if (!ArrayHelper.inArray(module[j], request)) {
 										request.splice(i, 0, module[j]);
 										moveForward = 0;
 									}
 								}
-								i += moveForward;
-							} else {
-								i++;
 							}
-						} else {
-							i++;
 						}
+						i += moveForward;
 					}
+					
+					// remove JSON module if there's native JSON support
 					if (win.JSON) {
 						ArrayHelper.remove("json", request);
 					}
+					
+					// transform every module request into an object and load the required css/script if not already loaded
 					for (i = 0; i < request.length - 1; i++) {
 						module = request[i];
 						/*
@@ -600,10 +669,14 @@
 							queuedScripts[module.name] = 1;
 						}
 					}
+					
+					// add the queue to the waiting list
 					var queue = {
 						main: request.pop(),
 						req: request
 					};
+					
+					// onProgress handlers are managed by queue
 					if (config.onProgress) {
 						queue.onProgress = config.onProgress;
 					}
@@ -618,6 +691,10 @@
 				 * @param {Function} expose
 				 */
 				add: function (moduleName, expose) {
+					/*
+					 * Modules are overwritten by default.
+					 * Maybe it would be a good idea to add an option not to overwrite if present?
+					 */ 
 					modules[moduleName] = expose;
 					update();
 				}
@@ -626,7 +703,7 @@
 	}
 }());
 
-jet().add('log', function ($) {
+jet().add("log", function ($) {
 	
 	$.error = function (msg) {
 		throw new Error(msg);
@@ -634,7 +711,7 @@ jet().add('log', function ($) {
 
 });
 
-jet().add('ua', function ($) {
+jet().add("ua", function ($) {
 	$.UA = (function () {
 		var nav = $.win.navigator,
 			ua = nav.userAgent.toLowerCase(),
@@ -646,8 +723,8 @@ jet().add('ua', function ($) {
 		
         return {
 			webkit: webkit,
-			chrome:  /chrome/i.test(ua),
-			ie: ie && ie[1] && ie[2] ? parseFloat(ie[2]) : false,
+			chrome:  /chrome/i.test(ua), // should always use webkit instead of chrome
+			ie: ie && ie[1] && ie[2] ? parseFloat(ie[2]) : false, // ie is false, 6, 7 or 8
 			opera: opera,
 			gecko: !webkit && !opera && !ie && /Gecko/i.test(ua),
 			win: p ? /win/.test(p) : /win/.test(ua), 
@@ -656,7 +733,7 @@ jet().add('ua', function ($) {
     }());
 });
 
-jet().add('node', function ($) {
+jet().add("node", function ($) {
 	
 	var TRUE = true,
 		FALSE = false,
@@ -1233,10 +1310,10 @@ jet().add('node', function ($) {
 			});
 		};
 	};
-	A.each(['append', 'appendTo', 'preprend', 'prependTo', 'insertBefore', 'remove', 
-			'on', 'unbind', 'unbindAll', 
-			'addClass', 'removeClass', 'toggleClass', 
-			'hide', 'show', 'toggle'], NodeList.addSetter);
+	A.each(["append", "appendTo", "preprend", "prependTo", "insertBefore", "remove", 
+			"on", "unbind", "unbindAll", 
+			"addClass", "removeClass", "toggleClass", 
+			"hide", "show", "toggle"], NodeList.addSetter);
 			
 	NodeList.addGetter = function (name) {
 		NodeListP[name] = function () {
@@ -1248,7 +1325,7 @@ jet().add('node', function ($) {
 			return results;
 		};
 	};
-	A.each(['hasClass', 'offset', 'getDocument', 'currentStyle'], NodeList.addGetter);
+	A.each(["hasClass", "offset", "getDocument", "currentStyle"], NodeList.addGetter);
 	
 	NodeList.addListGetter = function (name) {
 		NodeListP[name] = function () {
@@ -1264,7 +1341,7 @@ jet().add('node', function ($) {
 			return new NodeList(results);
 		};
 	};
-	A.each(['children', 'first', 'last', 'parent', 'find', 'clone'], NodeList.addListGetter);
+	A.each(["children", "first", "last", "parent", "find", "clone"], NodeList.addListGetter);
 	
 	NodeList.addMixed = function (name) {
 		NodeListP[name] = function () {
@@ -1283,7 +1360,7 @@ jet().add('node', function ($) {
 			}
 		};
 	};
-	A.each(['html', 'css', 'attr', 'widt', 'height'], NodeList.addMixed);
+	A.each(["html", "css", "attr", "widt", "height"], NodeList.addMixed);
 
 	$.add({
 		Node: Node,
