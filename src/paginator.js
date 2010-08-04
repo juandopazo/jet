@@ -12,7 +12,8 @@ jet().add('paginator', function ($) {
 		ACTIVE = "active",
 		INACTIVE = "inactive",
 		CLICK = "click",
-		ID = "id";
+		ID = "id",
+		CURRENT_PAGE = "currentPage";
 		
 	if (!jet.Paginator) {
 		jet.Paginator = {};
@@ -72,7 +73,7 @@ jet().add('paginator', function ($) {
 				value: pageCount
 			}
 		});
-		currentPage = myself.get("currentPage");
+		currentPage = myself.get(CURRENT_PAGE);
 		
 		var id = jet.Paginator.ids++;
 		
@@ -103,7 +104,7 @@ jet().add('paginator', function ($) {
 			}).html(myself.get("firstText")).appendTo(boundingBox);
 			spanPrev = $(NEW_SPAN).attr(ID, prefix + id + "-previous").addClass(prefix + "-previous", INACTIVE).on(CLICK, function () {
 				if ($(this).hasClass(ACTIVE)) {
-					goTo(myself.get("currentPage") - 1);
+					goTo(myself.get(CURRENT_PAGE) - 1);
 				}
 			}).html(myself.get("prevText")).appendTo(boundingBox);
 			pagesContainer = $(NEW_SPAN).addClass(prefix + "-pages").appendTo(boundingBox);
@@ -117,12 +118,12 @@ jet().add('paginator', function ($) {
 			}
 			spanNext = $(NEW_SPAN).attr(ID, prefix + id + "-next").addClass(prefix + "-next", INACTIVE).on(CLICK, function () {
 				if ($(this).hasClass(ACTIVE)) {
-					goTo(myself.get("currentPage") + 1);
+					goTo(myself.get(CURRENT_PAGE) + 1);
 				}
 			}).html(myself.get("nextText")).appendTo(boundingBox);
 			spanLast = $(NEW_SPAN).attr(ID, prefix + id + "-last").addClass(prefix + "-last", INACTIVE).on(CLICK, function () {
 				if ($(this).hasClass(ACTIVE)) {
-					goTo(myself.get("pagesCount") - 1);
+					goTo(myself.get("pageCount") - 1);
 				}
 			}).html(myself.get("lastText")).appendTo(boundingBox);
 			

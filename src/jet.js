@@ -198,6 +198,9 @@
 					return !!(t);
 				}
 			},
+			is: function (o) {
+				return o instanceof this;
+			},
 			/**
 			 * Returns a string without any leading or trailing whitespace.
 			 * Code by Steven Levithan
@@ -412,7 +415,7 @@
 					return result;
 				};
 			}
-			getByClass(className, root);
+			return getByClass(className, root);
 		};
 		
 		// @TODO: consider moving this to the Node module
@@ -871,7 +874,7 @@ jet().add("node", function ($) {
 	
 	var Node = function (node, root) {
 		root = root || $.context;
-		if (Lang.isNode(node)) {
+		if (Node.is(node)) {
 			return node;
 		}
 		if (Lang.isString(node)) {
@@ -882,10 +885,8 @@ jet().add("node", function ($) {
 		
 		this._node = node;
 	};
+	Node.is = Lang.is;
 	
-	Lang.isNode = function (o) {
-		return o instanceof Node;
-	};
 	var ready = function (fn) {
 		var myself = this;
 		if ((myself._node.ownerDocument || myself._node).body) {
@@ -1055,7 +1056,7 @@ jet().add("node", function ($) {
 			return this;
 		},
 		prepend: function (node) {
-			if (Lang.isNode(node)) {
+			if (Node.is(node)) {
 				node = node._node;
 			}
 			var mynode = this._node;
@@ -1067,7 +1068,7 @@ jet().add("node", function ($) {
 			return this;
 		},
 		prependTo: function (target) {
-			if (Lang.isNode(target)) {
+			if (Node.is(target)) {
 				target = target._node;
 			}
 			var node = this._node;
@@ -1079,7 +1080,7 @@ jet().add("node", function ($) {
 			return this;
 		},
 		insertBefore: function (before) {
-			if (Lang.isNode(before)) {
+			if (Node.is(before)) {
 				before = before._node;
 			}
 			if (before.parentNode) {
@@ -1241,7 +1242,7 @@ jet().add("node", function ($) {
 	NodeList = function () {
 		var collection = [];
 		var addToCollection = function (node) {
-			if (Lang.isNode(node)) {
+			if (Node.is(node)) {
 				collection[collection.length] = node;
 			} else if (node.nodeType || Lang.isString(node)) {
 				collection[collection.length] = new Node(node);
@@ -1282,9 +1283,9 @@ jet().add("node", function ($) {
 		},
 		link: function (nodes, createNewList) {
 			var myself = this;
-			if (Lang.isNodeList(nodes)) {
+			if (NodeList.is(nodes)) {
 				nodes = nodes._nodes;
-			} else if (Lang.isNode(nodes)) {
+			} else if (Node.is(nodes)) {
 				nodes = [nodes];
 			} else if (nodes.nodeType) {
 				nodes = [new Node(nodes)];
@@ -1297,10 +1298,6 @@ jet().add("node", function ($) {
 			}
 		}
 	});
-	
-	Lang.isNodeList = function (o) {
-		return o instanceof NodeList;
-	};
 	
 	NodeList.addSetter = function (name) {
 		NodeListP[name] = function () {
@@ -1361,6 +1358,8 @@ jet().add("node", function ($) {
 		};
 	};
 	A.each(["html", "css", "attr", "widt", "height"], NodeList.addMixed);
+	
+	NodeList.is = Lang.is;
 
 	$.add({
 		Node: Node,
