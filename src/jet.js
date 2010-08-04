@@ -69,6 +69,7 @@
 		doc = document,
 		OP = Object.prototype,
 		AP = Array.prototype,
+		SP = String.prototype,
 		SLICE = AP.slice,
 		TOSTRING = OP.toString,
 		TRUE = true,
@@ -161,6 +162,15 @@
 			return types[typeof o] || types[TOSTRING.call(o)] || (o ? OBJECT : NULL);
 		};
 		
+		/*
+		 * RegExp by @some
+		 * http://stackoverflow.com/questions/574584/javascript-check-if-method-prototype-has-been-changed/574741#574741
+		 */
+		var isNative = function (func) {
+		    return /^\s*function[^{]+{\s*\[native code\]\s*}\s*$/.test(func);
+		};
+
+		
 		return {
 			isNumber: function (o) {
 				return type(o) === NUMBER && isFinite(o);
@@ -184,6 +194,7 @@
 				return typeof o == UNDEFINED;
 			},
 			type: type,
+			isNative: isNative,
 			isValue: function (o) {
 				var t = type(o);
 				switch (t) {
@@ -210,7 +221,10 @@
 			 * @param {String} the string to trim
 			 * @return {string} the trimmed string
 			 */
-			trim: function (str) {
+			// check for native support
+			trim: isNative(SP.trim) ? function (str) {
+				return str.trim();
+			} : function (str) {
 				str = str.replace(/^\s\s*/, "");
 				var ws = /\s/,
 				i = str.length;
@@ -221,11 +235,16 @@
 	}());
 	
 	var ArrayHelper = {
-		each: function (arr, callback) {
+		// check for native support
+		each: Lang.isNative(AP.forEach) ? function (arr, fn, thisp) {
+			
+			arr.forEach(fn, thisp);
+			
+		} : function (arr, fn, thisp) {
 			arr = arr || [];
 			var i, length = arr.length;
 			for (i = 0; i < length; i++) {
-				callback.call(arr[i], arr[i], i);
+				fn.call(thisp, arr[i], i, arr);
 			}
 		},
 		remove: function (needle, haystack) {
@@ -240,7 +259,11 @@
 			}
 			return haystack;
 		},
-		indexOf: function (needle, haystack) {
+		indexOf: Lang.isNative(AP.indexOf) ? function (needle, haystack) {
+			
+			return haystack.indexOf(needle);
+			
+		} : function (needle, haystack) {
 			var i,
 				length = haystack.length;
 			for (i = 0; i < length; i = i + 1) {
@@ -260,37 +283,31 @@
 		}
 	};
 	
-	var Hash = (function () {
-		var BREAK = "break";
-		var each = function (hash, fn) {
+	var Hash = {
+		each: function (hash, fn, thisp) {
 			for (var x in hash) {
 				if (hash.hasOwnProperty(x)) {
-					if (fn.call(hash, x, hash[x]) == BREAK) {
+					if (fn.call(thisp, x, hash[x], hash) !== FALSE) {
 						break;
 					}
 				}
 			}
-		};
-		
-		return {
-			each: each,
-			BREAK: BREAK,
-			keys: function (hash) {
-				var keys = [];
-				each(hash, function (key) {
-					keys[keys.length] = key;
-				});
-				return keys;
-			},
-			values: function (hash) {
-				var values = [];
-				each(hash, function (key, value) {
-					values[values.length] = value;
-				});
-				return values;
-			}
-		};
-	}());
+		},
+		keys: function (hash) {
+			var keys = [];
+			each(hash, function (key) {
+				keys[keys.length] = key;
+			});
+			return keys;
+		},
+		values: function (hash) {
+			var values = [];
+			each(hash, function (key, value) {
+				values[values.length] = value;
+			});
+			return values;
+		}
+	};
 	
 	var createNode = function (name, attrs, s) {
 		var node = doc.createElement(name);
@@ -1023,6 +1040,9 @@ jet().add("node", function ($) {
 			var myself = this;
 			var node = myself._node;
 			if (Lang.isValue(width)) {
+				if (Lang.isNumber(width) && width < 0) {
+					width = 0;
+				}
 				node.style.width = Lang.isString(width) ? width : width + "px";
 				return myself;
 			}
@@ -1032,6 +1052,9 @@ jet().add("node", function ($) {
 			var myself = this;
 			var node = myself._node;
 			if (Lang.isValue(height)) {
+				if (Lang.isNumber(height) && height < 0) {
+					height = 0;
+				}
 				node.style.height = Lang.isString(height) ? height : height + "px";
 				return myself;
 			}
