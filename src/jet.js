@@ -128,11 +128,12 @@
 		plasma: ["anim"]
 	};
 	
-	/*
-	 * Lang module. Includes Lang, ArrayHelper and Hash.
-	 * A couple of functions of this module are used throughout the Loader.
-	 * Should this be defined as any other module with the jet().add() method?
+	/**
+	 * Includes Lang, ArrayHelper and Hash.
+	 * @module lang
 	 */
+	 //A couple of functions of this module are used throughout the Loader.
+	 //Should this be defined as any other module with the jet().add() method?
 	var ARRAY		= "array",
 		BOOLEAN		= "boolean",
 		FUNCTION	= "function",
@@ -143,6 +144,10 @@
 		STRING		= "string",
 		UNDEFINED	= "undefined";
 		
+	/**
+	 * @class Lang
+	 * @static
+	 */
 	var Lang = (function () {
 		
 		var types = {
@@ -167,34 +172,83 @@
 		 * http://stackoverflow.com/questions/574584/javascript-check-if-method-prototype-has-been-changed/574741#574741
 		 */
 		var isNative = function (func) {
-		    return /^\s*function[^{]+{\s*\[native code\]\s*}\s*$/.test(func);
+		    return /^\s*function[^{]+{\s*\[native code\]\s*}\s*$"/.test(func);
 		};
 
-		
 		return {
+			/**
+			 * Returns if o is a number
+			 * @method isNumber
+			 * @param {Object} o
+			 */
 			isNumber: function (o) {
 				return type(o) === NUMBER && isFinite(o);
 			},
+			/**
+			 * Returns if o is a string
+			 * @method isString
+			 * @param {Object} o
+			 */
 			isString: function (o) {
 				return type(o) === STRING;
 			},
+			/**
+			 * Returns if o is an array
+			 * @method isArray
+			 * @param {Object} o
+			 */
 			isArray: function (o) {
 				return type(o) === ARRAY;
 			},
+			/**
+			 * Returns if o is an object literal
+			 * @method isHash
+			 * @param {Object} o
+			 */
 			isHash: function (o) {
 				return type(o) === HASH;
 			},
+			/**
+			 * Returns if o is a function
+			 * @method isFunction
+			 * @param {Object} o
+			 */
 			isFunction: function (o) {
 				return type(o) === FUNCTION;
 			},
+			/**
+			 * Returns if o is a boolean
+			 * @method isBoolean
+			 * @param {Object} o
+			 */
 			isBoolean: function (o) {
 				return typeof o == BOOLEAN;
 			},
+			/**
+			 * Returns if o is undefined
+			 * @method isUndefined
+			 * @param {Object} o
+			 */
 			isUndefined: function (o) {
 				return typeof o == UNDEFINED;
 			},
+			/**
+			 * Returns the type of the object
+			 * @method type
+			 * @param {Object} o
+			 */
 			type: type,
+			/**
+			 * Returns whether the function is a native function or not
+			 * @method isNative
+			 * @param {Function} o
+			 */
 			isNative: isNative,
+			/**
+			 * Returns false if o is undefined, null, NaN or Infinity. In any other case, return true
+			 * @method isValue
+			 * @param {Object} o
+			 */
 			isValue: function (o) {
 				var t = type(o);
 				switch (t) {
@@ -216,8 +270,7 @@
 			 * Returns a string without any leading or trailing whitespace.
 			 * Code by Steven Levithan
 			 * http://blog.stevenlevithan.com/archives/faster-trim-javascript
-			 * 
-			 * @static
+			 * @method trim
 			 * @param {String} the string to trim
 			 * @return {string} the trimmed string
 			 */
@@ -230,11 +283,31 @@
 				i = str.length;
 				while (ws.test(str.charAt(--i))) {}
 				return str.slice(0, i + 1);
+			},
+			/**
+			 * A more traditional random function. Returns a random integer between 0 and num-1
+			 * @method random
+			 * @param {Number} num
+			 */
+			random: function (num) {
+				num = Math.random() * num;
+				return num === 0 ? 0 : Math.ceil(num) - 1;
 			}
 		};
 	}());
 	
+	/**
+	 * @class Array
+	 * @static
+	 */
 	var ArrayHelper = {
+		/**
+		 * Iterates through an array
+		 * @method each
+		 * @param {Array} arr
+		 * @param {Function} fn callback
+		 * @param {Object} thisp sets up the <b>this</b> keyword inside the callback
+		 */
 		// check for native support
 		each: Lang.isNative(AP.forEach) ? function (arr, fn, thisp) {
 			
@@ -247,6 +320,12 @@
 				fn.call(thisp, arr[i], i, arr);
 			}
 		},
+		/**
+		 * Searchs an haystack and removes the needle if found
+		 * @method remove
+		 * @param {Object} needle
+		 * @param {Array} haystack
+		 */
 		remove: function (needle, haystack) {
 			var i = 0;
 			var length = haystack.length;
@@ -259,6 +338,13 @@
 			}
 			return haystack;
 		},
+		/**
+		 * Returns the index of the first occurence of needle
+		 * @method indexOf
+		 * @param {Object} needle
+		 * @param {Array} haystack
+		 * @return {Number}
+		 */
 		indexOf: Lang.isNative(AP.indexOf) ? function (needle, haystack) {
 			
 			return haystack.indexOf(needle);
@@ -274,20 +360,26 @@
 			return -1;
 		},
 		/**
-		 * 
+		 * Returns whether needle is present in haystack
+		 * @method inArray
 		 * @param {Object} needle
 		 * @param {Array} haystack
+		 * @return {Boolean}
 		 */
 		inArray: function (needle, haystack) {
 			return this.indexOf(needle, haystack) > -1;
 		}
 	};
 	
+	/**
+	 * @class Hash
+	 * @static
+	 */
 	var Hash = {
 		each: function (hash, fn, thisp) {
 			for (var x in hash) {
 				if (hash.hasOwnProperty(x)) {
-					if (fn.call(thisp, x, hash[x], hash) !== FALSE) {
+					if (fn.call(thisp || hash, x, hash[x], hash) === FALSE) {
 						break;
 					}
 				}
@@ -295,14 +387,14 @@
 		},
 		keys: function (hash) {
 			var keys = [];
-			each(hash, function (key) {
+			Hash.each(hash, function (key) {
 				keys[keys.length] = key;
 			});
 			return keys;
 		},
 		values: function (hash) {
 			var values = [];
-			each(hash, function (key, value) {
+			Hash.each(hash, function (key, value) {
 				values[values.length] = value;
 			});
 			return values;
@@ -441,13 +533,9 @@
 			$.context = root.ownerDocument || $.context;
 			if (Lang.isString(query)) {
 				query = $.parseQuery(query, root);
-				query = !Lang.isValue(query) ? new $.NodeList([]) :
-						Lang.isNumber(query.length) ? new $.NodeList(query) : new $.Node(query, root);
-			} else if (Lang.isArray(query)) {
-				query = new $.NodeList(query, root);
-				/* weird way of allowing window and document to be nodes (for using events). Not sure it is a good idea */
-			} else if (query.nodeType || query.navigator || query.body) {
-				query = new $.Node(query);
+				query = !Lang.isValue(query) ? new $.NodeList([]) : new $.NodeList(query);
+			} else {
+				query = new $.NodeList(query);
 			}
 			return query;
 		};
@@ -459,6 +547,54 @@
 		if (win.JSON) {
 			$.JSON = win.JSON;
 		}
+			
+		/**
+		 * Object function by Douglas Crockford
+		 * <a href="https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1">link</a>
+		 * 
+		 * @param {Object} o
+		 */
+		var toObj = function (o) {
+			var F = function () {};
+			F.prototype = o;
+			return new F();
+		};
+		
+		/**
+		 * From the guys at YUI (Thanks! This function is GENIUS!)
+	     * 
+	     * Utility to set up the prototype, constructor and superclass properties to
+	     * support an inheritance strategy that can chain constructors and methods.
+	     * Static members will not be inherited.
+	     *
+	     * @param {Function} r	the object to modify
+	     * @param {Function} s	the object to inherit
+	     * @param {Object} [px]	prototype properties to add/override
+	     * @param {Object} [sx]	static properties to add/override
+	     */
+	    var extend = function (r, s, px) {
+	        if (!s || !r) {
+	            // @TODO error symbols
+	            $.error("extend failed, verify dependencies");
+	        }
+	
+	        var sp = s.prototype, rp = toObj(sp);
+	        r.prototype = rp;
+	
+	        rp.constructor = r;
+	        r.superclass = sp;
+	
+	        // assign constructor property
+	        if (s != Object && sp.constructor == OP.constructor) {
+	            sp.constructor = s;
+	        }
+	    
+	        // add prototype overrides
+	        if (px) {
+	            $.mix(rp, px, true);
+	        }
+	
+	    };
 		
 		add({
 			
@@ -495,6 +631,8 @@
 			mix: mix,
 			
 			add: add,
+			
+			extend: extend,
 			
 			walkTheDOM: walkTheDOM,
 			
@@ -616,7 +754,6 @@
 				 */
 				use: function () {
 					
-					// @TODO: clean up this mess of a function (way too many iterations)
 					var request = SLICE.call(arguments);
 					var i = 0, j = 0, k, module, moveForward;
 					
@@ -631,9 +768,9 @@
 						}
 						AP.unshift.apply(request, Hash.keys(predef));
 						
-					// add node by default
-					} else if (ArrayHelper.indexOf("node", request) == -1) {
-						request.unshift("node");
+					// add ajax by default
+					} else if (ArrayHelper.indexOf("ajax", request) == -1) {
+						request.unshift("ajax");
 					}
 					
 					// handle requirements
@@ -667,16 +804,11 @@
 						 * If it isn't defined, it's probably a mistake and will lead to errors
 						 */
 						if (Lang.isString(module) && predef[module]) {
-							if (Lang.isHash(predef[module])) {
-								module = predef[module];
-							} else {
-								request[i] = module = {
-									name: module,
-									path: module + (config.minify ? ".min.js" : ".js")
-								};
-							}
+							request[i] = module = Lang.isHash(predef[module]) ? predef[module] : {
+								name: module,
+								path: module + (config.minify ? ".min.js" : ".js")
+							};
 						}
-						request[i] = module;
 						if (module.type == "css" && !config.loadCss) {
 							request.splice(i, 1);
 							i--;
@@ -691,16 +823,12 @@
 					}
 					
 					// add the queue to the waiting list
-					var queue = {
+					queueList.push({
 						main: request.pop(),
-						req: request
-					};
-					
-					// onProgress handlers are managed by queue
-					if (config.onProgress) {
-						queue.onProgress = config.onProgress;
-					}
-					queueList.push(queue);
+						req: request,
+						// onProgress handlers are managed by queue
+						onProgress: config.onProgress
+					});
 					update();
 				},
 				/**
@@ -743,7 +871,6 @@ jet().add("ua", function ($) {
 		
         return {
 			webkit: webkit,
-			chrome:  /chrome/i.test(ua), // should always use webkit instead of chrome
 			ie: ie && ie[1] && ie[2] ? parseFloat(ie[2]) : false, // ie is false, 6, 7 or 8
 			opera: opera,
 			gecko: !webkit && !opera && !ie && /Gecko/i.test(ua),
@@ -761,7 +888,8 @@ jet().add("node", function ($) {
 		ON = "on",
 		Lang = $.Lang,
 		Hash = $.Hash,
-		A = $.Array;
+		A = $.Array,
+		SLICE = Array.prototype.slice;
 		
 	var EventCache = (function () {
 		var cache = {};
@@ -887,26 +1015,28 @@ jet().add("node", function ($) {
 	var GET_COMPUTED_STYLE = "getComputedStyle";
 	var CURRENT_STYLE = "currentStyle";
 		
-	var NodeList;
-	
-	var Node = function (node, root) {
-		root = root || $.context;
-		if (Node.is(node)) {
-			return node;
+	var scrollLeft = function (value) {
+		if (Lang.isValue(value)) {
+			$.win.scrollTo(value, this.scrollTop());
+		} else {
+			var doc = $.context;
+			var dv = doc.defaultView;
+	        return Math.max(doc[DOCUMENT_ELEMENT].scrollLeft, doc.body.scrollLeft, (dv) ? dv.pageXOffset : 0);
 		}
-		if (Lang.isString(node)) {
-			node = root.createElement(node);
-		} else if (!node.nodeType && node != $.win) {
-			$.error("Node must receive either a node name or a DOM node");
-		}
-		
-		this._node = node;
 	};
-	Node.is = Lang.is;
-	
+	var scrollTop = function (value) {
+		if (Lang.isValue(value)) {
+			$.win.scrollTo(this.scrollTop(), value);
+		} else {
+			var doc = $.context;
+			var dv = doc.defaultView;
+	        return Math.max(doc[DOCUMENT_ELEMENT].scrollTop, doc.body.scrollTop, (dv) ? dv.pageYOffset : 0);
+		}
+	};
+
 	var ready = function (fn) {
 		var myself = this;
-		if ((myself._node.ownerDocument || myself._node).body) {
+		if ((myself[0].ownerDocument || myself[0]).body) {
 			fn.call(myself);
 		} else {
 			setTimeout(function () {
@@ -916,93 +1046,106 @@ jet().add("node", function ($) {
 		return myself;
 	};
 	
-	$.mix(Node.prototype, {
-		hide: function () {
-			var myself = this;
-			var node = myself._node;
-			var display = node.style.display;
-			if (!node.JET_oDisplay && display != NONE) {
-				node.JET_oDisplay = display;
+	var NodeList = function (nodes, root) {
+		NodeList.superclass.constructor.apply(this);
+		root = root || $.context;
+		nodes = Lang.isValue(nodes) ? nodes : [];
+		if (NodeList.is(nodes)) {
+			return nodes;
+		}
+		if (Lang.isString(nodes)) {
+			nodes = [root.createElement(nodes)];
+		} else if (nodes.nodeType || nodes.body || nodes.navigator) {
+			nodes = [nodes];
+		} else if (Lang.isArray(nodes)) {
+			var i = 0;
+			while (i < nodes.length) {
+				if (!(nodes.nodeType || nodes.body || nodes.navigator)) {
+					nodes.splice(i, 1);
+				} else {
+					i++;
+				}
 			}
-			node.style.display = NONE;
+		} else if (Lang.isNumber(nodes.length)) {
+			nodes = Array.prototype.slice.call(nodes);
+		} else {
+			$.error("Wrong argument for NodeList");
+		}
+		this.push.apply(this, nodes);
+	};
+	$.extend(NodeList, Array, {
+		each: function (fn) {
+			for (var myself = this, length = myself.length, i = 0; i < length; i++) {
+				fn.call(myself[i], myself[i], i);
+			}
 			return myself;
+		},
+		hide: function () {
+			return this.each(function (node) {
+				var display = node.style.display;
+				if (!node.JET_oDisplay && display != NONE) {
+					node.JET_oDisplay = display;
+				}
+				node.style.display = NONE;
+			});
 		},
 		show: function () {
-			var myself = this;
-			var node = myself._node;
-			node.style.display = node.JET_oDisplay || "";
-			return myself;
+			return this.each(function (node) {
+				console.log(node);
+				node.style.display = node.JET_oDisplay || "";
+			});
 		},
 		toggle: function () {
-			var myself = this;
-			var node = myself._node;
-			var ns = node.style;
-			var oDisplay = node.LIB_oDisplay;
-			ns.display = ns.display != NONE ? NONE :
-						oDisplay ? oDisplay :
-						"";
-			return myself;
+			return this.each(function (node) {
+				var ns = node.style;
+				var oDisplay = node.LIB_oDisplay;
+				ns.display = ns.display != NONE ? NONE :
+							oDisplay ? oDisplay :
+							"";
+			});
 		},
 		hasClass: function (sClass) {
-			var node = this._node;
+			var node = this[0];
 			return A.inArray(sClass, node.className ? node.className.split(" ") : []);
 		},
 		removeClass: function () {
-			var myself = this;
-			var node = myself._node;
-			A.each(arguments, function (sClass) {
-				node.className = A.remove(sClass, node.className ? node.className.split(" ") : []).join(" ");
+			var args = SLICE.call(arguments);
+			return this.each(function (node) {
+				A.each(args, function (sClass) {
+					node.className = A.remove(sClass, node.className ? node.className.split(" ") : []).join(" ");
+				});
 			});
-			return myself;
 		},
 		addClass: function () {
-			var myself = this;
-			var node = myself._node;
-			A.each(arguments, function (sClass) {
+			var args = SLICE.call(arguments);
+			return this.each(function (node) {
+				A.each(args, function (sClass) {
+					var classes = node.className ? node.className.split(" ") : [];
+					if (!A.inArray(sClass, classes)) {
+						classes[classes.length] = sClass;
+						node.className = classes.join(" ");
+					}
+				});
+			});
+		},
+		toggleClass: function (sClass) {
+			return this.each(function (node) {
 				var classes = node.className ? node.className.split(" ") : [];
 				if (!A.inArray(sClass, classes)) {
 					classes[classes.length] = sClass;
-					node.className = classes.join(" ");
+				} else {
+					A.remove(sClass, classes);
 				}
+				node.className = classes.join(" ");
 			});
-			return myself;
-		},
-		toggleClass: function (sClass) {
-			var myself = this;
-			var node = myself._node;
-			var classes = node.className ? node.className.split(" ") : [];
-			if (!A.inArray(sClass, classes)) {
-				classes[classes.length] = sClass;
-			} else {
-				A.remove(sClass, classes);
-			}
-			node.className = classes.join(" ");
-			return myself;
 		},
 		setClass: function (sClass) {
-			this._node.className = sClass;
-			return this;
-		},
-		scrollLeft: function (value) {
-			if (Lang.isValue(value)) {
-				$.win.scrollTo(value, this.scrollTop());
-			} else {
-				var doc = $.context;
-				var dv = doc.defaultView;
-		        return Math.max(doc[DOCUMENT_ELEMENT].scrollLeft, doc.body.scrollLeft, (dv) ? dv.pageXOffset : 0);
-			}
-		},
-		scrollTop: function (value) {
-			if (Lang.isValue(value)) {
-				$.win.scrollTo(this.scrollTop(), value);
-			} else {
-				var doc = $.context;
-				var dv = doc.defaultView;
-		        return Math.max(doc[DOCUMENT_ELEMENT].scrollTop, doc.body.scrollTop, (dv) ? dv.pageYOffset : 0);
-			}
+			return this.each(function (node) {
+				node.className = sClass;
+			});
 		},
 		offset: function () {
-			var node = this._node;
+			var node = this[0];
 			var offset = {
 				left: 0,
 				top: 0,
@@ -1018,8 +1161,8 @@ jet().add("node", function ($) {
 					var box  = node.getBoundingClientRect();
 					var body = doc.body;
 					var de = doc[DOCUMENT_ELEMENT];
-					offset.left = box.left + this.scrollLeft() - (de.clientLeft || body.clientLeft || 0);
-					offset.top = box.top + this.scrollTop() - (de.clientTop || body.clientTop || 0);
+					offset.left = box.left + scrollLeft() - (de.clientLeft || body.clientLeft || 0);
+					offset.top = box.top + scrollTop() - (de.clientTop || body.clientTop || 0);
 				} else if (node.offsetParent) {
 					/*
 					 * Not interested in supporting other browsers very well
@@ -1037,361 +1180,284 @@ jet().add("node", function ($) {
 			return offset;
 		},
 		width: function (width) {
-			var myself = this;
-			var node = myself._node;
 			if (Lang.isValue(width)) {
 				if (Lang.isNumber(width) && width < 0) {
 					width = 0;
 				}
-				node.style.width = Lang.isString(width) ? width : width + "px";
-				return myself;
+				width = Lang.isString(width) ? width : width + "px";
+				return this.each(function (node) {
+					node.style.width = width;
+				});
 			}
-			return node.offsetWidth;
+			return this[0].offsetWidth;
 		},
 		height: function (height) {
-			var myself = this;
-			var node = myself._node;
 			if (Lang.isValue(height)) {
 				if (Lang.isNumber(height) && height < 0) {
 					height = 0;
 				}
-				node.style.height = Lang.isString(height) ? height : height + "px";
-				return myself;
+				height = Lang.isString(height) ? height : height + "px";
+				return this.each(function (node) {
+					node.style.height = height;
+				});
 			}
-			return node.offsetWidth;
+			return this[0].offsetHeight;
 		},
 		clone: function (deep) {
 			deep = Lang.isValue(deep) ? deep : TRUE;
-			return new Node(this._node.cloneNode(deep));
+			var result = new NodeList();
+			this.each(function (node) {
+				result.push(node.cloneNode(deep));
+			});
+			return result;
 		},
-		append: function (node) {
-			if (node._node) {
-				node = node._node;
-			}
-			this._node.appendChild(node);
-			return this;
+		append: function (appended) {
+			appended = $(appended);
+			return this.each(function (node) {
+				appended.each(function (app) {
+					node.appendChild(app);
+				});
+			});
 		},
 		appendTo: function (target) {
-			if (target._node) {
-				target = target._node;
-			}
-			target.appendChild(this._node);
-			return this;
+			target = $(target)[0];
+			return this.each(function (node) {
+				target.appendChild(node);
+			});
 		},
-		prepend: function (node) {
-			if (Node.is(node)) {
-				node = node._node;
-			}
-			var mynode = this._node;
-			if (mynode.firstChild) {
-				mynode.insertBefore(node, mynode.firstChild);
-			} else {
-				mynode.appendChild(node);
-			}
-			return this;
+		prepend: function (prepended) {
+			prepended = $(prepended);
+			return this.each(function (node) {
+				prepended.each(function (prep) {
+					if (node.firstChild) {
+						node.insertBefore(prep, node.firstChild);
+					} else {
+						node.appendChild(prep);
+					}
+				});
+			});
 		},
 		prependTo: function (target) {
-			if (Node.is(target)) {
-				target = target._node;
-			}
-			var node = this._node;
-			if (target.firstChild) {
-				target.insertBefore(node, target.firstChild);
-			} else {
-				target.appendChild(node);
-			}
-			return this;
+			target = $(target)[0];
+			return this.each(function (node) {
+				if (target.firstChild) {
+					target.insertBefore(node, target.firstChild);
+				} else {
+					target.appendChild(node);
+				}
+			});
 		},
 		insertBefore: function (before) {
-			if (Node.is(before)) {
-				before = before._node;
-			}
-			if (before.parentNode) {
-				before.parentNode.insertBefore(this._node, before);
-			}
-			return this;
+			before = $(before)[0];
+			return this.each(function (node) {
+				before.parentNode.insertBefore(node, before);
+			});
 		},
 		parent: function () {
-			return new Node(this._node.parentNode);
+			var result = new NodeList();
+			this.each(function (node) {
+				if (A.indexOf(node.parentNode, result) == -1) {
+					result.push(node.parentNode);
+				}
+			});
+			return result;
 		},
 		first: function () {
-			return new Node(this.children()._nodes.shift());
+			var result = new NodeList();
+			this.each(function (node) {
+				node = $(node).children(0)[0];
+				if (node) {
+					result.push(node);
+				}
+			});
+			return result;
 		},
 		next: function () {
-			var next = this._node;
-			do {
-				next = next.nextSibling;
-			}
-			while (next && next.nodeType == TEXT_NODE);
-			return next ? new Node(next) : null;
+			var result = new NodeList();
+			this.each(function (next) {
+				do {
+					next = next.nextSibling;
+				}
+				while (next && next.nodeType == TEXT_NODE);
+				if (next) {
+					result.push(next);
+				}
+			});
+			return result;
 		},
 		previous: function () {
-			var previous = this._node;
-			do {
-				previous = previous.previousSibling;
-			}
-			while (previous && previous.nodeType == TEXT_NODE);
-			return previous ? new Node(previous) : null;
+			var result = new NodeList();
+			this.each(function (previous) {
+				do {
+					previous = previous.previousSibling;
+				}
+				while (previous && previous.nodeType == TEXT_NODE);
+				if (previous) {
+					result.push(previous);
+				}
+			});
+			return result;
 		},
 		last: function () {
-			return new Node(this.children()._nodes.pop());
+			var result = new NodeList();
+			this.each(function (node) {
+				node = $(node).children().pop();
+				if (node) {
+					result.push(node);
+				}
+			});
+			return result;
 		},
 		html: function (html) {
-			if (Lang.isValue(html)) {
-				this._node.innerHTML = html;
-				return this;
-			} else {
-				return this._node.innerHTML;
-			}
+			return Lang.isValue(html) ? this.each(function (node) {
+				node.innerHTML = html;
+			}) : this[0].innerHTML;
 		},
 		attr: function (key, value) {
 			key = key || {};
-			var node = this._node;
 			var attrs = {};
 			if (Lang.isHash(key)) {
 				attrs = key;
 			} else if (Lang.isValue(value)) {
 				attrs[key] = value;
 			} else {
-				return node[key];
+				return this[0][key];
 			}
-			Hash.each(attrs, function (name, val) {
-				node[name] = val;
+			return this.each(function (node) {
+				Hash.each(attrs, function (name, val) {
+					node[name] = val;
+				});
 			});
-			return this;
 		},
 		css: function (key, value) {
-			var myself = this;
-			var node = myself._node;
 			var css = {};
 			if (Lang.isHash(key)) {
 				css = key;
 			} else if (Lang.isValue(value)) {
 				css[key] = value;
 			} else {
-				return this._node.style[key];
+				return this[0].style[key];
 			}
-			Hash.each(css, function (prop, value) {
-				if (prop == "opacity" && $.UA.ie) {
-					var ieOpacity = Math.ceil(value * 100);
-					if ($.UA.ie < 7) {
-						node.style["-ms-filter"] = "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + ieOpacity + ")";
+			return this.each(function (node) {
+				Hash.each(css, function (prop, value) {
+					if (prop == "opacity" && $.UA.ie) {
+						var ieOpacity = Math.ceil(value * 100);
+						if ($.UA.ie < 7) {
+							node.style["-ms-filter"] = "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + ieOpacity + ")";
+						} else {
+							node.style.filter = "alpha(opacity=" + ieOpacity + ")";
+						}
 					} else {
-						node.style.filter = "alpha(opacity=" + ieOpacity + ")";
+						if (Lang.isNumber(value) && prop != "zIndex" && prop != "zoom" && prop != "opacity") {
+							value += "px";
+						}
+						node.style[prop] = value;
 					}
-				} else {
-					if (Lang.isNumber(value) && prop != "zIndex" && prop != "zoom" && prop != "opacity") {
-						value += "px";
-					}
-					node.style[prop] = value;
-				}
+				});
 			});
-			return myself;
 		},
 		find: function (query) {
-			return $(query, this._node);
+			var result = new NodeList();
+			this.each(function (node) {
+				result.push.apply(result, $(query, node));
+			});
+			return result;
 		},
 		children: function (filter) {
 			filter = !Lang.isValue(filter) ? FALSE :
 					  Lang.isString(filter) ? filter.toUpperCase() : filter;
-			var result = [];
-			var myself = this;
-			var node = myself._node;
-			var children = node.childNodes;
-			var newChildren = [];
-			var length = children.length;
-			for (var i = 0; i < length; i++) {
-				if (children[i].nodeType != TEXT_NODE) {
-					newChildren[newChildren.length] = children[i];
-				}
-			}
-			if (filter !== FALSE) {
-				length = newChildren.length;
-				for (i = 0; i < length; i++) {
-					if (i == filter || newChildren[i].nodeName == filter) {
-						result[result.length] = newChildren[i];
+			var result = new NodeList();
+			this.each(function (node) {
+				var children = node.childNodes;
+				var newChildren = [];
+				var length = children.length;
+				for (var i = 0; i < length; i++) {
+					if (children[i].nodeType != TEXT_NODE) {
+						newChildren[newChildren.length] = children[i];
 					}
 				}
-			} else {
-				result.push.apply(result, newChildren);
-			}
-			return new NodeList(result);
+				if (filter !== FALSE) {
+					length = newChildren.length;
+					for (i = 0; i < length; i++) {
+						if (i == filter || newChildren[i].nodeName == filter) {
+							result.push(newChildren[i]);
+						}
+					}
+				} else {
+					result.push.apply(result, newChildren);
+				}
+			});
+			return result;
 		},
 		on: function (type, callback) {
-			addEvent(this._node, type, callback);
-			return this;
+			return this.each(function (node) {
+				addEvent(node, type, callback);
+			});
 		},
 		unbind: function (type, callback) {
-			removeEvent(this._node, type, callback);
-			return this;
+			return this.each(function (node) {
+				removeEvent(node, type, callback);
+			});
 		},
 		unbindAll: function (crawl) {
-			var node = this._node;
-			if (crawl) {
-				$.walkTheDOM(node, EventCache.clear);
-			} else {
-				EventCache.clear(node);
-			}
-			return this;
+			return this.each(function (node) {
+				if (crawl) {
+					$.walkTheDOM(node, EventCache.clear);
+				} else {
+					EventCache.clear(node);
+				}
+			});
 		},
 		remove: function (keepEvents) {
-			var node = this._node;
-			if (!keepEvents) {
-				$.walkTheDOM(node, EventCache.clear);
-			}
-			if (node.parentNode) {
-				node.parentNode.removeChild(node);
-			}
-			return this;
+			return this.each(function (node) {
+				if (!keepEvents) {
+					$.walkTheDOM(node, EventCache.clear);
+				}
+				if (node.parentNode) {
+					node.parentNode.removeChild(node);
+				}
+			});
 		},
 		getDocument: function () {
-			var node = this._node;
-			if (node.nodeName == "IFRAME") {
-				return new Node(node.contentDocument ||
-								node.contentWindow.document ||
-								node.document ||
-								null);
-			}
-			return null;
+			var result = [];
+			this.each(function (node) {
+				if (node.nodeName == "IFRAME") {
+					var doc = node.contentDocument || node.contentWindow.document || node.document || null;
+					if (doc) {
+						result[result.length] = doc;
+					}
+				}
+			});
+			return $(result);
 		},
 		currentStyle: function () {
-			var node = this._node;
+			var node = this[0];
 			return $.win[GET_COMPUTED_STYLE] ? $.win[GET_COMPUTED_STYLE](node, null) : 
 					node[CURRENT_STYLE] ? node[CURRENT_STYLE] : node.style;
 		},
-		ready: ready
-	});
-	
-	NodeList = function () {
-		var collection = [];
-		var addToCollection = function (node) {
-			if (Node.is(node)) {
-				collection[collection.length] = node;
-			} else if (node.nodeType || Lang.isString(node)) {
-				collection[collection.length] = new Node(node);
-			}
-		};
-		A.each(arguments, function (node) {
-			if (node.length) {
-				A.each(node, addToCollection);
-			} else {
-				addToCollection(node);
-			}
-		});
-		
-		this._nodes = collection;
-		var _DOMNodes = [];
-		A.each(collection, function (node) {
-			_DOMNodes[_DOMNodes.length] = node._node;
-		});
-		this._DOMNodes = _DOMNodes;
-	};
-	var NodeListP = NodeList.prototype;
-	$.mix(NodeListP, {
-		each: function (callback) {
-			var nodes = this._nodes;
-			var length = nodes.length;
-			for (var i = 0; i < length; i++) {
-				callback.call(nodes[i], nodes[i], i);
-			}
-			return this;
-		},
-		eq: function (index) {
-			return this._nodes[index];
-		},
-		notEq: function (index) {
-			var nodes = Lang.clone(this._nodes);
-			nodes.splice(index, 1);
-			return new NodeList(nodes);
-		},
-		link: function (nodes, createNewList) {
-			var myself = this;
-			if (NodeList.is(nodes)) {
-				nodes = nodes._nodes;
-			} else if (Node.is(nodes)) {
-				nodes = [nodes];
-			} else if (nodes.nodeType) {
-				nodes = [new Node(nodes)];
-			}
-			if (createNewList) {
-				return new NodeList(myself._nodes.concat(nodes));
-			} else {
-				myself._nodes = myself._nodes.concat(nodes);
-				return myself;
-			}
+		ready: ready,
+		link: function (nodelist) {
+			var result = new NodeList(SLICE.call(this));
+			A.each(nodelist, function (node) {
+				result.push(node);
+			});
+			return result;
 		}
 	});
-	
-	NodeList.addSetter = function (name) {
-		NodeListP[name] = function () {
-			var args = arguments;
-			return this.each(function (node) {
-				node[name].apply(node, args);
-			});
-		};
-	};
-	A.each(["append", "appendTo", "preprend", "prependTo", "insertBefore", "remove", 
-			"on", "unbind", "unbindAll", 
-			"addClass", "removeClass", "toggleClass", 
-			"hide", "show", "toggle"], NodeList.addSetter);
-			
-	NodeList.addGetter = function (name) {
-		NodeListP[name] = function () {
-			var args = arguments;
-			var results = [];
-			this.each(function (node) {
-				results[results.length] = node[name].apply(node, args);
-			});
-			return results;
-		};
-	};
-	A.each(["hasClass", "offset", "getDocument", "currentStyle"], NodeList.addGetter);
-	
-	NodeList.addListGetter = function (name) {
-		NodeListP[name] = function () {
-			var args = arguments;
-			var results = [];
-			this.each(function (node) {
-				A.each(node[name].apply(node, args), function (found) {
-					if (!A.inArray(found._node, results)) {
-						results[results.length] = found._node;
-					}
-				});
-			});
-			return new NodeList(results);
-		};
-	};
-	A.each(["children", "first", "last", "parent", "find", "clone"], NodeList.addListGetter);
-	
-	NodeList.addMixed = function (name) {
-		NodeListP[name] = function () {
-			var myself = this;
-			var args = arguments;
-			if (args.length === 0) {
-				var results = [];
-				myself.each(function (node) {
-					results[results.length] = node[name]();
-				});
-				return results;
-			} else {
-				return myself.each(function (node) {
-					node[name].apply(node, args);
-				});
-			}
-		};
-	};
-	A.each(["html", "css", "attr", "widt", "height"], NodeList.addMixed);
-	
 	NodeList.is = Lang.is;
+	
 
 	$.add({
-		Node: Node,
+
 		NodeList: NodeList,
 		
 		getWindowFromDocument: function (doc) {
 			doc = doc || $.context;
 			return doc.defaultView || doc.parentWindow || $.win;
 		},
+		
+		scrollLeft: scrollLeft,
+		scrollTop: scrollTop,
 		
 		screenSize: function () {
 			var doc = $.context,
@@ -1410,4 +1476,185 @@ jet().add("node", function ($) {
 	});
 	
 	addEvent($.win, "unload", EventCache.flush);
+});
+
+
+jet().add('ajax', function ($) {
+	var win = $.win;
+	
+	var TRUE = true,
+	FALSE = false,
+
+	XML = "xml",
+	XSL = "xsl",
+	TYPE_JSON = "json";
+	
+	var newAXO = function (t) {
+		return new win.ActiveXObject(t);
+	};
+	
+	var getActiveXParser = function (type) {
+		var freeThreadedDOM = "Msxml2.FreeThreadedDOMDocument.",
+			domDocument = "Msxml2.DOMDocument.",
+			test,
+			v6 = "6.0",
+			v3 = "3.0";
+		try {
+			test = newAXO(domDocument + v6);
+			getActiveXParser = function (type) {
+				if (type == XSL) {
+					return newAXO(freeThreadedDOM + v6);
+				} else {
+					return newAXO(domDocument + v6);
+				}
+			};
+		} catch (e) {
+			try {
+				test = newAXO(domDocument + v3);
+				getActiveXParser = function (type) {
+					if (type == XSL) {
+						return newAXO(freeThreadedDOM + v3);
+					} else {
+						return newAXO(domDocument + v3);
+					}
+				};
+			} catch (ex) {
+				
+			}
+		}
+		return getActiveXParser(type);
+	},
+	
+	getAjaxObject = function () {
+		var hostname = location.host,
+			msxml = "Microsoft.XMLHTTP",
+			test;
+		if ((location.protocol == "file:" || hostname == "localhost" || hostname == "127.0.0.1") && win.ActiveXObject) {
+			getAjaxObject = function () {
+				return newAXO(msxml);
+			};
+		} else if (XMLHttpRequest) {
+			getAjaxObject = function () {
+				return new XMLHttpRequest();
+			};
+		} else if (win.ActiveXObject) {
+			getAjaxObject = function () {
+				return newAXO(msxml);
+			};
+		}
+		return getAjaxObject();
+	};
+	
+	var timeoutError = 'timeout',
+	noObjectError = 'Can\'t create object',
+	noStatusError = 'Bad status';
+				
+	var getResultByContentType = function (xhr) {
+		var contentType = dataType || xhr.getResponseHeader('Content-type');
+		switch (contentType) {
+		case 'application/xml':
+		case XML:
+		case XSL:
+			return parseXML(xhr, contentType, onError);
+		case TYPE_JSON:
+			try {
+				return $.JSON.parse(xhr.responseText);
+			} catch (e) {
+				$.error(e);
+			}
+			break;
+		default:					
+			return xhr.responseText;
+		}
+	};
+
+	/* Parsea un XML
+	En Internet Explorer instancia un objeto ActiveX llamado MSXML. En el resto usa XMLHttpRequest.responseXML */
+	var parseXML = function (xmlFile, type, errorHandler) {
+		var xmlDoc = null;
+		/* La eleccion de versiones 6.0 y 3.0 es adrede.
+		   La version 4.0 es especifica de windows 2000 y la 5.0 viene unicamente con Microsoft Office
+		   La version 6 viene con Windows Vista y uno de los service pack de XP, por lo que el usuario quizas no la tenga
+		   Se la usa porque es considerablemente mas rapida */
+		if (!XMLHttpRequest) {
+			xmlDoc = getActiveXParser(type);
+			xmlDoc.async = FALSE;
+			xmlDoc.loadXML(xmlFile.responseText);
+			if (xmlDoc.parseError.errorCode !== 0) {
+				errorHandler(noStatusError, xmlDoc.parseError);
+			}
+		} else {
+			xmlDoc = xmlFile.responseXML;
+		}
+		return xmlDoc;
+	};
+	
+	$.ajax = function (settings) {
+		var xhr = getAjaxObject();
+	   
+		var success = settings.success,
+
+		result = null;
+		
+		var dataType 		= settings.dataType;
+		var timeout			= settings.timeout || 10000; /* Tiempo que tarda en cancelarse la transaccion */
+		var method			= settings.method || "GET"; /* Metodo para enviar informacion al servidor */
+		var async			= settings.async || TRUE;
+		var complete		= settings.complete || function () {};
+		var onSuccess		= function () {
+			if (success) {
+				success.apply($, arguments);
+			}
+			complete.apply($, arguments);
+		};
+		var onError			= function (a, b, c) {
+			if (settings.error) {
+				settings.error(a, b, c);
+			}
+			complete.apply($, arguments);
+		};
+	
+		if (xhr) {
+			/* Esto corrije el problema de ausencia de tipos mime solo si existe el metodo overrideMimeType (no existe en IE) */
+			if (dataType && (dataType === XML || dataType === XSL) && xhr.overrideMimeType) {
+				xhr.overrideMimeType('text/xml');
+			}
+			if (settings.url) {
+				if (async === TRUE) {
+					xhr.onreadystatechange = function () {
+						if (xhr.readyState === 4) {
+							/* Normalmente deberia chequearse unicamente el status == 200, pero cuando se hace una transaccion local el status en IE termina siendo 0
+							 por lo que con revisar que exista la respuesta alcanza */
+							if (xhr.status === 200 || xhr.responseText || xhr.responseXML) { 
+								onSuccess(getResultByContentType(xhr), xhr);
+							} else if (xhr.status === 408) {
+								onError(timeoutError, xhr.status, xhr);
+							} else {
+								onError(noStatusError, xhr.status, xhr); 
+							}
+						}
+					};
+				}
+				/* Cuando la transaccion se hace en un filesystem local y el archivo de destino no existe,
+				   no se llega a pasar por el evento onreadystatechange sino que puede lanzar una excepcion en algunos navegadores */
+				try {
+					xhr.open(method, settings.url, async);
+					xhr.send(null);
+				} catch (e) {
+					onError(noStatusError, 404, xhr); 
+				}
+				if (async === FALSE) {
+					result = getResultByContentType(xhr);
+				} else {
+					setTimeout(function () {
+						if (xhr.readyState !== 4) {
+							xhr.abort();
+							onError(timeoutError, 408, xhr);
+						}
+					}, timeout);
+				}
+			}
+		}
+		return result || $;
+	};
 });

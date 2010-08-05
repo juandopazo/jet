@@ -85,7 +85,7 @@ jet().add("container", function ($) {
 			}).on("blur", function () {
 				boundingBox.removeClass(prefix + Button.NAME + "-focus", prefix + type + Button.NAME + "-focus");
 			}).on(CLICK, function (e) {
-				node._node.blur();
+				node[0].blur();
 				if (myself.fire(PRESSED)) {
 					e.preventDefault();
 				}
@@ -176,11 +176,11 @@ jet().add("container", function ($) {
 		};
 		
 		myself.on("optionsChange", function (e, newOptions) {
-			var combo = myself.get(COMBO)._node;
+			var combo = myself.get(COMBO)[0];
 			combo.options.length = 0;
 			setOptions(combo, newOptions);
 		});
-		setOptions(myself.get(COMBO)._node, myself.get(OPTIONS));
+		setOptions(myself.get(COMBO)[0], myself.get(OPTIONS));
 		
 		myself.on("render", function () {
 			myself.get(COMBO).appendTo(myself.get(BOUNDING_BOX));
@@ -197,7 +197,7 @@ jet().add("container", function ($) {
 				opt = text;
 			}
 			myself.get("options").push(opt);
-			addOption(myself.get(COMBO)._node, text, value);
+			addOption(myself.get(COMBO)[0], text, value);
 			return myself;
 		},
 		fill: function (values) {

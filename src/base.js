@@ -1,3 +1,8 @@
+/**
+ * The Base module provides base classes for Utilities and Widgets.
+ * @module base
+ * @requires lang, dom
+ */
 jet().add('base', function ($) {
 	
 	var TRUE = true,
@@ -6,24 +11,20 @@ jet().add('base', function ($) {
 
 	var Hash = $.Hash,
 		Lang = $.Lang,
-		ArrayHelper = $.Array;
-	
+		ArrayHelper = $.Array,
+		extend = $.extend;
+
 	/**
-	 * A more traditional random number function.
-	 * Returns an integer between 0 and "num"
-	 *  
-	 * @param {Number} integer
+	 * @class OOP
+	 * @static
 	 */
-	var random = function (num) {
-		num = Math.random() * num;
-		return num === 0 ? 0 : Math.ceil(num) - 1;
-	};
-		
 	/**
-	 * Copies every property from b into a's prototype, except for the "constructor" property
-	 * 
-	 * @param {Function} a
-	 * @param {Object} b
+	 * @method extend
+	 */
+	/**
+	 * @method augment
+	 * @param {Function} A
+	 * @param {Function|Object} B
 	 * @param {Boolean} overwrite
 	 */
 	var augment = function (A, B, overwrite) {
@@ -49,61 +50,12 @@ jet().add('base', function ($) {
 		TRACKING = "tracking",
 		MOUSEMOVE = "mousemove",
 		FREQUENCY = "frequency";
-	
-	/**
-	 * Object function by Douglas Crockford
-	 * <a href="https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1">link</a>
-	 * 
-	 * @param {Object} o
-	 */
-	var Obj = function (o) {
-		var F = function () {};
-		F.prototype = o;
-		return new F();
-	};
-	
-	/**
-	 * From the guys at YUI (Thanks! This function is GENIUS!)
-     * 
-     * Utility to set up the prototype, constructor and superclass properties to
-     * support an inheritance strategy that can chain constructors and methods.
-     * Static members will not be inherited.
-     *
-     * @param {Function} r	the object to modify
-     * @param {Function} s	the object to inherit
-     * @param {Object} [px]	prototype properties to add/override
-     * @param {Object} [sx]	static properties to add/override
-     */
-    var extend = function (r, s, px) {
-        if (!s || !r) {
-            // @TODO error symbols
-            $.error("extend failed, verify dependencies");
-        }
 
-        var sp = s.prototype, rp = Obj(sp);
-        r.prototype = rp;
-
-        rp.constructor = r;
-        r.superclass = sp;
-
-        // assign constructor property
-        if (s != Object && sp.constructor == OP.constructor) {
-            sp.constructor = s;
-        }
-    
-        // add prototype overrides
-        if (px) {
-            $.mix(rp, px, true);
-        }
-
-    };
 	
 	/**
 	 * A class designed to be inherited or augmented into other classes and provide custom events
-	 * 
-	 * @classDescription  Custom events provider
+	 * @class EventTarget
 	 * @constructor
-	 * 
 	 */
 	var EventTarget = function () {
 		var collection = {};
@@ -112,8 +64,7 @@ jet().add('base', function ($) {
 		
 		/**
 		 * Adds an event listener
-		 * @method
-		 * @memberOf EventTarget
+		 * @method on
 		 * @param {String} eventType
 		 * @param {Function} callback
 		 */
@@ -127,8 +78,7 @@ jet().add('base', function ($) {
 		
 		/**
 		 * Removes and event listener
-		 * @method
-		 * @memberOf EventTarget
+		 * @method unbind
 		 * @param {String} eventType
 		 * @param {Function} callback
 		 */
@@ -139,8 +89,7 @@ jet().add('base', function ($) {
 		
 		/**
 		 * Fires an event, executing all its listeners
-		 * @method
-		 * @memberOf EventTarget
+		 * @method fire
 		 * @param {String} eventType
 		 * Extra parameters will be passed to all event listeners
 		 */
@@ -172,8 +121,7 @@ jet().add('base', function ($) {
 		
 		/**
 		 * Removes all event listeners of all types
-		 * @method
-		 * @memberOf EventTarget
+		 * @method unbindAll
 		 */
 		myself.unbindAll = function () {
 			collection = {};
@@ -183,11 +131,8 @@ jet().add('base', function ($) {
 	
 	/**
 	 * Provides get() and set() methods, along with getters, setters and options for configuration attributres
-	 * 
-	 * @classDescription Attribute provider
-	 * @return {Attribute}
-	 * @param {Object} classConfig
-	 * @inherits EventTarget
+	 * @class Attribute
+	 * @uses EventTarget
 	 * @constructor
 	 */
 	var Attribute = function (classConfig) {
@@ -238,8 +183,7 @@ jet().add('base', function ($) {
 		
 		/**
 		 * Returns a configuration attribute
-		 * 
-		 * @memberOf Attribute
+		 * @method get
 		 * @param {String} attrName
 		 */	
 		myself.get = function (attrName) {
@@ -259,8 +203,7 @@ jet().add('base', function ($) {
 		};
 		/**
 		 * Sets a configuration attribute
-		 * 
-		 * @memberOf Attribute
+		 * @method set
 		 * @param {String} attrName
 		 * @param {Object} attrValue
 		 */
@@ -276,8 +219,7 @@ jet().add('base', function ($) {
 		};
 		/**
 		 * Unsets a configuration attribute
-		 * 
-		 * @memberOf Attribute
+		 * @method unset
 		 * @param {String} attrName
 		 */
 		myself.unset = function (attrName) {
@@ -285,16 +227,14 @@ jet().add('base', function ($) {
 		};
 		/**
 		 * Adds a configuration attribute, along with its options
-		 * 
-		 * @memberOf Attribute
+		 * @method addAttr
 		 * @param {String} attrName
 		 * @param {Hash} config
 		 */
 		myself.addAttr = addAttr;
 		/**
 		 * Adds several configuration attributes
-		 * 
-		 * @memberOf Attribute
+		 * @method addAttrs
 		 * @param {Hash} config - key/value pairs of attribute names and configs
 		 */
 		myself.addAttrs = function (config) {
@@ -303,9 +243,7 @@ jet().add('base', function ($) {
 		};
 		/**
 		 * Returns a key/value paired object with all attributes
-		 * 
-		 * @method
-		 * @memberOf Attribute
+		 * @method getAttrs
 		 * @return {Hash}
 		 */
 		myself.getAttrs = function () {
@@ -317,9 +255,7 @@ jet().add('base', function ($) {
 		};
 		/**
 		 * Returns whether an attribute is set or not
-		 * 
-		 * @method
-		 * @memberOf Attribute
+		 * @method isSet
 		 * @param {String} attrName
 		 * @return {Boolean}
 		 */
@@ -329,9 +265,19 @@ jet().add('base', function ($) {
 	};
 	extend(Attribute, EventTarget);
 	
+	/**
+	 * Base class for all widgets and utilities
+	 * @class Base
+	 * @extends Attribute
+	 * @constructor
+	 */
 	var Base = function () {
 		Base.superclass.constructor.apply(this, arguments);
 		
+		/**
+		 * Allows quick setting of custom events in the constructor
+		 * @config on
+		 */
 		var myself = this.addAttr("on", {
 			writeOnce: TRUE,
 			value: {}
@@ -344,23 +290,28 @@ jet().add('base', function ($) {
 	extend(Base, Attribute);
 	
 	/**
-	 * Base class for all utilities
+	 * Basic class for all utilities
+	 * @class Utility
+	 * @extends Base
+	 * @constructor
 	 */
 	var Utility = function () {
 		Utility.superclass.constructor.apply(this, arguments);
 		var myself = this;
 		
 		$($.win).on(UNLOAD, function () {
-			myself.destructor();
+			myself.destroy();
 		}); 
 	};
 	extend(Utility, Base, {
-		destructor: function () {
+		/**
+		 * Calls itself when the window unloads. Allows for easier memory cleanup
+		 * @method destroy
+		 */
+		destroy: function () {
 			var myself = this;
 			if (myself.fire(DESTROY)) {
-				/*
-				 * Helping gargage collection
-				 */
+				// Helping gargage collection
 				Hash.each(myself, function (name) {
 					delete myself[name];
 				});
@@ -370,23 +321,50 @@ jet().add('base', function ($) {
 	
 	/**
 	 * Base class for all widgets
+	 * @class Widget
+	 * @extends Base
+	 * @constructor
 	 */
 	var Widget = function () {
 		Widget.superclass.constructor.apply(this, arguments);
 		var myself = this.addAttrs({
+			/**
+			 * @config srcNode
+			 */
 			srcNode: {
 				setter: $
 			},
+			/**
+			 * Prefix for all CSS clases.
+			 * @config classPrefix
+			 * @default "yui-"
+			 */
 			classPrefix: {
 				value: Widget.CSS_PREFIX + "-"
 			},
+			/**
+			 * CSS class name
+			 * @config className
+			 * @default "widget"
+			 */
 			className: {
 				value: "widget"
 			},
+			/**
+			 * Rendered status
+			 * @attribute rendered
+			 * @final
+			 */
 			rendered: {
 				writeOnce: TRUE,
 				value: FALSE
 			}
+			/**
+			 * The bounding box contains all the parts of the widget
+			 * @attribute boundingBox
+			 * @final
+			 * @value <div/>
+			 */
 		}).addAttr("boundingBox", {
 			readOnly: TRUE,
 			value: $("<div/>")
@@ -399,9 +377,7 @@ jet().add('base', function ($) {
 	extend(Widget, Base, {
 		/**
 		 * Hides the widget
-		 * @alias Widget.hide
-		 * @method
-		 * @memberOf Widget
+		 * @method hide
 		 */
 		hide: function () {
 			var myself = this;
@@ -410,6 +386,10 @@ jet().add('base', function ($) {
 			}
 			return myself;
 		},
+		/**
+		 * Shows the widget
+		 * @method show
+		 */
 		show: function () {
 			var myself = this;
 			if (myself.fire("show")) {
@@ -417,6 +397,11 @@ jet().add('base', function ($) {
 			}
 			return myself;
 		},
+		/**
+		 * Starts the rendering process
+		 * @method render
+		 * @param {NodeList|HTMLElement} target
+		 */
 		render: function (target) {
 			var myself = this;
 			if (target) {
@@ -430,6 +415,10 @@ jet().add('base', function ($) {
 			}
 			return myself;
 		},
+		/**
+		 * Destroys the widget by removing the elements from the dom and cleaning all event listeners
+		 * @method destroy
+		 */
 		destroy: function () {
 			var myself = this;
 			if (myself.fire(DESTROY)) {
@@ -448,8 +437,21 @@ jet().add('base', function ($) {
 	});
 	Widget.CSS_PREFIX = "yui";
 	
+	/**
+	 * A utility for tracking the mouse movement without crashing the browser rendering engine.
+	 * Also allows for moving the mouse over iframes and other pesky elements
+	 * @namespace $.utils
+	 * @class MouseTracker
+	 * @constructor
+	 */
 	var MouseTracker = function () {
 		MouseTracker.superclass.constructor.apply(this, arguments);
+		/**
+		 * Frequency at which the tracker updates
+		 * @attribute frequency
+		 * @default 20 (ms)
+		 * @type Number
+		 */
 		var myself = this.addAttr(FREQUENCY, {
 			value: 20
 		});
@@ -461,6 +463,12 @@ jet().add('base', function ($) {
 		var shim = new $.NodeList([]);
 		var iframes;
 		
+		/**
+		 * Tracking status
+		 * @attribute tracking
+		 * @type Boolean
+		 * @default false
+		 */
 		myself.addAttr(TRACKING, {
 			value: FALSE,
 			validator: Lang.isBoolean
@@ -468,15 +476,15 @@ jet().add('base', function ($) {
 		}).on(TRACKING + "Change", function (e, value) {
 			if (value) {
 				if (myself.get("shim")) {
-					shim._nodes = [];
+					shim.splice(0, shim.length);
 					iframes = $("iframe").each(function (iframe) {
 						var offset = iframe.offset();
-						shim._nodes.push($("<div/>").height(offset.height).width(offset.width).css({
+						shim.push($("<div/>").height(offset.height).width(offset.width).css({
 							position: "absolute",
 							left: offset.left,
 							top: offset.top
-						}).hide().appendTo(iframe.parent()));
-					});
+						}).hide().appendTo(iframe.parent())[0]);
+					});	
 				}
 				if (!capturing) {
 					shim.show();
@@ -497,19 +505,26 @@ jet().add('base', function ($) {
 				e.preventDefault();
 			}
 		});
-
+		
+		/**
+		 * 
+		 * @event mousemove
+		 */
 		shim.link($($.context), TRUE).on(MOUSEMOVE, function (e) {
 			clientX = e.clientX;
 			clientY = e.clientY;
 			if (myself.get(TRACKING) && myself.get("shim")) {
 				iframes.each(function (iframe, i) {
 					var offset = iframe.offset();
-					shim._nodes[i].height(offset.height).width(offset.width).css({
+					shim[i].height(offset.height).width(offset.width).css({
 						left: offset.left + "px",
 						top: offset.top + "px"
 					});
 				});
 			}
+		/**
+		 * @event mouseup
+		 */
 		}).on("mouseup", function () {
 			myself.set(TRACKING, FALSE).fire("mouseup", clientX, clientY);
 		});
@@ -519,9 +534,17 @@ jet().add('base', function ($) {
 		});
 	};
 	extend(MouseTracker, Utility, {
+		/**
+		 * Start tracking. Equivalent to setting the tracking attribute to true
+		 * @method start
+		 */
 		start: function () {
 			return this.set(TRACKING, TRUE);
 		},
+		/**
+		 * Stop tracking. Equivalent to setting the tracking attribute to false
+		 * @method stop
+		 */
 		stop: function () {
 			return this.set(TRACKING, FALSE);
 		}

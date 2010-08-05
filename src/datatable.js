@@ -142,9 +142,9 @@ jet().add('datatable', function ($) {
 			A.each(myself.get(COLUMN_DEFINITIONS), function (colDef) {
 				var text = row.get(colDef.key);
 				var td = $("<td/>").addClass(prefix + className + "-col-" + colDef.key);
-				td.append($(NEW_DIV).addClass(prefixClass + LINER).html(colDef.formatter ? colDef.formatter(text, row.getData(), td) : text)).appendTo(tr)
+				td.append($(NEW_DIV).addClass(prefixClass + LINER).html(colDef.formatter ? colDef.formatter(text, row.getData(), td) : text)).appendTo(tr);
 			});
-			tr.addClass(tbody.children()._nodes.length % 2 === 0 ? (prefixClass + EVEN) : (prefixClass + ODD)).appendTo(tbody);
+			tr.addClass(tbody.children().length % 2 === 0 ? (prefixClass + EVEN) : (prefixClass + ODD)).appendTo(tbody);
 		};
 		/**
 		 * Adds a row
