@@ -295,6 +295,30 @@
 			}
 		};
 	}());
+	/**
+	 * Clones an object, returning a copy with the sames properties
+	 * @method clone
+	 * @param {Object} o
+	 */
+	var clone = function (o) {
+		var n;
+		if (Lang.isHash(o)) {
+			n = {};
+			Hash.each(o, function (key, value) {
+				n[key] = clone(value);
+			});
+		} else if (Lang.isArray(o)) {
+			n = [];
+			ArrayHelper.each(o, function (value) {
+				n[n.length] = clone(value);
+			});
+		} else {
+			n = o;
+		}
+		return n;
+	};
+	Lang.clone = clone;
+	
 	
 	/**
 	 * @class Array
@@ -376,6 +400,13 @@
 	 * @static
 	 */
 	var Hash = {
+		/**
+		 * Iterats through a hash
+		 * @method each
+		 * @param {Hash} hash
+		 * @param {Function} fn
+		 * @param {Object} [thisp] Sets the value of the this keyword 
+		 */
 		each: function (hash, fn, thisp) {
 			for (var x in hash) {
 				if (hash.hasOwnProperty(x)) {
@@ -385,6 +416,12 @@
 				}
 			}
 		},
+		/**
+		 * Returns an array with all the keys of a hash
+		 * @method keys
+		 * @param {Hash} hash
+		 * @return {Array}
+		 */
 		keys: function (hash) {
 			var keys = [];
 			Hash.each(hash, function (key) {
@@ -392,6 +429,12 @@
 			});
 			return keys;
 		},
+		/**
+		 * Returns an array with all the valus of a hash
+		 * @method values
+		 * @param {Object} hash
+		 * @return {Array}
+		 */
 		values: function (hash) {
 			var values = [];
 			Hash.each(hash, function (key, value) {
@@ -468,30 +511,22 @@
 		return a;
 	};
 
-	var clone = function (o) {
-		var n;
-		if (Lang.isHash(o)) {
-			n = {};
-			Hash.each(o, function (key, value) {
-				n[key] = clone(value);
-			});
-		} else if (Lang.isArray(o)) {
-			n = [];
-			ArrayHelper.each(o, function (value) {
-				n[n.length] = clone(value);
-			});
-		} else {
-			n = o;
-		}
-		return n;
-	};
-	Lang.clone = clone;
-	
-	/*
-	 * Base object for the library.
+	/**
+	 * @module core
 	 */
 	var Core = function () {
+		/**
+		 * Core methods
+		 * @class Core
+		 * @static
+		 */
 		
+		/**
+		 * Walks through the DOM tree starting in th branch that derives from node
+		 * @method walkTheDOM
+		 * @param {HTMLElement} node
+		 * @param {Function} fn
+		 */
 		var walkTheDOM = function (node, fn) {
 			fn(node);
 			node = node.firstChild;
@@ -527,6 +562,15 @@
 			return getByClass(className, root);
 		};
 		
+		/**
+		 * The global object is a finder method that finds HTML elements.
+		 * The query string allows for different simple searches: "#foo" (get elemnet by id), ".foo" (gets elements by class), "foo" (get elements by tag) or an array of html elements
+		 * For more complex queries, take a look at the Sizzle module
+		 * @method $
+		 * @param {String|HTMLElement|Array} query
+		 * @param {HTMLElement|Document} root
+		 * @return {NodeList}
+		 */
 		// @TODO: consider moving this to the Node module
 		var $ = function (query, root) {
 			root = root || $.context;
@@ -551,7 +595,7 @@
 		/**
 		 * Object function by Douglas Crockford
 		 * <a href="https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1">link</a>
-		 * 
+		 * @private
 		 * @param {Object} o
 		 */
 		var toObj = function (o) {
@@ -567,6 +611,7 @@
 	     * support an inheritance strategy that can chain constructors and methods.
 	     * Static members will not be inherited.
 	     *
+	     * @method extend
 	     * @param {Function} r	the object to modify
 	     * @param {Function} s	the object to inherit
 	     * @param {Object} [px]	prototype properties to add/override
@@ -597,10 +642,24 @@
 	    };
 		
 		add({
-			
+			/**
+			 * A pointer to the last Windo that was referenced by the $() function
+			 * @property win
+			 */
 			win: win,
+			/**
+			 * A pointer to the last Document that was referenced by the $() function.
+			 * @property context
+			 */
 			context: doc,
 			
+			/**
+			 * Does all the work behind the $() function
+			 * You shouldn't overwrite it unless you know what you're doing
+			 * @protected 
+			 * @param {String} query
+			 * @param {HTMLElement|Document} root
+			 */
 			parseQuery: function (query, root) {
 				root = root || $.context;
 				var c = query.substr(0, 1), test, node;
@@ -628,8 +687,21 @@
 				}
 			},
 			
+			/**
+			 * Copies all properties from B to A.
+			 * Doesn't overwrite properties unless the overwrite parameter is TRUE
+			 * @method mix
+			 * @param {Object} A
+			 * @param {Object} B
+			 * @param {Boolean} [overwrite]
+			 */
 			mix: mix,
 			
+			/**
+			 * Adds properties to the $ object (shortcut for adding classes)
+			 * @method add
+			 * @param {Hash} key/value pairs of class/function names and definitions
+			 */
 			add: add,
 			
 			extend: extend,
@@ -644,8 +716,27 @@
 			
 			utils: {},
 			
+			/**
+			 * Loads scripts and CSS files.
+			 * Included with the jet() core
+			 * @module get
+			 */
+			/**
+			 * @class Get
+			 * @static
+			 */
 			Get: {
+				/**
+				 * Loads a script asynchronously
+				 * @method script
+				 * @param {String} url
+				 */
 				script: loadScript,
+				/**
+				 * Loads a CSS file
+				 * @method css
+				 * @param {String} url
+				 */
 				css: loadCSS
 			}
 		});
@@ -717,9 +808,16 @@
 		});
 			
 		/**
+		 * Main namespace. Handles loading of modules
+		 * @module loader
+		 */
+		/**
+		 * @class Loader
+		 */
+		/**
 		 * Global function. Returns an object with 2 methods: use() and add().
 		 * See the comments at the beginning for more information on this object and its use. 
-		 * 
+		 * @method jet
 		 * @param {Object} config
 		 */
 		win.jet = function (config) {
@@ -750,7 +848,8 @@
 				 * 
 				 * This method works by overloading its parameters. It takes names (String) of predefined modules
 				 * or objects defining name and path/fullpath of a module. The last parameter must be a function 
-				 * that contains the main logic of the application. 
+				 * that contains the main logic of the application.
+				 * @method use 
 				 */
 				use: function () {
 					
@@ -834,7 +933,7 @@
 				/**
 				 * Adds a module to the loaded module list and calls update() to check if a queue is ready to fire
 				 * This method must be called from a module to register it
-				 * 
+				 * @method add
 				 * @param {String} moduleName
 				 * @param {Function} expose
 				 */
@@ -851,6 +950,10 @@
 	}
 }());
 
+/**
+ * Base structure for logging
+ * @module log
+ */
 jet().add("log", function ($) {
 	
 	$.error = function (msg) {
@@ -859,7 +962,16 @@ jet().add("log", function ($) {
 
 });
 
+/**
+ * Browser sniffing
+ * @module ua
+ */
 jet().add("ua", function ($) {
+	/**
+	 * Browser sniffing
+	 * @class UA
+	 * @static
+	 */
 	$.UA = (function () {
 		var nav = $.win.navigator,
 			ua = nav.userAgent.toLowerCase(),
@@ -870,16 +982,45 @@ jet().add("ua", function ($) {
 			ie = /(msie) ([\w.]+)/.exec(ua);
 		
         return {
+			/**
+			 * true if the browser uses the Webkit rendering engine (ie: Safari, Chrome)
+			 * @property webkit
+			 */
 			webkit: webkit,
+			/**
+			 * If the browser is Internet Explorer, this property is equal to the IE version. If not, it is false
+			 * @property ie
+			 */
 			ie: ie && ie[1] && ie[2] ? parseFloat(ie[2]) : false, // ie is false, 6, 7 or 8
+			/**
+			 * true if the browser is Opera
+			 * @property opera
+			 */
 			opera: opera,
+			/**
+			 * true if the browser is based on the Gecko rendering engine (ie: Firefox)
+			 * @property gecko
+			 */
 			gecko: !webkit && !opera && !ie && /Gecko/i.test(ua),
+			/**
+			 * true if the operating system is Windows
+			 * @property win
+			 */
 			win: p ? /win/.test(p) : /win/.test(ua), 
+			/**
+			 * true if the operating system is Apple OSX
+			 * @property mac
+			 */
 			mac: p ? /mac/.test(p) : /mac/.test(ua)
 		};
     }());
 });
 
+/**
+ * Node collections and DOM abstraction
+ * @module node
+ * @requires lang, ua
+ */
 jet().add("node", function ($) {
 	
 	var TRUE = true,
@@ -890,10 +1031,21 @@ jet().add("node", function ($) {
 		Hash = $.Hash,
 		A = $.Array,
 		SLICE = Array.prototype.slice;
-		
+	
+	/**
+	 * Keeps a record of all listeners attached to the DOM in order to remove them when necessary
+	 * @class EventCache
+	 * @static
+	 * @private
+	 */
 	var EventCache = (function () {
 		var cache = {};
 		
+		/**
+		 * Removes all listeners from a node
+		 * @method clear
+		 * @param {DOMNode} obj
+		 */
 		var clear = function (obj) {
 			if (obj.detachEvent) {
 				clear = function (obj) {
@@ -943,6 +1095,13 @@ jet().add("node", function ($) {
 		};
 		
 		return {
+			/**
+			 * Adds a listener to the cache
+			 * @method add
+			 * @param {DOMNode} obj
+			 * @param {String} type
+			 * @param {Function} fn
+			 */
 			add: function (obj, type, fn) {
 				if (obj.nodeType) {
 					var c = getCache(type);
@@ -952,6 +1111,13 @@ jet().add("node", function ($) {
 					};
 				}
 			},
+			/**
+			 * Removes a method from the cache, but doesn't do anything to the node's listener
+			 * @method remove
+			 * @param {DOMNode} obj
+			 * @param {String} type
+			 * @param {Function} fn
+			 */
 			remove: function (obj, type, fn) {
 				A.remove(getCache(type), {
 					obj: obj,
@@ -959,6 +1125,10 @@ jet().add("node", function ($) {
 				});
 			},
 			clear: clear,
+			/**
+			 * Removes all listeners from all nodes recorded in the cache
+			 * @method flush
+			 */
 			flush: function () {
 				for (var o in cache) {
 					if (cache.hasOwnProperty(o)) {
@@ -969,6 +1139,7 @@ jet().add("node", function ($) {
 		};
 	}());
 	
+	// adds a DOM event and provides event object normalization
 	var addEvent = function (obj, type, callback) {
 		if (obj.addEventListener) {
 			addEvent = function (obj, type, callback) {
@@ -994,6 +1165,7 @@ jet().add("node", function ($) {
 		addEvent(obj, type, callback);
 	};
 	
+	// cross browser listener removal
 	var removeEvent = function (obj, type, callback) {
 		if (obj.removeEventListener) {
 			removeEvent = function (obj, type, callback) {
@@ -1014,7 +1186,26 @@ jet().add("node", function ($) {
 	var DOCUMENT_ELEMENT = "documentElement";
 	var GET_COMPUTED_STYLE = "getComputedStyle";
 	var CURRENT_STYLE = "currentStyle";
-		
+	
+	/**
+	 * @class DOM
+	 * @static
+	 */	
+	/**
+	 * Returns the window object to which the current document belongs
+	 * @method getWindowFromDocument
+	 * @param {Document} document
+	 */
+	/**
+	 * Returns the inner size of the screen
+	 * @method screenSize
+	 */
+	 
+	/**
+	 * Gets the scrolling width or makes the browser scroll
+	 * @method scrollLeft
+	 * @param {Number} value
+	 */
 	var scrollLeft = function (value) {
 		if (Lang.isValue(value)) {
 			$.win.scrollTo(value, this.scrollTop());
@@ -1024,6 +1215,11 @@ jet().add("node", function ($) {
 	        return Math.max(doc[DOCUMENT_ELEMENT].scrollLeft, doc.body.scrollLeft, (dv) ? dv.pageXOffset : 0);
 		}
 	};
+	/**
+	 * Gets the scrolling height or makes the browser scroll
+	 * @method scrollTop
+	 * @param {Number} value
+	 */
 	var scrollTop = function (value) {
 		if (Lang.isValue(value)) {
 			$.win.scrollTo(this.scrollTop(), value);
@@ -1045,7 +1241,12 @@ jet().add("node", function ($) {
 		}
 		return myself;
 	};
-	
+	/**
+	 * @class NodeList
+	 * @constructor
+	 * @param {Array|DOMCollection|DOMNode} nodes
+	 * @param {DOMNode|Document} root
+	 */
 	var NodeList = function (nodes, root) {
 		NodeList.superclass.constructor.apply(this);
 		root = root || $.context;
@@ -1074,12 +1275,32 @@ jet().add("node", function ($) {
 		this.push.apply(this, nodes);
 	};
 	$.extend(NodeList, Array, {
+		/**
+		 * Iterates through the NodeList
+		 * The callback is passed a reference to the node and an iteration index. 
+		 * The "this" keyword also refers to the node. ie:
+		 * $("div").each(function (node, i) {
+		 *     if (i % 2 == 1) {
+		 *        $(node).addClass("even");
+		 *     } else {
+		 *     	  $(node).addClass("odd");
+		 *     }
+		 * });
+		 * @method each
+		 * @param {Function} callback
+		 * @chainable
+		 */
 		each: function (fn) {
 			for (var myself = this, length = myself.length, i = 0; i < length; i++) {
 				fn.call(myself[i], myself[i], i);
 			}
 			return myself;
 		},
+		/**
+		 * Hides all nodes
+		 * @method hide
+		 * @chainable
+		 */
 		hide: function () {
 			return this.each(function (node) {
 				var display = node.style.display;
@@ -1089,12 +1310,22 @@ jet().add("node", function ($) {
 				node.style.display = NONE;
 			});
 		},
+		/**
+		 * Shows all nodes
+		 * @method show
+		 * @chainable
+		 */
 		show: function () {
 			return this.each(function (node) {
 				console.log(node);
 				node.style.display = node.JET_oDisplay || "";
 			});
 		},
+		/**
+		 * If a node in the collection is hidden, it shows it. If it is visible, it hides it.
+		 * @method toggle
+		 * @chainable
+		 */
 		toggle: function () {
 			return this.each(function (node) {
 				var ns = node.style;
@@ -1104,10 +1335,22 @@ jet().add("node", function ($) {
 							"";
 			});
 		},
-		hasClass: function (sClass) {
+		/**
+		 * Returns true if the first node in the collection has the className CSS class
+		 * @method hasClass
+		 * @param {String} className
+		 * @chainable
+		 */
+		hasClass: function (className) {
 			var node = this[0];
-			return A.inArray(sClass, node.className ? node.className.split(" ") : []);
+			return A.inArray(className, node.className ? node.className.split(" ") : []);
 		},
+		/**
+		 * Removes a number of classes from all nodes in the collection.
+		 * Takes multiple string parameters
+		 * @method removeClass
+		 * @chainable
+		 */
 		removeClass: function () {
 			var args = SLICE.call(arguments);
 			return this.each(function (node) {
@@ -1116,6 +1359,12 @@ jet().add("node", function ($) {
 				});
 			});
 		},
+		/**
+		 * Adds a number of classes to all nodes in the collection
+		 * Takes multiple string parameters
+		 * @method addClass
+		 * @chainable
+		 */
 		addClass: function () {
 			var args = SLICE.call(arguments);
 			return this.each(function (node) {
@@ -1128,6 +1377,12 @@ jet().add("node", function ($) {
 				});
 			});
 		},
+		/**
+		 * Adds/removes a certain class from all nodes in the collection
+		 * @method toggleClass
+		 * @param {String} sClass
+		 * @chainable
+		 */
 		toggleClass: function (sClass) {
 			return this.each(function (node) {
 				var classes = node.className ? node.className.split(" ") : [];
@@ -1139,11 +1394,28 @@ jet().add("node", function ($) {
 				node.className = classes.join(" ");
 			});
 		},
+		/**
+		 * Sets the class name of all nodes in the collection
+		 * @method setClass
+		 * @param {String} sClass
+		 * @chainable
+		 */
 		setClass: function (sClass) {
 			return this.each(function (node) {
 				node.className = sClass;
 			});
 		},
+		/**
+		 * Returns an object literal containing:
+		 * <ul>
+		 * <li><strong>top</strong>: top position in px</li>
+		 * <li><strong>left</strong>: left position in px</li>
+		 * <li><strong>width</strong>: width in px</li>
+		 * <li><strong>height</strong>: height in px</li>
+		 * </ul>
+		 * @method offset
+		 * @return {Hash}
+		 */
 		offset: function () {
 			var node = this[0];
 			var offset = {
@@ -1179,6 +1451,13 @@ jet().add("node", function ($) {
 			
 			return offset;
 		},
+		/**
+		 * Gets/sets the width of all the nodes in the collection
+		 * @method width
+		 * @param {String|Number} [width]
+		 * @memberOf NodeList
+		 * @chainable
+		 */
 		width: function (width) {
 			if (Lang.isValue(width)) {
 				if (Lang.isNumber(width) && width < 0) {
@@ -1191,6 +1470,12 @@ jet().add("node", function ($) {
 			}
 			return this[0].offsetWidth;
 		},
+		/**
+		 * Gets/sets the height of all the nodes in the collection
+		 * @method height
+		 * @param {String|Number} [height]
+		 * @chainable
+		 */
 		height: function (height) {
 			if (Lang.isValue(height)) {
 				if (Lang.isNumber(height) && height < 0) {
@@ -1203,6 +1488,12 @@ jet().add("node", function ($) {
 			}
 			return this[0].offsetHeight;
 		},
+		/**
+		 * Returns a new NodeList with all nodes cloned from the current one
+		 * @method clone
+		 * @param {Boolean} deep If true, all nodes in the brach are cloned. If not, only the ones in the collection
+		 * @return {NodeList}
+		 */
 		clone: function (deep) {
 			deep = Lang.isValue(deep) ? deep : TRUE;
 			var result = new NodeList();
@@ -1211,6 +1502,12 @@ jet().add("node", function ($) {
 			});
 			return result;
 		},
+		/**
+		 * Appends nodes to the ones in the current node list
+		 * @method append
+		 * @param {DOMNode|Array|NodeList} appended
+		 * @chainable
+		 */
 		append: function (appended) {
 			appended = $(appended);
 			return this.each(function (node) {
@@ -1219,12 +1516,24 @@ jet().add("node", function ($) {
 				});
 			});
 		},
+		/**
+		 * Appends all nodes in the current collection to the target node
+		 * @method appendTo
+		 * @param {DOMNode|NodeList} target
+		 * @chainable
+		 */
 		appendTo: function (target) {
 			target = $(target)[0];
 			return this.each(function (node) {
 				target.appendChild(node);
 			});
 		},
+		/**
+		 * Insert nodes to the ones in the current node list, before their first children
+		 * @method append
+		 * @param {DOMNode|Array|NodeList} appended
+		 * @chainable
+		 */
 		prepend: function (prepended) {
 			prepended = $(prepended);
 			return this.each(function (node) {
@@ -1237,6 +1546,12 @@ jet().add("node", function ($) {
 				});
 			});
 		},
+		/**
+		 * Inserts all nodes in the current collection before the first child of the target node
+		 * @method prependTo
+		 * @param {DOMNode|NodeList} target
+		 * @chainable
+		 */
 		prependTo: function (target) {
 			target = $(target)[0];
 			return this.each(function (node) {
@@ -1247,12 +1562,23 @@ jet().add("node", function ($) {
 				}
 			});
 		},
+		/**
+		 * Inserts all nodes in the current node list before the target node
+		 * @method insertBefore
+		 * @param {DOMNode|NodeList} before
+		 * @chainable
+		 */
 		insertBefore: function (before) {
 			before = $(before)[0];
 			return this.each(function (node) {
 				before.parentNode.insertBefore(node, before);
 			});
 		},
+		/**
+		 * Returns a new NodeList with all the parents of the current nodes
+		 * @method parent
+		 * @return {NodeList}
+		 */
 		parent: function () {
 			var result = new NodeList();
 			this.each(function (node) {
@@ -1262,6 +1588,11 @@ jet().add("node", function ($) {
 			});
 			return result;
 		},
+		/**
+		 * Returns a new NodeList with all the first children of the nodes in the collection
+		 * @method first
+		 * @return {NodeList}
+		 */
 		first: function () {
 			var result = new NodeList();
 			this.each(function (node) {
@@ -1272,6 +1603,11 @@ jet().add("node", function ($) {
 			});
 			return result;
 		},
+		/**
+		 * Returns a new NodeList with all the next siblings of the nodes in the collection
+		 * @method next
+		 * @return {NodeList}
+		 */
 		next: function () {
 			var result = new NodeList();
 			this.each(function (next) {
@@ -1285,6 +1621,11 @@ jet().add("node", function ($) {
 			});
 			return result;
 		},
+		/**
+		 * Returns a new NodeList with all the previous siblings of the nodes in the collection
+		 * @method previous
+		 * @return {NodeList}
+		 */
 		previous: function () {
 			var result = new NodeList();
 			this.each(function (previous) {
@@ -1298,6 +1639,11 @@ jet().add("node", function ($) {
 			});
 			return result;
 		},
+		/**
+		 * Returns a new NodeList with all the last children of the nodes in the collection
+		 * @method first
+		 * @return {NodeList}
+		 */
 		last: function () {
 			var result = new NodeList();
 			this.each(function (node) {
@@ -1308,11 +1654,24 @@ jet().add("node", function ($) {
 			});
 			return result;
 		},
+		/**
+		 * Gets or sets the innerHTML of all the nodes in the node list
+		 * @method html
+		 * @param {String} html
+		 * @chainable
+		 */
 		html: function (html) {
 			return Lang.isValue(html) ? this.each(function (node) {
 				node.innerHTML = html;
 			}) : this[0].innerHTML;
 		},
+		/**
+		 * Gets or sets tag attributes to the nodes in the collection
+		 * @method attr
+		 * @param {String|Hash} key
+		 * @param {String} [value]
+		 * @chainable
+		 */
 		attr: function (key, value) {
 			key = key || {};
 			var attrs = {};
@@ -1329,6 +1688,13 @@ jet().add("node", function ($) {
 				});
 			});
 		},
+		/**
+		 * Gets or sets CSS styles
+		 * @method css
+		 * @param {String|Hash} key
+		 * @param {String} [value]
+		 * @chainable
+		 */
 		css: function (key, value) {
 			var css = {};
 			if (Lang.isHash(key)) {
@@ -1356,6 +1722,12 @@ jet().add("node", function ($) {
 				});
 			});
 		},
+		/**
+		 * Finds all the nodes below the ones in the current collection that match the search query
+		 * @method find
+		 * @param {String} query
+		 * @return {NodeList}
+		 */
 		find: function (query) {
 			var result = new NodeList();
 			this.each(function (node) {
@@ -1363,6 +1735,12 @@ jet().add("node", function ($) {
 			});
 			return result;
 		},
+		/**
+		 * Returns a new NodeList with all the children of the current nodes
+		 * @method children
+		 * @param {String|Number} filter Return only the children that match the tag or index in this parameter
+		 * @return {NodeList}
+		 */
 		children: function (filter) {
 			filter = !Lang.isValue(filter) ? FALSE :
 					  Lang.isString(filter) ? filter.toUpperCase() : filter;
@@ -1389,16 +1767,37 @@ jet().add("node", function ($) {
 			});
 			return result;
 		},
+		/**
+		 * Adds an event listener to all the nods in the list
+		 * @method on
+		 * @param {String} type
+		 * @param {Function} callback
+		 * @chainable
+		 */
 		on: function (type, callback) {
 			return this.each(function (node) {
 				addEvent(node, type, callback);
 			});
 		},
+		/**
+		 * Removes an event listener from all the nodes
+		 * @method unbind
+		 * @param {String} type
+		 * @param {Function} callback
+		 * @chainable
+		 */
 		unbind: function (type, callback) {
 			return this.each(function (node) {
 				removeEvent(node, type, callback);
 			});
 		},
+		/**
+		 * Removes all event listeners from all the current nodes
+		 * If "crawl" is true, it also removes them from all the nodes in the branches defined by the nodes
+		 * @method unbindAll
+		 * @param {Boolean} crawl
+		 * @chainable 
+		 */
 		unbindAll: function (crawl) {
 			return this.each(function (node) {
 				if (crawl) {
@@ -1408,6 +1807,13 @@ jet().add("node", function ($) {
 				}
 			});
 		},
+		/**
+		 * Removes all the nodes from the DOM tree.
+		 * Unless keepEvents is true, it alse removes all event listeners from the nodes
+		 * @method remove
+		 * @param {Boolean} keepEvents
+		 * @chainable
+		 */
 		remove: function (keepEvents) {
 			return this.each(function (node) {
 				if (!keepEvents) {
@@ -1418,6 +1824,11 @@ jet().add("node", function ($) {
 				}
 			});
 		},
+		/**
+		 * Returns a new NodeList with all the documents of all the nodes in the collection that are Iframes
+		 * @method getDocument
+		 * @return {NodeList}
+		 */
 		getDocument: function () {
 			var result = [];
 			this.each(function (node) {
@@ -1430,12 +1841,30 @@ jet().add("node", function ($) {
 			});
 			return $(result);
 		},
+		/**
+		 * Returns the computed style of the first node in the collection
+		 * @method currentStyle
+		 * @return {CSSDeclaration}
+		 */
 		currentStyle: function () {
 			var node = this[0];
 			return $.win[GET_COMPUTED_STYLE] ? $.win[GET_COMPUTED_STYLE](node, null) : 
 					node[CURRENT_STYLE] ? node[CURRENT_STYLE] : node.style;
 		},
+		/**
+		 * Executes a callback when the DOM to which the first node in the collection belongs is ready
+		 * @method ready
+		 * @param {Function} callback
+		 * @chainable
+		 */
 		ready: ready,
+		/**
+		 * Returns a new NodeList containing all the nodes in the current list and the ones in the new one
+		 * Useful for applying properties to a bigger group of nodes, while keeping the original references
+		 * @method link
+		 * @param {NodeList} nodelist
+		 * @return {NodeList}
+		 */
 		link: function (nodelist) {
 			var result = new NodeList(SLICE.call(this));
 			A.each(nodelist, function (node) {
@@ -1478,7 +1907,10 @@ jet().add("node", function ($) {
 	addEvent($.win, "unload", EventCache.flush);
 });
 
-
+/**
+ * Handles AJAX requests
+ * @module ajax
+ */
 jet().add('ajax', function ($) {
 	var win = $.win;
 	
@@ -1589,6 +2021,15 @@ jet().add('ajax', function ($) {
 		return xmlDoc;
 	};
 	
+	/**
+	 * @class IO
+	 * @static
+	 */
+	/**
+	 * Makes an ajax request
+	 * @method ajax
+	 * @param {Hash} settings
+	 */
 	$.ajax = function (settings) {
 		var xhr = getAjaxObject();
 	   
@@ -1596,6 +2037,10 @@ jet().add('ajax', function ($) {
 
 		result = null;
 		
+		/**
+		 * Type of the returned data ('xml', 'xsl', 'json', 'text')
+		 * @config dataType
+		 */
 		var dataType 		= settings.dataType;
 		var timeout			= settings.timeout || 10000; /* Tiempo que tarda en cancelarse la transaccion */
 		var method			= settings.method || "GET"; /* Metodo para enviar informacion al servidor */

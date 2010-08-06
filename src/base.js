@@ -263,7 +263,7 @@ jet().add('base', function ($) {
 			return Lang.isValue(classConfig[attrName]);
 		};
 	};
-	extend(Attribute, EventTarget);
+	augment(Attribute, EventTarget);
 	
 	/**
 	 * Base class for all widgets and utilities
