@@ -42,7 +42,7 @@ jet().add('base', function ($) {
 		}
 	};
 	
-	var BOUNDING_BOX = 'boundingBox',
+	var BOUNDING_BOX = "boundingBox",
 		SRC_NODE = "srcNode",
 		UNLOAD = "unload",
 		VISIBILITY = "visibility",
@@ -206,6 +206,7 @@ jet().add('base', function ($) {
 		 * @method set
 		 * @param {String} attrName
 		 * @param {Object} attrValue
+		 * @chainable
 		 */
 		myself.set = function (attrName, attrValue) {
 			if (Lang.isHash(attrName)) {
@@ -221,21 +222,25 @@ jet().add('base', function ($) {
 		 * Unsets a configuration attribute
 		 * @method unset
 		 * @param {String} attrName
+		 * @chainable
 		 */
 		myself.unset = function (attrName) {
 			delete classConfig[attrName];
+			return myself;
 		};
 		/**
 		 * Adds a configuration attribute, along with its options
 		 * @method addAttr
 		 * @param {String} attrName
 		 * @param {Hash} config
+		 * @chainable
 		 */
 		myself.addAttr = addAttr;
 		/**
 		 * Adds several configuration attributes
 		 * @method addAttrs
 		 * @param {Hash} config - key/value pairs of attribute names and configs
+		 * @chainable
 		 */
 		myself.addAttrs = function (config) {
 			Hash.each(config, addAttr);
@@ -266,10 +271,14 @@ jet().add('base', function ($) {
 	augment(Attribute, EventTarget);
 	
 	/**
-	 * Base class for all widgets and utilities
+	 * Base class for all widgets and utilities.
 	 * @class Base
 	 * @extends Attribute
 	 * @constructor
+	 */
+	/*
+	 * Base should hold basic logic shared among a lot of classes, 
+	 * to avoid having to extend the Attribute class which is very specific in what it does
 	 */
 	var Base = function () {
 		Base.superclass.constructor.apply(this, arguments);
@@ -320,7 +329,9 @@ jet().add('base', function ($) {
 	});
 	
 	/**
-	 * Base class for all widgets
+	 * Base class for all widgets. 
+	 * Provides show, hide, render and destroy methods, the rendering process logic
+	 * and basic attributes shared by all widgets 
 	 * @class Widget
 	 * @extends Base
 	 * @constructor
@@ -329,31 +340,35 @@ jet().add('base', function ($) {
 		Widget.superclass.constructor.apply(this, arguments);
 		var myself = this.addAttrs({
 			/**
-			 * @config srcNode
+			 * @attribute srcNode
+			 * @description The node to which the widget will be appended to. May be set as a 
+			 * configuration attribute, with a setter or as the first parameter of the render() method
+			 * @type DOMNode | NodeList
 			 */
 			srcNode: {
 				setter: $
 			},
 			/**
-			 * Prefix for all CSS clases.
-			 * @config classPrefix
+			 * @attribute classPrefix
+			 * @description Prefix for all CSS clases. Useful for renaming the project
 			 * @default "yui-"
 			 */
 			classPrefix: {
 				value: Widget.CSS_PREFIX + "-"
 			},
 			/**
-			 * CSS class name
 			 * @config className
+			 * @description The class name applied along with the prefix to the boundingBox
 			 * @default "widget"
 			 */
 			className: {
 				value: "widget"
 			},
 			/**
-			 * Rendered status
 			 * @attribute rendered
-			 * @final
+			 * @description Rendered status. Shouldn't be changed by anything appart from the Widget.render() method
+			 * @writeOnce
+			 * @default false
 			 */
 			rendered: {
 				writeOnce: TRUE,
@@ -362,14 +377,20 @@ jet().add('base', function ($) {
 			/**
 			 * The bounding box contains all the parts of the widget
 			 * @attribute boundingBox
-			 * @final
-			 * @value <div/>
+			 * @writeOnce
+			 * @type NodeList
+			 * @default <div/>
 			 */
-		}).addAttr("boundingBox", {
+		}).addAttr(BOUNDING_BOX, {
 			readOnly: TRUE,
 			value: $("<div/>")
 		});
 		
+		/*
+		 * Call the destroy method when the window unloads.
+		 * This allows for the removal of all event listeners from the widget's nodes,
+		 * avoiding memory leaks and helping garbage collection 
+		 */ 
 		$($.win).on(UNLOAD, function () {
 			myself.destroy();
 		}); 
@@ -378,6 +399,7 @@ jet().add('base', function ($) {
 		/**
 		 * Hides the widget
 		 * @method hide
+		 * @chainable
 		 */
 		hide: function () {
 			var myself = this;
@@ -389,6 +411,7 @@ jet().add('base', function ($) {
 		/**
 		 * Shows the widget
 		 * @method show
+		 * @chainable
 		 */
 		show: function () {
 			var myself = this;
@@ -398,19 +421,36 @@ jet().add('base', function ($) {
 			return myself;
 		},
 		/**
-		 * Starts the rendering process
+		 * Starts the rendering process. The rendering process is based on custom events.
+		 * The widget class fires a "render" event to which all subclasses must subscribe.
+		 * This way all listeners are fired in the order of the inheritance chain. ie:
+		 * In the Overlay class, the render process is:
+		 * <code>render() method -> Module listener -> Overlay listener -> rest of the render() method (appends the boundingBox to the srcNode)</code>
+		 * This helps use an easy pattern of OOP CSS: each subclass adds a CSS class name to the boundingBox,
+		 * for example resulting in <div class="jet-module jet-overlay jet-panel"></div>. That way
+		 * a panel can inherit css properties from module and overlay.
 		 * @method render
 		 * @param {NodeList|HTMLElement} target
+		 * @chainable
 		 */
 		render: function (target) {
 			var myself = this;
 			if (target) {
 				myself.set(SRC_NODE, target);
 			}
+			/**
+			 * Render event. Preventing the default behavior will stop the rendering process
+			 * @event render
+			 * @see Widget.render()
+			 */
 			if (myself.fire("render")) {
 				var node = myself.get(SRC_NODE);
 				myself.get(BOUNDING_BOX).addClass(myself.get("classPrefix") + myself.get("className") + "-container").appendTo(node).css(VISIBILITY, "visible");
 				myself.set("rendered", TRUE);
+				/**
+				 * Fires after the render process is finished
+				 * @event afterRender
+				 */
 				myself.fire("afterRender");
 			}
 			return myself;
@@ -421,6 +461,10 @@ jet().add('base', function ($) {
 		 */
 		destroy: function () {
 			var myself = this;
+			/**
+			 * Preventing the default behavior will stop the destroy process
+			 * @event destroy
+			 */
 			if (myself.fire(DESTROY)) {
 				/*
 				 * Avoiding memory leaks, specially in IE
@@ -441,11 +485,12 @@ jet().add('base', function ($) {
 	 * A utility for tracking the mouse movement without crashing the browser rendering engine.
 	 * Also allows for moving the mouse over iframes and other pesky elements
 	 * @namespace $.utils
-	 * @class MouseTracker
+	 * @class Mouse
 	 * @constructor
+	 * @extends Utility
 	 */
-	var MouseTracker = function () {
-		MouseTracker.superclass.constructor.apply(this, arguments);
+	var Mouse = function () {
+		Mouse.superclass.constructor.apply(this, arguments);
 		/**
 		 * Frequency at which the tracker updates
 		 * @attribute frequency
@@ -464,7 +509,7 @@ jet().add('base', function ($) {
 		var iframes;
 		
 		/**
-		 * Tracking status
+		 * Tracking status. Set it to true to start tracking
 		 * @attribute tracking
 		 * @type Boolean
 		 * @default false
@@ -507,8 +552,10 @@ jet().add('base', function ($) {
 		});
 		
 		/**
-		 * 
-		 * @event mousemove
+		 * Fires not when the mouse moves, but in an interval defined by the frequency attribute
+		 * This way you can track the mouse position without breakin the browser's rendering engine
+		 * because the native mousemove event fires too quickly
+		 * @event move
 		 */
 		shim.link($($.context), TRUE).on(MOUSEMOVE, function (e) {
 			clientX = e.clientX;
@@ -522,35 +569,40 @@ jet().add('base', function ($) {
 					});
 				});
 			}
-		/**
-		 * @event mouseup
-		 */
 		}).on("mouseup", function () {
-			myself.set(TRACKING, FALSE).fire("mouseup", clientX, clientY);
+			/**
+			 * Fires when the mouse button is released
+			 * @event up
+			 */
+			myself.set(TRACKING, FALSE).fire("up", clientX, clientY);
 		});
 		
 		myself.on(DESTROY, function () {
 			shim.unbindAll();
 		});
 	};
-	extend(MouseTracker, Utility, {
+	extend(Mouse, Utility, {
 		/**
-		 * Start tracking. Equivalent to setting the tracking attribute to true
-		 * @method start
+		 * Start tracking. Equivalent to setting the tracking attribute to true.
+		 * Simulates the mousedown event
+		 * @method down
+		 * @chainable
 		 */
-		start: function () {
+		down: function () {
 			return this.set(TRACKING, TRUE);
 		},
 		/**
 		 * Stop tracking. Equivalent to setting the tracking attribute to false
-		 * @method stop
+		 * Simulates the mouseup event
+		 * @method up
+		 * @chainable
 		 */
-		stop: function () {
+		up: function () {
 			return this.set(TRACKING, FALSE);
 		}
 	});
 	
-	$.utils.MouseTracker = MouseTracker;
+	$.utils.Mouse = Mouse;
 	
 	$.add({
 		Attribute: Attribute,
