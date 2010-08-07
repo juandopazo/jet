@@ -67,6 +67,7 @@ jet().add('base', function ($) {
 		 * @method on
 		 * @param {String} eventType
 		 * @param {Function} callback
+		 * @chainable
 		 */
 		myself.on = function (eventType, callback) {
 			if (!collection[eventType]) {
@@ -81,6 +82,7 @@ jet().add('base', function ($) {
 		 * @method unbind
 		 * @param {String} eventType
 		 * @param {Function} callback
+		 * @chainable
 		 */
 		myself.unbind = function (eventType, callback) {
 			$.Array.remove(callback, collection[eventType] || []);
@@ -122,6 +124,7 @@ jet().add('base', function ($) {
 		/**
 		 * Removes all event listeners of all types
 		 * @method unbindAll
+		 * @chainable
 		 */
 		myself.unbindAll = function () {
 			collection = {};

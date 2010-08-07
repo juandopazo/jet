@@ -10,7 +10,7 @@ jet().add("container", function ($) {
 		Lang = $.Lang,
 		Hash = $.Hash,
 		A = $.Array;
-		
+	
 	// definitions for better minification
 	var BOUNDING_BOX = "boundingBox",
 		CONTENT_BOX = "contentBox",
