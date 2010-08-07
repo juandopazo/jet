@@ -15,16 +15,25 @@ jet().add('base', function ($) {
 		extend = $.extend;
 
 	/**
+	 * Utilities for object oriented programming in JavaScript.
+	 * JET doesn't provide a classical OOP environment like Prototype with Class methods,
+	 * but instead it helps you take advantage of JavaScript's own prototypical OOP strategy
 	 * @class OOP
 	 * @static
 	 */
 	/**
+	 * Allows for an inheritance strategy based on prototype chaining.
+	 * When exteiding a class with extend, you keep all prototypic methods from all superclasses
 	 * @method extend
+	 * @param {Function} subclass
+	 * @param {Function} superclass
+	 * @param {Hash} optional - An object literal with methods to overwrite in the subclass' prototype
 	 */
 	/**
+	 * Augments a class with the functionality of another, without chaining prototypes
 	 * @method augment
-	 * @param {Function} A
-	 * @param {Function|Object} B
+	 * @param {Function} subclass
+	 * @param {Function|Object} augmenter
 	 * @param {Boolean} overwrite
 	 */
 	var augment = function (A, B, overwrite) {
@@ -278,6 +287,7 @@ jet().add('base', function ($) {
 	 * @class Base
 	 * @extends Attribute
 	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
 	/*
 	 * Base should hold basic logic shared among a lot of classes, 
@@ -306,6 +316,7 @@ jet().add('base', function ($) {
 	 * @class Utility
 	 * @extends Base
 	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
 	var Utility = function () {
 		Utility.superclass.constructor.apply(this, arguments);
@@ -338,12 +349,13 @@ jet().add('base', function ($) {
 	 * @class Widget
 	 * @extends Base
 	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
 	var Widget = function () {
 		Widget.superclass.constructor.apply(this, arguments);
 		var myself = this.addAttrs({
 			/**
-			 * @attribute srcNode
+			 * @config srcNode
 			 * @description The node to which the widget will be appended to. May be set as a 
 			 * configuration attribute, with a setter or as the first parameter of the render() method
 			 * @type DOMNode | NodeList
@@ -352,7 +364,7 @@ jet().add('base', function ($) {
 				setter: $
 			},
 			/**
-			 * @attribute classPrefix
+			 * @config classPrefix
 			 * @description Prefix for all CSS clases. Useful for renaming the project
 			 * @default "yui-"
 			 */
@@ -368,7 +380,7 @@ jet().add('base', function ($) {
 				value: "widget"
 			},
 			/**
-			 * @attribute rendered
+			 * @config rendered
 			 * @description Rendered status. Shouldn't be changed by anything appart from the Widget.render() method
 			 * @writeOnce
 			 * @default false
@@ -379,7 +391,7 @@ jet().add('base', function ($) {
 			}
 			/**
 			 * The bounding box contains all the parts of the widget
-			 * @attribute boundingBox
+			 * @config boundingBox
 			 * @writeOnce
 			 * @type NodeList
 			 * @default <div/>
@@ -487,16 +499,17 @@ jet().add('base', function ($) {
 	/**
 	 * A utility for tracking the mouse movement without crashing the browser rendering engine.
 	 * Also allows for moving the mouse over iframes and other pesky elements
-	 * @namespace $.utils
+	 * @namespace utils
 	 * @class Mouse
 	 * @constructor
 	 * @extends Utility
+	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
 	var Mouse = function () {
 		Mouse.superclass.constructor.apply(this, arguments);
 		/**
 		 * Frequency at which the tracker updates
-		 * @attribute frequency
+		 * @config frequency
 		 * @default 20 (ms)
 		 * @type Number
 		 */
@@ -513,7 +526,7 @@ jet().add('base', function ($) {
 		
 		/**
 		 * Tracking status. Set it to true to start tracking
-		 * @attribute tracking
+		 * @config tracking
 		 * @type Boolean
 		 * @default false
 		 */
@@ -614,7 +627,6 @@ jet().add('base', function ($) {
 		Widget: Widget,
 		EventTarget: EventTarget,
 		augment: augment,
-		extend: extend,
-		random: random
+		extend: extend
 	});
 });

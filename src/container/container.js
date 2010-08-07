@@ -1,7 +1,8 @@
 /**
  * Contains widgets that act as containers, windows, dialogs 
  * @module container
- * @requires jet, lang, node, base, form
+ * @requires jet, node, base
+ * @namespace
  */
 jet().add("container", function ($) {
 	
@@ -64,7 +65,7 @@ jet().add("container", function ($) {
 		Button.superclass.constructor.apply(this, arguments);
 		var myself = this.set(CLASS_NAME, BUTTON).addAttrs({
 			/**
-			 * @attribute type
+			 * @config type
 			 * @type String
 			 * @writeOnce
 			 * @default "push"
@@ -91,9 +92,8 @@ jet().add("container", function ($) {
 		
 		/**
 		 * The button node
-		 * @attribute buttoNode
+		 * @config buttonNode
 		 * @readOnly
-		 * 
 		 */
 		myself.addAttr("buttonNode", {
 			readOnly: TRUE,
@@ -296,7 +296,7 @@ jet().add("container", function ($) {
 		};
 		myself.addAttrs({
 			/**
-			 * @attribute header
+			 * @config header
 			 * @description The header of the module.
 			 * If set to a string a node is creating and the string is set to its innerHTML
 			 * @type DOM Node | String | NodeList
@@ -306,7 +306,7 @@ jet().add("container", function ($) {
 				validator: Lang.isValue
 			},
 			/**
-			 * @attribute body
+			 * @config body
 			 * @description The body of the module.
 			 * If set to a string a node is creating and the string is set to its innerHTML
 			 * A body is always present in a Module
@@ -319,7 +319,7 @@ jet().add("container", function ($) {
 				validator: Lang.isValue
 			},
 			/**
-			 * @attribute footer
+			 * @config footer
 			 * @description The footer of the module.
 			 * If set to a string a node is creating and the string is set to its innerHTML
 			 * @type DOM Node | String | NodeList
@@ -346,7 +346,6 @@ jet().add("container", function ($) {
 	/**
 	 * @class Overlay
 	 * @description An Overlay is a Module that floats in the page (doesn't have position static)
-	 * @extends Module
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
@@ -354,7 +353,7 @@ jet().add("container", function ($) {
 		Overlay.superclass.constructor.apply(this, arguments);
 		var myself = this.addAttrs({
 			/**
-			 * @attribute center
+			 * @config center
 			 * @description If true, the overlay is positioned in the center of the page
 			 * @type Boolean
 			 * @default true
@@ -363,7 +362,7 @@ jet().add("container", function ($) {
 				value: TRUE
 			},
 			/**
-			 * @attribute fixed
+			 * @config fixed
 			 * @description If true, the overlay is position is set to fixed
 			 * @type Boolean
 			 * @default false
@@ -372,7 +371,7 @@ jet().add("container", function ($) {
 				value: FALSE
 			},
 			/**
-			 * @attribute width
+			 * @config width
 			 * @description The width of the overlay
 			 * @type Number
 			 * @default 300
@@ -382,7 +381,7 @@ jet().add("container", function ($) {
 				validator: Lang.isNumber
 			},
 			/**
-			 * @attribute height
+			 * @config height
 			 * @description The height of the overlay.
 			 * If set to 0 (zero) the height changes with the content
 			 * @type Number
@@ -393,7 +392,7 @@ jet().add("container", function ($) {
 				validator: Lang.isNumber
 			},
 			/**
-			 * @attribute top
+			 * @config top
 			 * @description The top position in pixels
 			 * @type Number
 			 */
@@ -405,7 +404,7 @@ jet().add("container", function ($) {
 				}
 			},
 			/**
-			 * @attribute left
+			 * @config left
 			 * @description The left position in pixels
 			 * @type Number
 			 */
@@ -417,7 +416,7 @@ jet().add("container", function ($) {
 				}
 			},
 			/**
-			 * @attribute bottom
+			 * @config bottom
 			 * @description The bottom position in pixels
 			 * @type Number
 			 */
@@ -429,7 +428,7 @@ jet().add("container", function ($) {
 				}
 			},
 			/**
-			 * @attribute right
+			 * @config right
 			 * @description The right position in pixels
 			 * @type Number
 			 */
@@ -441,7 +440,7 @@ jet().add("container", function ($) {
 				}
 			},
 			/**
-			 * @attribute draggable
+			 * @config draggable
 			 * @description If true, the overlay can be dragged
 			 * @default false
 			 */
@@ -567,7 +566,7 @@ jet().add("container", function ($) {
 		Panel.superclass.constructor.apply(this, arguments);
 		var myself = this.set(CLASS_NAME, Panel.NAME).addAttrs({
 			/**
-			 * @attribute contentBox
+			 * @config contentBox
 			 * @description A panel uses another container inside the boundingBox 
 			 * in order to have a more complex design (ie: shadow)
 			 * @readOnly
@@ -577,7 +576,7 @@ jet().add("container", function ($) {
 				value: $(NEW_DIV)
 			},
 			/**
-			 * @attribute underlay
+			 * @config underlay
 			 * @description The underlay is inserted after the contentBox to allow for a more complex design
 			 * @readOnly
 			 */
@@ -586,7 +585,7 @@ jet().add("container", function ($) {
 				value: $(NEW_DIV).addClass(UNDERLAY)
 			},
 			/**
-			 * @attribute shadow
+			 * @config shadow
 			 * @description If true, the panel shows a shadow
 			 * @default true
 			 */
@@ -607,7 +606,7 @@ jet().add("container", function ($) {
 			e.preventDefault();
 		});
 		/**
-		 * @attribute close
+		 * @config close
 		 * @description If true, a close button is added to the panel that hides it when clicked
 		 * @type Boolean
 		 * @default true
@@ -679,7 +678,7 @@ jet().add("container", function ($) {
 				value: $(NEW_DIV).addClass(FOOTER)
 			},
 			/**
-			 * @attribute buttons
+			 * @config buttons
 			 * @description An array of configuration objects for the Button class
 			 * @type Array
 			 */
@@ -706,7 +705,7 @@ jet().add("container", function ($) {
 		});
 	};
 	SimpleDialog.NAME = "dialog";
-	$.extend(SimpleDialog, Panel);
+	$.extend(SimpleDialog, Panel);	
 	
 	$.add({
 		Module: Module,

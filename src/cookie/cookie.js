@@ -1,5 +1,22 @@
+/**
+ * Provides abstracion for easier use of cookies
+ * @module cookie
+ */
 jet().add('cookie', function (L) {
+	/**
+	 * Provides abstracion for easier use of cookies
+	 * @class Cookie
+	 * @static
+	 */
 	L.cookie = {
+		/**
+		 * Sets the value of a cookie variable
+		 * @method set
+		 * @param {String} name
+		 * @param {String} value
+		 * @param {Number} optional - duration of the variable in days
+		 * @chainable
+		 */
 	    set: function (name, value, days) {
 	        var expires = "",
 	            date;
@@ -9,7 +26,13 @@ jet().add('cookie', function (L) {
 	            expires = "; expires=" + date.toGMTString();
 	        } 
 	        document.cookie = name + "=" + value + expires + "; path=/";
+	        return this;
 	    },
+	    /**
+	     * Get the value of a cookie
+	     * @method get
+	     * @param {String} name
+	     */
 	    get: function (name) {
 	        var nameEQ = name + "=",
 	            ca = document.cookie.split(';'),
@@ -27,9 +50,20 @@ jet().add('cookie', function (L) {
 	        }
 	        return null;
 	    },
-	    remove: function (name) {
-	        this.set(name, "", -1);
+	    /**
+	     * Removes a cookir
+	     * @method unset
+	     * @param {String} name
+	     * @chainable
+	     */
+	    unset: function (name) {
+	        return this.set(name, "", -1);
 	    },
+	    /**
+	     * Returns whether a cookir variable is set
+	     * @method isSet
+	     * @param {String} name
+	     */
 	    isSet: function (name) {
 	        return (this.get(name) !== null);
 	    }

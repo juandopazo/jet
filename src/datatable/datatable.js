@@ -1,5 +1,8 @@
-/*
- * @requires Base module
+/**
+ * Provides a DataTable widget that can be sorted and linked to a DataSource
+ * @module datatable
+ * @requires base, datasource
+ * @namespace
  */
 jet().add('datatable', function ($) {
 	
@@ -40,8 +43,11 @@ jet().add('datatable', function ($) {
 	};
 	
 	/**
-	 * @class
-	 * @extends $.Widget
+	 * A DataTable is an HTML table that can be sorted and linked to a DataSource
+	 * @class DataTable
+	 * @extends Widget
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 * @constructor
 	 */
 	var DataTable = function () {
 		DataTable.superclass.constructor.apply(this, arguments);
@@ -148,16 +154,24 @@ jet().add('datatable', function ($) {
 		};
 		/**
 		 * Adds a row
-		 * 
+		 * @method addRow
 		 * @param {Record|HTMLRowElement|Array} row
+		 * @chainable
 		 */
 		myself.addRow = function (row) {
 			addRow(row);
 			if (sortedBy) {
 				sort($(NUMERAL + thIdPrefix + sortedBy));
 			}
+			return myself;
 		};
 		
+		/**
+		 * Adds several rows
+		 * @method addRows
+		 * @param {Array} rows
+		 * @chainable
+		 */
 		myself.addRows = function (rows) {
 			if (Lang.isArray(rows)) {
 				A.each(rows, function (row) {
@@ -186,10 +200,21 @@ jet().add('datatable', function ($) {
 			
 		};*/
 		
+		/**
+		 * Returns the first html row element in the table
+		 * @method getFirstTr
+		 * @return NodeList
+		 */
 		myself.getFirstTr = function () {
 			return tbody.children().eq(0);
 		};
 		
+		/**
+		 * Returns the next html row element base on the one passed as a parameter
+		 * @method getNextTr
+		 * @param {Record, HTMLTrElement, NodeList, Number} tr
+		 * @return NodeList
+		 */
 		myself.getNextTr = function (tr) {
 			if (Lang.isRecord(tr)) {
 				tr = tr.getId();
@@ -200,6 +225,12 @@ jet().add('datatable', function ($) {
 			return tr.next();
 		};
 		
+		/**
+		 * Returns the first cell element in a row
+		 * @method getFirstTd
+		 * @param {Record, HTMLTrElement, NodeList, Number} row
+		 * @return NodeList
+		 */
 		myself.getFirstTd = function (row) {
 			if (Lang.isRecord(row)) {
 				row = row.getId();
@@ -210,7 +241,19 @@ jet().add('datatable', function ($) {
 			return row.children().eq(0);
 		};
 		
+		/**
+		 * Returns the next cell element in a row based on the one passed as a parameter
+		 * @method getNextTd
+		 * @param {Record, HTMLTrElement, NodeList, Number} td
+		 * @return NodeList
+		 */
 		myself.getNextTd = function (td) {
+			if (Lang.isRecord(td)) {
+				td = td.getId();
+			}
+			if (Lang.isNumber(td)) {
+				td = tbody.find(NUMERAL + recordIdPrefix + td).children(td - 1);
+			}
 			return td.next();
 		};
 		/*@TODO
@@ -256,7 +299,7 @@ jet().add('datatable', function ($) {
 		
 		/**
 		 * Replace all rows when the DataSource updates
-		 * 
+		 * @method onDataReturnReplaceRows
 		 * @param {EventFacade} e
 		 * @param {RecordSet} recordSet
 		 */
@@ -268,6 +311,7 @@ jet().add('datatable', function ($) {
 		
 		/**
 		 * When the DataSource updates, treat the returned data as additions to the table's recordSet
+		 * @method onDataReturnAddRows
 		 * @param {EventFacade} e
 		 * @param {RecordSet} newRecordSet
 		 */
@@ -276,6 +320,7 @@ jet().add('datatable', function ($) {
 			recordSet.push(newRecordSet);
 		};
 		
+		//rende lifecycle
 		myself.on("render", function () {
 			myself.onDataReturnAddRows(null, recordSet);
 			myself.get("boundingBox").addClass(prefix + className).append(table);

@@ -1,0 +1,746 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: base   base.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>base&nbsp; <span class="subtitle">0.1.53</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_base.html" title="base">base</a>
+                
+                 &gt; base.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * The Base module provides base classes for Utilities and Widgets.</span>
+<span class="cm"> * @module base</span>
+<span class="cm"> * @requires lang, dom</span>
+<span class="cm"> */</span>
+<span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;base&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
+	
+	<span class="kd">var</span> <span class="nx">TRUE</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+		<span class="nx">FALSE</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
+		<span class="nx">OP</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>
+
+	<span class="kd">var</span> <span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span>
+		<span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
+		<span class="nx">ArrayHelper</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">,</span>
+		<span class="nx">extend</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">;</span>
+
+	<span class="cm">/**</span>
+<span class="cm">	 * Utilities for object oriented programming in JavaScript.</span>
+<span class="cm">	 * JET doesn&#39;t provide a classical OOP environment like Prototype with Class methods,</span>
+<span class="cm">	 * but instead it helps you take advantage of JavaScript&#39;s own prototypical OOP strategy</span>
+<span class="cm">	 * @class OOP</span>
+<span class="cm">	 * @static</span>
+<span class="cm">	 */</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * Allows for an inheritance strategy based on prototype chaining.</span>
+<span class="cm">	 * When exteiding a class with extend, you keep all prototypic methods from all superclasses</span>
+<span class="cm">	 * @method extend</span>
+<span class="cm">	 * @param {Function} subclass</span>
+<span class="cm">	 * @param {Function} superclass</span>
+<span class="cm">	 * @param {Hash} optional - An object literal with methods to overwrite in the subclass&#39; prototype</span>
+<span class="cm">	 */</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * Augments a class with the functionality of another, without chaining prototypes</span>
+<span class="cm">	 * @method augment</span>
+<span class="cm">	 * @param {Function} subclass</span>
+<span class="cm">	 * @param {Function|Object} augmenter</span>
+<span class="cm">	 * @param {Boolean} overwrite</span>
+<span class="cm">	 */</span>
+	<span class="kd">var</span> <span class="nx">augment</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">A</span><span class="p">,</span> <span class="nx">B</span><span class="p">,</span> <span class="nx">overwrite</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">B</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">B</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">B</span><span class="p">();</span>
+		<span class="p">}</span>
+		<span class="kd">var</span> <span class="nx">copy</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">method</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">((</span><span class="o">!</span><span class="nx">A</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">||</span> <span class="nx">overwrite</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">name</span> <span class="o">!=</span> <span class="s2">&quot;constructor&quot;</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">A</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">method</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">};</span>
+		<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">B</span><span class="p">,</span> <span class="nx">copy</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">B</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">!=</span> <span class="nb">Object</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">B</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="nx">copy</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">};</span>
+	
+	<span class="kd">var</span> <span class="nx">BOUNDING_BOX</span> <span class="o">=</span> <span class="s2">&quot;boundingBox&quot;</span><span class="p">,</span>
+		<span class="nx">SRC_NODE</span> <span class="o">=</span> <span class="s2">&quot;srcNode&quot;</span><span class="p">,</span>
+		<span class="nx">UNLOAD</span> <span class="o">=</span> <span class="s2">&quot;unload&quot;</span><span class="p">,</span>
+		<span class="nx">VISIBILITY</span> <span class="o">=</span> <span class="s2">&quot;visibility&quot;</span><span class="p">,</span>
+		<span class="nx">DESTROY</span> <span class="o">=</span> <span class="s2">&quot;destroy&quot;</span><span class="p">,</span>
+		<span class="nx">TRACKING</span> <span class="o">=</span> <span class="s2">&quot;tracking&quot;</span><span class="p">,</span>
+		<span class="nx">MOUSEMOVE</span> <span class="o">=</span> <span class="s2">&quot;mousemove&quot;</span><span class="p">,</span>
+		<span class="nx">FREQUENCY</span> <span class="o">=</span> <span class="s2">&quot;frequency&quot;</span><span class="p">;</span>
+
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * A class designed to be inherited or augmented into other classes and provide custom events</span>
+<span class="cm">	 * @class EventTarget</span>
+<span class="cm">	 * @constructor</span>
+<span class="cm">	 */</span>
+	<span class="kd">var</span> <span class="nx">EventTarget</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">collection</span> <span class="o">=</span> <span class="p">{};</span>
+		
+		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Adds an event listener</span>
+<span class="cm">		 * @method on</span>
+<span class="cm">		 * @param {String} eventType</span>
+<span class="cm">		 * @param {Function} callback</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">eventType</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">collection</span><span class="p">[</span><span class="nx">eventType</span><span class="p">])</span> <span class="p">{</span>
+				<span class="nx">collection</span><span class="p">[</span><span class="nx">eventType</span><span class="p">]</span> <span class="o">=</span> <span class="p">[];</span>
+			<span class="p">}</span>
+			<span class="nx">collection</span><span class="p">[</span><span class="nx">eventType</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">callback</span><span class="p">);</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+		<span class="p">};</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Removes and event listener</span>
+<span class="cm">		 * @method unbind</span>
+<span class="cm">		 * @param {String} eventType</span>
+<span class="cm">		 * @param {Function} callback</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">unbind</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">eventType</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">callback</span><span class="p">,</span> <span class="nx">collection</span><span class="p">[</span><span class="nx">eventType</span><span class="p">]</span> <span class="o">||</span> <span class="p">[]);</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+		<span class="p">};</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Fires an event, executing all its listeners</span>
+<span class="cm">		 * @method fire</span>
+<span class="cm">		 * @param {String} eventType</span>
+<span class="cm">		 * Extra parameters will be passed to all event listeners</span>
+<span class="cm">		 */</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">eventType</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">handlers</span> <span class="o">=</span> <span class="nx">collection</span><span class="p">[</span><span class="nx">eventType</span><span class="p">]</span> <span class="o">||</span> <span class="p">[];</span>
+			<span class="kd">var</span> <span class="nx">returnValue</span> <span class="o">=</span> <span class="nx">TRUE</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">collection</span><span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">])</span> <span class="p">{</span>
+				<span class="nx">handlers</span> <span class="o">=</span> <span class="nx">handlers</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">collection</span><span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">]);</span>
+			<span class="p">}</span>
+			<span class="kd">var</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">collecLength</span> <span class="o">=</span> <span class="nx">handlers</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="nx">args</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">stop</span> <span class="o">=</span> <span class="nx">FALSE</span><span class="p">;</span>
+			<span class="nx">args</span><span class="p">.</span><span class="nx">unshift</span><span class="p">({</span>
+				<span class="nx">stopPropagation</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+					<span class="nx">stop</span> <span class="o">=</span> <span class="nx">TRUE</span><span class="p">;</span>
+				<span class="p">},</span>
+				<span class="nx">preventDefault</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+					<span class="nx">returnValue</span> <span class="o">=</span> <span class="nx">FALSE</span><span class="p">;</span>
+				<span class="p">},</span>
+				<span class="nx">type</span><span class="o">:</span> <span class="nx">eventType</span>
+			<span class="p">});</span>
+			<span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">collecLength</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">handlers</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">args</span><span class="p">);</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">stop</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">break</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">returnValue</span><span class="p">;</span>
+		<span class="p">};</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Removes all event listeners of all types</span>
+<span class="cm">		 * @method unbindAll</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">unbindAll</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="nx">collection</span> <span class="o">=</span> <span class="p">{};</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+		<span class="p">};</span>
+	<span class="p">};</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Provides get() and set() methods, along with getters, setters and options for configuration attributres</span>
+<span class="cm">	 * @class Attribute</span>
+<span class="cm">	 * @uses EventTarget</span>
+<span class="cm">	 * @constructor</span>
+<span class="cm">	 */</span>
+	<span class="kd">var</span> <span class="nx">Attribute</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">classConfig</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">Attribute</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+		<span class="nx">classConfig</span> <span class="o">=</span> <span class="nx">classConfig</span> <span class="o">||</span> <span class="p">{};</span>
+		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+		
+		<span class="kd">var</span> <span class="nx">attrConfig</span> <span class="o">=</span> <span class="p">{};</span>
+		
+		<span class="kd">var</span> <span class="nx">addAttr</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">attrName</span><span class="p">,</span> <span class="nx">config</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">attrConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">config</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">isValue</span> <span class="o">=</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isValue</span><span class="p">(</span><span class="nx">classConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">required</span> <span class="o">&amp;&amp;</span> <span class="nx">config</span><span class="p">.</span><span class="nx">readOnly</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">$</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&quot;You can&#39;t have both &#39;required&#39; and &#39;readOnly&#39;&quot;</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">readOnly</span> <span class="o">&amp;&amp;</span> <span class="nx">isValue</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">delete</span> <span class="nx">classConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">];</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">required</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">isValue</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">$</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&quot;Missing required attribute: &quot;</span> <span class="o">+</span> <span class="nx">attrName</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">isValue</span> <span class="o">&amp;&amp;</span> <span class="nx">config</span><span class="p">.</span><span class="nx">setter</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">classConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">setter</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">myself</span><span class="p">,</span> <span class="nx">classConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]);</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+		<span class="p">};</span>
+		
+		<span class="kd">var</span> <span class="nx">set</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">attrName</span><span class="p">,</span> <span class="nx">attrValue</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">attrConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">attrConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]</span> <span class="o">||</span> <span class="p">{};</span>
+			<span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="nx">attrConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">];</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">config</span><span class="p">.</span><span class="nx">readOnly</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">config</span><span class="p">.</span><span class="nx">validator</span> <span class="o">||</span> <span class="nx">config</span><span class="p">.</span><span class="nx">validator</span><span class="p">(</span><span class="nx">attrValue</span><span class="p">))</span> <span class="p">{</span>
+					<span class="nx">attrValue</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">setter</span> <span class="o">?</span> <span class="nx">config</span><span class="p">.</span><span class="nx">setter</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">myself</span><span class="p">,</span> <span class="nx">attrValue</span><span class="p">)</span> <span class="o">:</span> <span class="nx">attrValue</span><span class="p">;</span>
+					<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isValue</span><span class="p">(</span><span class="nx">classConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="nx">config</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">classConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+					<span class="p">}</span>
+					<span class="nx">classConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">classConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]</span> <span class="o">==</span> <span class="nx">attrValue</span> <span class="o">?</span> <span class="nx">attrValue</span> <span class="o">:</span>
+											<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">attrName</span> <span class="o">+</span> <span class="s2">&quot;Change&quot;</span><span class="p">,</span> <span class="nx">attrValue</span><span class="p">)</span> <span class="o">?</span> <span class="nx">attrValue</span> <span class="o">:</span>
+											<span class="nx">classConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">];</span>
+				<span class="p">}</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">writeOnce</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">config</span><span class="p">.</span><span class="nx">readOnly</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">attrConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">].</span><span class="nx">readOnly</span> <span class="o">=</span> <span class="nx">TRUE</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">$</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">attrName</span> <span class="o">+</span> <span class="s2">&quot; is a &quot;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">writeOnce</span> <span class="o">?</span> <span class="s2">&quot;write-once&quot;</span> <span class="o">:</span> <span class="s2">&quot;read-only&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; attribute&quot;</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">};</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Returns a configuration attribute</span>
+<span class="cm">		 * @method get</span>
+<span class="cm">		 * @param {String} attrName</span>
+<span class="cm">		 */</span>	
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">attrName</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">attrConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">attrConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]</span> <span class="o">||</span> <span class="p">{};</span>
+			<span class="kd">var</span> <span class="nx">config</span> <span class="o">=</span> <span class="nx">attrConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">];</span>
+			<span class="cm">/*</span>
+<span class="cm">			 * If it is write-once and it wasn&#39;t set before, use the default value and mark it as written (readOnly works as written)</span>
+<span class="cm">			 */</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">writeOnce</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">config</span><span class="p">.</span><span class="nx">readOnly</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">attrConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">].</span><span class="nx">readOnly</span> <span class="o">=</span> <span class="nx">TRUE</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isValue</span><span class="p">(</span><span class="nx">classConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]))</span> <span class="p">{</span>
+				<span class="nx">classConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="k">return</span>	<span class="nx">config</span><span class="p">.</span><span class="nx">getter</span> <span class="o">?</span> <span class="nx">config</span><span class="p">.</span><span class="nx">getter</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">myself</span><span class="p">,</span> <span class="nx">classConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">],</span> <span class="nx">attrName</span><span class="p">)</span> <span class="o">:</span>
+					<span class="nx">classConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">];</span>
+		<span class="p">};</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Sets a configuration attribute</span>
+<span class="cm">		 * @method set</span>
+<span class="cm">		 * @param {String} attrName</span>
+<span class="cm">		 * @param {Object} attrValue</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">attrName</span><span class="p">,</span> <span class="nx">attrValue</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isHash</span><span class="p">(</span><span class="nx">attrName</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">attrName</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">set</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+				<span class="p">});</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">set</span><span class="p">(</span><span class="nx">attrName</span><span class="p">,</span> <span class="nx">attrValue</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+		<span class="p">};</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Unsets a configuration attribute</span>
+<span class="cm">		 * @method unset</span>
+<span class="cm">		 * @param {String} attrName</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">unset</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">attrName</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">delete</span> <span class="nx">classConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">];</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+		<span class="p">};</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Adds a configuration attribute, along with its options</span>
+<span class="cm">		 * @method addAttr</span>
+<span class="cm">		 * @param {String} attrName</span>
+<span class="cm">		 * @param {Hash} config</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">addAttr</span> <span class="o">=</span> <span class="nx">addAttr</span><span class="p">;</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Adds several configuration attributes</span>
+<span class="cm">		 * @method addAttrs</span>
+<span class="cm">		 * @param {Hash} config - key/value pairs of attribute names and configs</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">addAttrs</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">config</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">config</span><span class="p">,</span> <span class="nx">addAttr</span><span class="p">);</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+		<span class="p">};</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Returns a key/value paired object with all attributes</span>
+<span class="cm">		 * @method getAttrs</span>
+<span class="cm">		 * @return {Hash}</span>
+<span class="cm">		 */</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">getAttrs</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">{};</span>
+			<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">classConfig</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">result</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+			<span class="p">});</span>
+			<span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+		<span class="p">};</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Returns whether an attribute is set or not</span>
+<span class="cm">		 * @method isSet</span>
+<span class="cm">		 * @param {String} attrName</span>
+<span class="cm">		 * @return {Boolean}</span>
+<span class="cm">		 */</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">isSet</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">attrName</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isValue</span><span class="p">(</span><span class="nx">classConfig</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]);</span>
+		<span class="p">};</span>
+	<span class="p">};</span>
+	<span class="nx">augment</span><span class="p">(</span><span class="nx">Attribute</span><span class="p">,</span> <span class="nx">EventTarget</span><span class="p">);</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Base class for all widgets and utilities.</span>
+<span class="cm">	 * @class Base</span>
+<span class="cm">	 * @extends Attribute</span>
+<span class="cm">	 * @constructor</span>
+<span class="cm">	 * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm">	 */</span>
+	<span class="cm">/*</span>
+<span class="cm">	 * Base should hold basic logic shared among a lot of classes, </span>
+<span class="cm">	 * to avoid having to extend the Attribute class which is very specific in what it does</span>
+<span class="cm">	 */</span>
+	<span class="kd">var</span> <span class="nx">Base</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="nx">Base</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Allows quick setting of custom events in the constructor</span>
+<span class="cm">		 * @config on</span>
+<span class="cm">		 */</span>
+		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttr</span><span class="p">(</span><span class="s2">&quot;on&quot;</span><span class="p">,</span> <span class="p">{</span>
+			<span class="nx">writeOnce</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="p">{}</span>
+		<span class="p">});</span>
+		
+		<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;on&quot;</span><span class="p">),</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">fn</span><span class="p">);</span>
+		<span class="p">});</span>
+	<span class="p">};</span>
+	<span class="nx">extend</span><span class="p">(</span><span class="nx">Base</span><span class="p">,</span> <span class="nx">Attribute</span><span class="p">);</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Basic class for all utilities</span>
+<span class="cm">	 * @class Utility</span>
+<span class="cm">	 * @extends Base</span>
+<span class="cm">	 * @constructor</span>
+<span class="cm">	 * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm">	 */</span>
+	<span class="kd">var</span> <span class="nx">Utility</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="nx">Utility</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+		
+		<span class="nx">$</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">win</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="nx">UNLOAD</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="nx">myself</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
+		<span class="p">});</span> 
+	<span class="p">};</span>
+	<span class="nx">extend</span><span class="p">(</span><span class="nx">Utility</span><span class="p">,</span> <span class="nx">Base</span><span class="p">,</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Calls itself when the window unloads. Allows for easier memory cleanup</span>
+<span class="cm">		 * @method destroy</span>
+<span class="cm">		 */</span>
+		<span class="nx">destroy</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">DESTROY</span><span class="p">))</span> <span class="p">{</span>
+				<span class="c1">// Helping gargage collection</span>
+				<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">myself</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">delete</span> <span class="nx">myself</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span>
+				<span class="p">});</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">});</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Base class for all widgets. </span>
+<span class="cm">	 * Provides show, hide, render and destroy methods, the rendering process logic</span>
+<span class="cm">	 * and basic attributes shared by all widgets </span>
+<span class="cm">	 * @class Widget</span>
+<span class="cm">	 * @extends Base</span>
+<span class="cm">	 * @constructor</span>
+<span class="cm">	 * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm">	 */</span>
+	<span class="kd">var</span> <span class="nx">Widget</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="nx">Widget</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config srcNode</span>
+<span class="cm">			 * @description The node to which the widget will be appended to. May be set as a </span>
+<span class="cm">			 * configuration attribute, with a setter or as the first parameter of the render() method</span>
+<span class="cm">			 * @type DOMNode | NodeList</span>
+<span class="cm">			 */</span>
+			<span class="nx">srcNode</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">setter</span><span class="o">:</span> <span class="nx">$</span>
+			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config classPrefix</span>
+<span class="cm">			 * @description Prefix for all CSS clases. Useful for renaming the project</span>
+<span class="cm">			 * @default &quot;yui-&quot;</span>
+<span class="cm">			 */</span>
+			<span class="nx">classPrefix</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="nx">Widget</span><span class="p">.</span><span class="nx">CSS_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span>
+			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config className</span>
+<span class="cm">			 * @description The class name applied along with the prefix to the boundingBox</span>
+<span class="cm">			 * @default &quot;widget&quot;</span>
+<span class="cm">			 */</span>
+			<span class="nx">className</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;widget&quot;</span>
+			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config rendered</span>
+<span class="cm">			 * @description Rendered status. Shouldn&#39;t be changed by anything appart from the Widget.render() method</span>
+<span class="cm">			 * @writeOnce</span>
+<span class="cm">			 * @default false</span>
+<span class="cm">			 */</span>
+			<span class="nx">rendered</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">writeOnce</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="nx">FALSE</span>
+			<span class="p">}</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * The bounding box contains all the parts of the widget</span>
+<span class="cm">			 * @config boundingBox</span>
+<span class="cm">			 * @writeOnce</span>
+<span class="cm">			 * @type NodeList</span>
+<span class="cm">			 * @default &lt;div/&gt;</span>
+<span class="cm">			 */</span>
+		<span class="p">}).</span><span class="nx">addAttr</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">,</span> <span class="p">{</span>
+			<span class="nx">readOnly</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;div/&gt;&quot;</span><span class="p">)</span>
+		<span class="p">});</span>
+		
+		<span class="cm">/*</span>
+<span class="cm">		 * Call the destroy method when the window unloads.</span>
+<span class="cm">		 * This allows for the removal of all event listeners from the widget&#39;s nodes,</span>
+<span class="cm">		 * avoiding memory leaks and helping garbage collection </span>
+<span class="cm">		 */</span> 
+		<span class="nx">$</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">win</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="nx">UNLOAD</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="nx">myself</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
+		<span class="p">});</span> 
+	<span class="p">};</span>
+	<span class="nx">extend</span><span class="p">(</span><span class="nx">Widget</span><span class="p">,</span> <span class="nx">Base</span><span class="p">,</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Hides the widget</span>
+<span class="cm">		 * @method hide</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">hide</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;hide&quot;</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="nx">VISIBILITY</span><span class="p">,</span> <span class="s2">&quot;hidden&quot;</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Shows the widget</span>
+<span class="cm">		 * @method show</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">show</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;show&quot;</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="nx">VISIBILITY</span><span class="p">,</span> <span class="s2">&quot;visible&quot;</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Starts the rendering process. The rendering process is based on custom events.</span>
+<span class="cm">		 * The widget class fires a &quot;render&quot; event to which all subclasses must subscribe.</span>
+<span class="cm">		 * This way all listeners are fired in the order of the inheritance chain. ie:</span>
+<span class="cm">		 * In the Overlay class, the render process is:</span>
+<span class="cm">		 * &lt;code&gt;render() method -&gt; Module listener -&gt; Overlay listener -&gt; rest of the render() method (appends the boundingBox to the srcNode)&lt;/code&gt;</span>
+<span class="cm">		 * This helps use an easy pattern of OOP CSS: each subclass adds a CSS class name to the boundingBox,</span>
+<span class="cm">		 * for example resulting in &lt;div class=&quot;jet-module jet-overlay jet-panel&quot;&gt;&lt;/div&gt;. That way</span>
+<span class="cm">		 * a panel can inherit css properties from module and overlay.</span>
+<span class="cm">		 * @method render</span>
+<span class="cm">		 * @param {NodeList|HTMLElement} target</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">render</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">SRC_NODE</span><span class="p">,</span> <span class="nx">target</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * Render event. Preventing the default behavior will stop the rendering process</span>
+<span class="cm">			 * @event render</span>
+<span class="cm">			 * @see Widget.render()</span>
+<span class="cm">			 */</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;render&quot;</span><span class="p">))</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">SRC_NODE</span><span class="p">);</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;classPrefix&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;className&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-container&quot;</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">node</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="nx">VISIBILITY</span><span class="p">,</span> <span class="s2">&quot;visible&quot;</span><span class="p">);</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;rendered&quot;</span><span class="p">,</span> <span class="nx">TRUE</span><span class="p">);</span>
+				<span class="cm">/**</span>
+<span class="cm">				 * Fires after the render process is finished</span>
+<span class="cm">				 * @event afterRender</span>
+<span class="cm">				 */</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;afterRender&quot;</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Destroys the widget by removing the elements from the dom and cleaning all event listeners</span>
+<span class="cm">		 * @method destroy</span>
+<span class="cm">		 */</span>
+		<span class="nx">destroy</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * Preventing the default behavior will stop the destroy process</span>
+<span class="cm">			 * @event destroy</span>
+<span class="cm">			 */</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">DESTROY</span><span class="p">))</span> <span class="p">{</span>
+				<span class="cm">/*</span>
+<span class="cm">				 * Avoiding memory leaks, specially in IE</span>
+<span class="cm">				 */</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">unbindAll</span><span class="p">(</span><span class="nx">TRUE</span><span class="p">).</span><span class="nx">remove</span><span class="p">();</span>
+				<span class="cm">/*</span>
+<span class="cm">				 * Helping gargage collection</span>
+<span class="cm">				 */</span>
+				<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">myself</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">delete</span> <span class="nx">myself</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span>
+				<span class="p">});</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">});</span>
+	<span class="nx">Widget</span><span class="p">.</span><span class="nx">CSS_PREFIX</span> <span class="o">=</span> <span class="s2">&quot;yui&quot;</span><span class="p">;</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * A utility for tracking the mouse movement without crashing the browser rendering engine.</span>
+<span class="cm">	 * Also allows for moving the mouse over iframes and other pesky elements</span>
+<span class="cm">	 * @namespace utils</span>
+<span class="cm">	 * @class Mouse</span>
+<span class="cm">	 * @constructor</span>
+<span class="cm">	 * @extends Utility</span>
+<span class="cm">	 * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm">	 */</span>
+	<span class="kd">var</span> <span class="nx">Mouse</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="nx">Mouse</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Frequency at which the tracker updates</span>
+<span class="cm">		 * @config frequency</span>
+<span class="cm">		 * @default 20 (ms)</span>
+<span class="cm">		 * @type Number</span>
+<span class="cm">		 */</span>
+		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttr</span><span class="p">(</span><span class="nx">FREQUENCY</span><span class="p">,</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="mi">20</span>
+		<span class="p">});</span>
+		
+		<span class="kd">var</span> <span class="nx">clientX</span><span class="p">,</span> <span class="nx">clientY</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">interval</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">capturing</span> <span class="o">=</span> <span class="nx">FALSE</span><span class="p">;</span>
+		
+		<span class="kd">var</span> <span class="nx">shim</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">NodeList</span><span class="p">([]);</span>
+		<span class="kd">var</span> <span class="nx">iframes</span><span class="p">;</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Tracking status. Set it to true to start tracking</span>
+<span class="cm">		 * @config tracking</span>
+<span class="cm">		 * @type Boolean</span>
+<span class="cm">		 * @default false</span>
+<span class="cm">		 */</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">addAttr</span><span class="p">(</span><span class="nx">TRACKING</span><span class="p">,</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="nx">FALSE</span><span class="p">,</span>
+			<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isBoolean</span>
+			
+		<span class="p">}).</span><span class="nx">on</span><span class="p">(</span><span class="nx">TRACKING</span> <span class="o">+</span> <span class="s2">&quot;Change&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;shim&quot;</span><span class="p">))</span> <span class="p">{</span>
+					<span class="nx">shim</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">shim</span><span class="p">.</span><span class="nx">length</span><span class="p">);</span>
+					<span class="nx">iframes</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;iframe&quot;</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">iframe</span><span class="p">)</span> <span class="p">{</span>
+						<span class="kd">var</span> <span class="nx">offset</span> <span class="o">=</span> <span class="nx">iframe</span><span class="p">.</span><span class="nx">offset</span><span class="p">();</span>
+						<span class="nx">shim</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;div/&gt;&quot;</span><span class="p">).</span><span class="nx">height</span><span class="p">(</span><span class="nx">offset</span><span class="p">.</span><span class="nx">height</span><span class="p">).</span><span class="nx">width</span><span class="p">(</span><span class="nx">offset</span><span class="p">.</span><span class="nx">width</span><span class="p">).</span><span class="nx">css</span><span class="p">({</span>
+							<span class="nx">position</span><span class="o">:</span> <span class="s2">&quot;absolute&quot;</span><span class="p">,</span>
+							<span class="nx">left</span><span class="o">:</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span>
+							<span class="nx">top</span><span class="o">:</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span>
+						<span class="p">}).</span><span class="nx">hide</span><span class="p">().</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">iframe</span><span class="p">.</span><span class="nx">parent</span><span class="p">())[</span><span class="mi">0</span><span class="p">]);</span>
+					<span class="p">});</span>	
+				<span class="p">}</span>
+				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">capturing</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">shim</span><span class="p">.</span><span class="nx">show</span><span class="p">();</span>
+					<span class="nx">interval</span> <span class="o">=</span> <span class="nx">setInterval</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+						<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">MOUSEMOVE</span><span class="p">,</span> <span class="nx">clientX</span><span class="p">,</span> <span class="nx">clientY</span><span class="p">);</span>
+					<span class="p">},</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">FREQUENCY</span><span class="p">));</span>
+					<span class="nx">capturing</span> <span class="o">=</span> <span class="nx">TRUE</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">shim</span><span class="p">.</span><span class="nx">hide</span><span class="p">();</span>
+				<span class="nx">clearInterval</span><span class="p">(</span><span class="nx">interval</span><span class="p">);</span>
+				<span class="nx">capturing</span> <span class="o">=</span> <span class="nx">FALSE</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">});</span>
+		
+		<span class="nx">$</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;selectstart&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">capturing</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+			<span class="p">}</span>
+		<span class="p">});</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Fires not when the mouse moves, but in an interval defined by the frequency attribute</span>
+<span class="cm">		 * This way you can track the mouse position without breakin the browser&#39;s rendering engine</span>
+<span class="cm">		 * because the native mousemove event fires too quickly</span>
+<span class="cm">		 * @event move</span>
+<span class="cm">		 */</span>
+		<span class="nx">shim</span><span class="p">.</span><span class="nx">link</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">),</span> <span class="nx">TRUE</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="nx">MOUSEMOVE</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">clientX</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">clientX</span><span class="p">;</span>
+			<span class="nx">clientY</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">clientY</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">TRACKING</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;shim&quot;</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">iframes</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">iframe</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+					<span class="kd">var</span> <span class="nx">offset</span> <span class="o">=</span> <span class="nx">iframe</span><span class="p">.</span><span class="nx">offset</span><span class="p">();</span>
+					<span class="nx">shim</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">height</span><span class="p">(</span><span class="nx">offset</span><span class="p">.</span><span class="nx">height</span><span class="p">).</span><span class="nx">width</span><span class="p">(</span><span class="nx">offset</span><span class="p">.</span><span class="nx">width</span><span class="p">).</span><span class="nx">css</span><span class="p">({</span>
+						<span class="nx">left</span><span class="o">:</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span> <span class="o">+</span> <span class="s2">&quot;px&quot;</span><span class="p">,</span>
+						<span class="nx">top</span><span class="o">:</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span> <span class="o">+</span> <span class="s2">&quot;px&quot;</span>
+					<span class="p">});</span>
+				<span class="p">});</span>
+			<span class="p">}</span>
+		<span class="p">}).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mouseup&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * Fires when the mouse button is released</span>
+<span class="cm">			 * @event up</span>
+<span class="cm">			 */</span>
+			<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">TRACKING</span><span class="p">,</span> <span class="nx">FALSE</span><span class="p">).</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;up&quot;</span><span class="p">,</span> <span class="nx">clientX</span><span class="p">,</span> <span class="nx">clientY</span><span class="p">);</span>
+		<span class="p">});</span>
+		
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">DESTROY</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="nx">shim</span><span class="p">.</span><span class="nx">unbindAll</span><span class="p">();</span>
+		<span class="p">});</span>
+	<span class="p">};</span>
+	<span class="nx">extend</span><span class="p">(</span><span class="nx">Mouse</span><span class="p">,</span> <span class="nx">Utility</span><span class="p">,</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Start tracking. Equivalent to setting the tracking attribute to true.</span>
+<span class="cm">		 * Simulates the mousedown event</span>
+<span class="cm">		 * @method down</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">down</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">TRACKING</span><span class="p">,</span> <span class="nx">TRUE</span><span class="p">);</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Stop tracking. Equivalent to setting the tracking attribute to false</span>
+<span class="cm">		 * Simulates the mouseup event</span>
+<span class="cm">		 * @method up</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">up</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">TRACKING</span><span class="p">,</span> <span class="nx">FALSE</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">});</span>
+	
+	<span class="nx">$</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nx">Mouse</span> <span class="o">=</span> <span class="nx">Mouse</span><span class="p">;</span>
+	
+	<span class="nx">$</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span>
+		<span class="nx">Attribute</span><span class="o">:</span> <span class="nx">Attribute</span><span class="p">,</span>
+		<span class="nx">Base</span><span class="o">:</span> <span class="nx">Base</span><span class="p">,</span>
+		<span class="nx">Utility</span><span class="o">:</span> <span class="nx">Utility</span><span class="p">,</span>
+		<span class="nx">Widget</span><span class="o">:</span> <span class="nx">Widget</span><span class="p">,</span>
+		<span class="nx">EventTarget</span><span class="o">:</span> <span class="nx">EventTarget</span><span class="p">,</span>
+		<span class="nx">augment</span><span class="o">:</span> <span class="nx">augment</span><span class="p">,</span>
+		<span class="nx">extend</span><span class="o">:</span> <span class="nx">extend</span>
+	<span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class="selected"><a href="module_base.html" title="base">base</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_io.html" title="io">io</a></li>
+                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_node.html" title="node">node</a></li>
+                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="Attribute.html" title="Attribute">Attribute</a></li>
+                                <li class=""><a href="Base.html" title="Base">Base</a></li>
+                                <li class=""><a href="EventTarget.html" title="EventTarget">EventTarget</a></li>
+                                <li class=""><a href="OOP.html" title="OOP">OOP</a></li>
+                                <li class=""><a href="Utility.html" title="Utility">Utility</a></li>
+                                <li class=""><a href="utils.Mouse.html" title="utils.Mouse">utils.Mouse</a></li>
+                                <li class=""><a href="Widget.html" title="Widget">Widget</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="anim.js.html" title="anim.js">anim.js</a></li>
+                                <li class="selected"><a href="base.js.html" title="base.js">base.js</a></li>
+                                <li class=""><a href="container.js.html" title="container.js">container.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2010 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+
+    var ALL_YUI_PROPS = [{"url": "Attribute.html#method_addAttr", "access": "", "host": "Attribute", "type": "method", "name": "addAttr"}, {"url": "Attribute.html#method_addAttrs", "access": "", "host": "Attribute", "type": "method", "name": "addAttrs"}, {"url": "Widget.html#event_afterRender", "access": "", "host": "Widget", "type": "event", "name": "afterRender"}, {"url": "OOP.html#method_augment", "access": "", "host": "OOP", "type": "method", "name": "augment"}, {"url": "Widget.html#config_boundingBox", "access": "", "host": "Widget", "type": "config", "name": "boundingBox"}, {"url": "Widget.html#config_className", "access": "", "host": "Widget", "type": "config", "name": "className"}, {"url": "Widget.html#config_classPrefix", "access": "", "host": "Widget", "type": "config", "name": "classPrefix"}, {"url": "Utility.html#method_destroy", "access": "", "host": "Utility", "type": "method", "name": "destroy"}, {"url": "Widget.html#method_destroy", "access": "", "host": "Widget", "type": "method", "name": "destroy"}, {"url": "Widget.html#event_destroy", "access": "", "host": "Widget", "type": "event", "name": "destroy"}, {"url": "utils.Mouse.html#method_down", "access": "", "host": "utils.Mouse", "type": "method", "name": "down"}, {"url": "OOP.html#method_extend", "access": "", "host": "OOP", "type": "method", "name": "extend"}, {"url": "EventTarget.html#method_fire", "access": "", "host": "EventTarget", "type": "method", "name": "fire"}, {"url": "utils.Mouse.html#config_frequency", "access": "", "host": "utils.Mouse", "type": "config", "name": "frequency"}, {"url": "Attribute.html#method_get", "access": "", "host": "Attribute", "type": "method", "name": "get"}, {"url": "Attribute.html#method_getAttrs", "access": "", "host": "Attribute", "type": "method", "name": "getAttrs"}, {"url": "Widget.html#method_hide", "access": "", "host": "Widget", "type": "method", "name": "hide"}, {"url": "Attribute.html#method_isSet", "access": "", "host": "Attribute", "type": "method", "name": "isSet"}, {"url": "utils.Mouse.html#event_move", "access": "", "host": "utils.Mouse", "type": "event", "name": "move"}, {"url": "EventTarget.html#method_on", "access": "", "host": "EventTarget", "type": "method", "name": "on"}, {"url": "Base.html#config_on", "access": "", "host": "Base", "type": "config", "name": "on"}, {"url": "Widget.html#method_render", "access": "", "host": "Widget", "type": "method", "name": "render"}, {"url": "Widget.html#event_render", "access": "", "host": "Widget", "type": "event", "name": "render"}, {"url": "Widget.html#config_rendered", "access": "", "host": "Widget", "type": "config", "name": "rendered"}, {"url": "Attribute.html#method_set", "access": "", "host": "Attribute", "type": "method", "name": "set"}, {"url": "Widget.html#method_show", "access": "", "host": "Widget", "type": "method", "name": "show"}, {"url": "Widget.html#config_srcNode", "access": "", "host": "Widget", "type": "config", "name": "srcNode"}, {"url": "utils.Mouse.html#config_tracking", "access": "", "host": "utils.Mouse", "type": "config", "name": "tracking"}, {"url": "EventTarget.html#method_unbind", "access": "", "host": "EventTarget", "type": "method", "name": "unbind"}, {"url": "EventTarget.html#method_unbindAll", "access": "", "host": "EventTarget", "type": "method", "name": "unbindAll"}, {"url": "Attribute.html#method_unset", "access": "", "host": "Attribute", "type": "method", "name": "unset"}, {"url": "utils.Mouse.html#method_up", "access": "", "host": "utils.Mouse", "type": "method", "name": "up"}, {"url": "utils.Mouse.html#event_up", "access": "", "host": "utils.Mouse", "type": "event", "name": "up"}];
+</script>
+</body>
+</html>

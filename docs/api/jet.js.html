@@ -1,0 +1,1066 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: io   jet.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>io&nbsp; <span class="subtitle">0.1.53</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_io.html" title="io">io</a>
+                
+                 &gt; jet.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * @module	jet</span>
+<span class="cm"> * @author	Juan Ignacio Dopazo</span>
+<span class="cm"> * </span>
+<span class="cm"> * @description &lt;p&gt;Based on YUI3&#39;s namespace&lt;/p&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> * &lt;p&gt;This module allows to load different modules asynchronously and to reuse</span>
+<span class="cm"> * them when they were already loaded. Its basic use looks like:&lt;/p&gt;</span>
+<span class="cm"> * </span>
+<span class="cm"> */</span>
+<span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">baseUrl</span> <span class="o">=</span> <span class="nx">location</span><span class="p">.</span><span class="nx">protocol</span> <span class="o">+</span> <span class="s2">&quot;//jet-js.googlecode.com/svn/trunk/src/&quot;</span><span class="p">;</span>
+	
+	<span class="kd">var</span> <span class="nx">win</span> <span class="o">=</span> <span class="nb">window</span><span class="p">,</span>
+		<span class="nx">doc</span> <span class="o">=</span> <span class="nb">document</span><span class="p">,</span>
+		<span class="nx">OP</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span>
+		<span class="nx">AP</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span>
+		<span class="nx">SP</span> <span class="o">=</span> <span class="nb">String</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span>
+		<span class="nx">SLICE</span> <span class="o">=</span> <span class="nx">AP</span><span class="p">.</span><span class="nx">slice</span><span class="p">,</span>
+		<span class="nx">TOSTRING</span> <span class="o">=</span> <span class="nx">OP</span><span class="p">.</span><span class="nx">toString</span><span class="p">,</span>
+		<span class="nx">TRUE</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+		<span class="nx">FALSE</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
+		<span class="nx">BASE</span> <span class="o">=</span> <span class="s2">&quot;base&quot;</span><span class="p">,</span>
+		<span class="nx">NODE</span> <span class="o">=</span> <span class="s2">&quot;node&quot;</span><span class="p">;</span>
+	
+	<span class="cm">/*</span>
+<span class="cm">	 * These modules can be called by the jet().use() method without defining a path.</span>
+<span class="cm">	 * Each module should be defined after its requirements</span>
+<span class="cm">	 */</span>
+	<span class="kd">var</span> <span class="nx">predefinedModules</span> <span class="o">=</span> <span class="p">{</span>
+		<span class="nx">ua</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
+		<span class="nx">log</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
+		<span class="nx">node</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="s2">&quot;ua&quot;</span><span class="p">],</span>
+		<span class="nx">xsl</span><span class="o">:</span> <span class="p">[</span><span class="nx">NODE</span><span class="p">],</span>
+		<span class="nx">flash</span><span class="o">:</span> <span class="p">[</span><span class="nx">NODE</span><span class="p">],</span>
+		<span class="s2">&quot;simple-progressbar&quot;</span><span class="o">:</span> <span class="p">[</span><span class="nx">NODE</span><span class="p">],</span>
+		<span class="nx">json</span><span class="o">:</span> <span class="p">[</span><span class="nx">NODE</span><span class="p">],</span>
+		<span class="nx">cookie</span><span class="o">:</span> <span class="p">[</span><span class="nx">NODE</span><span class="p">],</span>
+		<span class="nx">sizzle</span><span class="o">:</span> <span class="p">[</span><span class="nx">NODE</span><span class="p">],</span>
+		<span class="nx">base</span><span class="o">:</span> <span class="p">[</span><span class="nx">NODE</span><span class="p">],</span>
+		<span class="nx">ajax</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">],</span>
+		<span class="nx">tabs</span><span class="o">:</span> <span class="p">[</span><span class="nx">BASE</span><span class="p">],</span>
+		<span class="nx">resize</span><span class="o">:</span> <span class="p">[</span><span class="nx">BASE</span><span class="p">,</span> <span class="p">{</span>
+			<span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;resize-css&quot;</span><span class="p">,</span>
+			<span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;css&quot;</span><span class="p">,</span>
+			<span class="nx">fileName</span><span class="o">:</span> <span class="s2">&quot;resize&quot;</span><span class="p">,</span>
+			<span class="nx">beacon</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;borderLeftStyle&quot;</span><span class="p">,</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;solid&quot;</span>
+			<span class="p">}</span>
+		<span class="p">}],</span>
+		<span class="nx">container</span><span class="o">:</span> <span class="p">[</span><span class="nx">BASE</span><span class="p">,</span> <span class="p">{</span>
+			<span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;container-css&quot;</span><span class="p">,</span>
+			<span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;css&quot;</span><span class="p">,</span>
+			<span class="nx">fileName</span><span class="o">:</span> <span class="s2">&quot;container&quot;</span><span class="p">,</span>
+			<span class="nx">beacon</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;borderRightStyle&quot;</span><span class="p">,</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;solid&quot;</span>
+			<span class="p">}</span>
+		<span class="p">}],</span>
+		<span class="nx">dragdrop</span><span class="o">:</span> <span class="p">[</span><span class="nx">BASE</span><span class="p">],</span>
+		<span class="nx">imageloader</span><span class="o">:</span> <span class="p">[</span><span class="nx">BASE</span><span class="p">],</span>
+		<span class="nx">anim</span><span class="o">:</span> <span class="p">[</span><span class="nx">BASE</span><span class="p">],</span>
+		<span class="nx">datasource</span><span class="o">:</span> <span class="p">[</span><span class="nx">BASE</span><span class="p">,</span> <span class="s2">&quot;ajax&quot;</span><span class="p">],</span>
+		<span class="nx">datatable</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;datasource&quot;</span><span class="p">,</span> <span class="p">{</span>
+			<span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;datatable-css&quot;</span><span class="p">,</span>
+			<span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;css&quot;</span><span class="p">,</span>
+			<span class="nx">fileName</span><span class="o">:</span> <span class="s2">&quot;datatable&quot;</span><span class="p">,</span>
+			<span class="nx">beacon</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;borderTopStyle&quot;</span><span class="p">,</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;solid&quot;</span>
+			<span class="p">}</span>
+		<span class="p">}],</span>
+		<span class="nx">plasma</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;anim&quot;</span><span class="p">]</span>
+	<span class="p">};</span>
+	
+	 <span class="c1">//A couple of functions of this module are used throughout the Loader.</span>
+	 <span class="c1">//Should this be defined as any other module with the jet().add() method?</span>
+	<span class="kd">var</span> <span class="nx">ARRAY</span>		<span class="o">=</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span>
+		<span class="nx">BOOLEAN</span>		<span class="o">=</span> <span class="s2">&quot;boolean&quot;</span><span class="p">,</span>
+		<span class="nx">FUNCTION</span>	<span class="o">=</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span>
+		<span class="nx">OBJECT</span>		<span class="o">=</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+		<span class="nx">HASH</span>		<span class="o">=</span> <span class="s2">&quot;hash&quot;</span><span class="p">,</span>
+		<span class="nx">NULL</span>		<span class="o">=</span> <span class="s2">&quot;null&quot;</span><span class="p">,</span>
+		<span class="nx">NUMBER</span>		<span class="o">=</span> <span class="s2">&quot;number&quot;</span><span class="p">,</span>
+		<span class="nx">STRING</span>		<span class="o">=</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+		<span class="nx">UNDEFINED</span>	<span class="o">=</span> <span class="s2">&quot;undefined&quot;</span><span class="p">;</span>
+		
+	<span class="cm">/**</span>
+<span class="cm">	 * Provides utility methods for finding object types and other</span>
+<span class="cm">	 * methods that javascript provides in some browsers but not in others such as trim()</span>
+<span class="cm">	 * @class Lang</span>
+<span class="cm">	 * @static</span>
+<span class="cm">	 */</span>
+	<span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		
+		<span class="kd">var</span> <span class="nx">types</span> <span class="o">=</span> <span class="p">{</span>
+			<span class="s2">&quot;number&quot;</span>			<span class="o">:</span> <span class="nx">NUMBER</span><span class="p">,</span>
+			<span class="s2">&quot;string&quot;</span>			<span class="o">:</span> <span class="nx">STRING</span><span class="p">,</span>
+			<span class="s2">&quot;undefined&quot;</span>			<span class="o">:</span> <span class="nx">UNDEFINED</span><span class="p">,</span>
+			<span class="s2">&quot;[object Object]&quot;</span>	<span class="o">:</span> <span class="nx">HASH</span><span class="p">,</span>
+			<span class="s2">&quot;[object Function]&quot;</span> <span class="o">:</span> <span class="nx">FUNCTION</span><span class="p">,</span>
+			<span class="s2">&quot;[object Array]&quot;</span>	<span class="o">:</span> <span class="nx">ARRAY</span><span class="p">,</span>
+			<span class="s2">&quot;boolean&quot;</span>           <span class="o">:</span> <span class="nx">BOOLEAN</span>
+		<span class="p">};</span>
+		
+		<span class="cm">/*</span>
+<span class="cm">		 * Type function and constants from YUI</span>
+<span class="cm">		 */</span>
+		<span class="kd">var</span> <span class="nx">type</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">types</span><span class="p">[</span><span class="k">typeof</span> <span class="nx">o</span><span class="p">]</span> <span class="o">||</span> <span class="nx">types</span><span class="p">[</span><span class="nx">TOSTRING</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">o</span><span class="p">)]</span> <span class="o">||</span> <span class="p">(</span><span class="nx">o</span> <span class="o">?</span> <span class="nx">OBJECT</span> <span class="o">:</span> <span class="nx">NULL</span><span class="p">);</span>
+		<span class="p">};</span>
+		
+		<span class="cm">/*</span>
+<span class="cm">		 * RegExp by @some</span>
+<span class="cm">		 * http://stackoverflow.com/questions/574584/javascript-check-if-method-prototype-has-been-changed/574741#574741</span>
+<span class="cm">		 */</span>
+		<span class="kd">var</span> <span class="nx">isNative</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">func</span><span class="p">)</span> <span class="p">{</span>
+		    <span class="k">return</span> <span class="sr">/^\s*function[^{]+{\s*\[native code\]\s*}\s*$&quot;/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">func</span><span class="p">);</span>
+		<span class="p">};</span>
+
+		<span class="k">return</span> <span class="p">{</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * Returns if o is a number</span>
+<span class="cm">			 * @method isNumber</span>
+<span class="cm">			 * @param {Object} o</span>
+<span class="cm">			 */</span>
+			<span class="nx">isNumber</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">type</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="o">===</span> <span class="nx">NUMBER</span> <span class="o">&amp;&amp;</span> <span class="nb">isFinite</span><span class="p">(</span><span class="nx">o</span><span class="p">);</span>
+			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * Returns if o is a string</span>
+<span class="cm">			 * @method isString</span>
+<span class="cm">			 * @param {Object} o</span>
+<span class="cm">			 */</span>
+			<span class="nx">isString</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">type</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="o">===</span> <span class="nx">STRING</span><span class="p">;</span>
+			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * Returns if o is an array</span>
+<span class="cm">			 * @method isArray</span>
+<span class="cm">			 * @param {Object} o</span>
+<span class="cm">			 */</span>
+			<span class="nx">isArray</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">type</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="o">===</span> <span class="nx">ARRAY</span><span class="p">;</span>
+			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * Returns if o is an object literal</span>
+<span class="cm">			 * @method isHash</span>
+<span class="cm">			 * @param {Object} o</span>
+<span class="cm">			 */</span>
+			<span class="nx">isHash</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">type</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="o">===</span> <span class="nx">HASH</span><span class="p">;</span>
+			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * Returns if o is a function</span>
+<span class="cm">			 * @method isFunction</span>
+<span class="cm">			 * @param {Object} o</span>
+<span class="cm">			 */</span>
+			<span class="nx">isFunction</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">type</span><span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="o">===</span> <span class="nx">FUNCTION</span><span class="p">;</span>
+			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * Returns if o is a boolean</span>
+<span class="cm">			 * @method isBoolean</span>
+<span class="cm">			 * @param {Object} o</span>
+<span class="cm">			 */</span>
+			<span class="nx">isBoolean</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="k">typeof</span> <span class="nx">o</span> <span class="o">==</span> <span class="nx">BOOLEAN</span><span class="p">;</span>
+			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * Returns if o is undefined</span>
+<span class="cm">			 * @method isUndefined</span>
+<span class="cm">			 * @param {Object} o</span>
+<span class="cm">			 */</span>
+			<span class="nx">isUndefined</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="k">typeof</span> <span class="nx">o</span> <span class="o">==</span> <span class="nx">UNDEFINED</span><span class="p">;</span>
+			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * Returns the type of the object</span>
+<span class="cm">			 * @method type</span>
+<span class="cm">			 * @param {Object} o</span>
+<span class="cm">			 */</span>
+			<span class="nx">type</span><span class="o">:</span> <span class="nx">type</span><span class="p">,</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * Returns whether the function is a native function or not</span>
+<span class="cm">			 * @method isNative</span>
+<span class="cm">			 * @param {Function} o</span>
+<span class="cm">			 */</span>
+			<span class="nx">isNative</span><span class="o">:</span> <span class="nx">isNative</span><span class="p">,</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * Returns false if o is undefined, null, NaN or Infinity. In any other case, return true</span>
+<span class="cm">			 * @method isValue</span>
+<span class="cm">			 * @param {Object} o</span>
+<span class="cm">			 */</span>
+			<span class="nx">isValue</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">t</span> <span class="o">=</span> <span class="nx">type</span><span class="p">(</span><span class="nx">o</span><span class="p">);</span>
+				<span class="k">switch</span> <span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">case</span> <span class="nx">NUMBER</span><span class="o">:</span>
+					<span class="k">return</span> <span class="nb">isFinite</span><span class="p">(</span><span class="nx">o</span><span class="p">);</span>
+				<span class="k">case</span> <span class="nx">NULL</span><span class="o">:</span>
+				<span class="k">case</span> <span class="nx">UNDEFINED</span><span class="o">:</span>
+					<span class="k">return</span> <span class="nx">FALSE</span><span class="p">;</span>
+				<span class="k">case</span> <span class="nx">BOOLEAN</span><span class="o">:</span>
+					<span class="k">return</span> <span class="nx">TRUE</span><span class="p">;</span>
+				<span class="k">default</span><span class="o">:</span>
+					<span class="k">return</span> <span class="o">!!</span><span class="p">(</span><span class="nx">t</span><span class="p">);</span>
+				<span class="p">}</span>
+			<span class="p">},</span>
+			<span class="nx">is</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">o</span> <span class="k">instanceof</span> <span class="k">this</span><span class="p">;</span>
+			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * Returns a string without any leading or trailing whitespace.</span>
+<span class="cm">			 * Code by Steven Levithan</span>
+<span class="cm">			 * http://blog.stevenlevithan.com/archives/faster-trim-javascript</span>
+<span class="cm">			 * @method trim</span>
+<span class="cm">			 * @param {String} the string to trim</span>
+<span class="cm">			 * @return {string} the trimmed string</span>
+<span class="cm">			 */</span>
+			<span class="c1">// check for native support</span>
+			<span class="nx">trim</span><span class="o">:</span> <span class="nx">isNative</span><span class="p">(</span><span class="nx">SP</span><span class="p">.</span><span class="nx">trim</span><span class="p">)</span> <span class="o">?</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">str</span><span class="p">.</span><span class="nx">trim</span><span class="p">();</span>
+			<span class="p">}</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">str</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/^\s\s*/</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">);</span>
+				<span class="kd">var</span> <span class="nx">ws</span> <span class="o">=</span> <span class="sr">/\s/</span><span class="p">,</span>
+				<span class="nx">i</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+				<span class="k">while</span> <span class="p">(</span><span class="nx">ws</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">str</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="o">--</span><span class="nx">i</span><span class="p">)))</span> <span class="p">{}</span>
+				<span class="k">return</span> <span class="nx">str</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * A more traditional random function. Returns a random integer between 0 and num-1</span>
+<span class="cm">			 * @method random</span>
+<span class="cm">			 * @param {Number} num</span>
+<span class="cm">			 */</span>
+			<span class="nx">random</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">num</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">num</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">num</span><span class="p">;</span>
+				<span class="k">return</span> <span class="nx">num</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">ceil</span><span class="p">(</span><span class="nx">num</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">};</span>
+	<span class="p">}());</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * Clones an object, returning a copy with the sames properties</span>
+<span class="cm">	 * @method clone</span>
+<span class="cm">	 * @param {Object} o</span>
+<span class="cm">	 */</span>
+	<span class="kd">var</span> <span class="nx">clone</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">n</span><span class="p">;</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isHash</span><span class="p">(</span><span class="nx">o</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">n</span> <span class="o">=</span> <span class="p">{};</span>
+			<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">n</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">clone</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+			<span class="p">});</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">o</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">n</span> <span class="o">=</span> <span class="p">[];</span>
+			<span class="nx">ArrayHelper</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">o</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">n</span><span class="p">[</span><span class="nx">n</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">clone</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+			<span class="p">});</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="nx">n</span> <span class="o">=</span> <span class="nx">o</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nx">n</span><span class="p">;</span>
+	<span class="p">};</span>
+	<span class="nx">Lang</span><span class="p">.</span><span class="nx">clone</span> <span class="o">=</span> <span class="nx">clone</span><span class="p">;</span>
+	
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Utilities for working with Arrays</span>
+<span class="cm">	 * @class Array</span>
+<span class="cm">	 * @static</span>
+<span class="cm">	 */</span>
+	<span class="kd">var</span> <span class="nx">ArrayHelper</span> <span class="o">=</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Iterates through an array</span>
+<span class="cm">		 * @method each</span>
+<span class="cm">		 * @param {Array} arr</span>
+<span class="cm">		 * @param {Function} fn callback</span>
+<span class="cm">		 * @param {Object} thisp sets up the &lt;b&gt;this&lt;/b&gt; keyword inside the callback</span>
+<span class="cm">		 */</span>
+		<span class="c1">// check for native support</span>
+		<span class="nx">each</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isNative</span><span class="p">(</span><span class="nx">AP</span><span class="p">.</span><span class="nx">forEach</span><span class="p">)</span> <span class="o">?</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">fn</span><span class="p">,</span> <span class="nx">thisp</span><span class="p">)</span> <span class="p">{</span>
+			
+			<span class="nx">arr</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="nx">fn</span><span class="p">,</span> <span class="nx">thisp</span><span class="p">);</span>
+			
+		<span class="p">}</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">arr</span><span class="p">,</span> <span class="nx">fn</span><span class="p">,</span> <span class="nx">thisp</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">arr</span> <span class="o">=</span> <span class="nx">arr</span> <span class="o">||</span> <span class="p">[];</span>
+			<span class="kd">var</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">length</span> <span class="o">=</span> <span class="nx">arr</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+			<span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">fn</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">thisp</span><span class="p">,</span> <span class="nx">arr</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">arr</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Searchs an haystack and removes the needle if found</span>
+<span class="cm">		 * @method remove</span>
+<span class="cm">		 * @param {Object} needle</span>
+<span class="cm">		 * @param {Array} haystack</span>
+<span class="cm">		 */</span>
+		<span class="nx">remove</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">needle</span><span class="p">,</span> <span class="nx">haystack</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">length</span> <span class="o">=</span> <span class="nx">haystack</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+			<span class="k">while</span> <span class="p">(</span><span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">haystack</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">==</span> <span class="nx">needle</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">haystack</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+					<span class="nx">i</span><span class="o">++</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">haystack</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Returns the index of the first occurence of needle</span>
+<span class="cm">		 * @method indexOf</span>
+<span class="cm">		 * @param {Object} needle</span>
+<span class="cm">		 * @param {Array} haystack</span>
+<span class="cm">		 * @return {Number}</span>
+<span class="cm">		 */</span>
+		<span class="nx">indexOf</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isNative</span><span class="p">(</span><span class="nx">AP</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">)</span> <span class="o">?</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">needle</span><span class="p">,</span> <span class="nx">haystack</span><span class="p">)</span> <span class="p">{</span>
+			
+			<span class="k">return</span> <span class="nx">haystack</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">needle</span><span class="p">);</span>
+			
+		<span class="p">}</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">needle</span><span class="p">,</span> <span class="nx">haystack</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">i</span><span class="p">,</span>
+				<span class="nx">length</span> <span class="o">=</span> <span class="nx">haystack</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+			<span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">haystack</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">==</span> <span class="nx">needle</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">return</span> <span class="nx">i</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Returns whether needle is present in haystack</span>
+<span class="cm">		 * @method inArray</span>
+<span class="cm">		 * @param {Object} needle</span>
+<span class="cm">		 * @param {Array} haystack</span>
+<span class="cm">		 * @return {Boolean}</span>
+<span class="cm">		 */</span>
+		<span class="nx">inArray</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">needle</span><span class="p">,</span> <span class="nx">haystack</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">needle</span><span class="p">,</span> <span class="nx">haystack</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">};</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Utilities for working with object literals</span>
+<span class="cm">	 * Throughout jet the Hash type means an object lieteral</span>
+<span class="cm">	 * @class Hash</span>
+<span class="cm">	 * @static</span>
+<span class="cm">	 */</span>
+	<span class="kd">var</span> <span class="nx">Hash</span> <span class="o">=</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Iterats through a hash</span>
+<span class="cm">		 * @method each</span>
+<span class="cm">		 * @param {Hash} hash</span>
+<span class="cm">		 * @param {Function} fn</span>
+<span class="cm">		 * @param {Object} [thisp] Sets the value of the this keyword </span>
+<span class="cm">		 */</span>
+		<span class="nx">each</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">hash</span><span class="p">,</span> <span class="nx">fn</span><span class="p">,</span> <span class="nx">thisp</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">hash</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">hash</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">x</span><span class="p">))</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">fn</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">thisp</span> <span class="o">||</span> <span class="nx">hash</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">hash</span><span class="p">[</span><span class="nx">x</span><span class="p">],</span> <span class="nx">hash</span><span class="p">)</span> <span class="o">===</span> <span class="nx">FALSE</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">break</span><span class="p">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Returns an array with all the keys of a hash</span>
+<span class="cm">		 * @method keys</span>
+<span class="cm">		 * @param {Hash} hash</span>
+<span class="cm">		 * @return {Array}</span>
+<span class="cm">		 */</span>
+		<span class="nx">keys</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">hash</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">keys</span> <span class="o">=</span> <span class="p">[];</span>
+			<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">hash</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">keys</span><span class="p">[</span><span class="nx">keys</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">key</span><span class="p">;</span>
+			<span class="p">});</span>
+			<span class="k">return</span> <span class="nx">keys</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Returns an array with all the valus of a hash</span>
+<span class="cm">		 * @method values</span>
+<span class="cm">		 * @param {Object} hash</span>
+<span class="cm">		 * @return {Array}</span>
+<span class="cm">		 */</span>
+		<span class="nx">values</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">hash</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">values</span> <span class="o">=</span> <span class="p">[];</span>
+			<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">hash</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">values</span><span class="p">[</span><span class="nx">values</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+			<span class="p">});</span>
+			<span class="k">return</span> <span class="nx">values</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">};</span>
+	
+	<span class="kd">var</span> <span class="nx">createNode</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">attrs</span><span class="p">,</span> <span class="nx">s</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+		<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">attrs</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">attr</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">node</span><span class="p">[</span><span class="nx">attr</span><span class="p">]</span> <span class="o">=</span> <span class="nx">val</span><span class="p">;</span>
+		<span class="p">});</span>
+		<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">s</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">val</span><span class="p">;</span>
+		<span class="p">});</span>
+		<span class="k">return</span> <span class="nx">node</span><span class="p">;</span>
+	<span class="p">};</span>
+	
+	<span class="kd">var</span> <span class="nx">head</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;head&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * Dinamically inserts a script before the first script it finds on the page (at least the one executing this)</span>
+<span class="cm">	 * It loads scripts asynchronously, so it doesn&#39;t lock the browser and the loaded scripts can&#39;t use document.write()</span>
+<span class="cm">	 * </span>
+<span class="cm">	 * @private</span>
+<span class="cm">	 * @param {String} url</span>
+<span class="cm">	 */</span>
+	<span class="kd">var</span> <span class="nx">loadScript</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">keep</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">script</span> <span class="o">=</span> <span class="nx">createNode</span><span class="p">(</span><span class="s2">&quot;script&quot;</span><span class="p">,</span> <span class="p">{</span>
+			<span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;text/javascript&quot;</span><span class="p">,</span>
+			<span class="nx">asyng</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
+			<span class="nx">src</span><span class="o">:</span> <span class="nx">url</span>
+		<span class="p">});</span>
+		<span class="nx">head</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">script</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">keep</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+				<span class="nx">head</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">script</span><span class="p">);</span>
+			<span class="p">},</span> <span class="mi">10000</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">};</span>
+	
+	<span class="kd">var</span> <span class="nx">loadCSS</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">url</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">head</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">createNode</span><span class="p">(</span><span class="s2">&quot;link&quot;</span><span class="p">,</span> <span class="p">{</span>
+			<span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;text/css&quot;</span><span class="p">,</span>
+			<span class="nx">rel</span><span class="o">:</span> <span class="s2">&quot;stylesheet&quot;</span><span class="p">,</span>
+			<span class="nx">href</span><span class="o">:</span> <span class="nx">url</span>
+		<span class="p">}));</span>
+	<span class="p">};</span>
+	
+	<span class="kd">var</span> <span class="nx">domReady</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">fn</span><span class="p">,</span> <span class="nx">lib</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">fn</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">doc</span><span class="p">,</span> <span class="nx">lib</span><span class="p">);</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+				<span class="nx">domReady</span><span class="p">(</span><span class="nx">fn</span><span class="p">,</span> <span class="nx">lib</span><span class="p">);</span>
+			<span class="p">},</span> <span class="mi">13</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">};</span>
+	
+	<span class="kd">var</span> <span class="nx">getCurrentStyle</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">node</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">win</span><span class="p">.</span><span class="nx">getComputedStyle</span> <span class="o">?</span> <span class="nx">win</span><span class="p">.</span><span class="nx">getComputedStyle</span><span class="p">(</span><span class="nx">node</span><span class="p">,</span> <span class="kc">null</span><span class="p">)</span> <span class="o">:</span> 
+						<span class="nx">node</span><span class="p">.</span><span class="nx">currentStyle</span> <span class="o">?</span> <span class="nx">node</span><span class="p">.</span><span class="nx">currentStyle</span> <span class="o">:</span> <span class="p">{};</span>
+	<span class="p">};</span>
+	
+	<span class="kd">var</span> <span class="nx">mix</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">overwrite</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">a</span> <span class="o">=</span> <span class="nx">a</span> <span class="o">||</span> <span class="p">{};</span>
+		<span class="nx">b</span> <span class="o">=</span> <span class="nx">b</span> <span class="o">||</span> <span class="p">{};</span>
+		<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="k">in</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">b</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="o">!</span><span class="nx">a</span><span class="p">[</span><span class="nx">x</span><span class="p">]</span> <span class="o">||</span> <span class="nx">overwrite</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">a</span><span class="p">[</span><span class="nx">x</span><span class="p">]</span> <span class="o">=</span> <span class="nx">b</span><span class="p">[</span><span class="nx">x</span><span class="p">];</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nx">a</span><span class="p">;</span>
+	<span class="p">};</span>
+
+
+	<span class="kd">var</span> <span class="nx">Core</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Core methods</span>
+<span class="cm">		 * @class Core</span>
+<span class="cm">		 * @static</span>
+<span class="cm">		 */</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Walks through the DOM tree starting in th branch that derives from node</span>
+<span class="cm">		 * @method walkTheDOM</span>
+<span class="cm">		 * @param {HTMLElement} node</span>
+<span class="cm">		 * @param {Function} fn</span>
+<span class="cm">		 */</span>
+		<span class="kd">var</span> <span class="nx">walkTheDOM</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">node</span><span class="p">,</span> <span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">fn</span><span class="p">(</span><span class="nx">node</span><span class="p">);</span>
+			<span class="nx">node</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">firstChild</span><span class="p">;</span>
+			<span class="k">while</span> <span class="p">(</span><span class="nx">node</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">node</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">walkTheDOM</span><span class="p">(</span><span class="nx">node</span><span class="p">,</span> <span class="nx">fn</span><span class="p">);</span>
+				<span class="p">}</span>
+				<span class="nx">node</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">nextSibling</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">};</span>
+		
+		<span class="cm">/*</span>
+<span class="cm">		 * Rudimentary getElementsByClassName based on by Douglas Crockford&#39;s</span>
+<span class="cm">		 * https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&amp;pli=1</span>
+<span class="cm">		 */</span>
+		<span class="kd">var</span> <span class="nx">getByClass</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">className</span><span class="p">,</span> <span class="nx">root</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">root</span><span class="p">.</span><span class="nx">getElementsByClassName</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">getByClass</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">className</span><span class="p">,</span> <span class="nx">root</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">return</span> <span class="nx">root</span><span class="p">.</span><span class="nx">getElementsByClassName</span><span class="p">(</span><span class="nx">className</span><span class="p">);</span>
+				<span class="p">};</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">getByClass</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">className</span><span class="p">,</span> <span class="nx">root</span><span class="p">)</span> <span class="p">{</span>
+					<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">[];</span>
+					<span class="nx">walkTheDOM</span><span class="p">(</span><span class="nx">root</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">node</span><span class="p">)</span> <span class="p">{</span>
+						<span class="kd">var</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">c</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">className</span><span class="p">,</span> <span class="nx">i</span><span class="p">;</span>
+						<span class="k">if</span> <span class="p">(</span><span class="nx">c</span> <span class="o">&amp;&amp;</span> <span class="nx">ArrayHelper</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">className</span><span class="p">,</span> <span class="nx">c</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+							<span class="nx">result</span><span class="p">[</span><span class="nx">result</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">node</span><span class="p">;</span>
+						<span class="p">}</span>
+					<span class="p">});</span>
+					<span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+				<span class="p">};</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">getByClass</span><span class="p">(</span><span class="nx">className</span><span class="p">,</span> <span class="nx">root</span><span class="p">);</span>
+		<span class="p">};</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * The global object is a finder method that finds HTML elements.</span>
+<span class="cm">		 * The query string allows for different simple searches: &quot;#foo&quot; (get elemnet by id), &quot;.foo&quot; (gets elements by class), &quot;foo&quot; (get elements by tag) or an array of html elements</span>
+<span class="cm">		 * For more complex queries, take a look at the Sizzle module</span>
+<span class="cm">		 * @method $</span>
+<span class="cm">		 * @param {String|HTMLElement|Array} query</span>
+<span class="cm">		 * @param {HTMLElement|Document} root</span>
+<span class="cm">		 * @return {NodeList}</span>
+<span class="cm">		 */</span>
+		<span class="c1">// @TODO: consider moving this to the Node module</span>
+		<span class="kd">var</span> <span class="nx">$</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">root</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">root</span> <span class="o">=</span> <span class="nx">root</span> <span class="o">||</span> <span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">;</span>
+			<span class="nx">$</span><span class="p">.</span><span class="nx">context</span> <span class="o">=</span> <span class="nx">root</span><span class="p">.</span><span class="nx">ownerDocument</span> <span class="o">||</span> <span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">query</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">query</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">parseQuery</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">root</span><span class="p">);</span>
+				<span class="nx">query</span> <span class="o">=</span> <span class="o">!</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isValue</span><span class="p">(</span><span class="nx">query</span><span class="p">)</span> <span class="o">?</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">NodeList</span><span class="p">([])</span> <span class="o">:</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">NodeList</span><span class="p">(</span><span class="nx">query</span><span class="p">);</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">query</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">NodeList</span><span class="p">(</span><span class="nx">query</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">query</span><span class="p">;</span>
+		<span class="p">};</span>
+		
+		<span class="kd">var</span> <span class="nx">add</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">mix</span><span class="p">(</span><span class="nx">$</span><span class="p">,</span> <span class="nx">o</span><span class="p">,</span> <span class="nx">TRUE</span><span class="p">);</span>
+		<span class="p">};</span>
+		
+		<span class="k">if</span> <span class="p">(</span><span class="nx">win</span><span class="p">.</span><span class="nx">JSON</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">$</span><span class="p">.</span><span class="nx">JSON</span> <span class="o">=</span> <span class="nx">win</span><span class="p">.</span><span class="nx">JSON</span><span class="p">;</span>
+		<span class="p">}</span>
+			
+		<span class="cm">/**</span>
+<span class="cm">		 * Object function by Douglas Crockford</span>
+<span class="cm">		 * &lt;a href=&quot;https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&amp;pli=1&quot;&gt;link&lt;/a&gt;</span>
+<span class="cm">		 * @private</span>
+<span class="cm">		 * @param {Object} o</span>
+<span class="cm">		 */</span>
+		<span class="kd">var</span> <span class="nx">toObj</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">F</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{};</span>
+			<span class="nx">F</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nx">o</span><span class="p">;</span>
+			<span class="k">return</span> <span class="k">new</span> <span class="nx">F</span><span class="p">();</span>
+		<span class="p">};</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * From the guys at YUI (Thanks! This function is GENIUS!)</span>
+<span class="cm">	     * </span>
+<span class="cm">	     * Utility to set up the prototype, constructor and superclass properties to</span>
+<span class="cm">	     * support an inheritance strategy that can chain constructors and methods.</span>
+<span class="cm">	     * Static members will not be inherited.</span>
+<span class="cm">	     *</span>
+<span class="cm">	     * @method extend</span>
+<span class="cm">	     * @param {Function} r	the object to modify</span>
+<span class="cm">	     * @param {Function} s	the object to inherit</span>
+<span class="cm">	     * @param {Object} [px]	prototype properties to add/override</span>
+<span class="cm">	     * @param {Object} [sx]	static properties to add/override</span>
+<span class="cm">	     */</span>
+	    <span class="kd">var</span> <span class="nx">extend</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">r</span><span class="p">,</span> <span class="nx">s</span><span class="p">,</span> <span class="nx">px</span><span class="p">)</span> <span class="p">{</span>
+	        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">s</span> <span class="o">||</span> <span class="o">!</span><span class="nx">r</span><span class="p">)</span> <span class="p">{</span>
+	            <span class="c1">// @TODO error symbols</span>
+	            <span class="nx">$</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&quot;extend failed, verify dependencies&quot;</span><span class="p">);</span>
+	        <span class="p">}</span>
+	
+	        <span class="kd">var</span> <span class="nx">sp</span> <span class="o">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="nx">rp</span> <span class="o">=</span> <span class="nx">toObj</span><span class="p">(</span><span class="nx">sp</span><span class="p">);</span>
+	        <span class="nx">r</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nx">rp</span><span class="p">;</span>
+	
+	        <span class="nx">rp</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">=</span> <span class="nx">r</span><span class="p">;</span>
+	        <span class="nx">r</span><span class="p">.</span><span class="nx">superclass</span> <span class="o">=</span> <span class="nx">sp</span><span class="p">;</span>
+	
+	        <span class="c1">// assign constructor property</span>
+	        <span class="k">if</span> <span class="p">(</span><span class="nx">s</span> <span class="o">!=</span> <span class="nb">Object</span> <span class="o">&amp;&amp;</span> <span class="nx">sp</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">==</span> <span class="nx">OP</span><span class="p">.</span><span class="nx">constructor</span><span class="p">)</span> <span class="p">{</span>
+	            <span class="nx">sp</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">=</span> <span class="nx">s</span><span class="p">;</span>
+	        <span class="p">}</span>
+	    
+	        <span class="c1">// add prototype overrides</span>
+	        <span class="k">if</span> <span class="p">(</span><span class="nx">px</span><span class="p">)</span> <span class="p">{</span>
+	            <span class="nx">$</span><span class="p">.</span><span class="nx">mix</span><span class="p">(</span><span class="nx">rp</span><span class="p">,</span> <span class="nx">px</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+	        <span class="p">}</span>
+	
+	    <span class="p">};</span>
+		
+		<span class="nx">add</span><span class="p">({</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * A pointer to the last Windo that was referenced by the $() function</span>
+<span class="cm">			 * @property win</span>
+<span class="cm">			 */</span>
+			<span class="nx">win</span><span class="o">:</span> <span class="nx">win</span><span class="p">,</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * A pointer to the last Document that was referenced by the $() function.</span>
+<span class="cm">			 * @property context</span>
+<span class="cm">			 */</span>
+			<span class="nx">context</span><span class="o">:</span> <span class="nx">doc</span><span class="p">,</span>
+			
+			<span class="cm">/**</span>
+<span class="cm">			 * Does all the work behind the $() function</span>
+<span class="cm">			 * You shouldn&#39;t overwrite it unless you know what you&#39;re doing</span>
+<span class="cm">			 * @protected </span>
+<span class="cm">			 * @param {String} query</span>
+<span class="cm">			 * @param {HTMLElement|Document} root</span>
+<span class="cm">			 */</span>
+			<span class="nx">parseQuery</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">root</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">root</span> <span class="o">=</span> <span class="nx">root</span> <span class="o">||</span> <span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">;</span>
+				<span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="nx">query</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="nx">test</span><span class="p">,</span> <span class="nx">node</span><span class="p">;</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">c</span> <span class="o">==</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">query</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/&lt;/g</span><span class="p">).</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">return</span> <span class="nx">root</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="nx">query</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">query</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">3</span><span class="p">));</span>
+					<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+						<span class="cm">/*</span>
+<span class="cm">						 * Check for strings like &quot;&lt;div&gt;&lt;span&gt;&lt;a/&gt;&lt;/span&gt;&lt;/div&gt;&quot;</span>
+<span class="cm">						 */</span>
+						<span class="nx">test</span> <span class="o">=</span> <span class="nx">query</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s2">&quot;&lt;([a-z]+)&gt;(.+)&lt;\/([a-z]+)&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;i&quot;</span><span class="p">));</span>
+						<span class="nx">node</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+						<span class="k">if</span> <span class="p">(</span><span class="nx">test</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">4</span> <span class="o">&amp;&amp;</span> <span class="nx">test</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="nx">test</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="p">{</span>
+							<span class="nx">node</span> <span class="o">=</span> <span class="nx">root</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="nx">test</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+							<span class="nx">node</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">test</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+						<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+							<span class="nx">$</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&quot;Wrong element creation string&quot;</span><span class="p">);</span>
+						<span class="p">}</span>
+						<span class="k">return</span> <span class="nx">node</span><span class="p">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+					<span class="k">return</span> <span class="nx">c</span> <span class="o">==</span> <span class="s2">&quot;#&quot;</span> <span class="o">?</span> <span class="nx">root</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">query</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span> <span class="o">:</span> 
+						   <span class="nx">c</span> <span class="o">==</span> <span class="s2">&quot;.&quot;</span> <span class="o">?</span> <span class="nx">getByClass</span><span class="p">(</span><span class="nx">query</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="nx">root</span><span class="p">)</span> <span class="o">:</span>
+						   <span class="nx">root</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="nx">query</span><span class="p">);</span>
+				<span class="p">}</span>
+			<span class="p">},</span>
+			
+			<span class="cm">/**</span>
+<span class="cm">			 * Copies all properties from B to A.</span>
+<span class="cm">			 * Doesn&#39;t overwrite properties unless the overwrite parameter is TRUE</span>
+<span class="cm">			 * @method mix</span>
+<span class="cm">			 * @param {Object} A</span>
+<span class="cm">			 * @param {Object} B</span>
+<span class="cm">			 * @param {Boolean} [overwrite]</span>
+<span class="cm">			 */</span>
+			<span class="nx">mix</span><span class="o">:</span> <span class="nx">mix</span><span class="p">,</span>
+			
+			<span class="cm">/**</span>
+<span class="cm">			 * Adds properties to the $ object (shortcut for adding classes)</span>
+<span class="cm">			 * @method add</span>
+<span class="cm">			 * @param {Hash} key/value pairs of class/function names and definitions</span>
+<span class="cm">			 */</span>
+			<span class="nx">add</span><span class="o">:</span> <span class="nx">add</span><span class="p">,</span>
+			
+			<span class="nx">extend</span><span class="o">:</span> <span class="nx">extend</span><span class="p">,</span>
+			
+			<span class="nx">walkTheDOM</span><span class="o">:</span> <span class="nx">walkTheDOM</span><span class="p">,</span>
+			
+			<span class="nx">Lang</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">,</span>
+			
+			<span class="s2">&quot;Array&quot;</span><span class="o">:</span> <span class="nx">ArrayHelper</span><span class="p">,</span>
+			
+			<span class="nx">Hash</span><span class="o">:</span> <span class="nx">Hash</span><span class="p">,</span>
+			
+			<span class="nx">utils</span><span class="o">:</span> <span class="p">{},</span>
+			
+			<span class="cm">/**</span>
+<span class="cm">			 * Loads scripts and CSS files.</span>
+<span class="cm">			 * Included with the jet() core</span>
+<span class="cm">			 * @class Get</span>
+<span class="cm">			 * @static</span>
+<span class="cm">			 */</span>
+			<span class="nx">Get</span><span class="o">:</span> <span class="p">{</span>
+				<span class="cm">/**</span>
+<span class="cm">				 * Loads a script asynchronously</span>
+<span class="cm">				 * @method script</span>
+<span class="cm">				 * @param {String} url</span>
+<span class="cm">				 */</span>
+				<span class="nx">script</span><span class="o">:</span> <span class="nx">loadScript</span><span class="p">,</span>
+				<span class="cm">/**</span>
+<span class="cm">				 * Loads a CSS file</span>
+<span class="cm">				 * @method css</span>
+<span class="cm">				 * @param {String} url</span>
+<span class="cm">				 */</span>
+				<span class="nx">css</span><span class="o">:</span> <span class="nx">loadCSS</span>
+			<span class="p">}</span>
+		<span class="p">});</span>
+		
+		<span class="k">return</span> <span class="nx">$</span><span class="p">;</span>
+	<span class="p">};</span>
+	
+	<span class="cm">/*</span>
+<span class="cm">	 * Variables used by the loader to hold states and information.</span>
+<span class="cm">	 * - &quot;queueList&quot; contains the requests made to the loader. </span>
+<span class="cm">	 *   Once a request is delivered, it is deleted from this array.</span>
+<span class="cm">	 * - &quot;queuedScripts&quot; keeps track of which scripts were started to load, </span>
+<span class="cm">	 *   so as not to insert them twice in the page if the loader is called before</span>
+<span class="cm">	 *   the script loaded</span>
+<span class="cm">	 * - &quot;modules&quot; contains all the modules already loaded </span>
+<span class="cm">	 */</span>
+	<span class="kd">var</span> <span class="nx">queueList</span> <span class="o">=</span> <span class="p">[],</span> <span class="nx">queuedScripts</span> <span class="o">=</span> <span class="p">{},</span> <span class="nx">modules</span> <span class="o">=</span> <span class="p">{};</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Checks the state of each queue. If a queue has finished loading it executes it</span>
+<span class="cm">	 * @private</span>
+<span class="cm">	 */</span>
+	<span class="kd">var</span> <span class="nx">update</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">core</span><span class="p">,</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">j</span><span class="p">,</span> <span class="nx">required</span><span class="p">,</span> <span class="nx">requiredLength</span><span class="p">,</span> <span class="nx">ready</span><span class="p">;</span>
+		<span class="k">while</span> <span class="p">(</span><span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">queueList</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">required</span> <span class="o">=</span> <span class="nx">queueList</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">req</span><span class="p">;</span>
+			<span class="nx">requiredLength</span> <span class="o">=</span> <span class="nx">required</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+			<span class="nx">ready</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+			<span class="cm">/*</span>
+<span class="cm">			 * Check if every module in this queue was loaded </span>
+<span class="cm">			 */</span>
+			<span class="k">for</span> <span class="p">(</span><span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">requiredLength</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">modules</span><span class="p">[</span><span class="nx">required</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">name</span><span class="p">])</span> <span class="p">{</span>
+					<span class="nx">ready</span><span class="o">++</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">queueList</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">onProgress</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">queueList</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">onProgress</span><span class="p">(</span><span class="nx">ready</span> <span class="o">/</span> <span class="nx">requiredLength</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">ready</span> <span class="o">==</span> <span class="nx">requiredLength</span><span class="p">)</span> <span class="p">{</span>
+				<span class="cm">/*</span>
+<span class="cm">				 * Create a new instance of the core, call each module and the queue&#39;s callback </span>
+<span class="cm">				 */</span>
+				<span class="nx">core</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Core</span><span class="p">();</span>
+				<span class="k">for</span> <span class="p">(</span><span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">requiredLength</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">modules</span><span class="p">[</span><span class="nx">required</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">name</span><span class="p">](</span><span class="nx">core</span><span class="p">);</span>
+				<span class="p">}</span>
+				<span class="nx">domReady</span><span class="p">(</span><span class="nx">queueList</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">main</span><span class="p">,</span> <span class="nx">core</span><span class="p">);</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">i</span><span class="o">++</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">};</span>
+		
+	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">win</span><span class="p">.</span><span class="nx">jet</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">trackerDiv</span><span class="p">;</span>
+		<span class="nx">domReady</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="nx">trackerDiv</span> <span class="o">=</span> <span class="nx">createNode</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">,</span> <span class="p">{</span>
+				<span class="nx">id</span><span class="o">:</span> <span class="s2">&quot;jet-tracker&quot;</span>
+			<span class="p">},</span> <span class="p">{</span>
+				<span class="nx">position</span><span class="o">:</span> <span class="s2">&quot;absolute&quot;</span><span class="p">,</span>
+				<span class="nx">width</span><span class="o">:</span> <span class="s2">&quot;1px&quot;</span><span class="p">,</span>
+				<span class="nx">height</span><span class="o">:</span> <span class="s2">&quot;1px&quot;</span><span class="p">,</span>
+				<span class="nx">top</span><span class="o">:</span> <span class="s2">&quot;-1000px&quot;</span><span class="p">,</span>
+				<span class="nx">left</span><span class="o">:</span> <span class="s2">&quot;-1000px&quot;</span><span class="p">,</span>
+				<span class="nx">visibility</span><span class="o">:</span> <span class="s2">&quot;hidden&quot;</span>
+			<span class="p">});</span>
+			<span class="nx">doc</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">trackerDiv</span><span class="p">);</span>
+		<span class="p">});</span>
+			
+		<span class="cm">/**</span>
+<span class="cm">		 * &lt;p&gt;Global function. Returns an object with 2 methods: use() and add().&lt;/p&gt;</span>
+<span class="cm">		 *  </span>
+<span class="cm">		 * &lt;code&gt;jet().use(&quot;node&quot;, function ($) {</span>
+<span class="cm">		 *	 //do something with $</span>
+<span class="cm">		 * });&lt;/code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * &lt;p&gt;This snippet will load the Node module, and when it finishes loading it&#39;ll execute</span>
+<span class="cm">		 * the function. Each module must call the jet().add() method to tell the loader</span>
+<span class="cm">		 * it has finished loading:&lt;/p&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * &lt;code&gt;jet().add(&quot;node&quot;, function ($) {</span>
+<span class="cm">		 *	 $.method = function () {};</span>
+<span class="cm">		 * });&lt;/code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * &lt;p&gt;A variable is passed to every module and the function defined in the use() method. </span>
+<span class="cm">		 * This variable acts as a main library and is shared by each module and the main</span>
+<span class="cm">		 * function, but not between different calls to the &quot;use&quot; method. Ie:&lt;/p&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * &lt;code&gt;jet().use(&quot;node&quot;, function ($) {</span>
+<span class="cm">		 *	 $.testProperty = &quot;test&quot;;</span>
+<span class="cm">		 * });</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * jet().use(&quot;node&quot;, function ($) {</span>
+<span class="cm">		 *	 alert($.testProperty); //alerts &quot;undefined&quot;</span>
+<span class="cm">		 * });&lt;/code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * &lt;p&gt;Since it is a parameter, it can have any name but it still acts the same way. Also,</span>
+<span class="cm">		 * each module is called in the order defined by the &quot;use&quot; method. So:&lt;/p&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * &lt;code&gt;jet().use(&quot;node&quot;, &quot;anim&quot;, function (L) {</span>
+<span class="cm">		 *	 // Here the L variable contains both Node and Anim</span>
+<span class="cm">		 *	 // The Node module is called first on L and the Anim module after,</span>
+<span class="cm">		 *	 // so it can overwrite anything Node did, extend classes, etc</span>
+<span class="cm">		 * });&lt;/code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * &lt;p&gt;New modules can be defined by passing an object literal instead of a string to the</span>
+<span class="cm">		 * &quot;use&quot; method with a &quot;name&quot; property and a &quot;path&quot; or &quot;fullpath&quot; property.&lt;/p&gt; </span>
+<span class="cm">		 * </span>
+<span class="cm">		 * &lt;code&gt;jet().use(&quot;node&quot;, {name:&quot;myModule&quot;, fullpath:&quot;http://localhost/myModule.js&quot;}, function ($) {</span>
+<span class="cm">		 *	 //do something</span>
+<span class="cm">		 * });&lt;/code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * &lt;p&gt;If &quot;path&quot; is defined instead of &quot;fullpath&quot;, the loader will append &quot;path&quot;</span>
+<span class="cm">		 * to a predefined base URL. This base URL can be modified by passing</span>
+<span class="cm">		 * the jet() function an object literal with a &quot;base&quot; property:&lt;/p&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 *  &lt;code&gt;jet({</span>
+<span class="cm">		 *	  base: &quot;http://www.mydomain.com/modules/&quot;</span>
+<span class="cm">		 *  }).use(&quot;node&quot;, function ($) {</span>
+<span class="cm">		 *	  //in this case the &quot;core&quot; module is loaded from http://www.mydomain.com/modules/node.min.js</span>
+<span class="cm">		 *  });&lt;/code&gt;</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * @class jet</span>
+<span class="cm">		 * @constructor</span>
+<span class="cm">		 * @param {Object} config Object literal with configuration options</span>
+<span class="cm">		 */</span>
+		<span class="nx">win</span><span class="p">.</span><span class="nx">jet</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">config</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">config</span> <span class="o">=</span> <span class="nx">config</span> <span class="o">||</span> <span class="p">{};</span>
+			<span class="kd">var</span> <span class="nx">base</span> <span class="o">=</span> <span class="nx">baseUrl</span><span class="p">;</span>
+ 			<span class="cm">/**</span>
+<span class="cm"> 			 * @config base</span>
+<span class="cm"> 			 * @description prefix for all script and css urls</span>
+<span class="cm"> 			 * @type String</span>
+<span class="cm"> 			 * @default &quot;//jet-js.googlecode.com/svn/trunk/src/&quot;</span>
+<span class="cm"> 			 */</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">base</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">base</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">base</span><span class="p">;</span>
+				<span class="nx">base</span> <span class="o">=</span> <span class="nx">base</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="nx">base</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;/&quot;</span> <span class="o">?</span> <span class="nx">base</span> <span class="o">:</span> <span class="nx">base</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span><span class="p">;</span>
+			<span class="p">}</span>
+ 			<span class="cm">/**</span>
+<span class="cm"> 			 * @config base</span>
+<span class="cm"> 			 * @description defines whether predefined modules should be minified or not</span>
+<span class="cm"> 			 * @type Boolean</span>
+<span class="cm"> 			 * @default true</span>
+<span class="cm"> 			 */</span>
+			<span class="nx">config</span><span class="p">.</span><span class="nx">minify</span> <span class="o">=</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isBoolean</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">minify</span><span class="p">)</span> <span class="o">?</span> <span class="nx">config</span><span class="p">.</span><span class="nx">minify</span> <span class="o">:</span> <span class="nx">FALSE</span><span class="p">;</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config loadCss</span>
+<span class="cm">			 * @description If true, css modules are loaded</span>
+<span class="cm">			 * @type Boolean</span>
+<span class="cm">			 * @default true</span>
+<span class="cm">			 */</span>
+			<span class="nx">config</span><span class="p">.</span><span class="nx">loadCss</span> <span class="o">=</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isBoolean</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">loadCss</span><span class="p">)</span> <span class="o">?</span> <span class="nx">config</span><span class="p">.</span><span class="nx">loadCss</span> <span class="o">:</span> <span class="nx">TRUE</span><span class="p">;</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config modules</span>
+<span class="cm">			 * @description Allows to define your own modules. Currently the same as using object literals in the use() method</span>
+<span class="cm">			 * @type Array</span>
+<span class="cm">			 */</span>
+			<span class="kd">var</span> <span class="nx">predef</span> <span class="o">=</span> <span class="nx">mix</span><span class="p">(</span><span class="nx">clone</span><span class="p">(</span><span class="nx">predefinedModules</span><span class="p">),</span> <span class="nx">config</span><span class="p">.</span><span class="nx">modules</span> <span class="o">||</span> <span class="p">{},</span> <span class="nx">TRUE</span><span class="p">);</span>
+			
+			<span class="kd">var</span> <span class="nx">loadCssModule</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">module</span><span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">module</span><span class="p">.</span><span class="nx">fullpath</span> <span class="o">||</span> <span class="p">(</span><span class="nx">module</span><span class="p">.</span><span class="nx">path</span> <span class="o">?</span> <span class="p">(</span><span class="nx">base</span> <span class="o">+</span> <span class="nx">module</span><span class="p">.</span><span class="nx">path</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="nx">base</span> <span class="o">+</span> <span class="nx">module</span><span class="p">.</span><span class="nx">fileName</span> <span class="o">+</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">minify</span> <span class="o">?</span> <span class="s2">&quot;.min.css&quot;</span> <span class="o">:</span> <span class="s2">&quot;.css&quot;</span><span class="p">)));</span>
+				<span class="nx">loadCSS</span><span class="p">(</span><span class="nx">url</span><span class="p">);</span>
+				<span class="kd">var</span> <span class="nx">t</span> <span class="o">=</span> <span class="nx">setInterval</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">getCurrentStyle</span><span class="p">(</span><span class="nx">trackerDiv</span><span class="p">)[</span><span class="nx">module</span><span class="p">.</span><span class="nx">beacon</span><span class="p">.</span><span class="nx">name</span><span class="p">]</span> <span class="o">==</span> <span class="nx">module</span><span class="p">.</span><span class="nx">beacon</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">clearInterval</span><span class="p">(</span><span class="nx">t</span><span class="p">);</span>
+						<span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="nx">module</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{});</span>
+					<span class="p">}</span>
+				<span class="p">},</span> <span class="mi">50</span><span class="p">);</span>
+			<span class="p">};</span>
+			
+			<span class="k">return</span> <span class="p">{</span>
+				<span class="cm">/**</span>
+<span class="cm">				 * Allows to load modules and obtain a unique reference to the library augmented by the requested modules </span>
+<span class="cm">				 * </span>
+<span class="cm">				 * This method works by overloading its parameters. It takes names (String) of predefined modules</span>
+<span class="cm">				 * or objects defining name and path/fullpath of a module. The last parameter must be a function </span>
+<span class="cm">				 * that contains the main logic of the application.</span>
+<span class="cm">				 * @method use </span>
+<span class="cm">				 */</span>
+				<span class="nx">use</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+					
+					<span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">SLICE</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+					<span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">module</span><span class="p">,</span> <span class="nx">moveForward</span><span class="p">;</span>
+					
+					<span class="c1">// if &quot;*&quot; is used, include everything</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">ArrayHelper</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="nx">request</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">while</span> <span class="p">(</span><span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">request</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+							<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">request</span><span class="p">[</span><span class="nx">j</span><span class="p">]))</span> <span class="p">{</span>
+								<span class="nx">request</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+							<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+								<span class="nx">j</span><span class="o">++</span><span class="p">;</span>
+							<span class="p">}</span>
+						<span class="p">}</span>
+						<span class="nx">AP</span><span class="p">.</span><span class="nx">unshift</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">Hash</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">predef</span><span class="p">));</span>
+						
+					<span class="c1">// add ajax by default</span>
+					<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">ArrayHelper</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;ajax&quot;</span><span class="p">,</span> <span class="nx">request</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">request</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span><span class="s2">&quot;ajax&quot;</span><span class="p">);</span>
+					<span class="p">}</span>
+					
+					<span class="c1">// handle requirements</span>
+					<span class="k">while</span> <span class="p">(</span><span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">request</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">module</span> <span class="o">=</span> <span class="nx">request</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+						<span class="nx">moveForward</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+						<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">module</span><span class="p">))</span> <span class="p">{</span>
+							<span class="nx">module</span> <span class="o">=</span> <span class="nx">predef</span><span class="p">[</span><span class="nx">module</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()];</span>
+							<span class="k">if</span> <span class="p">(</span><span class="nx">module</span> <span class="o">&amp;&amp;</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">module</span><span class="p">))</span> <span class="p">{</span>
+								<span class="k">for</span> <span class="p">(</span><span class="nx">j</span> <span class="o">=</span> <span class="nx">module</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+									<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">ArrayHelper</span><span class="p">.</span><span class="nx">inArray</span><span class="p">(</span><span class="nx">module</span><span class="p">[</span><span class="nx">j</span><span class="p">],</span> <span class="nx">request</span><span class="p">))</span> <span class="p">{</span>
+										<span class="nx">request</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">module</span><span class="p">[</span><span class="nx">j</span><span class="p">]);</span>
+										<span class="nx">moveForward</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+									<span class="p">}</span>
+								<span class="p">}</span>
+							<span class="p">}</span>
+						<span class="p">}</span>
+						<span class="nx">i</span> <span class="o">+=</span> <span class="nx">moveForward</span><span class="p">;</span>
+					<span class="p">}</span>
+					
+					<span class="c1">// remove JSON module if there&#39;s native JSON support</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">win</span><span class="p">.</span><span class="nx">JSON</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">ArrayHelper</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="nx">request</span><span class="p">);</span>
+					<span class="p">}</span>
+					
+					<span class="c1">// transform every module request into an object and load the required css/script if not already loaded</span>
+					<span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">request</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">module</span> <span class="o">=</span> <span class="nx">request</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+						<span class="cm">/*</span>
+<span class="cm">						 * If a module is a string, it is considered a predefined module.</span>
+<span class="cm">						 * If it isn&#39;t defined, it&#39;s probably a mistake and will lead to errors</span>
+<span class="cm">						 */</span>
+						<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">module</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">predef</span><span class="p">[</span><span class="nx">module</span><span class="p">])</span> <span class="p">{</span>
+							<span class="nx">request</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">module</span> <span class="o">=</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isHash</span><span class="p">(</span><span class="nx">predef</span><span class="p">[</span><span class="nx">module</span><span class="p">])</span> <span class="o">?</span> <span class="nx">predef</span><span class="p">[</span><span class="nx">module</span><span class="p">]</span> <span class="o">:</span> <span class="p">{</span>
+								<span class="nx">name</span><span class="o">:</span> <span class="nx">module</span><span class="p">,</span>
+								<span class="nx">path</span><span class="o">:</span> <span class="nx">module</span> <span class="o">+</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">minify</span> <span class="o">?</span> <span class="s2">&quot;.min.js&quot;</span> <span class="o">:</span> <span class="s2">&quot;.js&quot;</span><span class="p">)</span>
+							<span class="p">};</span>
+						<span class="p">}</span>
+						<span class="k">if</span> <span class="p">(</span><span class="nx">module</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;css&quot;</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">config</span><span class="p">.</span><span class="nx">loadCss</span><span class="p">)</span> <span class="p">{</span>
+							<span class="nx">request</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+							<span class="nx">i</span><span class="o">--</span><span class="p">;</span>
+						<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">modules</span><span class="p">[</span><span class="nx">module</span><span class="p">.</span><span class="nx">name</span><span class="p">]</span> <span class="o">||</span> <span class="nx">queuedScripts</span><span class="p">[</span><span class="nx">module</span><span class="p">.</span><span class="nx">name</span><span class="p">]))</span> <span class="p">{</span>
+							<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">module</span><span class="p">.</span><span class="nx">type</span> <span class="o">||</span> <span class="nx">module</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;js&quot;</span><span class="p">)</span> <span class="p">{</span>
+								<span class="nx">loadScript</span><span class="p">(</span><span class="nx">module</span><span class="p">.</span><span class="nx">fullpath</span> <span class="o">||</span> <span class="p">(</span><span class="nx">base</span> <span class="o">+</span> <span class="nx">module</span><span class="p">.</span><span class="nx">path</span><span class="p">));</span> 
+							<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">module</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;css&quot;</span><span class="p">)</span> <span class="p">{</span>
+								<span class="nx">domReady</span><span class="p">(</span><span class="nx">loadCssModule</span><span class="p">,</span> <span class="nx">module</span><span class="p">);</span>
+							<span class="p">}</span>
+							<span class="nx">queuedScripts</span><span class="p">[</span><span class="nx">module</span><span class="p">.</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+					
+					<span class="c1">// add the queue to the waiting list</span>
+					<span class="nx">queueList</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span>
+						<span class="nx">main</span><span class="o">:</span> <span class="nx">request</span><span class="p">.</span><span class="nx">pop</span><span class="p">(),</span>
+						<span class="nx">req</span><span class="o">:</span> <span class="nx">request</span><span class="p">,</span>
+						<span class="c1">// onProgress handlers are managed by queue</span>
+						<span class="nx">onProgress</span><span class="o">:</span> <span class="nx">config</span><span class="p">.</span><span class="nx">onProgress</span>
+					<span class="p">});</span>
+					<span class="nx">update</span><span class="p">();</span>
+				<span class="p">},</span>
+				<span class="cm">/**</span>
+<span class="cm">				 * Adds a module to the loaded module list and calls update() to check if a queue is ready to fire</span>
+<span class="cm">				 * This method must be called from a module to register it</span>
+<span class="cm">				 * @method add</span>
+<span class="cm">				 * @param {String} moduleName</span>
+<span class="cm">				 * @param {Function} expose</span>
+<span class="cm">				 */</span>
+				<span class="nx">add</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">moduleName</span><span class="p">,</span> <span class="nx">expose</span><span class="p">)</span> <span class="p">{</span>
+					<span class="cm">/*</span>
+<span class="cm">					 * Modules are overwritten by default.</span>
+<span class="cm">					 * Maybe it would be a good idea to add an option not to overwrite if present?</span>
+<span class="cm">					 */</span> 
+					<span class="nx">modules</span><span class="p">[</span><span class="nx">moduleName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">expose</span><span class="p">;</span>
+					<span class="nx">update</span><span class="p">();</span>
+				<span class="p">}</span>
+			<span class="p">};</span>
+		<span class="p">};</span>
+	<span class="p">}</span>
+<span class="p">}());</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_base.html" title="base">base</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class="selected"><a href="module_io.html" title="io">io</a></li>
+                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_node.html" title="node">node</a></li>
+                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="IO.html" title="IO">IO</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class="selected"><a href="jet.js.html" title="jet.js">jet.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2010 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+
+    var ALL_YUI_PROPS = [{"url": "IO.html#method_ajax", "access": "", "host": "IO", "type": "method", "name": "ajax"}, {"url": "IO.html#config_dataType", "access": "", "host": "IO", "type": "config", "name": "dataType"}];
+</script>
+</body>
+</html>

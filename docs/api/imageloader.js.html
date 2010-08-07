@@ -1,0 +1,262 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: dragdrop   imageloader.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>dragdrop&nbsp; <span class="subtitle">0.1.53</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_dragdrop.html" title="dragdrop">dragdrop</a>
+                
+                 &gt; imageloader.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight"><pre><span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;imageloader&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
+	
+	<span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
+		<span class="nx">ArrayHelper</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">;</span>
+	
+	<span class="kd">var</span> <span class="nx">TRUE</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
+		<span class="nx">FALSE</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+		
+	<span class="kd">var</span> <span class="nx">LOAD</span> <span class="o">=</span> <span class="s2">&quot;load&quot;</span><span class="p">,</span>
+		<span class="nx">ERROR</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span><span class="p">,</span>
+		<span class="nx">TIMEOUT</span> <span class="o">=</span> <span class="s2">&quot;timeout&quot;</span><span class="p">,</span>
+		<span class="nx">COMPLETE</span> <span class="o">=</span> <span class="s2">&quot;complete&quot;</span><span class="p">,</span>
+		<span class="nx">IMAGE_</span> <span class="o">=</span> <span class="s2">&quot;image:&quot;</span><span class="p">;</span>
+	
+	<span class="kd">var</span> <span class="nx">Img</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="nx">Img</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">img</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Image</span><span class="p">();</span>
+		<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">img</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
+			<span class="nx">src</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">required</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
+				<span class="nx">writeOnce</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
+				<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span>
+			<span class="p">},</span>
+			<span class="nx">image</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">readOnly</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="nx">img</span>
+			<span class="p">},</span>
+			<span class="nx">node</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="nx">node</span>
+			<span class="p">},</span>
+			<span class="nx">timeout</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="mi">5000</span>
+			<span class="p">}</span>
+		<span class="p">});</span>
+		<span class="kd">var</span> <span class="nx">loaded</span> <span class="o">=</span> <span class="nx">FALSE</span><span class="p">;</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
+			<span class="nx">type</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+				<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">,</span>
+				<span class="nx">getter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">return</span> <span class="nx">value</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span>
+				<span class="p">}</span>
+			<span class="p">},</span>
+			<span class="nx">loaded</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">readOnly</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
+				<span class="nx">getter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+					<span class="k">return</span> <span class="o">!!</span><span class="nx">loaded</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}).</span><span class="nx">load</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">completed</span> <span class="o">=</span> <span class="nx">FALSE</span><span class="p">;</span>
+			<span class="nx">img</span><span class="p">.</span><span class="nx">onload</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;png&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">$</span><span class="p">.</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;node&quot;</span><span class="p">,</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;span/&gt;&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">({</span>
+						<span class="nx">display</span><span class="o">:</span> <span class="s2">&quot;inline-block&quot;</span><span class="p">,</span>
+						<span class="nx">filter</span><span class="o">:</span> <span class="s2">&quot;progid:DXImageTransform.Microsoft.AlphaImageLoader (src=&#39;&quot;</span> <span class="o">+</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;src&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;&#39;,sizingMethod=&#39;crop&#39;);&quot;</span>
+					<span class="p">}).</span><span class="nx">height</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">height</span><span class="p">).</span><span class="nx">width</span><span class="p">(</span><span class="nx">img</span><span class="p">.</span><span class="nx">width</span><span class="p">));</span>
+				<span class="p">}</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">LOAD</span><span class="p">);</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">COMPLETE</span><span class="p">);</span>
+				<span class="nx">completed</span> <span class="o">=</span> <span class="nx">TRUE</span><span class="p">;</span>
+				<span class="nx">loaded</span> <span class="o">=</span> <span class="nx">TRUE</span><span class="p">;</span>
+			<span class="p">};</span>
+			<span class="nx">img</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">ERROR</span><span class="p">);</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">COMPLETE</span><span class="p">);</span>
+				<span class="nx">completed</span> <span class="o">=</span> <span class="nx">TRUE</span><span class="p">;</span>
+			<span class="p">};</span>
+			<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">completed</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">TIMEOUT</span><span class="p">);</span>
+					<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">COMPLETE</span><span class="p">);</span>
+				<span class="p">}</span>
+			<span class="p">},</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">TIMEOUT</span><span class="p">));</span>
+			<span class="nx">img</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;src&quot;</span><span class="p">);</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+		<span class="p">};</span>
+	<span class="p">};</span>
+	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Img</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">,</span> <span class="p">{</span>
+		<span class="nx">setAsBackground</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">node</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">node</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">node</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">setBg</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">src</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;src&quot;</span><span class="p">);</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;png&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">$</span><span class="p">.</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">node</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;filter&quot;</span><span class="p">,</span> <span class="s2">&quot;progid:DXImageTransform.Microsoft.AlphaImageLoader (src=&#39;&quot;</span> <span class="o">+</span> <span class="nx">src</span> <span class="o">+</span> <span class="s2">&quot;&#39;,sizingMethod=&#39;crop&#39;);&quot;</span><span class="p">);</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+					<span class="nx">node</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;backgroundImage&quot;</span><span class="p">,</span> <span class="s2">&quot;url(&quot;</span> <span class="o">+</span> <span class="nx">src</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">);</span>
+				<span class="p">}</span>
+			<span class="p">};</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;loaded&quot;</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">setBg</span><span class="p">();</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">LOAD</span><span class="p">,</span> <span class="nx">setBg</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">});</span>
+	
+	<span class="kd">var</span> <span class="nx">ImageLoader</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="nx">ImageLoader</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+		
+		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
+			<span class="nx">srcs</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isArray</span>
+			<span class="p">}</span>
+		<span class="p">});</span>
+		
+		<span class="kd">var</span> <span class="nx">completed</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+		
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">load</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">srcs</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;srcs&quot;</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">length</span> <span class="o">=</span> <span class="nx">srcs</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+			<span class="nx">ArrayHelper</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">srcs</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">src</span><span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">img</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Img</span><span class="p">({</span>
+					<span class="nx">src</span><span class="o">:</span> <span class="nx">src</span><span class="p">,</span>
+					<span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
+						<span class="nx">load</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+							<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">IMAGE_</span> <span class="o">+</span> <span class="nx">LOAD</span><span class="p">,</span> <span class="nx">img</span><span class="p">);</span>
+						<span class="p">},</span>
+						<span class="nx">error</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+							<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">IMAGE_</span> <span class="o">+</span> <span class="nx">ERROR</span><span class="p">,</span> <span class="nx">img</span><span class="p">);</span>
+						<span class="p">},</span>
+						<span class="nx">timeout</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+							<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">IMAGE_</span> <span class="o">+</span> <span class="nx">TIMEOUT</span><span class="p">,</span> <span class="nx">img</span><span class="p">);</span>
+						<span class="p">},</span>
+						<span class="nx">complete</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+							<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">IMAGE_</span> <span class="o">+</span> <span class="nx">COMPLETE</span><span class="p">,</span> <span class="nx">img</span><span class="p">);</span>
+							<span class="nx">completed</span><span class="o">++</span><span class="p">;</span>
+							<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;progress&quot;</span><span class="p">,</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">round</span><span class="p">(</span><span class="nx">completed</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="nx">length</span><span class="p">),</span> <span class="nx">img</span><span class="p">);</span>
+							<span class="k">if</span> <span class="p">(</span><span class="nx">completed</span> <span class="o">==</span> <span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+								<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">COMPLETE</span><span class="p">);</span>
+							<span class="p">}</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+				<span class="p">});</span>
+				<span class="nx">img</span><span class="p">.</span><span class="nx">load</span><span class="p">();</span>
+			<span class="p">});</span>
+		<span class="p">};</span>
+		
+	<span class="p">};</span>
+	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">ImageLoader</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">);</span>
+	
+	<span class="cm">/*</span>
+<span class="cm">	 * @TODO: fixPNG method for Node and NodeList</span>
+<span class="cm">	 */</span>
+	
+	<span class="nx">$</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span>
+		<span class="nx">Image</span><span class="o">:</span> <span class="nx">Img</span><span class="p">,</span>
+		<span class="nx">ImageLoader</span><span class="o">:</span> <span class="nx">ImageLoader</span>
+	<span class="p">});</span>
+<span class="p">});</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_base.html" title="base">base</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class="selected"><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_io.html" title="io">io</a></li>
+                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_node.html" title="node">node</a></li>
+                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="Drag.html" title="Drag">Drag</a></li>
+                                <li class=""><a href="DragDrop.html" title="DragDrop">DragDrop</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="flash.js.html" title="flash.js">flash.js</a></li>
+                                <li class="selected"><a href="imageloader.js.html" title="imageloader.js">imageloader.js</a></li>
+                                <li class=""><a href="io.js.html" title="io.js">io.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2010 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+
+    var ALL_YUI_PROPS = [{"url": "Drag.html#method_addHandler", "access": "", "host": "Drag", "type": "method", "name": "addHandler"}, {"url": "DragDrop.html#method_addTarget", "access": "", "host": "DragDrop", "type": "method", "name": "addTarget"}, {"url": "Drag.html#config_cursor", "access": "", "host": "Drag", "type": "config", "name": "cursor"}, {"url": "Drag.html#event_drag", "access": "", "host": "Drag", "type": "event", "name": "drag"}, {"url": "Drag.html#event_drag:end", "access": "", "host": "Drag", "type": "event", "name": "drag:end"}, {"url": "Drag.html#event_drag:start", "access": "", "host": "Drag", "type": "event", "name": "drag:start"}, {"url": "DragDrop.html#event_drop:hit", "access": "", "host": "DragDrop", "type": "event", "name": "drop:hit"}, {"url": "DragDrop.html#event_drop:miss", "access": "", "host": "DragDrop", "type": "event", "name": "drop:miss"}, {"url": "Drag.html#config_handlers", "access": "", "host": "Drag", "type": "config", "name": "handlers"}, {"url": "Drag.html#config_node", "access": "", "host": "Drag", "type": "config", "name": "node"}, {"url": "Drag.html#config_tracking", "access": "", "host": "Drag", "type": "config", "name": "tracking"}];
+</script>
+</body>
+</html>

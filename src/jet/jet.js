@@ -1,65 +1,11 @@
-/*
- * MODULE LOADER
- * 25/06/2010
- * Based on YUI3's namespace
+/**
+ * @module	jet
+ * @author	Juan Ignacio Dopazo
  * 
- * This script allows to load different modules asynchronously and to reuse
- * them when they were already loaded. Its basic use looks like:
+ * @description <p>Based on YUI3's namespace</p>
  * 
- * jet().use("node", function ($) {
- *	 //do something with $
- * });
- * 
- * This snippet will load the Node module, and when it finishes loading it'll execute
- * the function. Each module must call the jet().add() method to tell the loader
- * it has finished loading:
- * 
- * jet().add("node", function ($) {
- *	 $.method = function () {};
- * });
- * 
- * A variable is passed to every module and the function defined in the use() method. 
- * This variable acts as a main library and is shared by each module and the main
- * function, but not between different calls to the "use" method. Ie:
- * 
- * jet().use("node", function ($) {
- *	 $.testProperty = "test";
- * });
- * 
- * jet().use("node", function ($) {
- *	 alert($.testProperty); //alerts "undefined"
- * });
- * 
- * Since it is a parameter, it can have any name but it still acts the same way. Also,
- * each module is called in the order defined by the "use" method. So:
- * 
- * jet().use("node", "anim", function (L) {
- *	 // Here the L variable contains both Node and Anim
- *	 // The Node module is called first on L and the Anim module after,
- *	 // so it can overwrite anything Node did, extend classes, etc
- * });
- * 
- * New modules can be defined by passing an object literal instead of a string to the
- * "use" method with a "name" property and a "path" or "fullpath" property. 
- * 
- * jet().use("node", {name:"myModule", fullpath:"http://localhost/myModule.js"}, function ($) {
- *	 //do something
- * });
- * 
- * If "path" is defined instead of "fullpath", the loader will append "path"
- * to a predefined base URL. This base URL can be modified by passing
- * the jet() function an object literal with a "base" property:
- * 
- *  jet({
- *	  base: "http://www.mydomain.com/modules/"
- *  }).use("node", function ($) {
- *	  //in this case the "core" module is loaded from http://www.mydomain.com/modules/node.min.js
- *  });
- * 
- * Other configuration options:
- * - minify {Boolean} defines whether predefined modules should be minified or not. TRUE by default
- * - loadCss {Boolean} if TRUE, css modules are loaded. TRUE by default
- * - modules {Array} allows to define your own modules. Currently the same as using object literals in the use() method
+ * <p>This module allows to load different modules asynchronously and to reuse
+ * them when they were already loaded. Its basic use looks like:</p>
  * 
  */
 (function () {
@@ -128,10 +74,6 @@
 		plasma: ["anim"]
 	};
 	
-	/**
-	 * Includes Lang, ArrayHelper and Hash.
-	 * @module lang
-	 */
 	 //A couple of functions of this module are used throughout the Loader.
 	 //Should this be defined as any other module with the jet().add() method?
 	var ARRAY		= "array",
@@ -145,6 +87,8 @@
 		UNDEFINED	= "undefined";
 		
 	/**
+	 * Provides utility methods for finding object types and other
+	 * methods that javascript provides in some browsers but not in others such as trim()
 	 * @class Lang
 	 * @static
 	 */
@@ -321,6 +265,7 @@
 	
 	
 	/**
+	 * Utilities for working with Arrays
 	 * @class Array
 	 * @static
 	 */
@@ -396,6 +341,8 @@
 	};
 	
 	/**
+	 * Utilities for working with object literals
+	 * Throughout jet the Hash type means an object lieteral
 	 * @class Hash
 	 * @static
 	 */
@@ -511,9 +458,7 @@
 		return a;
 	};
 
-	/**
-	 * @module core
-	 */
+
 	var Core = function () {
 		/**
 		 * Core methods
@@ -719,9 +664,6 @@
 			/**
 			 * Loads scripts and CSS files.
 			 * Included with the jet() core
-			 * @module get
-			 */
-			/**
 			 * @class Get
 			 * @static
 			 */
@@ -808,27 +750,94 @@
 		});
 			
 		/**
-		 * Main namespace. Handles loading of modules
-		 * @module loader
-		 */
-		/**
-		 * @class Loader
-		 */
-		/**
-		 * Global function. Returns an object with 2 methods: use() and add().
-		 * See the comments at the beginning for more information on this object and its use. 
-		 * @method jet
-		 * @param {Object} config
+		 * <p>Global function. Returns an object with 2 methods: use() and add().</p>
+		 *  
+		 * <code>jet().use("node", function ($) {
+		 *	 //do something with $
+		 * });</code>
+		 * 
+		 * <p>This snippet will load the Node module, and when it finishes loading it'll execute
+		 * the function. Each module must call the jet().add() method to tell the loader
+		 * it has finished loading:</p>
+		 * 
+		 * <code>jet().add("node", function ($) {
+		 *	 $.method = function () {};
+		 * });</code>
+		 * 
+		 * <p>A variable is passed to every module and the function defined in the use() method. 
+		 * This variable acts as a main library and is shared by each module and the main
+		 * function, but not between different calls to the "use" method. Ie:</p>
+		 * 
+		 * <code>jet().use("node", function ($) {
+		 *	 $.testProperty = "test";
+		 * });
+		 * 
+		 * jet().use("node", function ($) {
+		 *	 alert($.testProperty); //alerts "undefined"
+		 * });</code>
+		 * 
+		 * <p>Since it is a parameter, it can have any name but it still acts the same way. Also,
+		 * each module is called in the order defined by the "use" method. So:</p>
+		 * 
+		 * <code>jet().use("node", "anim", function (L) {
+		 *	 // Here the L variable contains both Node and Anim
+		 *	 // The Node module is called first on L and the Anim module after,
+		 *	 // so it can overwrite anything Node did, extend classes, etc
+		 * });</code>
+		 * 
+		 * <p>New modules can be defined by passing an object literal instead of a string to the
+		 * "use" method with a "name" property and a "path" or "fullpath" property.</p> 
+		 * 
+		 * <code>jet().use("node", {name:"myModule", fullpath:"http://localhost/myModule.js"}, function ($) {
+		 *	 //do something
+		 * });</code>
+		 * 
+		 * <p>If "path" is defined instead of "fullpath", the loader will append "path"
+		 * to a predefined base URL. This base URL can be modified by passing
+		 * the jet() function an object literal with a "base" property:</p>
+		 * 
+		 *  <code>jet({
+		 *	  base: "http://www.mydomain.com/modules/"
+		 *  }).use("node", function ($) {
+		 *	  //in this case the "core" module is loaded from http://www.mydomain.com/modules/node.min.js
+		 *  });</code>
+		 * 
+		 * @class jet
+		 * @constructor
+		 * @param {Object} config Object literal with configuration options
 		 */
 		win.jet = function (config) {
 			config = config || {};
 			var base = baseUrl;
+ 			/**
+ 			 * @config base
+ 			 * @description prefix for all script and css urls
+ 			 * @type String
+ 			 * @default "//jet-js.googlecode.com/svn/trunk/src/"
+ 			 */
 			if (config.base) {
 				base = config.base;
 				base = base.substr(base.length - 1, 1) == "/" ? base : base + "/";
 			}
+ 			/**
+ 			 * @config base
+ 			 * @description defines whether predefined modules should be minified or not
+ 			 * @type Boolean
+ 			 * @default true
+ 			 */
 			config.minify = Lang.isBoolean(config.minify) ? config.minify : FALSE;
+			/**
+			 * @config loadCss
+			 * @description If true, css modules are loaded
+			 * @type Boolean
+			 * @default true
+			 */
 			config.loadCss = Lang.isBoolean(config.loadCss) ? config.loadCss : TRUE;
+			/**
+			 * @config modules
+			 * @description Allows to define your own modules. Currently the same as using object literals in the use() method
+			 * @type Array
+			 */
 			var predef = mix(clone(predefinedModules), config.modules || {}, TRUE);
 			
 			var loadCssModule = function (module) {

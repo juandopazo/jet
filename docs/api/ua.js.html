@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: node   ua.js  (YUI Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body id="yahoo-com">
+
+<div id="doc3" class="yui-t2">
+	<div id="hd">
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>node&nbsp; <span class="subtitle">0.1.53</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+            &gt; <a href="./module_node.html" title="node">node</a>
+                
+                 &gt; ua.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * Browser sniffing</span>
+<span class="cm"> * @module ua</span>
+<span class="cm"> */</span>
+<span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="s2">&quot;ua&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * Browser sniffing</span>
+<span class="cm">	 * @class UA</span>
+<span class="cm">	 * @static</span>
+<span class="cm">	 */</span>
+	<span class="nx">$</span><span class="p">.</span><span class="nx">UA</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">nav</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">win</span><span class="p">.</span><span class="nx">navigator</span><span class="p">,</span>
+			<span class="nx">ua</span> <span class="o">=</span> <span class="nx">nav</span><span class="p">.</span><span class="nx">userAgent</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">(),</span>
+        	<span class="nx">p</span> <span class="o">=</span> <span class="nx">nav</span><span class="p">.</span><span class="nx">platform</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span>
+
+		<span class="kd">var</span> <span class="nx">webkit</span> <span class="o">=</span> <span class="sr">/KHTML/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">ua</span><span class="p">)</span> <span class="o">||</span> <span class="sr">/webkit/i</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">ua</span><span class="p">),</span>
+			<span class="nx">opera</span> <span class="o">=</span> <span class="sr">/opera/i</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">ua</span><span class="p">),</span>
+			<span class="nx">ie</span> <span class="o">=</span> <span class="sr">/(msie) ([\w.]+)/</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">ua</span><span class="p">);</span>
+		
+        <span class="k">return</span> <span class="p">{</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * true if the browser uses the Webkit rendering engine (ie: Safari, Chrome)</span>
+<span class="cm">			 * @property webkit</span>
+<span class="cm">			 */</span>
+			<span class="nx">webkit</span><span class="o">:</span> <span class="nx">webkit</span><span class="p">,</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * If the browser is Internet Explorer, this property is equal to the IE version. If not, it is false</span>
+<span class="cm">			 * @property ie</span>
+<span class="cm">			 */</span>
+			<span class="nx">ie</span><span class="o">:</span> <span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">ie</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="nx">ie</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">?</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">ie</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="c1">// ie is false, 6, 7 or 8</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * true if the browser is Opera</span>
+<span class="cm">			 * @property opera</span>
+<span class="cm">			 */</span>
+			<span class="nx">opera</span><span class="o">:</span> <span class="nx">opera</span><span class="p">,</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * true if the browser is based on the Gecko rendering engine (ie: Firefox)</span>
+<span class="cm">			 * @property gecko</span>
+<span class="cm">			 */</span>
+			<span class="nx">gecko</span><span class="o">:</span> <span class="o">!</span><span class="nx">webkit</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">opera</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="sr">/Gecko/i</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">ua</span><span class="p">),</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * true if the operating system is Windows</span>
+<span class="cm">			 * @property win</span>
+<span class="cm">			 */</span>
+			<span class="nx">win</span><span class="o">:</span> <span class="nx">p</span> <span class="o">?</span> <span class="sr">/win/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="o">:</span> <span class="sr">/win/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">ua</span><span class="p">),</span> 
+			<span class="cm">/**</span>
+<span class="cm">			 * true if the operating system is Apple OSX</span>
+<span class="cm">			 * @property mac</span>
+<span class="cm">			 */</span>
+			<span class="nx">mac</span><span class="o">:</span> <span class="nx">p</span> <span class="o">?</span> <span class="sr">/mac/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">p</span><span class="p">)</span> <span class="o">:</span> <span class="sr">/mac/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">ua</span><span class="p">)</span>
+		<span class="p">};</span>
+    <span class="p">}());</span>
+<span class="p">});</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_base.html" title="base">base</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_io.html" title="io">io</a></li>
+                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class="selected"><a href="module_node.html" title="node">node</a></li>
+                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="DOM.html" title="DOM">DOM</a></li>
+                                <li class=""><a href="NodeList.html" title="NodeList">NodeList</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="paginator.js.html" title="paginator.js">paginator.js</a></li>
+                                <li class=""><a href="plasma.js.html" title="plasma.js">plasma.js</a></li>
+                                <li class=""><a href="resize.js.html" title="resize.js">resize.js</a></li>
+                                <li class=""><a href="simpleprogressbar.js.html" title="simpleprogressbar.js">simpleprogressbar.js</a></li>
+                                <li class=""><a href="sizzle.js.html" title="sizzle.js">sizzle.js</a></li>
+                                <li class=""><a href="tabs.js.html" title="tabs.js">tabs.js</a></li>
+                                <li class="selected"><a href="ua.js.html" title="ua.js">ua.js</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2010 Yahoo! Inc. All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+
+    var ALL_YUI_PROPS = [{"url": "NodeList.html#method_addClass", "access": "", "host": "NodeList", "type": "method", "name": "addClass"}, {"url": "NodeList.html#method_append", "access": "", "host": "NodeList", "type": "method", "name": "append"}, {"url": "NodeList.html#method_appendTo", "access": "", "host": "NodeList", "type": "method", "name": "appendTo"}, {"url": "NodeList.html#method_attr", "access": "", "host": "NodeList", "type": "method", "name": "attr"}, {"url": "NodeList.html#method_children", "access": "", "host": "NodeList", "type": "method", "name": "children"}, {"url": "NodeList.html#method_Circle", "access": "", "host": "NodeList", "type": "method", "name": "Circle"}, {"url": "NodeList.html#method_clone", "access": "", "host": "NodeList", "type": "method", "name": "clone"}, {"url": "NodeList.html#method_css", "access": "", "host": "NodeList", "type": "method", "name": "css"}, {"url": "NodeList.html#method_currentStyle", "access": "", "host": "NodeList", "type": "method", "name": "currentStyle"}, {"url": "NodeList.html#method_each", "access": "", "host": "NodeList", "type": "method", "name": "each"}, {"url": "NodeList.html#method_Ellipse", "access": "", "host": "NodeList", "type": "method", "name": "Ellipse"}, {"url": "NodeList.html#method_find", "access": "", "host": "NodeList", "type": "method", "name": "find"}, {"url": "NodeList.html#method_first", "access": "", "host": "NodeList", "type": "method", "name": "first"}, {"url": "NodeList.html#method_getDefaultGetter", "access": "", "host": "NodeList", "type": "method", "name": "getDefaultGetter"}, {"url": "NodeList.html#method_getDefaultSetter", "access": "", "host": "NodeList", "type": "method", "name": "getDefaultSetter"}, {"url": "NodeList.html#method_getDocument", "access": "", "host": "NodeList", "type": "method", "name": "getDocument"}, {"url": "DOM.html#method_getWindowFromDocument", "access": "", "host": "DOM", "type": "method", "name": "getWindowFromDocument"}, {"url": "NodeList.html#method_Graphic", "access": "", "host": "NodeList", "type": "method", "name": "Graphic"}, {"url": "NodeList.html#method_GraphicList", "access": "", "host": "NodeList", "type": "method", "name": "GraphicList"}, {"url": "NodeList.html#method_hasClass", "access": "", "host": "NodeList", "type": "method", "name": "hasClass"}, {"url": "NodeList.html#method_height", "access": "", "host": "NodeList", "type": "method", "name": "height"}, {"url": "NodeList.html#method_hide", "access": "", "host": "NodeList", "type": "method", "name": "hide"}, {"url": "NodeList.html#method_html", "access": "", "host": "NodeList", "type": "method", "name": "html"}, {"url": "NodeList.html#method_ImageGraphic", "access": "", "host": "NodeList", "type": "method", "name": "ImageGraphic"}, {"url": "NodeList.html#method_insertBefore", "access": "", "host": "NodeList", "type": "method", "name": "insertBefore"}, {"url": "NodeList.html#method_Line", "access": "", "host": "NodeList", "type": "method", "name": "Line"}, {"url": "NodeList.html#method_link", "access": "", "host": "NodeList", "type": "method", "name": "link"}, {"url": "NodeList.html#method_next", "access": "", "host": "NodeList", "type": "method", "name": "next"}, {"url": "NodeList.html#method_offset", "access": "", "host": "NodeList", "type": "method", "name": "offset"}, {"url": "NodeList.html#method_on", "access": "", "host": "NodeList", "type": "method", "name": "on"}, {"url": "NodeList.html#method_parent", "access": "", "host": "NodeList", "type": "method", "name": "parent"}, {"url": "NodeList.html#method_Path", "access": "", "host": "NodeList", "type": "method", "name": "Path"}, {"url": "NodeList.html#method_Plasma", "access": "", "host": "NodeList", "type": "method", "name": "Plasma"}, {"url": "NodeList.html#method_prependTo", "access": "", "host": "NodeList", "type": "method", "name": "prependTo"}, {"url": "NodeList.html#method_previous", "access": "", "host": "NodeList", "type": "method", "name": "previous"}, {"url": "NodeList.html#method_ready", "access": "", "host": "NodeList", "type": "method", "name": "ready"}, {"url": "NodeList.html#method_Rectangle", "access": "", "host": "NodeList", "type": "method", "name": "Rectangle"}, {"url": "NodeList.html#method_remove", "access": "", "host": "NodeList", "type": "method", "name": "remove"}, {"url": "NodeList.html#method_removeClass", "access": "", "host": "NodeList", "type": "method", "name": "removeClass"}, {"url": "NodeList.html#method_Resize", "access": "", "host": "NodeList", "type": "method", "name": "Resize"}, {"url": "NodeList.html#method_RoundedRectangle", "access": "", "host": "NodeList", "type": "method", "name": "RoundedRectangle"}, {"url": "DOM.html#method_screenSize", "access": "", "host": "DOM", "type": "method", "name": "screenSize"}, {"url": "DOM.html#method_scrollLeft", "access": "", "host": "DOM", "type": "method", "name": "scrollLeft"}, {"url": "DOM.html#method_scrollTop", "access": "", "host": "DOM", "type": "method", "name": "scrollTop"}, {"url": "NodeList.html#method_setClass", "access": "", "host": "NodeList", "type": "method", "name": "setClass"}, {"url": "NodeList.html#method_show", "access": "", "host": "NodeList", "type": "method", "name": "show"}, {"url": "NodeList.html#method_Text", "access": "", "host": "NodeList", "type": "method", "name": "Text"}, {"url": "NodeList.html#method_toggle", "access": "", "host": "NodeList", "type": "method", "name": "toggle"}, {"url": "NodeList.html#method_toggleClass", "access": "", "host": "NodeList", "type": "method", "name": "toggleClass"}, {"url": "NodeList.html#method_unbind", "access": "", "host": "NodeList", "type": "method", "name": "unbind"}, {"url": "NodeList.html#method_unbindAll", "access": "", "host": "NodeList", "type": "method", "name": "unbindAll"}, {"url": "NodeList.html#method_width", "access": "", "host": "NodeList", "type": "method", "name": "width"}];
+</script>
+</body>
+</html>
