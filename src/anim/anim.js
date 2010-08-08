@@ -1,3 +1,7 @@
+/**
+ * Animations
+ * @module anim
+ */
 jet().add('anim', function ($) {
 	
 	var TRUE = true,

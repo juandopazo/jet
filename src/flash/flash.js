@@ -1,6 +1,6 @@
-/*
+/**
  * Very early stages
- * 
+ * @module flash
  */
 jet().add('flash', function ($) {
 	

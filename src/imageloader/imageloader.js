@@ -1,3 +1,8 @@
+/**
+ * Provides functionality for preloading images and fixing PNGs in IE
+ * @module imageloader
+ * @requires jet, lang, node
+ */
 jet().add('imageloader', function ($) {
 	
 	var Lang = $.Lang,
@@ -12,42 +17,88 @@ jet().add('imageloader', function ($) {
 		COMPLETE = "complete",
 		IMAGE_ = "image:";
 	
+	/**
+	 * The Image class enhances the native class
+	 * @class Image
+	 * @constructor
+	 * @extends Base
+	 * @param {Object} config Object literal specifying image configuration properties
+	 */
 	var Img = function () {
 		Img.superclass.constructor.apply(this, arguments);
 		var img = new Image();
 		var node = $(img);
 		var myself = this.addAttrs({
+			/**
+			 * @config src
+			 * @description URI of the image to load
+			 * @required
+			 * @writeOnce
+			 * @type String
+			 */
 			src: {
 				required: TRUE,
 				writeOnce: TRUE,
 				validator: Lang.isString
 			},
+			/**
+			 * @config image
+			 * @description A pointer to the actual Image object
+			 * @readOnly
+			 */
 			image: {
 				readOnly: TRUE,
 				value: img
 			},
+			/**
+			 * @config node
+			 * @description A NodeList with the image node
+			 * @type NodeList
+			 */
 			node: {
 				value: node
 			},
+			/**
+			 * @config timeout
+			 * @description Time the image can spend loading before firing the timeout event
+			 * @default 5000
+			 * @type Number (ms)
+			 */
 			timeout: {
 				value: 5000
 			}
 		});
 		var loaded = FALSE;
 		myself.addAttrs({
+			/**
+			 * @config type
+			 * @description The image type. Used to specify if an image is PNG
+			 * @type String
+			 */
 			type: {
 				value: "",
 				validator: Lang.isString,
-				getter: function (name, value) {
+				getter: function (value) {
 					return value.toLowerCase();
 				}
 			},
+			/**
+			 * @config loaded
+			 * @description Specifies if the image has finished loading or not
+			 * @readOnly
+			 * @type Boolean
+			 */
 			loaded: {
 				readOnly: TRUE,
 				getter: function () {
 					return !!loaded;
 				}
 			}
+		/**
+		 * Start loading the image
+		 * @method load
+		 * @chainable
+		 */
 		}).load = function () {
 			var completed = FALSE;
 			img.onload = function () {
@@ -57,18 +108,34 @@ jet().add('imageloader', function ($) {
 						filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader (src='" + myself.get("src") + "',sizingMethod='crop');"
 					}).height(img.height).width(img.width));
 				}
+				/**
+				 * Fires when the image finished loading successfully
+				 * @event load
+				 */
 				myself.fire(LOAD);
+				/**
+				 * Fires when the image finished loading, successfully or not
+				 * @event complete
+				 */
 				myself.fire(COMPLETE);
 				completed = TRUE;
 				loaded = TRUE;
 			};
 			img.onerror = function () {
+				/**
+				 * Fires if the image didn't load successfully
+				 * @event error
+				 */
 				myself.fire(ERROR);
 				myself.fire(COMPLETE);
 				completed = TRUE;
 			};
 			setTimeout(function () {
 				if (!completed) {
+					/**
+					 * Fires if the image timed out
+					 * @event error
+					 */
 					myself.fire(TIMEOUT);
 					myself.fire(COMPLETE);
 				}
@@ -78,6 +145,12 @@ jet().add('imageloader', function ($) {
 		};
 	};
 	$.extend(Img, $.Base, {
+		/**
+		 * Set the image as a background once it loaded
+		 * @method setAsBackground
+		 * @param {DOM Node, NodeList} node Which node to set the image as background of
+		 * @chainable
+		 */
 		setAsBackground: function (node) {
 			node = $(node);
 			var myself = this;
@@ -98,10 +171,22 @@ jet().add('imageloader', function ($) {
 		}
 	});
 	
+	/**
+	 * Handles loading of multiple images
+	 * @class ImageLoader
+	 * @constructor
+	 * @extends Base
+	 * @param {Object} config Object literal specifying configuration properties
+	 */
 	var ImageLoader = function () {
 		ImageLoader.superclass.constructor.apply(this, arguments);
 		
 		var myself = this.addAttrs({
+			/**
+			 * @config srcs
+			 * @description An array of image URIs
+			 * @type Array
+			 */
 			srcs: {
 				validator: Lang.isArray
 			}
@@ -109,6 +194,11 @@ jet().add('imageloader', function ($) {
 		
 		var completed = 0;
 		
+		/**
+		 * Loads all images whose srcs where specified
+		 * @method load
+		 * @chainable
+		 */
 		myself.load = function () {
 			var srcs = myself.get("srcs");
 			var length = srcs.length;
@@ -117,19 +207,48 @@ jet().add('imageloader', function ($) {
 					src: src,
 					on: {
 						load: function () {
+							/**
+							 * Fires when each image fires its load event
+							 * @event image:load
+							 * @param {Image} the image that fired the event
+							 */
 							myself.fire(IMAGE_ + LOAD, img);
 						},
 						error: function () {
+							/**
+							 * Fires when each image fires its error event
+							 * @event image:error
+							 * @param {Image} the image that fired the event
+							 */
 							myself.fire(IMAGE_ + ERROR, img);
 						},
 						timeout: function () {
+							/**
+							 * Fires when each image fires its timeout event
+							 * @event image:timeout
+							 * @param {Image} the image that fired the event
+							 */
 							myself.fire(IMAGE_ + TIMEOUT, img);
 						},
 						complete: function () {
+							/**
+							 * Fires when each image fires its complete event
+							 * @event image:complete
+							 * @param {Image} the image that fired the event
+							 */
 							myself.fire(IMAGE_ + COMPLETE, img);
 							completed++;
+							/**
+							 * Fires each time an image loads
+							 * @event progress
+							 * @param {Number} percentage completed
+							 */
 							myself.fire("progress", Math.round(completed * 100 / length), img);
 							if (completed == length) {
+								/**
+								 * Fires when all images loaded
+								 * @event complete
+								 */
 								myself.fire(COMPLETE);
 							}
 						}
@@ -137,6 +256,7 @@ jet().add('imageloader', function ($) {
 				});
 				img.load();
 			});
+			return myself;
 		};
 		
 	};

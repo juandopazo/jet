@@ -131,10 +131,6 @@ jet().add('io', function ($) {
 	
 			result = null;
 			
-			/**
-			 * Type of the returned data ('xml', 'xsl', 'json', 'text')
-			 * @config dataType
-			 */
 			var dataType 		= settings.dataType;
 			var timeout			= settings.timeout || 10000; /* Tiempo que tarda en cancelarse la transaccion */
 			var method			= settings.method || "GET"; /* Metodo para enviar informacion al servidor */

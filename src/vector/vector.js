@@ -1,4 +1,9 @@
-jet().add('plasma', function ($) {
+/**
+ * Provides cross-browser vector graphics implementation based on SVG and VML
+ * @module vector
+ * @requires jet, lang, node, base, anim
+ */
+jet().add('vector', function ($) {
 	
 	var TRUE = true,
 		FALSE = false;
@@ -9,27 +14,60 @@ jet().add('plasma', function ($) {
 		
 	var BOUNDING_BOX = "boundingBox",
 		NODE = "node",
-		PLASMA = "plasma";
+		VECTOR = "vector";
 	var NAMESPACE_URI = "http://www.w3.org/2000/svg";
 	
 	var UA_SUPPORTS_SVG = !$.UA.ie || $.UA.ie > 8;
 	
-	var Node = $.Node,
-		NP = Node.prototype;
+	var NodeList = $.NodeList,
+		NP = NodeList.prototype;
 		
-	/*
-	 * Parsing functions
+	/**
+	 * Basic Vector class
+	 * A graphic represents a figure, an SVG element or its VML counterpart 
+	 * @class Vector
+	 * @extends Attribute
+	 * @constructor
+	 * @param {Object} configuration key/value pairs, as in the Attribute class
+	 */
+	//Parsing functions
+	/**
+	 * Short for paseInt(str, 10). Doesn't fail if it isn't a number
+	 * @method parseDec
+	 * @param {String} str Decimal number candidate
+	 * @final
 	 */
 	var parseDec = function (str) {
 		var num = parseInt(str, 10);
 		return Lang.isValue(num) ? num : str;
 	};
+	/**
+	 * Transforms a decimal number into a hex string
+	 * @method decToHex
+	 * @param {Number} dec Decimal number
+	 * @return String
+	 * @final
+	 */
 	var decToHex = function (dec) {
 		return dec.toString(16);
 	};
+	/**
+	 * Transforms a hext string into a decimal number
+	 * @method hexToDec
+	 * @param {String} hex Hex string
+	 * @return Number
+	 * @final
+	 */
 	var hexToDec = function (hex) {
 		return parseInt(hex, 16);
 	};
+	/**
+	 * Takes a hex color and returns an array of three numbers between 0 and 255
+	 * @method colorHexToArray
+	 * @param {String} hexColor Hex color string
+	 * @return Array
+	 * @final
+	 */
 	var colorHexToArray = function (hexColor) {
 		if (hexColor.substr(0, 1) == "#") {
 			hexColor = hexColor.substr(1);
@@ -44,6 +82,13 @@ jet().add('plasma', function ($) {
 		});
 		return hexColor;
 	};
+	/**
+	 * Takes an array of three decimal colors and returns a hex color string
+	 * @method colorArrayToHex
+	 * @param {Array} arr Color array
+	 * @return String
+	 * @final
+	 */
 	var colorArrayToHex = function (arr) {
 		for (var i = 0; i < 3; i++) {
 			arr[i] = decToHex(arr[i]);
@@ -74,30 +119,23 @@ jet().add('plasma', function ($) {
     	};
     }
 	
-	/*
-	 * Setup VML behaviour
-	 */
+	// Setup VML behaviour
 	if (!UA_SUPPORTS_SVG) {
 		var styles = $.context.createStyleSheet();
 		styles.addRule(".vml", "behavior:url(#default#VML)");
 		styles.addRule(".vml", "display:inline-block");
 	}
 
-	/*
-	 * Graphic class attribute definitions
-	 */
-	var Graphic_ATTRS = {};
-	/*
-	 * This attributes should map to styles in VML instead of DOM attributes
-	 */
+	// Vector class attribute definitions
+	var Vector_ATTRS = {};
+	
+	// This attributes should map to styles in VML instead of DOM attributes
 	var VML_STYLE_ATTRIBUTES = ['width', 'height', 'left', 'top'];
-	/*
-	 * This attributes should always map to DOM attributes in both SVG and VML
-	 */
+	
+	// This attributes should always map to DOM attributes in both SVG and VML
 	var ATTR_ATTRIBUTES = ['x', 'y', 'rx', 'ry', 'xmlns', 'version', 'fill', 'opacity'].concat(VML_STYLE_ATTRIBUTES);
-	/*
-	 * Each key in this object is a SVG attribute and its value is its VML equivalent
-	 */
+	
+	// Each key in this object is a SVG attribute and its value is its VML equivalent
 	var VML_ATTR_MAPPING = {
 		fill: "fillcolor",
 		x: "left",
@@ -105,17 +143,14 @@ jet().add('plasma', function ($) {
 		cx: "left",
 		cy: "top"
 	};
-	/*
-	 * Set up attributes according to its support
-	 */
+	
+	// Set up attributes according to its support
 	if (UA_SUPPORTS_SVG) {
-		/*
-		 * In SVG everything works as an attribute modifiable with get/setAttribute() 
-		 */
+		// In SVG everything works as an attribute modifiable with get/setAttribute()
 		ATTR_ATTRIBUTES = ATTR_ATTRIBUTES.concat(VML_STYLE_ATTRIBUTES);
 
 	}
-	/**
+	/*
 	 * Create a default getter function
 	 * @param {String} attrName
 	 */
@@ -128,7 +163,7 @@ jet().add('plasma', function ($) {
 			return parseDec(this._node[attrName]);
 		};
 	};
-	/**
+	/*
 	 * Create a default setter function 
 	 * @param {Object} attrName
 	 */
@@ -147,7 +182,7 @@ jet().add('plasma', function ($) {
 	
 	A.each(ATTR_ATTRIBUTES, function (attrName) {
 		var mappedAttrName = !UA_SUPPORTS_SVG && VML_ATTR_MAPPING[attrName] ? VML_ATTR_MAPPING[attrName] : attrName;
-		Graphic_ATTRS[attrName] = {
+		Vector_ATTRS[attrName] = {
 			getter: getDefaultGetter(mappedAttrName),
 			setter: getDefaultSetter(mappedAttrName)
 		};
@@ -190,39 +225,70 @@ jet().add('plasma', function ($) {
 		}
 	};
 	Hash.each(STROKE_ATTR_MAPPING, function (asvg) {
-		Graphic_ATTRS[asvg] = {
+		Vector_ATTRS[asvg] = {
 			getter: strokeAttributesGetter(asvg),
 			setter: strokeAttributesSetter(asvg)
 		};
 	});
 	
-	/**
-	 * Basic Graphic class
-	 * A graphic represents a figure, an SVG element or its VML counterpart 
-	 * 
-	 * @param {Object} configuration key/value pairs, as in the Attribute class
-	 */
-	var Graphic = UA_SUPPORTS_SVG ? function () {
-		Graphic.superclass.constructor.apply(this, arguments);
+	var Vector = UA_SUPPORTS_SVG ? function () {
+		Vector.superclass.constructor.apply(this, arguments);
 		var myself = this;
+		
+		var node;
+		/**
+		 * @config node
+		 * @description A pointer to the vector node
+		 * @required
+		 * @writeOnce
+		 * @type SVG/VML node
+		 */
 		myself.addAttr(NODE, {
 			required: TRUE,
 			writeOnce: TRUE,
 			getter: function () {
-				return myself._node;
+				return node;
 			},
-			setter: function (node) {
-				myself._node = node.nodeType ? node : $.context.createElementNS(NAMESPACE_URI, node);
-				return myself._node;
+			setter: function (newNode) {
+				node = newNode.nodeType ? newNode : $.context.createElementNS(NAMESPACE_URI, newNode);
+				return node;
 			}
 		});
-		var node = myself.get(NODE);
+
+		node = myself.get(NODE);
 		
+		/**
+		 * @method on
+		 * @description Adds an event listener to the vector node
+		 * @param {String} eventType
+		 * @param {Function} callback
+		 * @chainable
+		 */
+		/**
+		 * @method unbind
+		 * @description Remove an event listeners from the vector node
+		 * @param {String} eventType
+		 * @param {Function} callback
+		 * @chainable
+		 */
+		/**
+		 * @method unbindAll
+		 * @description Removes all event listeners of a certain type from the vector node
+		 * @param {String} eventType
+		 * @chainable
+		 */
 		A.each(['on', 'unbind', 'unbindAll'], function (method) {
-			myself[method] = NP[method];
+			myself[method] = function (type, fn) {
+				$(node)[method](type, fn);
+				return myself;
+			};
 		});
 		
-		myself.addAttrs(Graphic_ATTRS).addAttr("fill-opacity", {
+		/**
+		 * @config width
+		 * @description width
+		 */
+		myself.addAttrs(Vector_ATTRS).addAttr("fill-opacity", {
 			getter: function () {
 				return this.get(NODE).getAttribute("fill-opacity");
 			},
@@ -233,7 +299,7 @@ jet().add('plasma', function ($) {
 		});
 		
 	} : function () {
-		Graphic.superclass.constructor.apply(this, arguments);
+		Vector.superclass.constructor.apply(this, arguments);
 		var myself = this;
 		myself.addAttr(NODE, {
 			required: TRUE,
@@ -258,10 +324,13 @@ jet().add('plasma', function ($) {
 		node.appendChild(fill);
 		
 		A.each(['on', 'unbind', 'unbindAll'], function (method) {
-			myself[method] = NP[method];
+			myself[method] = function (type, fn) {
+				$(node)[mehtod](type, fn);
+				return myself;
+			};
 		});
-
-		myself.addAttrs(Graphic_ATTRS).addAttr("fill-opacity", {
+		
+		myself.addAttrs(Vector_ATTRS).addAttr("fill-opacity", {
 			getter: function () {
 				return this.get("fill-node").opacity;
 			},
@@ -271,7 +340,7 @@ jet().add('plasma', function ($) {
 			}
 		});
 	};
-	$.extend(Graphic, $.Attribute, {
+	$.extend(Vector, $.Attribute, {
 		translate: function () {
 			
 		},
@@ -280,52 +349,36 @@ jet().add('plasma', function ($) {
 		}
 	});
 	/*
-	 * Copy methods from Node
+	 * Copy methods from NodeList
 	 * After all, SVG and VML elements are DOM nodes and we don't want them to have custom events,
 	 * but we don't need every method from Node either
 	 */
 	A.each(['append', 'appendTo', 'remove', 'css', 'hide', 'show', 'children'], function (method) {
-		Graphic.prototype[method] = NP[method];
-	});
-	
-	/**
-	 * A collection of Graphics
-	 */
-	var GraphicList = function () {
-		var collection = [];
-		var addToCollection = function (node) {
-			if (node instanceof Graphic) {
-				collection[collection.length] = node;
-			} else if (node.nodeType || Lang.isString(node)) {
-				collection[collection.length] = new Graphic(node);
-			}
+		Vector.prototype[method] = function () {
+			var result = NP[method].apply($(this.get(NODE)), arguments);
+			return $.NodeList.is(result) ? this : result;
 		};
-		A.each(arguments, function (node) {
-			if (node.length) {
-				A.each(node, addToCollection);
-			} else {
-				addToCollection(node);
-			}
-		});
-		
-		this._nodes = collection;
-	};
-	$.extend(GraphicList, $.Attribute, {
-		
-	});
-	A.each(['each', 'append', 'appendTo', 'on', 'unbind', 'unbindAll', 'remove', 'hide', 'show'], function (method) {
-		GraphicList.prototype[method] = NP[method];
 	});
 	
 	/**
-	 * 
+	 * Draws a rectangle
+	 * @class Rectangle
+	 * @extends Vector
+	 * @namespace Vector
+	 * @constructor
 	 * @param {Object} config
 	 */
 	var Rectangle = function (config) {
-		config.node = "rect";
+		config.node = config.node && config.node == "roundrect" ? "roundrect" : "rect";
 		Rectangle.superclass.constructor.apply(this, arguments);
 	};
-	$.extend(Rectangle, Graphic, {
+	$.extend(Rectangle, Vector, {
+		/**
+		 * @method rotate
+		 * @description Rotates the rectangle
+		 * @param {Number} angle Angle between 0 and 360
+		 * @chainable
+		 */
 		rotate: UA_SUPPORTS_SVG ? function (angle) {
 			var myself = this;
 			myself._node.setAttribute("transform", "rotate(" + angle + " " + (myself.get("x") + myself.get("width") / 2) + " " + (myself.get("y") + myself.get("height") / 2) + ")");
@@ -336,21 +389,29 @@ jet().add('plasma', function ($) {
 	});
 	
 	/**
-	 * 
+	 * A rectangle with rounded corners
+	 * @class RoundedRectangle
+	 * @extends Rectangle
+	 * @constructor
+	 * @namespace Vector
 	 * @param {Object} config
 	 */
 	var RoundedRectangle = function (config) {
 		config.node = UA_SUPPORTS_SVG ? "rect" : "roundrect";
 		RoundedRectangle.superclass.constructor.apply(this, arguments);
 	};
-	$.extend(RoundedRectangle, Graphic);
+	$.extend(RoundedRectangle, Rectangle);
 	
 	/**
-	 * 
+	 * An ellipse
+	 * @class Ellipse
+	 * @extends Vector
+	 * @namespace Vector
 	 * @param {Object} config
 	 */
 	var Ellipse = function (config) {
-		config.node = UA_SUPPORTS_SVG ? "ellipse" : "oval";
+		config.node = config.node && config.node == "circle" ? "circle" :
+					UA_SUPPORTS_SVG ? "ellipse" : "oval";
 		Ellipse.superclass.constructor.apply(this, arguments);
 		
 		var myself = this.addAttrs({
@@ -406,10 +467,14 @@ jet().add('plasma', function ($) {
 			}
 		});
 	};
-	$.extend(Ellipse, Graphic);
+	$.extend(Ellipse, Vector);
 	
 	/**
-	 * 
+	 * A circle vector
+	 * @class Circle
+	 * @extends Vector
+	 * @constructor
+	 * @namespace Vector
 	 * @param {Object} config
 	 */
 	var Circle = function (config) {
@@ -456,10 +521,14 @@ jet().add('plasma', function ($) {
 			}
 		});
 	};
-	$.extend(Circle, Graphic);
+	$.extend(Circle, Vector);
 	
 	/**
-	 * 
+	 * A line vector
+	 * @class Line
+	 * @extends Vector
+	 * @constructor
+	 * @namespace Vector
 	 * @param {Object} config
 	 */
 	var Line = function (config) {
@@ -485,21 +554,27 @@ jet().add('plasma', function ($) {
 			}
 		});
 	};
-	$.extend(Line, Graphic);
+	$.extend(Line, Vector);
 	
 	/**
-	 * 
+	 * An Image vector
+	 * @class Image
+	 * @extends Vector
+	 * @constructor
+	 * @namespace Vector
 	 * @param {Object} config
 	 */
-	var ImageGraphic = function (config) {
-		ImageGraphic.superclass.constructor.call(this, "Image");
-		
-		this.attr(config);
+	var ImageVector = function (config) {
+		ImageVector.superclass.constructor.call(this, "Image");
 	};
-	$.extend(ImageGraphic, Graphic);
+	$.extend(ImageVector, Vector);
 	
 	/**
-	 * 
+	 * An Text vector
+	 * @class Text
+	 * @extends Vector
+	 * @constructor
+	 * @namespace Vector
 	 * @param {Object} config
 	 */
 	var Text = function (config) {
@@ -507,25 +582,34 @@ jet().add('plasma', function ($) {
 		
 		this.attr(config);
 	};
-	$.extend(Text, Graphic);
+	$.extend(Text, Vector);
 	
 	/**
-	 * 
+	 * An Path vector
+	 * @class Path
+	 * @extends Vector
+	 * @constructor
+	 * @namespace Vector
 	 * @param {Object} config
 	 */
 	var Path = function (config) {
 		Path.superclass.constructor.call(this, "path");
-		
-		this.attr(config);
 	};
-	$.extend(Path, Graphic);
+	$.extend(Path, Vector);
 	
 	/**
-	 * 
+	 * @namespace
 	 */
-	var Plasma = UA_SUPPORTS_SVG ? function () {
-		Plasma.superclass.constructor.apply(this, arguments);
-		var box = new Graphic({
+	/**
+	 * A canvas for Vectors
+	 * @class VectorView
+	 * @extends TimeFrame
+	 * @constructor
+	 * @param {Object} config
+	 */
+	var VectorView = UA_SUPPORTS_SVG ? function () {
+		VectorView.superclass.constructor.apply(this, arguments);
+		var box = new Vector({
 			node: "svg",
 			xmlns: NAMESPACE_URI,
 			version: "1.1"
@@ -558,7 +642,7 @@ jet().add('plasma', function ($) {
 		myself.get("srcNode").append(box);
 		
 	} : function () {
-		Plasma.superclass.constructor.apply(this, arguments);
+		VectorView.superclass.constructor.apply(this, arguments);
 		
 		var box = new Node("div");
 		box.css({
@@ -596,51 +680,53 @@ jet().add('plasma', function ($) {
 		myself.get("srcNode").append(box);
 		
 	};
-	var appendToPlasma = function (shape, plasma) {
-		return shape.set(PLASMA, plasma).appendTo(plasma.get(BOUNDING_BOX));
+	var appendToVectorView = function (shape, plasma) {
+		return shape.set(VECTOR, plasma).appendTo(plasma.get(BOUNDING_BOX));
 	};
-	$.extend(Plasma, $.TimeFrame, {
+	$.extend(VectorView, $.TimeFrame, {
 		rectangle: function (config) {
-			return appendToPlasma(new Rectangle(config), this);
+			return appendToVectorView(new Rectangle(config), this);
 		},
 		circle: function (config) {
-			return appendToPlasma(new Circle(config), this);
+			return appendToVectorView(new Circle(config), this);
 		},
 		ellipse: function (config) {
-			return appendToPlasma(new Ellipse(config), this);
+			return appendToVectorView(new Ellipse(config), this);
 		},
 		image: function (config) {
-			return appendToPlasma(new ImageGraphic(config), this);
+			return appendToVectorView(new ImageVector(config), this);
 		},
 		text: function (config) {
-			return appendToPlasma(new Text(config), this);
+			return appendToVectorView(new Text(config), this);
 		},
 		line: function (config) {
-			return appendToPlasma(new Line(config), this);
+			return appendToVectorView(new Line(config), this);
 		},
 		path: function (config) {
-			return appendToPlasma(new Path(config), this);
+			return appendToVectorView(new Path(config), this);
 		},
 		link: function () {
-			return new GraphicList(arguments);
+			return new VectorList(arguments);
 		},
 		clear: function () {
 			this.get(BOUNDING_BOX).children().remove();
 		}
 	});
 	
-	Plasma.Circle = Circle;
-	Plasma.Rectangle = Rectangle;
-	Plasma.Image = ImageGraphic;
-	Plasma.Text = Text;
-	Plasma.Path = Path;
-	
-	$.add({
-		Plasma: Plasma,
+	$.mix(Vector, {
+		Circle: Circle,
+		Rectangle: Rectangle,
+		"Image": ImageVector,
+		Text: Text,
+		Path: Path,
 		decToHex: decToHex,
 		hexToDec: hexToDec,
 		colorHexToArray: colorHexToArray,
-		colorArrayToHex: colorArrayToHex,
-		Graphic: Graphic
+		colorArrayToHex: colorArrayToHex
+	});
+	
+	$.add({
+		VectorView: VectorView,
+		Vector: Vector
 	});
 });

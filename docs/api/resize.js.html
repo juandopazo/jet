@@ -2,7 +2,7 @@
 <html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-	<title>API: node   resize.js  (YUI Library)</title>
+	<title>API: paginator   resize.js  (YUI Library)</title>
 
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
@@ -16,9 +16,9 @@
 <div id="doc3" class="yui-t2">
 	<div id="hd">
         <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
-        <h3>node&nbsp; <span class="subtitle">0.1.53</span></h3>
+        <h3>paginator&nbsp; <span class="subtitle">0.1.53</span></h3>
         <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
-            &gt; <a href="./module_node.html" title="node">node</a>
+            &gt; <a href="./module_paginator.html" title="paginator">paginator</a>
                 
                  &gt; resize.js (source view) 
         <form onsubmit="return false">
@@ -47,8 +47,10 @@
                         <style>
                             #doc3 .classopts { display:none; }
                         </style>
-                        <div class="highlight"><pre><span class="cm">/*</span>
-<span class="cm"> * @requires Base module</span>
+                        <div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * Provides a utility for resizing elements</span>
+<span class="cm"> * @module resize</span>
+<span class="cm"> * @requires jet, lang, base</span>
 <span class="cm"> */</span>
 <span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;resize&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 	
@@ -71,8 +73,10 @@
 		<span class="nx">db</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">body</span><span class="p">;</span>
 				
 	<span class="cm">/**</span>
-<span class="cm">	 * </span>
+<span class="cm">	 * Provides a utility for resizing elements</span>
+<span class="cm">	 * @class Resize</span>
 <span class="cm">	 * @extends Utility</span>
+<span class="cm">	 * @param {Object} config Object literal specifying configuration properties</span>
 <span class="cm">	 */</span>
 	<span class="kd">var</span> <span class="nx">Resize</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 		<span class="nx">Resize</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
@@ -368,38 +372,41 @@
                     <div id="moduleList" class="module">
                         <h4>Modules</h4>
                         <ul class="content">
+                                <li class=""><a href="module_anim.html" title="anim">anim</a></li>
                                 <li class=""><a href="module_base.html" title="base">base</a></li>
                                 <li class=""><a href="module_container.html" title="container">container</a></li>
                                 <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
                                 <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
                                 <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
                                 <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_flash.html" title="flash">flash</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
                                 <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
-                                <li class="selected"><a href="module_node.html" title="node">node</a></li>
+                                <li class=""><a href="module_node.html" title="node">node</a></li>
+                                <li class="selected"><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_simple-progressbar.html" title="simple-progressbar">simple-progressbar</a></li>
+                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_ua.html" title="ua">ua</a></li>
+                                <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_xsl.html" title="xsl">xsl</a></li>
                         </ul>
                     </div>
 
                     <div id="classList" class="module">
                         <h4>Classes</h4>
                         <ul class="content">
-                                <li class=""><a href="DOM.html" title="DOM">DOM</a></li>
-                                <li class=""><a href="NodeList.html" title="NodeList">NodeList</a></li>
+                                <li class=""><a href="Paginator.html" title="Paginator">Paginator</a></li>
                         </ul>
                     </div>
 
                     <div id="fileList" class="module">
                         <h4>Files</h4>
                         <ul class="content">        
-                                <li class=""><a href="paginator.js.html" title="paginator.js">paginator.js</a></li>
-                                <li class=""><a href="plasma.js.html" title="plasma.js">plasma.js</a></li>
                                 <li class="selected"><a href="resize.js.html" title="resize.js">resize.js</a></li>
-                                <li class=""><a href="simpleprogressbar.js.html" title="simpleprogressbar.js">simpleprogressbar.js</a></li>
-                                <li class=""><a href="sizzle.js.html" title="sizzle.js">sizzle.js</a></li>
-                                <li class=""><a href="tabs.js.html" title="tabs.js">tabs.js</a></li>
-                                <li class=""><a href="ua.js.html" title="ua.js">ua.js</a></li>
                         </ul>
                     </div>
 
@@ -417,7 +424,7 @@
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "NodeList.html#method_addClass", "access": "", "host": "NodeList", "type": "method", "name": "addClass"}, {"url": "NodeList.html#method_append", "access": "", "host": "NodeList", "type": "method", "name": "append"}, {"url": "NodeList.html#method_appendTo", "access": "", "host": "NodeList", "type": "method", "name": "appendTo"}, {"url": "NodeList.html#method_attr", "access": "", "host": "NodeList", "type": "method", "name": "attr"}, {"url": "NodeList.html#method_children", "access": "", "host": "NodeList", "type": "method", "name": "children"}, {"url": "NodeList.html#method_Circle", "access": "", "host": "NodeList", "type": "method", "name": "Circle"}, {"url": "NodeList.html#method_clone", "access": "", "host": "NodeList", "type": "method", "name": "clone"}, {"url": "NodeList.html#method_css", "access": "", "host": "NodeList", "type": "method", "name": "css"}, {"url": "NodeList.html#method_currentStyle", "access": "", "host": "NodeList", "type": "method", "name": "currentStyle"}, {"url": "NodeList.html#method_each", "access": "", "host": "NodeList", "type": "method", "name": "each"}, {"url": "NodeList.html#method_Ellipse", "access": "", "host": "NodeList", "type": "method", "name": "Ellipse"}, {"url": "NodeList.html#method_find", "access": "", "host": "NodeList", "type": "method", "name": "find"}, {"url": "NodeList.html#method_first", "access": "", "host": "NodeList", "type": "method", "name": "first"}, {"url": "NodeList.html#method_getDefaultGetter", "access": "", "host": "NodeList", "type": "method", "name": "getDefaultGetter"}, {"url": "NodeList.html#method_getDefaultSetter", "access": "", "host": "NodeList", "type": "method", "name": "getDefaultSetter"}, {"url": "NodeList.html#method_getDocument", "access": "", "host": "NodeList", "type": "method", "name": "getDocument"}, {"url": "DOM.html#method_getWindowFromDocument", "access": "", "host": "DOM", "type": "method", "name": "getWindowFromDocument"}, {"url": "NodeList.html#method_Graphic", "access": "", "host": "NodeList", "type": "method", "name": "Graphic"}, {"url": "NodeList.html#method_GraphicList", "access": "", "host": "NodeList", "type": "method", "name": "GraphicList"}, {"url": "NodeList.html#method_hasClass", "access": "", "host": "NodeList", "type": "method", "name": "hasClass"}, {"url": "NodeList.html#method_height", "access": "", "host": "NodeList", "type": "method", "name": "height"}, {"url": "NodeList.html#method_hide", "access": "", "host": "NodeList", "type": "method", "name": "hide"}, {"url": "NodeList.html#method_html", "access": "", "host": "NodeList", "type": "method", "name": "html"}, {"url": "NodeList.html#method_ImageGraphic", "access": "", "host": "NodeList", "type": "method", "name": "ImageGraphic"}, {"url": "NodeList.html#method_insertBefore", "access": "", "host": "NodeList", "type": "method", "name": "insertBefore"}, {"url": "NodeList.html#method_Line", "access": "", "host": "NodeList", "type": "method", "name": "Line"}, {"url": "NodeList.html#method_link", "access": "", "host": "NodeList", "type": "method", "name": "link"}, {"url": "NodeList.html#method_next", "access": "", "host": "NodeList", "type": "method", "name": "next"}, {"url": "NodeList.html#method_offset", "access": "", "host": "NodeList", "type": "method", "name": "offset"}, {"url": "NodeList.html#method_on", "access": "", "host": "NodeList", "type": "method", "name": "on"}, {"url": "NodeList.html#method_parent", "access": "", "host": "NodeList", "type": "method", "name": "parent"}, {"url": "NodeList.html#method_Path", "access": "", "host": "NodeList", "type": "method", "name": "Path"}, {"url": "NodeList.html#method_Plasma", "access": "", "host": "NodeList", "type": "method", "name": "Plasma"}, {"url": "NodeList.html#method_prependTo", "access": "", "host": "NodeList", "type": "method", "name": "prependTo"}, {"url": "NodeList.html#method_previous", "access": "", "host": "NodeList", "type": "method", "name": "previous"}, {"url": "NodeList.html#method_ready", "access": "", "host": "NodeList", "type": "method", "name": "ready"}, {"url": "NodeList.html#method_Rectangle", "access": "", "host": "NodeList", "type": "method", "name": "Rectangle"}, {"url": "NodeList.html#method_remove", "access": "", "host": "NodeList", "type": "method", "name": "remove"}, {"url": "NodeList.html#method_removeClass", "access": "", "host": "NodeList", "type": "method", "name": "removeClass"}, {"url": "NodeList.html#method_Resize", "access": "", "host": "NodeList", "type": "method", "name": "Resize"}, {"url": "NodeList.html#method_RoundedRectangle", "access": "", "host": "NodeList", "type": "method", "name": "RoundedRectangle"}, {"url": "DOM.html#method_screenSize", "access": "", "host": "DOM", "type": "method", "name": "screenSize"}, {"url": "DOM.html#method_scrollLeft", "access": "", "host": "DOM", "type": "method", "name": "scrollLeft"}, {"url": "DOM.html#method_scrollTop", "access": "", "host": "DOM", "type": "method", "name": "scrollTop"}, {"url": "NodeList.html#method_setClass", "access": "", "host": "NodeList", "type": "method", "name": "setClass"}, {"url": "NodeList.html#method_show", "access": "", "host": "NodeList", "type": "method", "name": "show"}, {"url": "NodeList.html#method_Text", "access": "", "host": "NodeList", "type": "method", "name": "Text"}, {"url": "NodeList.html#method_toggle", "access": "", "host": "NodeList", "type": "method", "name": "toggle"}, {"url": "NodeList.html#method_toggleClass", "access": "", "host": "NodeList", "type": "method", "name": "toggleClass"}, {"url": "NodeList.html#method_unbind", "access": "", "host": "NodeList", "type": "method", "name": "unbind"}, {"url": "NodeList.html#method_unbindAll", "access": "", "host": "NodeList", "type": "method", "name": "unbindAll"}, {"url": "NodeList.html#method_width", "access": "", "host": "NodeList", "type": "method", "name": "width"}];
+    var ALL_YUI_PROPS = [{"url": "Paginator.html#config_currentPage", "access": "", "host": "Paginator", "type": "config", "name": "currentPage"}, {"url": "Paginator.html#config_firstLast", "access": "", "host": "Paginator", "type": "config", "name": "firstLast"}, {"url": "Paginator.html#config_firstText", "access": "", "host": "Paginator", "type": "config", "name": "firstText"}, {"url": "Paginator.html#method_goTo", "access": "", "host": "Paginator", "type": "method", "name": "goTo"}, {"url": "Paginator.html#config_lastText", "access": "", "host": "Paginator", "type": "config", "name": "lastText"}, {"url": "Paginator.html#config_nextText", "access": "", "host": "Paginator", "type": "config", "name": "nextText"}, {"url": "Paginator.html#config_pageCount", "access": "", "host": "Paginator", "type": "config", "name": "pageCount"}, {"url": "Paginator.html#config_pagesShown", "access": "", "host": "Paginator", "type": "config", "name": "pagesShown"}, {"url": "Paginator.html#config_prevNext", "access": "", "host": "Paginator", "type": "config", "name": "prevNext"}, {"url": "Paginator.html#config_prevText", "access": "", "host": "Paginator", "type": "config", "name": "prevText"}, {"url": "Paginator.html#config_recordSet", "access": "", "host": "Paginator", "type": "config", "name": "recordSet"}, {"url": "Paginator.html#config_recordsPerPage", "access": "", "host": "Paginator", "type": "config", "name": "recordsPerPage"}];
 </script>
 </body>
 </html>

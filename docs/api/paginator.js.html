@@ -47,7 +47,13 @@
                         <style>
                             #doc3 .classopts { display:none; }
                         </style>
-                        <div class="highlight"><pre><span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;paginator&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
+                        <div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * Paginator widget</span>
+<span class="cm"> * @module paginator</span>
+<span class="cm"> * @requires jet, lang, node, base, datasource</span>
+<span class="cm"> * @namespace</span>
+<span class="cm"> */</span>
+<span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;paginator&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 	
 	<span class="kd">var</span> <span class="nx">TRUE</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
 		<span class="nx">FALSE</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
@@ -70,7 +76,14 @@
 	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">jet</span><span class="p">.</span><span class="nx">Paginator</span><span class="p">.</span><span class="nx">ids</span><span class="p">))</span> <span class="p">{</span>
 		<span class="nx">jet</span><span class="p">.</span><span class="nx">Paginator</span><span class="p">.</span><span class="nx">ids</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 	<span class="p">}</span>
-		
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * A simple paginator that works on top of a data source</span>
+<span class="cm">	 * @class Paginator</span>
+<span class="cm">	 * @extends Widget</span>
+<span class="cm">	 * @constructor</span>
+<span class="cm">	 * @param {Object} config Object literal specifying configuration properties</span>
+<span class="cm">	 */</span>	
 	<span class="kd">var</span> <span class="nx">Paginator</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 		<span class="nx">Paginator</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
 		
@@ -78,33 +91,91 @@
 		<span class="kd">var</span> <span class="nx">pageCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 		
 		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config recordSet</span>
+<span class="cm">			 * @description A RecordSet with the data the paginator should handle</span>
+<span class="cm">			 * @required</span>
+<span class="cm">			 * @type RecordSet</span>
+<span class="cm">			 */</span>
 			<span class="nx">recordSet</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">required</span><span class="o">:</span> <span class="nx">TRUE</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config recordsPerPage</span>
+<span class="cm">			 * @description Number of records each page should show</span>
+<span class="cm">			 * @type Number</span>
+<span class="cm">			 * @default 10</span>
+<span class="cm">			 */</span>
 			<span class="nx">recordsPerPage</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="mi">10</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config firstLast</span>
+<span class="cm">			 * @description Wheter the &quot;First&quot; and &quot;Last&quot; buttons should appear</span>
+<span class="cm">			 * @type Boolean</span>
+<span class="cm">			 * @default true</span>
+<span class="cm">			 */</span>
 			<span class="nx">firstLast</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="nx">TRUE</span>
 			<span class="p">},</span>
-			<span class="nx">prevNexst</span><span class="o">:</span> <span class="p">{</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config prevNext</span>
+<span class="cm">			 * @description Wheter the &quot;previous&quot; and &quot;next&quot; buttons should appear</span>
+<span class="cm">			 * @type Boolean</span>
+<span class="cm">			 * @default true</span>
+<span class="cm">			 */</span>
+			<span class="nx">prevNext</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="nx">TRUE</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config pagesShown</span>
+<span class="cm">			 * @description Number of pages that should be listed in the paginator (1, 2, 3...)</span>
+<span class="cm">			 * @type Number</span>
+<span class="cm">			 * @default 5</span>
+<span class="cm">			 */</span>
 			<span class="nx">pagesShown</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="mi">5</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config firstText</span>
+<span class="cm">			 * @description The text of the &quot;first&quot; button</span>
+<span class="cm">			 * @writeOnce</span>
+<span class="cm">			 * @default &quot;&lt;&lt; first&quot;</span>
+<span class="cm">			 * @type String</span>
+<span class="cm">			 */</span>
 			<span class="nx">firstText</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">writeOnce</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;&lt;&lt; first&quot;</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config prevText</span>
+<span class="cm">			 * @description The text of the &quot;previous&quot; button</span>
+<span class="cm">			 * @writeOnce</span>
+<span class="cm">			 * @default &quot;&lt; prev&quot;</span>
+<span class="cm">			 * @type String</span>
+<span class="cm">			 */</span>
 			<span class="nx">prevText</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">writeOnce</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;&lt; prev&quot;</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config nextText</span>
+<span class="cm">			 * @description The text of the &quot;next&quot; button</span>
+<span class="cm">			 * @writeOnce</span>
+<span class="cm">			 * @default &quot;next &gt;&quot;</span>
+<span class="cm">			 * @type String</span>
+<span class="cm">			 */</span>
 			<span class="nx">nextText</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">writeOnce</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;next &gt;&quot;</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config lastText</span>
+<span class="cm">			 * @description The text of the &quot;last&quot; button</span>
+<span class="cm">			 * @writeOnce</span>
+<span class="cm">			 * @default &quot;last &gt;&gt;&quot;</span>
+<span class="cm">			 * @type String</span>
+<span class="cm">			 */</span>
 			<span class="nx">lastText</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">writeOnce</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;last &gt;&gt;&quot;</span>
@@ -113,10 +184,23 @@
 				<span class="nx">writeOnce</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;pg&quot;</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config currentPage</span>
+<span class="cm">			 * @description The current selected page. If set in the config, </span>
+<span class="cm">			 * the paginator will go directly to that page when rendered</span>
+<span class="cm">			 * @writeOnce</span>
+<span class="cm">			 * @type Number</span>
+<span class="cm">			 */</span>
 			<span class="nx">currentPage</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">writeOnce</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="nx">currentPage</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config pageCount</span>
+<span class="cm">			 * @description The number of pages in the paginator</span>
+<span class="cm">			 * @readOnly</span>
+<span class="cm">			 * @type Number</span>
+<span class="cm">			 */</span>
 			<span class="nx">pageCount</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">readOnly</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="nx">pageCount</span>
@@ -134,8 +218,15 @@
 		<span class="p">};</span>
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">RECORDSET</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;replace&quot;</span><span class="p">,</span> <span class="nx">recalculate</span><span class="p">);</span>
 		
+		<span class="cm">/**</span>
+<span class="cm">		 * Go to a certain page</span>
+<span class="cm">		 * @method goTo</span>
+<span class="cm">		 * @param {Number} page</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="kd">var</span> <span class="nx">goTo</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">page</span><span class="p">)</span> <span class="p">{</span>
 			
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
 		<span class="p">};</span>
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">goTo</span> <span class="o">=</span> <span class="nx">goTo</span><span class="p">;</span>
 		
@@ -146,30 +237,40 @@
 			<span class="nx">prefix</span> <span class="o">+=</span> <span class="nx">className</span><span class="p">;</span>
 			
 			<span class="kd">var</span> <span class="nx">boundingBox</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;boundingBox&quot;</span><span class="p">);</span>
+			
+			<span class="c1">// the &quot;first&quot; button object</span>
 			<span class="nx">spanFirst</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">NEW_SPAN</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">prefix</span> <span class="o">+</span> <span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot;-first&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">prefix</span> <span class="o">+</span> <span class="s2">&quot;-first&quot;</span><span class="p">,</span> <span class="nx">INACTIVE</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="nx">CLICK</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 				<span class="k">if</span> <span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">ACTIVE</span><span class="p">))</span> <span class="p">{</span>
 					<span class="nx">goTo</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 				<span class="p">}</span>
 			<span class="p">}).</span><span class="nx">html</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;firstText&quot;</span><span class="p">)).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">boundingBox</span><span class="p">);</span>
+			
+			<span class="c1">// the &quot;previous&quot; button object</span>
 			<span class="nx">spanPrev</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">NEW_SPAN</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">prefix</span> <span class="o">+</span> <span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot;-previous&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">prefix</span> <span class="o">+</span> <span class="s2">&quot;-previous&quot;</span><span class="p">,</span> <span class="nx">INACTIVE</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="nx">CLICK</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 				<span class="k">if</span> <span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">ACTIVE</span><span class="p">))</span> <span class="p">{</span>
 					<span class="nx">goTo</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CURRENT_PAGE</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
 				<span class="p">}</span>
 			<span class="p">}).</span><span class="nx">html</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;prevText&quot;</span><span class="p">)).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">boundingBox</span><span class="p">);</span>
+			
+			<span class="c1">// the pages are inside a container</span>
 			<span class="nx">pagesContainer</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">NEW_SPAN</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">prefix</span> <span class="o">+</span> <span class="s2">&quot;-pages&quot;</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">boundingBox</span><span class="p">);</span>
-			<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">currentPage</span><span class="p">,</span> <span class="nx">currentPage</span> <span class="o">+</span> <span class="nx">pageCount</span><span class="p">);</span>
 			<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">currentPage</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">currentPage</span> <span class="o">+</span> <span class="nx">pageCount</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+				<span class="c1">// create each &quot;page&quot; button</span>
 				<span class="nx">$</span><span class="p">(</span><span class="nx">NEW_SPAN</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">prefix</span> <span class="o">+</span> <span class="s2">&quot;-page&quot;</span><span class="p">,</span> <span class="nx">i</span> <span class="o">==</span> <span class="nx">currentPage</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">?</span> <span class="nx">prefix</span> <span class="o">+</span> <span class="s2">&quot;-current-page&quot;</span> <span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nx">i</span> <span class="o">==</span> <span class="nx">currentPage</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">?</span> <span class="nx">ACTIVE</span> <span class="o">:</span> <span class="nx">INACTIVE</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">prefix</span> <span class="o">+</span> <span class="s2">&quot;-page&quot;</span> <span class="o">+</span> <span class="nx">i</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">i</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="nx">CLICK</span><span class="p">,</span> <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
 					<span class="k">return</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 						<span class="nx">goTo</span><span class="p">(</span><span class="nx">index</span><span class="p">);</span>
 					<span class="p">};</span>
 				<span class="p">}(</span><span class="nx">i</span><span class="p">))).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">pagesContainer</span><span class="p">);</span>
 			<span class="p">}</span>
+			
+			<span class="c1">// the &quot;next&quot; button object</span>
 			<span class="nx">spanNext</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">NEW_SPAN</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">prefix</span> <span class="o">+</span> <span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot;-next&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">prefix</span> <span class="o">+</span> <span class="s2">&quot;-next&quot;</span><span class="p">,</span> <span class="nx">INACTIVE</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="nx">CLICK</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 				<span class="k">if</span> <span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">ACTIVE</span><span class="p">))</span> <span class="p">{</span>
 					<span class="nx">goTo</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CURRENT_PAGE</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
 				<span class="p">}</span>
 			<span class="p">}).</span><span class="nx">html</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;nextText&quot;</span><span class="p">)).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">boundingBox</span><span class="p">);</span>
+			
+			<span class="c1">// the &quot;last&quot; button object</span>
 			<span class="nx">spanLast</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">NEW_SPAN</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">prefix</span> <span class="o">+</span> <span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot;-last&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">prefix</span> <span class="o">+</span> <span class="s2">&quot;-last&quot;</span><span class="p">,</span> <span class="nx">INACTIVE</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="nx">CLICK</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 				<span class="k">if</span> <span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">ACTIVE</span><span class="p">))</span> <span class="p">{</span>
 					<span class="nx">goTo</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;pageCount&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
@@ -194,17 +295,27 @@
                     <div id="moduleList" class="module">
                         <h4>Modules</h4>
                         <ul class="content">
+                                <li class=""><a href="module_anim.html" title="anim">anim</a></li>
                                 <li class=""><a href="module_base.html" title="base">base</a></li>
                                 <li class=""><a href="module_container.html" title="container">container</a></li>
                                 <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
                                 <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
                                 <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
                                 <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_flash.html" title="flash">flash</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
                                 <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
                                 <li class="selected"><a href="module_node.html" title="node">node</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_simple-progressbar.html" title="simple-progressbar">simple-progressbar</a></li>
+                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_ua.html" title="ua">ua</a></li>
+                                <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_xsl.html" title="xsl">xsl</a></li>
                         </ul>
                     </div>
 
@@ -220,12 +331,6 @@
                         <h4>Files</h4>
                         <ul class="content">        
                                 <li class="selected"><a href="paginator.js.html" title="paginator.js">paginator.js</a></li>
-                                <li class=""><a href="plasma.js.html" title="plasma.js">plasma.js</a></li>
-                                <li class=""><a href="resize.js.html" title="resize.js">resize.js</a></li>
-                                <li class=""><a href="simpleprogressbar.js.html" title="simpleprogressbar.js">simpleprogressbar.js</a></li>
-                                <li class=""><a href="sizzle.js.html" title="sizzle.js">sizzle.js</a></li>
-                                <li class=""><a href="tabs.js.html" title="tabs.js">tabs.js</a></li>
-                                <li class=""><a href="ua.js.html" title="ua.js">ua.js</a></li>
                         </ul>
                     </div>
 
@@ -243,7 +348,7 @@
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "NodeList.html#method_addClass", "access": "", "host": "NodeList", "type": "method", "name": "addClass"}, {"url": "NodeList.html#method_append", "access": "", "host": "NodeList", "type": "method", "name": "append"}, {"url": "NodeList.html#method_appendTo", "access": "", "host": "NodeList", "type": "method", "name": "appendTo"}, {"url": "NodeList.html#method_attr", "access": "", "host": "NodeList", "type": "method", "name": "attr"}, {"url": "NodeList.html#method_children", "access": "", "host": "NodeList", "type": "method", "name": "children"}, {"url": "NodeList.html#method_Circle", "access": "", "host": "NodeList", "type": "method", "name": "Circle"}, {"url": "NodeList.html#method_clone", "access": "", "host": "NodeList", "type": "method", "name": "clone"}, {"url": "NodeList.html#method_css", "access": "", "host": "NodeList", "type": "method", "name": "css"}, {"url": "NodeList.html#method_currentStyle", "access": "", "host": "NodeList", "type": "method", "name": "currentStyle"}, {"url": "NodeList.html#method_each", "access": "", "host": "NodeList", "type": "method", "name": "each"}, {"url": "NodeList.html#method_Ellipse", "access": "", "host": "NodeList", "type": "method", "name": "Ellipse"}, {"url": "NodeList.html#method_find", "access": "", "host": "NodeList", "type": "method", "name": "find"}, {"url": "NodeList.html#method_first", "access": "", "host": "NodeList", "type": "method", "name": "first"}, {"url": "NodeList.html#method_getDefaultGetter", "access": "", "host": "NodeList", "type": "method", "name": "getDefaultGetter"}, {"url": "NodeList.html#method_getDefaultSetter", "access": "", "host": "NodeList", "type": "method", "name": "getDefaultSetter"}, {"url": "NodeList.html#method_getDocument", "access": "", "host": "NodeList", "type": "method", "name": "getDocument"}, {"url": "DOM.html#method_getWindowFromDocument", "access": "", "host": "DOM", "type": "method", "name": "getWindowFromDocument"}, {"url": "NodeList.html#method_Graphic", "access": "", "host": "NodeList", "type": "method", "name": "Graphic"}, {"url": "NodeList.html#method_GraphicList", "access": "", "host": "NodeList", "type": "method", "name": "GraphicList"}, {"url": "NodeList.html#method_hasClass", "access": "", "host": "NodeList", "type": "method", "name": "hasClass"}, {"url": "NodeList.html#method_height", "access": "", "host": "NodeList", "type": "method", "name": "height"}, {"url": "NodeList.html#method_hide", "access": "", "host": "NodeList", "type": "method", "name": "hide"}, {"url": "NodeList.html#method_html", "access": "", "host": "NodeList", "type": "method", "name": "html"}, {"url": "NodeList.html#method_ImageGraphic", "access": "", "host": "NodeList", "type": "method", "name": "ImageGraphic"}, {"url": "NodeList.html#method_insertBefore", "access": "", "host": "NodeList", "type": "method", "name": "insertBefore"}, {"url": "NodeList.html#method_Line", "access": "", "host": "NodeList", "type": "method", "name": "Line"}, {"url": "NodeList.html#method_link", "access": "", "host": "NodeList", "type": "method", "name": "link"}, {"url": "NodeList.html#method_next", "access": "", "host": "NodeList", "type": "method", "name": "next"}, {"url": "NodeList.html#method_offset", "access": "", "host": "NodeList", "type": "method", "name": "offset"}, {"url": "NodeList.html#method_on", "access": "", "host": "NodeList", "type": "method", "name": "on"}, {"url": "NodeList.html#method_parent", "access": "", "host": "NodeList", "type": "method", "name": "parent"}, {"url": "NodeList.html#method_Path", "access": "", "host": "NodeList", "type": "method", "name": "Path"}, {"url": "NodeList.html#method_Plasma", "access": "", "host": "NodeList", "type": "method", "name": "Plasma"}, {"url": "NodeList.html#method_prependTo", "access": "", "host": "NodeList", "type": "method", "name": "prependTo"}, {"url": "NodeList.html#method_previous", "access": "", "host": "NodeList", "type": "method", "name": "previous"}, {"url": "NodeList.html#method_ready", "access": "", "host": "NodeList", "type": "method", "name": "ready"}, {"url": "NodeList.html#method_Rectangle", "access": "", "host": "NodeList", "type": "method", "name": "Rectangle"}, {"url": "NodeList.html#method_remove", "access": "", "host": "NodeList", "type": "method", "name": "remove"}, {"url": "NodeList.html#method_removeClass", "access": "", "host": "NodeList", "type": "method", "name": "removeClass"}, {"url": "NodeList.html#method_Resize", "access": "", "host": "NodeList", "type": "method", "name": "Resize"}, {"url": "NodeList.html#method_RoundedRectangle", "access": "", "host": "NodeList", "type": "method", "name": "RoundedRectangle"}, {"url": "DOM.html#method_screenSize", "access": "", "host": "DOM", "type": "method", "name": "screenSize"}, {"url": "DOM.html#method_scrollLeft", "access": "", "host": "DOM", "type": "method", "name": "scrollLeft"}, {"url": "DOM.html#method_scrollTop", "access": "", "host": "DOM", "type": "method", "name": "scrollTop"}, {"url": "NodeList.html#method_setClass", "access": "", "host": "NodeList", "type": "method", "name": "setClass"}, {"url": "NodeList.html#method_show", "access": "", "host": "NodeList", "type": "method", "name": "show"}, {"url": "NodeList.html#method_Text", "access": "", "host": "NodeList", "type": "method", "name": "Text"}, {"url": "NodeList.html#method_toggle", "access": "", "host": "NodeList", "type": "method", "name": "toggle"}, {"url": "NodeList.html#method_toggleClass", "access": "", "host": "NodeList", "type": "method", "name": "toggleClass"}, {"url": "NodeList.html#method_unbind", "access": "", "host": "NodeList", "type": "method", "name": "unbind"}, {"url": "NodeList.html#method_unbindAll", "access": "", "host": "NodeList", "type": "method", "name": "unbindAll"}, {"url": "NodeList.html#method_width", "access": "", "host": "NodeList", "type": "method", "name": "width"}];
+    var ALL_YUI_PROPS = [{"url": "NodeList.html#method_addClass", "access": "", "host": "NodeList", "type": "method", "name": "addClass"}, {"url": "NodeList.html#method_append", "access": "", "host": "NodeList", "type": "method", "name": "append"}, {"url": "NodeList.html#method_appendTo", "access": "", "host": "NodeList", "type": "method", "name": "appendTo"}, {"url": "NodeList.html#method_attr", "access": "", "host": "NodeList", "type": "method", "name": "attr"}, {"url": "NodeList.html#method_children", "access": "", "host": "NodeList", "type": "method", "name": "children"}, {"url": "NodeList.html#method_clone", "access": "", "host": "NodeList", "type": "method", "name": "clone"}, {"url": "NodeList.html#method_css", "access": "", "host": "NodeList", "type": "method", "name": "css"}, {"url": "NodeList.html#method_currentStyle", "access": "", "host": "NodeList", "type": "method", "name": "currentStyle"}, {"url": "NodeList.html#method_each", "access": "", "host": "NodeList", "type": "method", "name": "each"}, {"url": "NodeList.html#method_find", "access": "", "host": "NodeList", "type": "method", "name": "find"}, {"url": "NodeList.html#method_first", "access": "", "host": "NodeList", "type": "method", "name": "first"}, {"url": "NodeList.html#method_getDocument", "access": "", "host": "NodeList", "type": "method", "name": "getDocument"}, {"url": "DOM.html#method_getWindowFromDocument", "access": "", "host": "DOM", "type": "method", "name": "getWindowFromDocument"}, {"url": "NodeList.html#method_hasClass", "access": "", "host": "NodeList", "type": "method", "name": "hasClass"}, {"url": "NodeList.html#method_height", "access": "", "host": "NodeList", "type": "method", "name": "height"}, {"url": "NodeList.html#method_hide", "access": "", "host": "NodeList", "type": "method", "name": "hide"}, {"url": "NodeList.html#method_html", "access": "", "host": "NodeList", "type": "method", "name": "html"}, {"url": "NodeList.html#method_insertBefore", "access": "", "host": "NodeList", "type": "method", "name": "insertBefore"}, {"url": "NodeList.html#method_link", "access": "", "host": "NodeList", "type": "method", "name": "link"}, {"url": "NodeList.html#method_next", "access": "", "host": "NodeList", "type": "method", "name": "next"}, {"url": "NodeList.html#method_offset", "access": "", "host": "NodeList", "type": "method", "name": "offset"}, {"url": "NodeList.html#method_on", "access": "", "host": "NodeList", "type": "method", "name": "on"}, {"url": "NodeList.html#method_parent", "access": "", "host": "NodeList", "type": "method", "name": "parent"}, {"url": "NodeList.html#method_prependTo", "access": "", "host": "NodeList", "type": "method", "name": "prependTo"}, {"url": "NodeList.html#method_previous", "access": "", "host": "NodeList", "type": "method", "name": "previous"}, {"url": "NodeList.html#method_ready", "access": "", "host": "NodeList", "type": "method", "name": "ready"}, {"url": "NodeList.html#method_remove", "access": "", "host": "NodeList", "type": "method", "name": "remove"}, {"url": "NodeList.html#method_removeClass", "access": "", "host": "NodeList", "type": "method", "name": "removeClass"}, {"url": "DOM.html#method_screenSize", "access": "", "host": "DOM", "type": "method", "name": "screenSize"}, {"url": "DOM.html#method_scrollLeft", "access": "", "host": "DOM", "type": "method", "name": "scrollLeft"}, {"url": "DOM.html#method_scrollTop", "access": "", "host": "DOM", "type": "method", "name": "scrollTop"}, {"url": "NodeList.html#method_setClass", "access": "", "host": "NodeList", "type": "method", "name": "setClass"}, {"url": "NodeList.html#method_show", "access": "", "host": "NodeList", "type": "method", "name": "show"}, {"url": "NodeList.html#method_toggle", "access": "", "host": "NodeList", "type": "method", "name": "toggle"}, {"url": "NodeList.html#method_toggleClass", "access": "", "host": "NodeList", "type": "method", "name": "toggleClass"}, {"url": "NodeList.html#method_unbind", "access": "", "host": "NodeList", "type": "method", "name": "unbind"}, {"url": "NodeList.html#method_unbindAll", "access": "", "host": "NodeList", "type": "method", "name": "unbindAll"}, {"url": "NodeList.html#method_width", "access": "", "host": "NodeList", "type": "method", "name": "width"}];
 </script>
 </body>
 </html>

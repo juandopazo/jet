@@ -1,5 +1,7 @@
-/*
- * @requires Base module
+/**
+ * Provides a utility for resizing elements
+ * @module resize
+ * @requires jet, lang, base
  */
 jet().add('resize', function ($) {
 	
@@ -22,8 +24,10 @@ jet().add('resize', function ($) {
 		db = $.context.body;
 				
 	/**
-	 * 
+	 * Provides a utility for resizing elements
+	 * @class Resize
 	 * @extends Utility
+	 * @param {Object} config Object literal specifying configuration properties
 	 */
 	var Resize = function () {
 		Resize.superclass.constructor.apply(this, arguments);

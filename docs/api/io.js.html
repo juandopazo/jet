@@ -2,7 +2,7 @@
 <html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-	<title>API: dragdrop   io.js  (YUI Library)</title>
+	<title>API: imageloader   io.js  (YUI Library)</title>
 
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
@@ -16,9 +16,9 @@
 <div id="doc3" class="yui-t2">
 	<div id="hd">
         <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
-        <h3>dragdrop&nbsp; <span class="subtitle">0.1.53</span></h3>
+        <h3>imageloader&nbsp; <span class="subtitle">0.1.53</span></h3>
         <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
-            &gt; <a href="./module_dragdrop.html" title="dragdrop">dragdrop</a>
+            &gt; <a href="./module_imageloader.html" title="imageloader">imageloader</a>
                 
                  &gt; io.js (source view) 
         <form onsubmit="return false">
@@ -180,10 +180,6 @@
 	
 			<span class="nx">result</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
 			
-			<span class="cm">/**</span>
-<span class="cm">			 * Type of the returned data (&#39;xml&#39;, &#39;xsl&#39;, &#39;json&#39;, &#39;text&#39;)</span>
-<span class="cm">			 * @config dataType</span>
-<span class="cm">			 */</span>
 			<span class="kd">var</span> <span class="nx">dataType</span> 		<span class="o">=</span> <span class="nx">settings</span><span class="p">.</span><span class="nx">dataType</span><span class="p">;</span>
 			<span class="kd">var</span> <span class="nx">timeout</span>			<span class="o">=</span> <span class="nx">settings</span><span class="p">.</span><span class="nx">timeout</span> <span class="o">||</span> <span class="mi">10000</span><span class="p">;</span> <span class="cm">/* Tiempo que tarda en cancelarse la transaccion */</span>
 			<span class="kd">var</span> <span class="nx">method</span>			<span class="o">=</span> <span class="nx">settings</span><span class="p">.</span><span class="nx">method</span> <span class="o">||</span> <span class="s2">&quot;GET&quot;</span><span class="p">;</span> <span class="cm">/* Metodo para enviar informacion al servidor */</span>
@@ -258,33 +254,41 @@
                     <div id="moduleList" class="module">
                         <h4>Modules</h4>
                         <ul class="content">
+                                <li class=""><a href="module_anim.html" title="anim">anim</a></li>
                                 <li class=""><a href="module_base.html" title="base">base</a></li>
                                 <li class=""><a href="module_container.html" title="container">container</a></li>
                                 <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
                                 <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
                                 <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
-                                <li class="selected"><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_flash.html" title="flash">flash</a></li>
+                                <li class="selected"><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
                                 <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_simple-progressbar.html" title="simple-progressbar">simple-progressbar</a></li>
+                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_ua.html" title="ua">ua</a></li>
+                                <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_xsl.html" title="xsl">xsl</a></li>
                         </ul>
                     </div>
 
                     <div id="classList" class="module">
                         <h4>Classes</h4>
                         <ul class="content">
-                                <li class=""><a href="Drag.html" title="Drag">Drag</a></li>
-                                <li class=""><a href="DragDrop.html" title="DragDrop">DragDrop</a></li>
+                                <li class=""><a href="Image.html" title="Image">Image</a></li>
+                                <li class=""><a href="ImageLoader.html" title="ImageLoader">ImageLoader</a></li>
                         </ul>
                     </div>
 
                     <div id="fileList" class="module">
                         <h4>Files</h4>
                         <ul class="content">        
-                                <li class=""><a href="flash.js.html" title="flash.js">flash.js</a></li>
-                                <li class=""><a href="imageloader.js.html" title="imageloader.js">imageloader.js</a></li>
                                 <li class="selected"><a href="io.js.html" title="io.js">io.js</a></li>
                         </ul>
                     </div>
@@ -303,7 +307,7 @@
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Drag.html#method_addHandler", "access": "", "host": "Drag", "type": "method", "name": "addHandler"}, {"url": "DragDrop.html#method_addTarget", "access": "", "host": "DragDrop", "type": "method", "name": "addTarget"}, {"url": "Drag.html#config_cursor", "access": "", "host": "Drag", "type": "config", "name": "cursor"}, {"url": "Drag.html#event_drag", "access": "", "host": "Drag", "type": "event", "name": "drag"}, {"url": "Drag.html#event_drag:end", "access": "", "host": "Drag", "type": "event", "name": "drag:end"}, {"url": "Drag.html#event_drag:start", "access": "", "host": "Drag", "type": "event", "name": "drag:start"}, {"url": "DragDrop.html#event_drop:hit", "access": "", "host": "DragDrop", "type": "event", "name": "drop:hit"}, {"url": "DragDrop.html#event_drop:miss", "access": "", "host": "DragDrop", "type": "event", "name": "drop:miss"}, {"url": "Drag.html#config_handlers", "access": "", "host": "Drag", "type": "config", "name": "handlers"}, {"url": "Drag.html#config_node", "access": "", "host": "Drag", "type": "config", "name": "node"}, {"url": "Drag.html#config_tracking", "access": "", "host": "Drag", "type": "config", "name": "tracking"}];
+    var ALL_YUI_PROPS = [{"url": "Image.html#event_complete", "access": "", "host": "Image", "type": "event", "name": "complete"}, {"url": "ImageLoader.html#event_complete", "access": "", "host": "ImageLoader", "type": "event", "name": "complete"}, {"url": "Image.html#event_error", "access": "", "host": "Image", "type": "event", "name": "error"}, {"url": "Image.html#config_image", "access": "", "host": "Image", "type": "config", "name": "image"}, {"url": "ImageLoader.html#event_image:complete", "access": "", "host": "ImageLoader", "type": "event", "name": "image:complete"}, {"url": "ImageLoader.html#event_image:error", "access": "", "host": "ImageLoader", "type": "event", "name": "image:error"}, {"url": "ImageLoader.html#event_image:load", "access": "", "host": "ImageLoader", "type": "event", "name": "image:load"}, {"url": "ImageLoader.html#event_image:timeout", "access": "", "host": "ImageLoader", "type": "event", "name": "image:timeout"}, {"url": "Image.html#method_load", "access": "", "host": "Image", "type": "method", "name": "load"}, {"url": "Image.html#event_load", "access": "", "host": "Image", "type": "event", "name": "load"}, {"url": "ImageLoader.html#method_load", "access": "", "host": "ImageLoader", "type": "method", "name": "load"}, {"url": "Image.html#config_loaded", "access": "", "host": "Image", "type": "config", "name": "loaded"}, {"url": "Image.html#config_node", "access": "", "host": "Image", "type": "config", "name": "node"}, {"url": "ImageLoader.html#event_progress", "access": "", "host": "ImageLoader", "type": "event", "name": "progress"}, {"url": "Image.html#method_setAsBackground", "access": "", "host": "Image", "type": "method", "name": "setAsBackground"}, {"url": "Image.html#config_src", "access": "", "host": "Image", "type": "config", "name": "src"}, {"url": "ImageLoader.html#config_srcs", "access": "", "host": "ImageLoader", "type": "config", "name": "srcs"}, {"url": "Image.html#config_timeout", "access": "", "host": "Image", "type": "config", "name": "timeout"}, {"url": "Image.html#config_type", "access": "", "host": "Image", "type": "config", "name": "type"}];
 </script>
 </body>
 </html>
