@@ -2,7 +2,7 @@
 <html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-	<title>API: base  utils.Mouse   (YUI Library)</title>
+	<title>API: anim  TimeFrame   (YUI Library)</title>
 
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
@@ -16,10 +16,10 @@
 <div id="doc3" class="yui-t2">
 	<div id="hd">
         <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
-        <h3>base&nbsp; <span class="subtitle">0.1.53</span></h3>
+        <h3>anim&nbsp; <span class="subtitle">0.1.53</span></h3>
         <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
-            &gt; <a href="./module_base.html" title="base">base</a>
-                 &gt; utils.Mouse 
+            &gt; <a href="./module_anim.html" title="anim">anim</a>
+                 &gt; TimeFrame 
                 
         <form onsubmit="return false">
             <div id="propertysearch">
@@ -48,27 +48,34 @@
 
                         
                         
-                            Class <b property="yui:name">utils.Mouse</b>
+                            Class <b property="yui:name">TimeFrame</b>
                         <span class="extends">
-                           - extends <a href="Utility.html" title="Utility">Utility</a>
+                           - extends <a href="Base.html" title="Base">Base</a>
                         </span>
 
                     </h2>
                     <!-- class tree goes here -->
                     
+                        <dl class="subclasses" rel="yui:subclasses">
+                            <dt>Known Subclasses:</dt>
+                            <dd>
+                                    <span rel="yui:subclass" resource="VectorView.html">
+                                    <a href="VectorView.html" property="yui:name" title="VectorView">VectorView</a>
+                                    </span>
+                            </dd>
+                       </dl>
                 
   
 
                     <div class="summary description" property="yui:description">
-                        A utility for tracking the mouse movement without crashing the browser rendering engine.
-Also allows for moving the mouse over iframes and other pesky elements
+                        Creates a time frame for queueing animations
                     </div>
 
                         <div class="section constructor details" rel="yui:constructor" resource="#constructor">
                         <h3 id="constructor">Constructor</h3>
                         <div class="content">
                             <div class="detail">
-                                <strong property="yui:name">utils.Mouse</strong>
+                                <strong property="yui:name">TimeFrame</strong>
                                 <code>
                                     (
   
@@ -102,23 +109,69 @@ Also allows for moving the mouse over iframes and other pesky elements
                         <div class="section method details">
                             <h3 id="methods">Methods</h3>
                             <div class="content">
-                                    <div class="" rel="yui:method" resource="#method_down">
+                                    <div class="" rel="yui:method" resource="#method_addTween">
                                     <h4>
-                                        <a name="method_down">down</a></h4>
+                                        <a name="method_addTween">addTween</a></h4>
                                     <div class="detail" >
                                         <code>
                                         
                                         
                                         
                                         void
-                                            <strong property="yui:name">down</strong>
+                                            <strong property="yui:name">addTween</strong>
+                                           (
+                                                
+                                                        
+                                                         tween
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Adds a Tween to the queue
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">tween</span>
+                                                        &lt;<span property="yui:type">Tween</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"></span>
+                                                        </dd>
+                                                </dl>
+
+
+                                            <div class="chainable">
+                                                <strong>Chainable:</strong> This method is chainable.
+                                            </div>        
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_pause">
+                                    <h4>
+                                        <a name="method_pause">pause</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">pause</strong>
                                            (
                                             )
                                         </code>
                                         
                                         <div class="description" property="yui:description">
-                                            Start tracking. Equivalent to setting the tracking attribute to true.
-Simulates the mousedown event
+                                            Pauses the playback
                                         </div>
 
                                         <div class="description">
@@ -136,23 +189,102 @@ Simulates the mousedown event
                                     </div>
                                     <hr />
                                     </div>
-                                    <div class="" rel="yui:method" resource="#method_up">
+                                    <div class="" rel="yui:method" resource="#method_play">
                                     <h4>
-                                        <a name="method_up">up</a></h4>
+                                        <a name="method_play">play</a></h4>
                                     <div class="detail" >
                                         <code>
                                         
                                         
                                         
                                         void
-                                            <strong property="yui:name">up</strong>
+                                            <strong property="yui:name">play</strong>
                                            (
                                             )
                                         </code>
                                         
                                         <div class="description" property="yui:description">
-                                            Stop tracking. Equivalent to setting the tracking attribute to false
-Simulates the mouseup event
+                                            Starts the playback
+                                        </div>
+
+                                        <div class="description">
+
+
+
+                                            <div class="chainable">
+                                                <strong>Chainable:</strong> This method is chainable.
+                                            </div>        
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_removeTween">
+                                    <h4>
+                                        <a name="method_removeTween">removeTween</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">removeTween</strong>
+                                           (
+                                                
+                                                        
+                                                         tween
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Removes a Tween from the queue
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">tween</span>
+                                                        &lt;<span property="yui:type">Tween</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"></span>
+                                                        </dd>
+                                                </dl>
+
+
+                                            <div class="chainable">
+                                                <strong>Chainable:</strong> This method is chainable.
+                                            </div>        
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:method" resource="#method_stop">
+                                    <h4>
+                                        <a name="method_stop">stop</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        void
+                                            <strong property="yui:name">stop</strong>
+                                           (
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Stops the playback
                                         </div>
 
                                         <div class="description">
@@ -221,85 +353,10 @@ Simulates the mouseup event
                                     </code>
                                 </div>
                             </div>
-                            <div class="section field inheritance" rel="yui:superclass"  resource="Utility.html">
-                                <h4>Methods inherited from <a href="Utility.html" property="yui:name" title="Utility">Utility</a>:</h4>
-                                <div class="content" rel="yui:methods">
-                                    <code>
-                                            <span rel="yui:method" resource="Utility.html#method_destroy">                                        
-                                            <a class="" href="Utility.html#method_destroy" property="yui:name" title="destroy">destroy</a>
-                                            </span>
-                                    </code>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
                     <div rel="yui:events" resource="#events">
-                        <div class="section method details">
-                            <h3 id="events">Events</h3>
-                            <div class="content">
-                                    <div class="" rel="yui:event" resource="#event_move">
-                                    <h4>
-                                        <a name="event_move">move</a></h4>
-                                    <div class="detail">
-                                        <code>
-                                        
-                                        
-                                        
-                                            <strong property="yui:name">move</strong>
-
-                                            (
-                                            )
-
-                                        </code>
-                                        
-                                        <div class="description" property="yui:description">
-                                            Fires not when the mouse moves, but in an interval defined by the frequency attribute
-This way you can track the mouse position without breakin the browser's rendering engine
-because the native mousemove event fires too quickly
-                                        </div>
-
-                                        <div class="description">
-
-
-
-
-                                        </div>
-
-                                    </div>
-                                    <hr />
-                                    </div>
-                                    <div class="" rel="yui:event" resource="#event_up">
-                                    <h4>
-                                        <a name="event_up">up</a></h4>
-                                    <div class="detail">
-                                        <code>
-                                        
-                                        
-                                        
-                                            <strong property="yui:name">up</strong>
-
-                                            (
-                                            )
-
-                                        </code>
-                                        
-                                        <div class="description" property="yui:description">
-                                            Fires when the mouse button is released
-                                        </div>
-
-                                        <div class="description">
-
-
-
-
-                                        </div>
-
-                                    </div>
-                                    <hr />
-                                    </div>
-                            </div>
-                        </div>
 
 
                     </div>
@@ -308,37 +365,62 @@ because the native mousemove event fires too quickly
                         <div class="section field details">
                             <h3 id="configattributes">Configuration Attributes</h3>
                             <div class="content">
-                                    <div class="" rel="yui:attribute" resource="#config_frequency">
-                                    <h4><a name="config_frequency">frequency</a>
-                                        <code>- <span property="yui:type">Number</span></code>
+                                    <div class="" rel="yui:attribute" resource="#config_fps">
+                                    <h4><a name="config_fps">fps</a>
+                                        <code>- <span property="yui:type">object</span></code>
                                     </h4>
                                     <div class="detail">
                                         <div class="description" property="yui:description">
-                                            Frequency at which the tracker updates
+                                            Refresh speed in frames per second
                                         </div>
                                     </div>
  
      
                                     <div class="default">
-                                        Default Value: 20 (ms)
+                                        Default Value: 35
                                     </div>        
 
                                     <hr />
                                     </div>        
-                                    <div class="" rel="yui:attribute" resource="#config_tracking">
-                                    <h4><a name="config_tracking">tracking</a>
+                                    <div class="" rel="yui:attribute" resource="#config_paused">
+                                    <h4><a name="config_paused">paused</a>
                                         <code>- <span property="yui:type">Boolean</span></code>
                                     </h4>
                                     <div class="detail">
                                         <div class="description" property="yui:description">
-                                            Tracking status. Set it to true to start tracking
+                                            Whether the timeframe is paused or not
                                         </div>
                                     </div>
  
      
-                                    <div class="default">
-                                        Default Value: false
+
+                                    <hr />
                                     </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_readOnly">
+                                    <h4><a name="config_readOnly">readOnly</a>
+                                        <code>- <span property="yui:type">Boolean</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Whether the timeframe is readOnly or not
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_tweens">
+                                    <h4><a name="config_tweens">tweens</a>
+                                        <code>- <span property="yui:type">Array</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            
+                                        </div>
+                                    </div>
+ 
+     
 
                                     <hr />
                                     </div>        
@@ -370,8 +452,8 @@ because the native mousemove event fires too quickly
                     <div id="moduleList" class="module">
                         <h4>Modules</h4>
                         <ul class="content">
-                                <li class=""><a href="module_anim.html" title="anim">anim</a></li>
-                                <li class="selected"><a href="module_base.html" title="base">base</a></li>
+                                <li class="selected"><a href="module_anim.html" title="anim">anim</a></li>
+                                <li class=""><a href="module_base.html" title="base">base</a></li>
                                 <li class=""><a href="module_container.html" title="container">container</a></li>
                                 <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
                                 <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
@@ -397,20 +479,17 @@ because the native mousemove event fires too quickly
                     <div id="classList" class="module">
                         <h4>Classes</h4>
                         <ul class="content">
-                                <li class=""><a href="Attribute.html" title="Attribute">Attribute</a></li>
-                                <li class=""><a href="Base.html" title="Base">Base</a></li>
-                                <li class=""><a href="EventTarget.html" title="EventTarget">EventTarget</a></li>
-                                <li class=""><a href="OOP.html" title="OOP">OOP</a></li>
-                                <li class=""><a href="Utility.html" title="Utility">Utility</a></li>
-                                <li class="selected"><a href="utils.Mouse.html" title="utils.Mouse">utils.Mouse</a></li>
-                                <li class=""><a href="Widget.html" title="Widget">Widget</a></li>
+                                <li class="selected"><a href="TimeFrame.html" title="TimeFrame">TimeFrame</a></li>
+                                <li class=""><a href="TimeFrame.easing.html" title="TimeFrame.easing">TimeFrame.easing</a></li>
+                                <li class=""><a href="Tween.html" title="Tween">Tween</a></li>
                         </ul>
                     </div>
 
                     <div id="fileList" class="module">
                         <h4>Files</h4>
                         <ul class="content">        
-                                <li class=""><a href="container.js.html" title="container.js">container.js</a></li>
+                                <li class=""><a href="anim.js.html" title="anim.js">anim.js</a></li>
+                                <li class=""><a href="base.js.html" title="base.js">base.js</a></li>
                         </ul>
                     </div>
 
@@ -418,24 +497,22 @@ because the native mousemove event fires too quickly
                     <div id="methodsList" class="module">
                         <h4>Methods</h4>
                         <ul class="content">        
-                                <li class=""><a href="#method_down" title="down">down</a></li>
-                                <li class=""><a href="#method_up" title="up">up</a></li>
+                                <li class=""><a href="#method_addTween" title="addTween">addTween</a></li>
+                                <li class=""><a href="#method_pause" title="pause">pause</a></li>
+                                <li class=""><a href="#method_play" title="play">play</a></li>
+                                <li class=""><a href="#method_removeTween" title="removeTween">removeTween</a></li>
+                                <li class=""><a href="#method_stop" title="stop">stop</a></li>
                         </ul>
                     </div>
 
-                    <div id="eventsList" class="module">
-                        <h4>Events</h4>
-                        <ul class="content">        
-                                <li class=""><a href="#event_move" title="move">move</a></li>
-                                <li class=""><a href="#event_up" title="up">up</a></li>
-                        </ul>
-                    </div>
 
                     <div id="configList" class="module">
                         <h4>Configuration Attributes</h4>
                         <ul class="content">        
-                                <li class=""><a href="#config_frequency" title="frequency">frequency</a></li>
-                                <li class=""><a href="#config_tracking" title="tracking">tracking</a></li>
+                                <li class=""><a href="#config_fps" title="fps">fps</a></li>
+                                <li class=""><a href="#config_paused" title="paused">paused</a></li>
+                                <li class=""><a href="#config_readOnly" title="readOnly">readOnly</a></li>
+                                <li class=""><a href="#config_tweens" title="tweens">tweens</a></li>
                         </ul>
                     </div>
 
@@ -449,7 +526,7 @@ because the native mousemove event fires too quickly
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Attribute.html#method_addAttr", "access": "", "host": "Attribute", "type": "method", "name": "addAttr"}, {"url": "Attribute.html#method_addAttrs", "access": "", "host": "Attribute", "type": "method", "name": "addAttrs"}, {"url": "Widget.html#event_afterRender", "access": "", "host": "Widget", "type": "event", "name": "afterRender"}, {"url": "OOP.html#method_augment", "access": "", "host": "OOP", "type": "method", "name": "augment"}, {"url": "Widget.html#config_boundingBox", "access": "", "host": "Widget", "type": "config", "name": "boundingBox"}, {"url": "Widget.html#config_className", "access": "", "host": "Widget", "type": "config", "name": "className"}, {"url": "Widget.html#config_classPrefix", "access": "", "host": "Widget", "type": "config", "name": "classPrefix"}, {"url": "Utility.html#method_destroy", "access": "", "host": "Utility", "type": "method", "name": "destroy"}, {"url": "Widget.html#method_destroy", "access": "", "host": "Widget", "type": "method", "name": "destroy"}, {"url": "Widget.html#event_destroy", "access": "", "host": "Widget", "type": "event", "name": "destroy"}, {"url": "utils.Mouse.html#method_down", "access": "", "host": "utils.Mouse", "type": "method", "name": "down"}, {"url": "OOP.html#method_extend", "access": "", "host": "OOP", "type": "method", "name": "extend"}, {"url": "EventTarget.html#method_fire", "access": "", "host": "EventTarget", "type": "method", "name": "fire"}, {"url": "utils.Mouse.html#config_frequency", "access": "", "host": "utils.Mouse", "type": "config", "name": "frequency"}, {"url": "Attribute.html#method_get", "access": "", "host": "Attribute", "type": "method", "name": "get"}, {"url": "Attribute.html#method_getAttrs", "access": "", "host": "Attribute", "type": "method", "name": "getAttrs"}, {"url": "Widget.html#method_hide", "access": "", "host": "Widget", "type": "method", "name": "hide"}, {"url": "Attribute.html#method_isSet", "access": "", "host": "Attribute", "type": "method", "name": "isSet"}, {"url": "utils.Mouse.html#event_move", "access": "", "host": "utils.Mouse", "type": "event", "name": "move"}, {"url": "EventTarget.html#method_on", "access": "", "host": "EventTarget", "type": "method", "name": "on"}, {"url": "Base.html#config_on", "access": "", "host": "Base", "type": "config", "name": "on"}, {"url": "Widget.html#method_render", "access": "", "host": "Widget", "type": "method", "name": "render"}, {"url": "Widget.html#event_render", "access": "", "host": "Widget", "type": "event", "name": "render"}, {"url": "Widget.html#config_rendered", "access": "", "host": "Widget", "type": "config", "name": "rendered"}, {"url": "Attribute.html#method_set", "access": "", "host": "Attribute", "type": "method", "name": "set"}, {"url": "Widget.html#method_show", "access": "", "host": "Widget", "type": "method", "name": "show"}, {"url": "Widget.html#config_srcNode", "access": "", "host": "Widget", "type": "config", "name": "srcNode"}, {"url": "utils.Mouse.html#config_tracking", "access": "", "host": "utils.Mouse", "type": "config", "name": "tracking"}, {"url": "EventTarget.html#method_unbind", "access": "", "host": "EventTarget", "type": "method", "name": "unbind"}, {"url": "EventTarget.html#method_unbindAll", "access": "", "host": "EventTarget", "type": "method", "name": "unbindAll"}, {"url": "Attribute.html#method_unset", "access": "", "host": "Attribute", "type": "method", "name": "unset"}, {"url": "utils.Mouse.html#method_up", "access": "", "host": "utils.Mouse", "type": "method", "name": "up"}, {"url": "utils.Mouse.html#event_up", "access": "", "host": "utils.Mouse", "type": "event", "name": "up"}];
+    var ALL_YUI_PROPS = [{"url": "TimeFrame.html#method_addTween", "access": "", "host": "TimeFrame", "type": "method", "name": "addTween"}, {"url": "TimeFrame.html#config_fps", "access": "", "host": "TimeFrame", "type": "config", "name": "fps"}, {"url": "TimeFrame.html#method_pause", "access": "", "host": "TimeFrame", "type": "method", "name": "pause"}, {"url": "TimeFrame.html#config_paused", "access": "", "host": "TimeFrame", "type": "config", "name": "paused"}, {"url": "TimeFrame.html#method_play", "access": "", "host": "TimeFrame", "type": "method", "name": "play"}, {"url": "TimeFrame.html#config_readOnly", "access": "", "host": "TimeFrame", "type": "config", "name": "readOnly"}, {"url": "TimeFrame.html#method_removeTween", "access": "", "host": "TimeFrame", "type": "method", "name": "removeTween"}, {"url": "TimeFrame.html#method_stop", "access": "", "host": "TimeFrame", "type": "method", "name": "stop"}, {"url": "TimeFrame.html#config_tweens", "access": "", "host": "TimeFrame", "type": "config", "name": "tweens"}];
 </script>
 </body>
 </html>

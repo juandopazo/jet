@@ -121,26 +121,7 @@
 	<span class="kd">var</span> <span class="nx">timeoutError</span> <span class="o">=</span> <span class="s1">&#39;timeout&#39;</span><span class="p">,</span>
 	<span class="nx">noObjectError</span> <span class="o">=</span> <span class="s1">&#39;Can\&#39;t create object&#39;</span><span class="p">,</span>
 	<span class="nx">noStatusError</span> <span class="o">=</span> <span class="s1">&#39;Bad status&#39;</span><span class="p">;</span>
-				
-	<span class="kd">var</span> <span class="nx">getResultByContentType</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">)</span> <span class="p">{</span>
-		<span class="kd">var</span> <span class="nx">contentType</span> <span class="o">=</span> <span class="nx">dataType</span> <span class="o">||</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">getResponseHeader</span><span class="p">(</span><span class="s1">&#39;Content-type&#39;</span><span class="p">);</span>
-		<span class="k">switch</span> <span class="p">(</span><span class="nx">contentType</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">case</span> <span class="s1">&#39;application/xml&#39;</span><span class="o">:</span>
-		<span class="k">case</span> <span class="nx">XML</span><span class="o">:</span>
-		<span class="k">case</span> <span class="nx">XSL</span><span class="o">:</span>
-			<span class="k">return</span> <span class="nx">parseXML</span><span class="p">(</span><span class="nx">xhr</span><span class="p">,</span> <span class="nx">contentType</span><span class="p">,</span> <span class="nx">onError</span><span class="p">);</span>
-		<span class="k">case</span> <span class="nx">TYPE_JSON</span><span class="o">:</span>
-			<span class="k">try</span> <span class="p">{</span>
-				<span class="k">return</span> <span class="nx">$</span><span class="p">.</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
-			<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">$</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
-			<span class="p">}</span>
-			<span class="k">break</span><span class="p">;</span>
-		<span class="k">default</span><span class="o">:</span>					
-			<span class="k">return</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">responseText</span><span class="p">;</span>
-		<span class="p">}</span>
-	<span class="p">};</span>
-
+	
 	<span class="cm">/* Parsea un XML</span>
 <span class="cm">	En Internet Explorer instancia un objeto ActiveX llamado MSXML. En el resto usa XMLHttpRequest.responseXML */</span>
 	<span class="kd">var</span> <span class="nx">parseXML</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">xmlFile</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">errorHandler</span><span class="p">)</span> <span class="p">{</span>
@@ -161,13 +142,32 @@
 		<span class="p">}</span>
 		<span class="k">return</span> <span class="nx">xmlDoc</span><span class="p">;</span>
 	<span class="p">};</span>
-	
+				
+	<span class="kd">var</span> <span class="nx">getResultByContentType</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">,</span> <span class="nx">dataType</span><span class="p">,</span> <span class="nx">onError</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">contentType</span> <span class="o">=</span> <span class="nx">dataType</span> <span class="o">||</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">getResponseHeader</span><span class="p">(</span><span class="s1">&#39;Content-type&#39;</span><span class="p">);</span>
+		<span class="k">switch</span> <span class="p">(</span><span class="nx">contentType</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">case</span> <span class="s1">&#39;application/xml&#39;</span><span class="o">:</span>
+		<span class="k">case</span> <span class="nx">XML</span><span class="o">:</span>
+		<span class="k">case</span> <span class="nx">XSL</span><span class="o">:</span>
+			<span class="k">return</span> <span class="nx">parseXML</span><span class="p">(</span><span class="nx">xhr</span><span class="p">,</span> <span class="nx">contentType</span><span class="p">,</span> <span class="nx">onError</span><span class="p">);</span>
+		<span class="k">case</span> <span class="nx">TYPE_JSON</span><span class="o">:</span>
+			<span class="k">try</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">$</span><span class="p">.</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+			<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">$</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="k">default</span><span class="o">:</span>					
+			<span class="k">return</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">responseText</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">};</span>
+
 	<span class="cm">/**</span>
 <span class="cm">	 * Handles AJAX requests</span>
 <span class="cm">	 * @class IO</span>
 <span class="cm">	 * @static</span>
 <span class="cm">	 */</span>
-	 <span class="nx">$</span><span class="p">.</span><span class="nx">IO</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="nx">$</span><span class="p">.</span><span class="nx">IO</span> <span class="o">=</span> <span class="p">{</span>
 		<span class="cm">/**</span>
 <span class="cm">		 * Makes an ajax request</span>
 <span class="cm">		 * @method ajax</span>
@@ -210,7 +210,7 @@
 								<span class="cm">/* Normalmente deberia chequearse unicamente el status == 200, pero cuando se hace una transaccion local el status en IE termina siendo 0</span>
 <span class="cm">								 por lo que con revisar que exista la respuesta alcanza */</span>
 								<span class="k">if</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="mi">200</span> <span class="o">||</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">responseText</span> <span class="o">||</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">responseXML</span><span class="p">)</span> <span class="p">{</span> 
-									<span class="nx">onSuccess</span><span class="p">(</span><span class="nx">getResultByContentType</span><span class="p">(</span><span class="nx">xhr</span><span class="p">),</span> <span class="nx">xhr</span><span class="p">);</span>
+									<span class="nx">onSuccess</span><span class="p">(</span><span class="nx">getResultByContentType</span><span class="p">(</span><span class="nx">xhr</span><span class="p">,</span> <span class="nx">dataType</span><span class="p">,</span> <span class="nx">onError</span><span class="p">),</span> <span class="nx">xhr</span><span class="p">);</span>
 								<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="mi">408</span><span class="p">)</span> <span class="p">{</span>
 									<span class="nx">onError</span><span class="p">(</span><span class="nx">timeoutError</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">status</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">);</span>
 								<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
@@ -228,7 +228,7 @@
 						<span class="nx">onError</span><span class="p">(</span><span class="nx">noStatusError</span><span class="p">,</span> <span class="mi">404</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">);</span> 
 					<span class="p">}</span>
 					<span class="k">if</span> <span class="p">(</span><span class="nx">async</span> <span class="o">===</span> <span class="nx">FALSE</span><span class="p">)</span> <span class="p">{</span>
-						<span class="nx">result</span> <span class="o">=</span> <span class="nx">getResultByContentType</span><span class="p">(</span><span class="nx">xhr</span><span class="p">);</span>
+						<span class="nx">result</span> <span class="o">=</span> <span class="nx">getResultByContentType</span><span class="p">(</span><span class="nx">xhr</span><span class="p">,</span> <span class="nx">dataType</span><span class="p">,</span> <span class="nx">onError</span><span class="p">);</span>
 					<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 						<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 							<span class="k">if</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">!==</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>

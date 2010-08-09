@@ -47,9 +47,15 @@
                         <style>
                             #doc3 .classopts { display:none; }
                         </style>
-                        <div class="highlight"><pre><span class="cm">/**</span>
+                        <div class="highlight"><pre><span class="cm">/*</span>
+<span class="cm"> Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.</span>
+<span class="cm"> Code licensed under the BSD License:</span>
+<span class="cm"> http://code.google.com/p/jet-js/wiki/License</span>
+<span class="cm">*/</span>
+<span class="cm">/**</span>
 <span class="cm"> * Animations</span>
 <span class="cm"> * @module anim</span>
+<span class="cm"> * @namespace</span>
 <span class="cm"> */</span>
 <span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;anim&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 	
@@ -63,6 +69,13 @@
 	<span class="kd">var</span> <span class="nx">PLAYING</span> <span class="o">=</span> <span class="s2">&quot;playing&quot;</span><span class="p">,</span>
 		<span class="nx">ENTER_FRAME</span> <span class="o">=</span> <span class="s2">&quot;enterFrame&quot;</span><span class="p">;</span>
 		
+	<span class="cm">/**</span>
+<span class="cm">	 * Creates a time frame for queueing animations</span>
+<span class="cm">	 * @class TimeFrame</span>
+<span class="cm">	 * @extends Base</span>
+<span class="cm">	 * @constructor</span>
+<span class="cm">	 * @param {Object} config Object literal specifying configuration properties</span>
+<span class="cm">	 */</span>
 	<span class="kd">var</span> <span class="nx">TimeFrame</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 		<span class="nx">TimeFrame</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
 		
@@ -71,36 +84,52 @@
 		<span class="kd">var</span> <span class="nx">tweens</span> <span class="o">=</span> <span class="p">[];</span>
 		
 		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
-			<span class="nx">node</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">writeOnce</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
-				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
-				<span class="p">},</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;&lt;canvas/&gt;&quot;</span>
-			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config paused</span>
+<span class="cm">			 * @description Whether the timeframe is paused or not</span>
+<span class="cm">			 * @type Boolean</span>
+<span class="cm">			 * @readOnly</span>
+<span class="cm">			 */</span>
 			<span class="nx">paused</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">readOnly</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
 				<span class="nx">getter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 					<span class="k">return</span> <span class="o">!!</span><span class="nx">paused</span><span class="p">;</span>
 				<span class="p">}</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config readOnly</span>
+<span class="cm">			 * @description Whether the timeframe is readOnly or not</span>
+<span class="cm">			 * @type Boolean</span>
+<span class="cm">			 * @readOnly</span>
+<span class="cm">			 */</span>
 			<span class="nx">playing</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">readOnly</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
 				<span class="nx">getter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 					<span class="k">return</span> <span class="o">!!</span><span class="nx">playing</span><span class="p">;</span>
 				<span class="p">}</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config tweens</span>
+<span class="cm">			 * @descriptinn a list of the tweens running in the timeframe</span>
+<span class="cm">			 * @type Array</span>
+<span class="cm">			 * @readOnly</span>
+<span class="cm">			 */</span>
 			<span class="nx">tweens</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">readOnly</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
 				<span class="nx">getter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 					<span class="k">return</span> <span class="nx">$</span><span class="p">.</span><span class="nx">clone</span><span class="p">(</span><span class="nx">tweens</span><span class="p">);</span>
 				<span class="p">}</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config fps</span>
+<span class="cm">			 * @description Refresh speed in frames per second</span>
+<span class="cm">			 * @default 35</span>
+<span class="cm">			 */</span>
 			<span class="nx">fps</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">validator</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 					<span class="k">return</span> <span class="o">!</span><span class="nx">playing</span><span class="p">;</span>
 				<span class="p">},</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="mi">50</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="mi">35</span>
 			<span class="p">}</span>
 		<span class="p">});</span>
 		
@@ -108,6 +137,11 @@
 		<span class="kd">var</span> <span class="nx">time</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 		<span class="kd">var</span> <span class="nx">frameLength</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">round</span><span class="p">(</span><span class="mi">1000</span> <span class="o">/</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;fps&quot;</span><span class="p">));</span>
 		
+		<span class="cm">/**</span>
+<span class="cm">		 * @method play</span>
+<span class="cm">		 * @description Starts the playback</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">play</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 			<span class="nx">paused</span> <span class="o">=</span> <span class="nx">FALSE</span><span class="p">;</span>
 			<span class="nx">playing</span> <span class="o">=</span> <span class="nx">TRUE</span><span class="p">;</span>
@@ -124,6 +158,11 @@
 			<span class="p">},</span> <span class="nx">frameLength</span><span class="p">);</span>
 			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
 		<span class="p">};</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @method stop</span>
+<span class="cm">		 * @description Stops the playback</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">stop</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 			<span class="nx">paused</span> <span class="o">=</span> <span class="nx">playing</span> <span class="o">=</span> <span class="nx">FALSE</span><span class="p">;</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">interval</span><span class="p">)</span> <span class="p">{</span>
@@ -131,18 +170,35 @@
 			<span class="p">}</span>
 			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
 		<span class="p">};</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @method pause</span>
+<span class="cm">		 * @description Pauses the playback</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">pause</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 			<span class="nx">playing</span> <span class="o">=</span> <span class="nx">FALSE</span><span class="p">;</span>
 			<span class="nx">paused</span> <span class="o">=</span> <span class="nx">TRUE</span><span class="p">;</span>
 			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
 		<span class="p">};</span>
 		
+		<span class="cm">/**</span>
+<span class="cm">		 * @method addTween</span>
+<span class="cm">		 * @description Adds a Tween to the queue</span>
+<span class="cm">		 * @param {Tween} tween</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">addTween</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">tween</span><span class="p">)</span> <span class="p">{</span>
 			<span class="nx">tweens</span><span class="p">[</span><span class="nx">tweens</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">tween</span><span class="p">;</span>
 			<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">ENTER_FRAME</span><span class="p">,</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">frame</span><span class="p">);</span>
 			<span class="nx">tween</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;stop&quot;</span><span class="p">,</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">stop</span><span class="p">);</span>
 			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
 		<span class="p">};</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @method removeTween</span>
+<span class="cm">		 * @description Removes a Tween from the queue</span>
+<span class="cm">		 * @param {Tween} tween</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">removeTween</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">tween</span><span class="p">)</span> <span class="p">{</span>
 			<span class="nx">myself</span><span class="p">.</span><span class="nx">unbind</span><span class="p">(</span><span class="nx">ENTER_FRAME</span><span class="p">,</span> <span class="nx">tween</span><span class="p">.</span><span class="nx">frame</span><span class="p">);</span>
 			<span class="nx">ArrayHelper</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">tween</span><span class="p">,</span> <span class="nx">tweens</span><span class="p">);</span>
@@ -151,18 +207,58 @@
 	<span class="p">};</span>
 	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">TimeFrame</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">);</span>
 	
+	<span class="cm">/**</span>
+<span class="cm">	 * Easing modes</span>
+<span class="cm">	 * @class easing</span>
+<span class="cm">	 * @static</span>
+<span class="cm">	 * @namespace TimeFrame</span>
+<span class="cm">	 */</span>
 	<span class="nx">TimeFrame</span><span class="p">.</span><span class="nx">easing</span> <span class="o">=</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @method DEFAULT</span>
+<span class="cm">		 * @description Linear easing</span>
+<span class="cm">		 * @param {Number} x The time variable</span>
+<span class="cm">		 * @param {Number} y0 The start value of the property that will be changed</span>
+<span class="cm">		 * @param {Number} yf The final value of the property that will be changed</span>
+<span class="cm">		 * @param {Number} dur Duration of the animation</span>
+<span class="cm">		 */</span>
         <span class="nx">DEFAULT</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y0</span><span class="p">,</span> <span class="nx">yf</span><span class="p">,</span> <span class="nx">dur</span><span class="p">)</span> <span class="p">{</span>
             <span class="k">return</span> <span class="p">(</span><span class="nx">yf</span> <span class="o">-</span> <span class="nx">y0</span><span class="p">)</span> <span class="o">*</span> <span class="nx">x</span> <span class="o">/</span> <span class="nx">dur</span> <span class="o">+</span> <span class="nx">y0</span><span class="p">;</span>
         <span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @method EASEIN</span>
+<span class="cm">		 * @description An easing that&#39;s stronger at the beginning and softer at the end</span>
+<span class="cm">		 * @param {Number} x The time variable</span>
+<span class="cm">		 * @param {Number} y0 The start value of the property that will be changed</span>
+<span class="cm">		 * @param {Number} yf The final value of the property that will be changed</span>
+<span class="cm">		 * @param {Number} dur Duration of the animation</span>
+<span class="cm">		 * @param {Number} pw Easing strengh</span>
+<span class="cm">		 */</span>
         <span class="nx">EASEIN</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y0</span><span class="p">,</span> <span class="nx">yf</span><span class="p">,</span> <span class="nx">dur</span><span class="p">,</span> <span class="nx">pw</span><span class="p">)</span> <span class="p">{</span>
             <span class="k">return</span> <span class="nx">yf</span> <span class="o">+</span> <span class="nx">y0</span> <span class="o">-</span> <span class="nx">yf</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">((</span><span class="nx">dur</span> <span class="o">-</span> <span class="nx">x</span><span class="p">)</span> <span class="o">/</span> <span class="nx">dur</span><span class="p">,</span> <span class="nx">pw</span><span class="p">)</span> <span class="o">+</span> <span class="nx">y0</span><span class="p">;</span>
         <span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @method EASEOUT</span>
+<span class="cm">		 * @description An easing that&#39;s softer at the beginning and stronger at the end</span>
+<span class="cm">		 * @param {Number} x The time variable</span>
+<span class="cm">		 * @param {Number} y0 The start value of the property that will be changed</span>
+<span class="cm">		 * @param {Number} yf The final value of the property that will be changed</span>
+<span class="cm">		 * @param {Number} dur Duration of the animation</span>
+<span class="cm">		 * @param {Number} pw Easing strengh</span>
+<span class="cm">		 */</span>
         <span class="nx">EASEOUT</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y0</span><span class="p">,</span> <span class="nx">yf</span><span class="p">,</span> <span class="nx">dur</span><span class="p">,</span> <span class="nx">pw</span><span class="p">)</span> <span class="p">{</span>
             <span class="k">return</span> <span class="nx">yf</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="nx">x</span> <span class="o">/</span> <span class="nx">dur</span><span class="p">,</span> <span class="nx">pw</span><span class="p">)</span> <span class="o">+</span> <span class="nx">y0</span><span class="p">;</span>
         <span class="p">}</span>
     <span class="p">};</span>
 	
+	<span class="cm">/**</span>
+<span class="cm">	 * A Tween is a variation of a property during a laps of time that has a certain easing associated</span>
+<span class="cm">	 * @class Tween</span>
+<span class="cm">	 * @extends Base</span>
+<span class="cm">	 * @constructor</span>
+<span class="cm">	 * @namespace</span>
+<span class="cm">	 * @param {Object} config Object literal specifying configuration properties</span>
+<span class="cm">	 */</span>
 	<span class="kd">var</span> <span class="nx">Tween</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 		<span class="nx">Tween</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
 		
@@ -172,32 +268,72 @@
 		<span class="p">};</span>
 		
 		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config node</span>
+<span class="cm">			 * @description The node that will be animated</span>
+<span class="cm">			 * @required</span>
+<span class="cm">			 * @writeOnce</span>
+<span class="cm">			 */</span>
 			<span class="nx">node</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">writeOnce</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
 				<span class="nx">required</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
 				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
 					<span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
 				<span class="p">}</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config from</span>
+<span class="cm">			 * @description an object literal with properties that will be animated</span>
+<span class="cm">			 * @type Object</span>
+<span class="cm">			 */</span>
 			<span class="nx">from</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="p">{},</span>
 				<span class="nx">validator</span><span class="o">:</span> <span class="nx">isPlaying</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config to</span>
+<span class="cm">			 * @description an object literal with the target properties for the animation</span>
+<span class="cm">			 * @type Object</span>
+<span class="cm">			 */</span>
 			<span class="nx">to</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">required</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
 				<span class="nx">validator</span><span class="o">:</span> <span class="nx">isPlaying</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config easing</span>
+<span class="cm">			 * @description The easing used by the animation</span>
+<span class="cm">			 * @type TimeFrame.easing</span>
+<span class="cm">			 * @default TimeFrame.easing.DEFAULT</span>
+<span class="cm">			 */</span>
 			<span class="nx">easing</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="nx">TimeFrame</span><span class="p">.</span><span class="nx">easing</span><span class="p">.</span><span class="nx">DEFAULT</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config easingStrength</span>
+<span class="cm">			 * @description The strength of the easing if applicable</span>
+<span class="cm">			 * @default 2</span>
+<span class="cm">			 */</span>
 			<span class="nx">easingStrength</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
 				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
 					<span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">abs</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
 				<span class="p">}</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config startFrame</span>
+<span class="cm">			 * @description Where in the TimeFrame to start the tween</span>
+<span class="cm">			 * @type Number</span>
+<span class="cm">			 * @default 0 Start inmediately</span>
+<span class="cm">			 */</span>
 			<span class="nx">startFrame</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="mi">0</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config duration</span>
+<span class="cm">			 * @description The duration of the animation</span>
+<span class="cm">			 * @default 1000</span>
+<span class="cm">			 * @type {String, Number} Allowd strings: &quot;fast&quot;, &quot;slow&quot;, &quot;normal&quot;. Numbers are milliseconds</span>
+<span class="cm">			 */</span>
 			<span class="nx">duration</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="mi">1000</span><span class="p">,</span>
                 <span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
@@ -223,6 +359,13 @@
 		<span class="kd">var</span> <span class="nx">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">,</span> <span class="nx">dur</span><span class="p">;</span>
 		<span class="kd">var</span> <span class="nx">timeFrame</span><span class="p">;</span>
 		
+		<span class="cm">/**</span>
+<span class="cm">		 * Play the tween&#39;s animation</span>
+<span class="cm">		 * @method play</span>
+<span class="cm">		 * @param {Number} startTime</span>
+<span class="cm">		 * @param {Number} frameLength</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">play</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">startTime</span><span class="p">,</span> <span class="nx">frameLength</span><span class="p">)</span> <span class="p">{</span>
 			<span class="nx">playing</span> <span class="o">=</span> <span class="nx">TRUE</span><span class="p">;</span>
 			<span class="nx">time</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
@@ -243,13 +386,30 @@
 			<span class="p">}</span>
 			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
 		<span class="p">};</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Stops the tween</span>
+<span class="cm">		 * @method stop</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">stop</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 			<span class="nx">playing</span> <span class="o">=</span> <span class="nx">FALSE</span><span class="p">;</span>
 			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
 		<span class="p">};</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Pauses the tween</span>
+<span class="cm">		 * @method pause</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">pause</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
 		<span class="p">};</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Executes a frame. Used as a lister for the timeframe onenterframe event</span>
+<span class="cm">		 * @method frame</span>
+<span class="cm">		 * @param {EventFacade} event</span>
+<span class="cm">		 * @param {Number} Time The curent time</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">frame</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">time</span><span class="p">)</span> <span class="p">{</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">time</span> <span class="o">&gt;</span> <span class="nx">dur</span><span class="p">)</span> <span class="p">{</span>
 				<span class="nx">playing</span> <span class="o">=</span> <span class="nx">FALSE</span><span class="p">;</span>
@@ -303,6 +463,14 @@
                         </ul>
                     </div>
 
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="TimeFrame.html" title="TimeFrame">TimeFrame</a></li>
+                                <li class=""><a href="TimeFrame.easing.html" title="TimeFrame.easing">TimeFrame.easing</a></li>
+                                <li class=""><a href="Tween.html" title="Tween">Tween</a></li>
+                        </ul>
+                    </div>
 
                     <div id="fileList" class="module">
                         <h4>Files</h4>
@@ -326,7 +494,7 @@
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [];
+    var ALL_YUI_PROPS = [{"url": "TimeFrame.html#method_addTween", "access": "", "host": "TimeFrame", "type": "method", "name": "addTween"}, {"url": "TimeFrame.easing.html#method_DEFAULT", "access": "", "host": "TimeFrame.easing", "type": "method", "name": "DEFAULT"}, {"url": "Tween.html#config_duration", "access": "", "host": "Tween", "type": "config", "name": "duration"}, {"url": "TimeFrame.easing.html#method_EASEIN", "access": "", "host": "TimeFrame.easing", "type": "method", "name": "EASEIN"}, {"url": "TimeFrame.easing.html#method_EASEOUT", "access": "", "host": "TimeFrame.easing", "type": "method", "name": "EASEOUT"}, {"url": "Tween.html#config_easing", "access": "", "host": "Tween", "type": "config", "name": "easing"}, {"url": "Tween.html#config_easingStrength", "access": "", "host": "Tween", "type": "config", "name": "easingStrength"}, {"url": "TimeFrame.html#config_fps", "access": "", "host": "TimeFrame", "type": "config", "name": "fps"}, {"url": "Tween.html#method_frame", "access": "", "host": "Tween", "type": "method", "name": "frame"}, {"url": "Tween.html#config_from", "access": "", "host": "Tween", "type": "config", "name": "from"}, {"url": "Tween.html#config_node", "access": "", "host": "Tween", "type": "config", "name": "node"}, {"url": "TimeFrame.html#method_pause", "access": "", "host": "TimeFrame", "type": "method", "name": "pause"}, {"url": "Tween.html#method_pause", "access": "", "host": "Tween", "type": "method", "name": "pause"}, {"url": "TimeFrame.html#config_paused", "access": "", "host": "TimeFrame", "type": "config", "name": "paused"}, {"url": "TimeFrame.html#method_play", "access": "", "host": "TimeFrame", "type": "method", "name": "play"}, {"url": "Tween.html#method_play", "access": "", "host": "Tween", "type": "method", "name": "play"}, {"url": "TimeFrame.html#config_readOnly", "access": "", "host": "TimeFrame", "type": "config", "name": "readOnly"}, {"url": "TimeFrame.html#method_removeTween", "access": "", "host": "TimeFrame", "type": "method", "name": "removeTween"}, {"url": "Tween.html#config_startFrame", "access": "", "host": "Tween", "type": "config", "name": "startFrame"}, {"url": "TimeFrame.html#method_stop", "access": "", "host": "TimeFrame", "type": "method", "name": "stop"}, {"url": "Tween.html#method_stop", "access": "", "host": "Tween", "type": "method", "name": "stop"}, {"url": "Tween.html#config_to", "access": "", "host": "Tween", "type": "config", "name": "to"}, {"url": "TimeFrame.html#config_tweens", "access": "", "host": "TimeFrame", "type": "config", "name": "tweens"}];
 </script>
 </body>
 </html>

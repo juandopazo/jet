@@ -47,15 +47,17 @@
                         <style>
                             #doc3 .classopts { display:none; }
                         </style>
-                        <div class="highlight"><pre><span class="cm">/**</span>
+                        <div class="highlight"><pre><span class="cm">/*</span>
+<span class="cm"> Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.</span>
+<span class="cm"> Code licensed under the BSD License:</span>
+<span class="cm"> http://code.google.com/p/jet-js/wiki/Licence</span>
+<span class="cm">*/</span>
+<span class="cm">/**</span>
 <span class="cm"> * @module	jet</span>
-<span class="cm"> * @author	Juan Ignacio Dopazo</span>
-<span class="cm"> * </span>
 <span class="cm"> * @description &lt;p&gt;Based on YUI3&#39;s namespace&lt;/p&gt;</span>
 <span class="cm"> * </span>
 <span class="cm"> * &lt;p&gt;This module allows to load different modules asynchronously and to reuse</span>
 <span class="cm"> * them when they were already loaded. Its basic use looks like:&lt;/p&gt;</span>
-<span class="cm"> * </span>
 <span class="cm"> */</span>
 <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 	<span class="kd">var</span> <span class="nx">baseUrl</span> <span class="o">=</span> <span class="nx">location</span><span class="p">.</span><span class="nx">protocol</span> <span class="o">+</span> <span class="s2">&quot;//jet-js.googlecode.com/svn/trunk/src/&quot;</span><span class="p">;</span>
@@ -165,7 +167,7 @@
 <span class="cm">		 * http://stackoverflow.com/questions/574584/javascript-check-if-method-prototype-has-been-changed/574741#574741</span>
 <span class="cm">		 */</span>
 		<span class="kd">var</span> <span class="nx">isNative</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">func</span><span class="p">)</span> <span class="p">{</span>
-		    <span class="k">return</span> <span class="sr">/^\s*function[^{]+{\s*\[native code\]\s*}\s*$&quot;/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">func</span><span class="p">);</span>
+		    <span class="k">return</span> <span class="p">(</span><span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span><span class="s1">&#39;^\s*function[^\{]+{\s*\[native code\]\s*\}\s*$&quot;&#39;</span><span class="p">)).</span><span class="nx">test</span><span class="p">(</span><span class="nx">func</span><span class="p">);</span>
 		<span class="p">};</span>
 
 		<span class="k">return</span> <span class="p">{</span>
@@ -288,6 +290,7 @@
 			<span class="p">}</span>
 		<span class="p">};</span>
 	<span class="p">}());</span>
+	<span class="kd">var</span> <span class="nx">ArrayHelper</span><span class="p">,</span> <span class="nx">Hash</span><span class="p">;</span>
 	<span class="cm">/**</span>
 <span class="cm">	 * Clones an object, returning a copy with the sames properties</span>
 <span class="cm">	 * @method clone</span>
@@ -318,7 +321,7 @@
 <span class="cm">	 * @class Array</span>
 <span class="cm">	 * @static</span>
 <span class="cm">	 */</span>
-	<span class="kd">var</span> <span class="nx">ArrayHelper</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="nx">ArrayHelper</span> <span class="o">=</span> <span class="p">{</span>
 		<span class="cm">/**</span>
 <span class="cm">		 * Iterates through an array</span>
 <span class="cm">		 * @method each</span>
@@ -395,7 +398,7 @@
 <span class="cm">	 * @class Hash</span>
 <span class="cm">	 * @static</span>
 <span class="cm">	 */</span>
-	<span class="kd">var</span> <span class="nx">Hash</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="nx">Hash</span> <span class="o">=</span> <span class="p">{</span>
 		<span class="cm">/**</span>
 <span class="cm">		 * Iterats through a hash</span>
 <span class="cm">		 * @method each</span>
