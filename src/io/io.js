@@ -72,26 +72,7 @@ jet().add('io', function ($) {
 	var timeoutError = 'timeout',
 	noObjectError = 'Can\'t create object',
 	noStatusError = 'Bad status';
-				
-	var getResultByContentType = function (xhr) {
-		var contentType = dataType || xhr.getResponseHeader('Content-type');
-		switch (contentType) {
-		case 'application/xml':
-		case XML:
-		case XSL:
-			return parseXML(xhr, contentType, onError);
-		case TYPE_JSON:
-			try {
-				return $.JSON.parse(xhr.responseText);
-			} catch (e) {
-				$.error(e);
-			}
-			break;
-		default:					
-			return xhr.responseText;
-		}
-	};
-
+	
 	/* Parsea un XML
 	En Internet Explorer instancia un objeto ActiveX llamado MSXML. En el resto usa XMLHttpRequest.responseXML */
 	var parseXML = function (xmlFile, type, errorHandler) {
@@ -112,13 +93,32 @@ jet().add('io', function ($) {
 		}
 		return xmlDoc;
 	};
-	
+				
+	var getResultByContentType = function (xhr, dataType, onError) {
+		var contentType = dataType || xhr.getResponseHeader('Content-type');
+		switch (contentType) {
+		case 'application/xml':
+		case XML:
+		case XSL:
+			return parseXML(xhr, contentType, onError);
+		case TYPE_JSON:
+			try {
+				return $.JSON.parse(xhr.responseText);
+			} catch (e) {
+				$.error(e);
+			}
+			break;
+		default:					
+			return xhr.responseText;
+		}
+	};
+
 	/**
 	 * Handles AJAX requests
 	 * @class IO
 	 * @static
 	 */
-	 $.IO = {
+	$.IO = {
 		/**
 		 * Makes an ajax request
 		 * @method ajax
@@ -161,7 +161,7 @@ jet().add('io', function ($) {
 								/* Normalmente deberia chequearse unicamente el status == 200, pero cuando se hace una transaccion local el status en IE termina siendo 0
 								 por lo que con revisar que exista la respuesta alcanza */
 								if (xhr.status === 200 || xhr.responseText || xhr.responseXML) { 
-									onSuccess(getResultByContentType(xhr), xhr);
+									onSuccess(getResultByContentType(xhr, dataType, onError), xhr);
 								} else if (xhr.status === 408) {
 									onError(timeoutError, xhr.status, xhr);
 								} else {
@@ -179,7 +179,7 @@ jet().add('io', function ($) {
 						onError(noStatusError, 404, xhr); 
 					}
 					if (async === FALSE) {
-						result = getResultByContentType(xhr);
+						result = getResultByContentType(xhr, dataType, onError);
 					} else {
 						setTimeout(function () {
 							if (xhr.readyState !== 4) {

@@ -156,11 +156,11 @@ jet().add('vector', function ($) {
 	 */
 	var getDefaultGetter = function (attrName) {
 		return UA_SUPPORTS_SVG ?  function () {
-			return parseDec(this._node.getAttribute(attrName));
+			return parseDec(this.node.getAttribute(attrName));
 		} : A.inArray(attrName, VML_STYLE_ATTRIBUTES) ? function () {
-			return parseDec(this._node.style[attrName]);
+			return parseDec(this.node.style[attrName]);
 		} : function () {
-			return parseDec(this._node[attrName]);
+			return parseDec(this.node[attrName]);
 		};
 	};
 	/*
@@ -169,13 +169,13 @@ jet().add('vector', function ($) {
 	 */
 	var getDefaultSetter = function (attrName) {
 		return UA_SUPPORTS_SVG ? function (value) {
-			this._node.setAttribute(attrName, value);
+			this.node.setAttribute(attrName, value);
 			return value;
 		} : A.inArray(attrName, VML_STYLE_ATTRIBUTES) ? function (value) {
-			this._node.style[attrName] = value;
+			this.node.style[attrName] = value;
 			return value;
 		} : function (value) {
-			this._node[attrName] = value;
+			this.node[attrName] = value;
 			return value;
 		};
 	};
@@ -201,7 +201,7 @@ jet().add('vector', function ($) {
 	var strokeAttributesGetter = function (name) {
 		if (UA_SUPPORTS_SVG) {
 			return function (value) {
-				this._node.getAttribute(name);
+				this.node.getAttribute(name);
 			};
 		} else {
 			return function (value) {
@@ -212,7 +212,7 @@ jet().add('vector', function ($) {
 	var strokeAttributesSetter = function (name) {
 		if (UA_SUPPORTS_SVG) {
 			return function (value) {
-				this._node.setAttribute(name, value);
+				this.node.setAttribute(name, value);
 				return value;
 			};
 		} else {
@@ -305,11 +305,11 @@ jet().add('vector', function ($) {
 			required: TRUE,
 			writeOnce: TRUE,
 			getter: function () {
-				return myself._node;
+				return myself.node;
 			},
 			setter: function (node) {
-				myself._node = node.nodeType ? node : createIENode(node);
-				return myself._node;
+				myself.node = node.nodeType ? node : createIENode(node);
+				return myself.node;
 			}
 		});
 		var stroke = createIENode("stroke");
@@ -325,7 +325,7 @@ jet().add('vector', function ($) {
 		
 		A.each(['on', 'unbind', 'unbindAll'], function (method) {
 			myself[method] = function (type, fn) {
-				$(node)[mehtod](type, fn);
+				$(node)[method](type, fn);
 				return myself;
 			};
 		});
@@ -381,7 +381,7 @@ jet().add('vector', function ($) {
 		 */
 		rotate: UA_SUPPORTS_SVG ? function (angle) {
 			var myself = this;
-			myself._node.setAttribute("transform", "rotate(" + angle + " " + (myself.get("x") + myself.get("width") / 2) + " " + (myself.get("y") + myself.get("height") / 2) + ")");
+			myself.node.setAttribute("transform", "rotate(" + angle + " " + (myself.get("x") + myself.get("width") / 2) + " " + (myself.get("y") + myself.get("height") / 2) + ")");
 			return myself;
 		} : function () {
 		
@@ -417,29 +417,29 @@ jet().add('vector', function ($) {
 		var myself = this.addAttrs({
 			rx: {
 				getter: UA_SUPPORTS_SVG ? function () {
-					return this._node.getAttribute("rx");
+					return this.node.getAttribute("rx");
 				} : function () {
-					return $.pxToFloat(this._node.style.width) / 2;
+					return $.pxToFloat(this.node.style.width) / 2;
 				},
 				setter: UA_SUPPORTS_SVG ? function (value) {
-					this._node.setAttribute("rx", value);
+					this.node.setAttribute("rx", value);
 					return value;
 				} : function (value) {
-					this._node.style.width = value * 2;
+					this.node.style.width = value * 2;
 					return value;
 				}
 			},
 			ry: {
 				getter: UA_SUPPORTS_SVG ? function () {
-					return this._node.getAttribute("ry");
+					return this.node.getAttribute("ry");
 				} : function () {
-					return $.pxToFloat(this._node.style.width) / 2;
+					return $.pxToFloat(this.node.style.width) / 2;
 				},
 				setter: UA_SUPPORTS_SVG ? function (value) {
-					this._node.setAttribute("ry", value);
+					this.node.setAttribute("ry", value);
 					return value;
 				} : function (value) {
-					this._node.style.height = value * 2;
+					this.node.style.height = value * 2;
 					return value;
 				}
 			}		
@@ -448,20 +448,20 @@ jet().add('vector', function ($) {
 			cx: {
 				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING.cx ? VML_ATTR_MAPPING.cx : "cx"),
 				setter: UA_SUPPORTS_SVG ? function (value) {
-					this._node.setAttribute("cx", value);
+					this.node.setAttribute("cx", value);
 					return value;
 				} : function (value) {
-					this._node.style.left = (value - $.pxToFloat(myself.get("rx"))) + "px";
+					this.node.style.left = (value - $.pxToFloat(myself.get("rx"))) + "px";
 					return value;
 				}
 			},
 			cy: {
 				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING.cy ? VML_ATTR_MAPPING.cy : "cy"),
 				setter: UA_SUPPORTS_SVG ? function (value) {
-					this._node.setAttribute("cy", value);
+					this.node.setAttribute("cy", value);
 					return value;
 				} : function (value) {
-					this._node.style.top = (value - $.pxToFloat(myself.get("ry")) / 2) + "px";
+					this.node.style.top = (value - $.pxToFloat(myself.get("ry")) / 2) + "px";
 					return value;
 				}
 			}
@@ -483,15 +483,15 @@ jet().add('vector', function ($) {
 		var myself = this.addAttrs({
 			r: {
 				getter: UA_SUPPORTS_SVG ? function () {
-					return this._node.getAttribute("r");
+					return this.node.getAttribute("r");
 				} : function () {
-					return this._node.style.width;
+					return this.node.style.width;
 				},
 				setter: UA_SUPPORTS_SVG ? function (value) {
-					this._node.setAttribute("r", value);
+					this.node.setAttribute("r", value);
 					return value;
 				} : function (value) {
-					var ns = this._node.style;
+					var ns = this.node.style;
 					ns.width = value * 2;
 					ns.height = value * 2;
 					return value;
@@ -502,20 +502,20 @@ jet().add('vector', function ($) {
 			cx: {
 				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING.cx ? VML_ATTR_MAPPING.cx : "cx"),
 				setter: UA_SUPPORTS_SVG ? function (value) {
-					this._node.setAttribute("cx", value);
+					this.node.setAttribute("cx", value);
 					return value;
 				} : function (value) {
-					this._node.style.left = (value - $.pxToFloat(myself.get("r")) / 2) + "px";
+					this.node.style.left = (value - $.pxToFloat(myself.get("r")) / 2) + "px";
 					return value;
 				}
 			},
 			cy: {
 				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING.cy ? VML_ATTR_MAPPING.cy : "cy"),
 				setter: UA_SUPPORTS_SVG ? function (value) {
-					this._node.setAttribute("cy", value);
+					this.node.setAttribute("cy", value);
 					return value;
 				} : function (value) {
-					this._node.style.top = (value - $.pxToFloat(myself.get("r")) / 2) + "px";
+					this.node.style.top = (value - $.pxToFloat(myself.get("r")) / 2) + "px";
 					return value;
 				}
 			}
@@ -644,8 +644,7 @@ jet().add('vector', function ($) {
 	} : function () {
 		VectorView.superclass.constructor.apply(this, arguments);
 		
-		var box = new Node("div");
-		box.css({
+		var box = $("<div/>").css({
 			position: "relative",
 			overflow: "hidden"
 		});
@@ -704,9 +703,6 @@ jet().add('vector', function ($) {
 		},
 		path: function (config) {
 			return appendToVectorView(new Path(config), this);
-		},
-		link: function () {
-			return new VectorList(arguments);
 		},
 		clear: function () {
 			this.get(BOUNDING_BOX).children().remove();

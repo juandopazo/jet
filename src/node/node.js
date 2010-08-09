@@ -183,7 +183,7 @@ jet().add("node", function ($) {
 		getWindowFromDocument: function (doc) {
 			doc = doc || $.context;
 			return doc.defaultView || doc.parentWindow || $.win;
-		}
+		},
 		/**
 		 * Gets the scrolling width or makes the browser scroll
 		 * @method scrollLeft
@@ -220,7 +220,7 @@ jet().add("node", function ($) {
 		 * Returns the inner size of the screen
 		 * @method screenSize
 		 */
-		 screenSize: function () {
+		screenSize: function () {
 			var doc = $.context,
 				de = doc.documentElement,
 				db = doc.body;
@@ -436,8 +436,8 @@ jet().add("node", function ($) {
 					var box  = node.getBoundingClientRect();
 					var body = doc.body;
 					var de = doc[DOCUMENT_ELEMENT];
-					offset.left = box.left + scrollLeft() - (de.clientLeft || body.clientLeft || 0);
-					offset.top = box.top + scrollTop() - (de.clientTop || body.clientTop || 0);
+					offset.left = box.left + DOM.scrollLeft() - (de.clientLeft || body.clientLeft || 0);
+					offset.top = box.top + DOM.scrollTop() - (de.clientTop || body.clientTop || 0);
 				} else if (node.offsetParent) {
 					/*
 					 * Not interested in supporting other browsers very well

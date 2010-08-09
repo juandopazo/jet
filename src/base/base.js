@@ -503,7 +503,7 @@ jet().add('base', function ($) {
 	 * @class Mouse
 	 * @constructor
 	 * @extends Utility
-	 * @param {Object} config Object literal specifying widget configuration properties
+	 * @param {Object} config Object literal specifying configuration properties
 	 */
 	var Mouse = function () {
 		Mouse.superclass.constructor.apply(this, arguments);

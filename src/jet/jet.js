@@ -1,12 +1,14 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License:
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
 /**
  * @module	jet
- * @author	Juan Ignacio Dopazo
- * 
  * @description <p>Based on YUI3's namespace</p>
  * 
  * <p>This module allows to load different modules asynchronously and to reuse
  * them when they were already loaded. Its basic use looks like:</p>
- * 
  */
 (function () {
 	var baseUrl = location.protocol + "//jet-js.googlecode.com/svn/trunk/src/";
@@ -116,7 +118,7 @@
 		 * http://stackoverflow.com/questions/574584/javascript-check-if-method-prototype-has-been-changed/574741#574741
 		 */
 		var isNative = function (func) {
-		    return /^\s*function[^{]+{\s*\[native code\]\s*}\s*$"/.test(func);
+		    return (new RegExp('^\s*function[^\{]+{\s*\[native code\]\s*\}\s*$"')).test(func);
 		};
 
 		return {
@@ -239,6 +241,7 @@
 			}
 		};
 	}());
+	var ArrayHelper, Hash;
 	/**
 	 * Clones an object, returning a copy with the sames properties
 	 * @method clone
@@ -269,7 +272,7 @@
 	 * @class Array
 	 * @static
 	 */
-	var ArrayHelper = {
+	ArrayHelper = {
 		/**
 		 * Iterates through an array
 		 * @method each
@@ -346,7 +349,7 @@
 	 * @class Hash
 	 * @static
 	 */
-	var Hash = {
+	Hash = {
 		/**
 		 * Iterats through a hash
 		 * @method each

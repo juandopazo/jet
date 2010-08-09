@@ -343,15 +343,15 @@ jet().add('datasource', function ($) {
 			 */
 			else if (responseType == RESPONSE_TYPE_XML) {
 
-				var resultNode = $(rawData).find(responseSchema.resultNode)._nodes[0];
-				A.each(resultNode.children()._nodes, function (node) {
+				var resultNode = $(rawData).find(responseSchema.resultNode)[0];
+				A.each(resultNode.children(), function (node) {
 					var record = {};
 					A.each(responseSchema.fields, function (field) {
 						var value;
-						if (node._node.nodeName != field.node) {
-							value = node.find(field.node)._DOMNodes[0];
+						if (node[0].nodeName != field.node) {
+							value = node.find(field.node)[0];
 						} else {
-							value = node._node;
+							value = node[0];
 						}
 						if (field.attr) {
 							value = value.getAttribute(field.attr);
