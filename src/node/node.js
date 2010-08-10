@@ -271,7 +271,12 @@ jet().add("node", function ($) {
 				}
 			}
 		} else if (Lang.isNumber(nodes.length)) {
-			nodes = SLICE.call(nodes);
+			var tmp = []
+			for (var i = 0; i < nodes.length; i++) {
+				tmp[i] = nodes[i];
+			}
+			nodes = tmp;
+			//nodes = SLICE.call(nodes);
 		} else {
 			$.error("Wrong argument for NodeList");
 		}
@@ -706,7 +711,7 @@ jet().add("node", function ($) {
 			} else if (Lang.isValue(value)) {
 				css[key] = value;
 			} else {
-				return this[0].style[key];
+				return $(this[0]).currentStyle()[key];
 			}
 			return this.each(function (node) {
 				Hash.each(css, function (prop, value) {

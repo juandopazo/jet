@@ -15,7 +15,7 @@ jet().add('anim', function ($) {
 		
 	var Lang = $.Lang,
 		Hash = $.Hash,
-		ArrayHelper = $.Array;
+		A = $.Array;
 	
 	var PLAYING = "playing",
 		ENTER_FRAME = "enterFrame";
@@ -24,120 +24,79 @@ jet().add('anim', function ($) {
 		return !Lang.isString(str) ? str :
 		    str.substr(-2, str.length) == "px" ? parseFloat(str.substr(0, str.length - 2)) : parseFloat(str);
 	};
-		
-	/**
-	 * Creates a time frame for queueing animations
-	 * @class TimeFrame
-	 * @extends Base
-	 * @constructor
-	 * @param {Object} config Object literal specifying configuration properties
-	 */
-	var TimeFrame = function () {
-		TimeFrame.superclass.constructor.apply(this, arguments);
-		
-		var playing = FALSE;
-		var tweens = [];
-		
-		var myself = this.addAttrs({
-			/**
-			 * @config readOnly
-			 * @description Whether the timeframe is readOnly or not
-			 * @type Boolean
-			 * @readOnly
-			 */
-			playing: {
-				readOnly: TRUE,
-				getter: function () {
-					return !!playing;
-				}
-			},
-			/**
-			 * @config tweens
-			 * @descriptinn a list of the tweens running in the timeframe
-			 * @type Array
-			 * @readOnly
-			 */
-			tweens: {
-				readOnly: TRUE,
-				getter: function () {
-					return Lang.clone(tweens);
-				}
-			},
-			/**
-			 * @config fps
-			 * @description Refresh speed in frames per second.
-			 * Can't be changed during playback
-			 * @default 35
-			 */
-			fps: {
-				validator: function () {
-					return !playing;
-				},
-				value: 50
-			}
-		});
-		
-		var interval;
-		var frameLength = Math.round(1000 / myself.get("fps"));
-		
-		myself.on("fpsChange", function (val) {
-			frameLength = Math.round(1000 / val);
-		});
-		
-		/**
-		 * @method play
-		 * @description Starts the playback
-		 * @chainable
-		 */
-		myself.play = function () {
-			playing = TRUE;
-			if (interval) {
-				clearInterval(interval);
-			}
-			interval = setInterval(function () {
-				myself.fire(ENTER_FRAME, (new Date()).getTime());
-			}, frameLength);
-			console.log(frameLength);
-			return myself;
-		};
-		/**
-		 * @method stop
-		 * @description Stops the playback
-		 * @chainable
-		 */
-		myself.stop = function () {
-			playing = FALSE;
-			if (interval) {
-				clearInterval(interval);
-			}
-			return myself;
-		};
-
-		/**
-		 * @method addTween
-		 * @description Adds a Tween to the queue
-		 * @param {Tween} tween
-		 * @chainable
-		 */
-		myself.addTween = function (tween) {
-			tweens[tweens.length] = tween;
-			return !playing ? myself.play() : myself;
-		};
-		/**
-		 * @method removeTween
-		 * @description Removes a Tween from the queue
-		 * @param {Tween} tween
-		 * @chainable
-		 */
-		myself.removeTween = function (tween) {
-			ArrayHelper.remove(tween, tweens);
-			return tweens.length === 0 ? myself.stop() : myself;
-		};
-	};
-	$.extend(TimeFrame, $.Base);
 	
-	if (!jet.timeframe) {
-		jet.timeframe = new TimeFrame();
+	if (!jet.TimeFrame) {
+		/**
+		 * A time frame for queueing animations
+		 * @class TimeFrame
+		 * @uses EventTarget
+		 * @static
+		 */
+		jet.TimeFrame = (function () {
+			var tweens = [];
+			var interval;
+			var frameLength;
+			var time = 0;
+	
+			return {
+				/**
+				 * @property fps
+				 * @description Refresh speed in frames per second.
+				 * Can't be changed during playback
+				 * @default 35
+				 */
+				fps: 50,
+				/**
+				 * @method play
+				 * @description Starts the playback
+				 * @chainable
+				 */
+				play: function () {
+					var myself = this;
+					if (interval) {
+						clearInterval(interval);
+					}
+					var frameLength = Math.round(1000 / myself.fps);
+					interval = setInterval(function () {
+						time += frameLength;
+						myself.fire(ENTER_FRAME, time);
+					}, frameLength);
+					return myself;
+				},
+				/**
+				 * @method stop
+				 * @description Stops the playback
+				 * @chainable
+				 */
+				stop: function () {
+					if (interval) {
+						clearInterval(interval);
+					}
+					return this;
+				},
+				/**
+				 * @method addTween
+				 * @description Adds a Tween to the queue
+				 * @param {Tween} tween
+				 * @chainable
+				 */
+				addTween: function (tween) {
+					tweens[tweens.length] = tween;
+					return this;
+				},
+				/**
+				 * @method removeTween
+				 * @description Removes a Tween from the queue
+				 * @param {Tween} tween
+				 * @chainable
+				 */
+				removeTween: function (tween) {
+					A.remove(tween, tweens);
+					return tweens.length === 0 ? this.stop() : this;
+				}
+			};
+		}());
+		$.mix(jet.TimeFrame, new $.EventTarget());
 	}
 	
 	/**
@@ -151,7 +110,7 @@ jet().add('anim', function ($) {
 	var Tween = function () {
 		Tween.superclass.constructor.apply(this, arguments);
 		
-		var timeframe = jet.timeframe;
+		var timeframe = jet.TimeFrame;
 		var playing = FALSE;
 		var notPlaying = function () {
 			return !playing;
@@ -244,32 +203,26 @@ jet().add('anim', function ($) {
 		
 		var enterFrame = function (e, time) {
 			if (playing) {
+				if (!startTime) {
+					startTime = time;
+				}
 				var elapsed = time - startTime + previous;
 				var check = 0;
-				var against = Hash.keys(to.css).length + Hash.keys(to.attr).length;
-				Hash.each(to.css, function (name, val) {
-					var go = easing(elapsed, from.css[name], val, duration, strength);
-					if (go >= val) {
+				var against = Hash.keys(to).length;
+				Hash.each(to, function (name, val) {
+					var go = easing(elapsed, from[name], val, duration, strength);
+					if ((val >= from[name] && go >= val) || (val <= from[name] && go <= val)) {
 						++check;
 					}
 					node.css(name, go);
 				});
-				Hash.each(to.attr, function (name, val) {
-					var go = easing(elapsed, from.attr[name], val, duration, strength);
-					if (go >= val) {
-						++check;
-					}
-					node.attr(name, go);
-				});
 				if (check == against) {
 					myself.stop();
+					myself.fire("finish");
 				}
 			}
 		};
-		timeframe.on(ENTER_FRAME, enterFrame);
-		timeframe.on(ENTER_FRAME, function () {
-			console.log(ENTER_FRAME);
-		});		
+		
 		/**
 		 * Play the tween's animation
 		 * @method play
@@ -279,39 +232,39 @@ jet().add('anim', function ($) {
 		 */
 		myself.play = function () {
 			var startStyle = node.currentStyle();
-			startTime = (new Date()).getTime();
 			playing = TRUE;
 			from = myself.get("from");
 			to = myself.get("to");
 			if (!from) {
 				from = { css: {} };
 			}
-			Hash.each(to.css, function (name, val) {
-				to.css[name] = pxToFloat(val);
-				if (!from.css[name]) {
+			Hash.each(to, function (name, val) {
+				to[name] = pxToFloat(val);
+				if (!from[name]) {
 					var offset = node.offset();
 					switch (name) {
-						case "left":
-							from.css[name] = offset.left;
-							break;
-						case "top":
-							from.css[name] = offset.top;
-							break;
-						case "width":
-							from.css[name] = offset.width;
-							break;
-						case "height":
-							from.css[name] = offset.height;
-							break;
-						default:
-							from.css[name] = pxToFloat(startStyle[name]);
+					case "left":
+						from[name] = offset.left;
+						break;
+					case "top":
+						from[name] = offset.top;
+						break;
+					case "width":
+						from[name] = offset.width;
+						break;
+					case "height":
+						from[name] = offset.height;
+						break;
+					default:
+						from[name] = pxToFloat(startStyle[name]);
 					}
 				} 
 			});
 			easing = myself.get("easing");
 			duration = myself.get("duration");
 			strength = myself.get("easingStrength");
-			timeframe.addTween(myself);
+			timeframe.on(ENTER_FRAME, enterFrame);
+			timeframe.addTween(myself).play();
 			return myself;
 		};
 		/**
@@ -322,7 +275,8 @@ jet().add('anim', function ($) {
 		myself.stop = function () {
 			playing = FALSE;
 			timeframe.removeTween(myself);
-			previous = 0;
+			timeframe.unbind(ENTER_FRAME, enterFrame);
+			previous = startTime = 0;
 			return myself;
 		};
 		/**
@@ -383,6 +337,65 @@ jet().add('anim', function ($) {
             return yf * Math.pow(x / dur, pw) + y0;
         }
     };
+    
+    $.augment($.NodeList, {
+    	animate: function (props, curation, easing, callback) {
+    		var tw = new Tween({
+    			node: this,
+    			to: props,
+    			duration: curation,
+    			easing: easing
+    		});
+    		this.tw = tw.on("finish", callback).play();
+    		return this;
+    	},
+    	fadeIn: function (duration, callback) {
+    		return this.animate({
+    			opacity: 1 
+    		}, duration, null, callback);
+    	},
+    	fadeOut: function (duration, callback) {
+    		return this.animate({
+    			opacity: 0
+    		}, duration, null, callback);
+    	},
+    	fadeToggle: function (duration, callback) {
+    		return this.each(function (node) {
+    			node = $(node);
+    			if (node.css("opacity") == 1) {
+    				node.fadeOut(duration, callback);
+    			} else {
+    				node.fadeIn(duration, callback);
+    			}
+    		});
+    	},
+    	slideDown: function (duration, callback) {
+    		var myself = this;
+    		var overflow = myself.css("overflow");
+    		return myself.css("overflow", "hidden").animate({
+    			height: myself.oHeight
+    		}, duration, null, function () {
+    			myself.css("overflow", overflow);
+    			callback.call(myself);
+    		});
+    	},
+    	slideUp: function (duration, callback) {
+    		var myself = this;
+    		var overflow = myself.css("overflow");
+    		return myself.css("overflow", "hidden").animate({
+    			height: 0
+    		}, duration, null, function () {
+    			myself.css("overflow", overflow);
+    			callback.call(myself);
+    		});
+    	},
+    	stop: function () {
+    		if (this.tw) {
+    			this.tw.stop();
+    		}
+    		return this;
+    	}
+    });
 	
 	$.add({
 		Tween: Tween

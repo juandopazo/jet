@@ -103,7 +103,7 @@ jet().add('base', function ($) {
 			if (Lang.isObject(callback)) {
 				collection[eventType].push(callback);
 			}
-			return myself;
+			return this;
 		};
 		
 		/**
@@ -115,7 +115,7 @@ jet().add('base', function ($) {
 		 */
 		myself.unbind = function (eventType, callback) {
 			$.Array.remove(callback, collection[eventType] || []);
-			return myself;
+			return this;
 		};
 		
 		/**
@@ -148,14 +148,14 @@ jet().add('base', function ($) {
 					handlers[i].apply(myself, args);
 				// if the event handler is an object with a handleEvent method,
 				// that method is used but the context is the object itself
-				} else if (handlers[i].handleEvent) {
+				} else if (Lang.isObject(handlers[i]) && handlers[i].handleEvent) {
 					handlers[i].handleEvent.apply(handlers[i], args);
 				}
 				if (stop) {
 					break;
 				}
 			}
-			return returnValue;
+			return this;
 		};
 		
 		/**
@@ -165,7 +165,7 @@ jet().add('base', function ($) {
 		 */
 		myself.unbindAll = function () {
 			collection = {};
-			return myself;
+			return this;
 		};
 	};
 	
