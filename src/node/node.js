@@ -252,7 +252,6 @@ jet().add("node", function ($) {
 	 * @param {DOMNode|Document} root
 	 */
 	var NodeList = function (nodes, root) {
-		NodeList.superclass.constructor.apply(this);
 		root = root || $.context;
 		nodes = Lang.isValue(nodes) ? nodes : [];
 		if (NodeList.is(nodes)) {
@@ -877,7 +876,7 @@ jet().add("node", function ($) {
 			});
 			return result;
 		}
-	});
+	};
 	NodeList.is = Lang.is;
 	
 

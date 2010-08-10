@@ -40,7 +40,7 @@
 		cookie: [NODE],
 		sizzle: [NODE],
 		base: [NODE],
-		ajax: ["json"],
+		io: ["json"],
 		tabs: [BASE],
 		resize: [BASE, {
 			name: "resize-css",
@@ -63,7 +63,7 @@
 		dragdrop: [BASE],
 		imageloader: [BASE],
 		anim: [BASE],
-		datasource: [BASE, "ajax"],
+		datasource: [BASE, "io"],
 		datatable: ["datasource", {
 			name: "datatable-css",
 			type: "css",
@@ -161,6 +161,10 @@
 			 */
 			isFunction: function (o) {
 				return type(o) === FUNCTION;
+			},
+			isObject: function(o, failfn) {
+				var t = typeof o;
+				return (o && (t === OBJECT || (!failfn && (t === FUNCTION || Lang.isFunction(o))))) || false;
 			},
 			/**
 			 * Returns if o is a boolean
@@ -880,8 +884,8 @@
 						AP.unshift.apply(request, Hash.keys(predef));
 						
 					// add ajax by default
-					} else if (ArrayHelper.indexOf("ajax", request) == -1) {
-						request.unshift("ajax");
+					} else if (ArrayHelper.indexOf("io", request) == -1) {
+						request.unshift("io");
 					}
 					
 					// handle requirements
@@ -917,7 +921,7 @@
 						if (Lang.isString(module) && predef[module]) {
 							request[i] = module = Lang.isHash(predef[module]) ? predef[module] : {
 								name: module,
-								path: module + (config.minify ? ".min.js" : ".js")
+								path: module + "/" + module + (config.minify ? ".min.js" : ".js")
 							};
 						}
 						if (module.type == "css" && !config.loadCss) {

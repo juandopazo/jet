@@ -62,7 +62,25 @@ jet().add('base', function ($) {
 
 	
 	/**
-	 * A class designed to be inherited or augmented into other classes and provide custom events
+	 * <p>A class designed to be inherited or augmented into other classes and provide custom events.</p>
+	 * <p>Custom events work by attaching event listeners to a class that augments or extends EventTarget.
+	 * An event listener can be a function or an object with a method called "eventHandler".
+	 * If it is a function, when fired the context will be the firing object. In the case of an object, the 
+	 * context will be the object itself.</p>
+	 * <p>Attaching an object to the "*" event type allows for a different approach:</p>
+	 * <code>
+	 * someObj.handleEvent = function (e) {<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;switch (e.type) {<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case "someEvent":<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//do something<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case "otherEvent":<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//do something else<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+	 * };<br/>
+	 * eventProvider.on("*", someObj);
+	 * </code>
 	 * @class EventTarget
 	 * @constructor
 	 */
@@ -72,7 +90,7 @@ jet().add('base', function ($) {
 		var myself = this;
 		
 		/**
-		 * Adds an event listener
+		 * Adds an event listener 
 		 * @method on
 		 * @param {String} eventType
 		 * @param {Function} callback
@@ -158,7 +176,6 @@ jet().add('base', function ($) {
 	 * @constructor
 	 */
 	var Attribute = function (classConfig) {
-		Attribute.superclass.constructor.apply(this);
 		classConfig = classConfig || {};
 		var myself = this;
 		
