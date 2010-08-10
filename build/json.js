@@ -1,3 +1,25 @@
+/**
+ * Adds JSON support when needed. If JSON is found natively, this module
+ * is not loaded but the $.JSON object is still found if needed
+ * @module json
+ * @requires jet
+ * @namespace
+ */
+ /**
+  * JSON parsing
+  * @class JSON
+  * @static
+  */
+  /**
+   * Takes a string and parses it into an object literal
+   * @method parse
+   * @param {String} json string
+   */
+   /**
+   * Takes an object literal and serialices it into a string
+   * @method stringify
+   * @param {Object} an object literal
+   */
 jet().add('json', function ($) {
 /*
     http://www.JSON.org/json2.js

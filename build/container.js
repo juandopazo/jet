@@ -1,3 +1,9 @@
+/**
+ * Contains widgets that act as containers, windows, dialogs 
+ * @module container
+ * @requires jet, node, base
+ * @namespace
+ */
 jet().add("container", function ($) {
 	
 	var TRUE = true,
@@ -5,7 +11,8 @@ jet().add("container", function ($) {
 		Lang = $.Lang,
 		Hash = $.Hash,
 		A = $.Array;
-		
+	
+	// definitions for better minification
 	var BOUNDING_BOX = "boundingBox",
 		CONTENT_BOX = "contentBox",
 		UNDERLAY = "underlay",
@@ -44,19 +51,36 @@ jet().add("container", function ($) {
 		OPTIONS = "options",
 		COMBO = "combo";
 	
+	// true if the UA supports the value 'fixed' for the css 'position' attribute
 	var UA_SUPPORTS_FIXED = (!$.UA.ie || $.UA.ie < 8);
-		
+	
+	/**
+	 * A button may be a push button, a radio button or other form elements that behave as buttons
+	 * @class Button
+	 * @constructor
+	 * @extends Widget
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
 	var Button = function () {
 		Button.superclass.constructor.apply(this, arguments);
 		var myself = this.set(CLASS_NAME, BUTTON).addAttrs({
+			/**
+			 * @config type
+			 * @type String
+			 * @writeOnce
+			 * @default "push"
+			 */
 			type: {
 				writeOnce: TRUE,
 				value: "push"
 			},
+			// overwrite standard boundingBox (a div) with a span
+			// maybe all widgets should use a span with display: inline-block as a boundingBox?
 			boundingBox: {
 				readOnly: TRUE,
 				value: $(NEW_SPAN)
 			},
+			//overwrite standard contentBox (a div) with a span
 			contentBox: {
 				readOnly: TRUE,
 				value: $(NEW_SPAN)
@@ -65,7 +89,12 @@ jet().add("container", function ($) {
 		var type = myself.get(TYPE);
 		var tag =	type == "push" ? "button" :
 					type == "link" ? "a" : "a";
-					
+		
+		/**
+		 * The button node
+		 * @config buttonNode
+		 * @readOnly
+		 */
 		myself.addAttr("buttonNode", {
 			readOnly: TRUE,
 			value: $("<" + tag + "/>")
@@ -85,7 +114,7 @@ jet().add("container", function ($) {
 			}).on("blur", function () {
 				boundingBox.removeClass(prefix + Button.NAME + "-focus", prefix + type + Button.NAME + "-focus");
 			}).on(CLICK, function (e) {
-				node._node.blur();
+				node[0].blur();
 				if (myself.fire(PRESSED)) {
 					e.preventDefault();
 				}
@@ -93,20 +122,41 @@ jet().add("container", function ($) {
 			node.appendTo(contentBox.appendTo(boundingBox));
 		});
 		myself.on("afterRender", function () {
+			// since the order of the nodes was changed, use visibility inherit to avoid breaking the hide() method
 			myself.get(BOUNDING_BOX).css(VISIBILITY, "inherit");
 		});
 	};
 	Button.NAME = "button";
 	$.extend(Button, $.Widget, {
+		/**
+		 * Disables the button
+		 * @method disable
+		 * @chainable
+		 */
 		disable: function () {
 			
 		},
+		/**
+		 * Enables the button
+		 * @method enable
+		 * @chainable
+		 */
 		enable: function () {
 			
 		},
+		/**
+		 * Fires the blur event
+		 * @method blur
+		 * @chainable
+		 */
 		blur: function () {
 			
 		},
+		/**
+		 * Fires the focus event and sets the button as active
+		 * @method focus
+		 * @chainable
+		 */
 		focus: function () {
 			
 		}
@@ -176,11 +226,11 @@ jet().add("container", function ($) {
 		};
 		
 		myself.on("optionsChange", function (e, newOptions) {
-			var combo = myself.get(COMBO)._node;
+			var combo = myself.get(COMBO)[0];
 			combo.options.length = 0;
 			setOptions(combo, newOptions);
 		});
-		setOptions(myself.get(COMBO)._node, myself.get(OPTIONS));
+		setOptions(myself.get(COMBO)[0], myself.get(OPTIONS));
 		
 		myself.on("render", function () {
 			myself.get(COMBO).appendTo(myself.get(BOUNDING_BOX));
@@ -197,7 +247,7 @@ jet().add("container", function ($) {
 				opt = text;
 			}
 			myself.get("options").push(opt);
-			addOption(myself.get(COMBO)._node, text, value);
+			addOption(myself.get(COMBO)[0], text, value);
 			return myself;
 		},
 		fill: function (values) {
@@ -216,6 +266,13 @@ jet().add("container", function ($) {
 		}
 	});
 	
+	/**
+	 * @class Module
+	 * @description A module is a basic container with header, body and footer
+	 * @extends Widget
+	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
 	var Module = function () {
 		Module.superclass.constructor.apply(this, arguments);
 		var myself = this;
@@ -238,25 +295,46 @@ jet().add("container", function ($) {
 			};
 		};
 		myself.addAttrs({
+			/**
+			 * @config header
+			 * @description The header of the module.
+			 * If set to a string a node is creating and the string is set to its innerHTML
+			 * @type DOM Node | String | NodeList
+			 */
 			header: {
 				setter: containerSetter(HEADER),
 				validator: Lang.isValue
 			},
+			/**
+			 * @config body
+			 * @description The body of the module.
+			 * If set to a string a node is creating and the string is set to its innerHTML
+			 * A body is always present in a Module
+			 * @type DOM Node | String | NodeList
+			 * @default ""
+			 */
 			body: {
 				value: "",
 				setter: containerSetter(BODY),
 				validator: Lang.isValue
 			},
+			/**
+			 * @config footer
+			 * @description The footer of the module.
+			 * If set to a string a node is creating and the string is set to its innerHTML
+			 * @type DOM Node | String | NodeList
+			 */
 			footer: {
 				setter: containerSetter(FOOTER),
 				validator: Lang.isValue
 			}
 		});
 		myself.set(CLASS_NAME, Module.NAME);
-						
+					
+		// rendering process	
 		myself.on(RENDER, function () {
 			var boundingBox = myself.get(BOUNDING_BOX);
-			var classPrefix = myself.get(CLASS_PREFIX);
+			// append the header, body and footer to the bounding box if present
 			Hash.each(containers, function (name, container) {
 				container.addClass(name).appendTo(boundingBox);
 			});
@@ -265,23 +343,59 @@ jet().add("container", function ($) {
 	Module.NAME = "module";
 	$.extend(Module, $.Widget);
 	
+	/**
+	 * @class Overlay
+	 * @description An Overlay is a Module that floats in the page (doesn't have position static)
+	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
 	var Overlay = function () {
 		Overlay.superclass.constructor.apply(this, arguments);
 		var myself = this.addAttrs({
+			/**
+			 * @config center
+			 * @description If true, the overlay is positioned in the center of the page
+			 * @type Boolean
+			 * @default true
+			 */
 			center: {
 				value: TRUE
 			},
+			/**
+			 * @config fixed
+			 * @description If true, the overlay is position is set to fixed
+			 * @type Boolean
+			 * @default false
+			 */
 			fixed: {
 				value: FALSE
 			},
+			/**
+			 * @config width
+			 * @description The width of the overlay
+			 * @type Number
+			 * @default 300
+			 */
 			width: {
 				value: 300,
 				validator: Lang.isNumber
 			},
+			/**
+			 * @config height
+			 * @description The height of the overlay.
+			 * If set to 0 (zero) the height changes with the content
+			 * @type Number
+			 * @default 0
+			 */
 			height: {
 				value: 0,
 				validator: Lang.isNumber
 			},
+			/**
+			 * @config top
+			 * @description The top position in pixels
+			 * @type Number
+			 */
 			top: {
 				validator: Lang.isNumber,
 				setter: function (value) {
@@ -289,6 +403,11 @@ jet().add("container", function ($) {
 					return value;
 				}
 			},
+			/**
+			 * @config left
+			 * @description The left position in pixels
+			 * @type Number
+			 */
 			left: {
 				validator: Lang.isNumber,
 				setter: function (value) {
@@ -296,6 +415,11 @@ jet().add("container", function ($) {
 					return value;
 				}
 			},
+			/**
+			 * @config bottom
+			 * @description The bottom position in pixels
+			 * @type Number
+			 */
 			bottom: {
 				validator: Lang.isNumber,
 				setter: function (value) {
@@ -303,12 +427,28 @@ jet().add("container", function ($) {
 					return value;
 				}
 			},
+			/**
+			 * @config right
+			 * @description The right position in pixels
+			 * @type Number
+			 */
 			right: {
 				validator: Lang.isNumber,
 				setter: function (value) {
 					myself.unset(LEFT);
 					return value;
 				}
+			},
+			/**
+			 * @config draggable
+			 * @description If true, the overlay can be dragged
+			 * @default false
+			 */
+			draggable: {
+				validator: function () {
+					return !!$.Drag;
+				},
+				value: FALSE
 			}
 		});
 		myself.set(CLASS_NAME, Overlay.NAME);
@@ -318,6 +458,7 @@ jet().add("container", function ($) {
 			rendered = TRUE;
 		});
 		
+		// centers the overlay in the screen
 		var center = function (boundingBox) {
 			var screenSize = $.screenSize();
 			boundingBox.css({
@@ -355,6 +496,7 @@ jet().add("container", function ($) {
 			});
 		};
 		
+		// rendering process
 		myself.on(RENDER, function (e) {
 			var win = $($.win);
 			var boundingBox = myself.get(BOUNDING_BOX);
@@ -398,18 +540,13 @@ jet().add("container", function ($) {
 			}
 		});
 		myself.on("afterRender", function () {
-			var draggable = myself.get("draggable");
-			if (draggable) {
-				if ($.DragDrop) {
-					var head = myself.get(HEADER);
-					myself.dd = new $.Drag({
-						node: myself.get(BOUNDING_BOX)
-					});
-					if (head) {
-						myself.dd.addHandler(head);
-					}
-				} else {
-					$.error("The 'draggable' property needs the DragDrop module");
+			if (myself.get("draggable")) {
+				var head = myself.get(HEADER);
+				myself.dd = new $.Drag({
+					node: myself.get(BOUNDING_BOX)
+				});
+				if (head) {
+					myself.dd.addHandler(head);
 				}
 			}
 		});
@@ -417,17 +554,41 @@ jet().add("container", function ($) {
 	Overlay.NAME = "overlay";
 	$.extend(Overlay, Module);
 	
+	/**
+	 * A panel is an overlay that resembles an OS window without actually being one,
+	 * to the problems they have (stop javascript execution, etc)
+	 * @class Panel
+	 * @extends Overlay
+	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
 	var Panel = function () {
 		Panel.superclass.constructor.apply(this, arguments);
 		var myself = this.set(CLASS_NAME, Panel.NAME).addAttrs({
+			/**
+			 * @config contentBox
+			 * @description A panel uses another container inside the boundingBox 
+			 * in order to have a more complex design (ie: shadow)
+			 * @readOnly
+			 */
 			contentBox: {
 				readOnly: TRUE,
 				value: $(NEW_DIV)
 			},
+			/**
+			 * @config underlay
+			 * @description The underlay is inserted after the contentBox to allow for a more complex design
+			 * @readOnly
+			 */
 			underlay: {
 				readOnly: TRUE,
 				value: $(NEW_DIV).addClass(UNDERLAY)
 			},
+			/**
+			 * @config shadow
+			 * @description If true, the panel shows a shadow
+			 * @default true
+			 */
 			shadow: {
 				value: TRUE
 			}
@@ -444,6 +605,12 @@ jet().add("container", function ($) {
 			}
 			e.preventDefault();
 		});
+		/**
+		 * @config close
+		 * @description If true, a close button is added to the panel that hides it when clicked
+		 * @type Boolean
+		 * @default true
+		 */
 		myself.addAttr(CLOSE, {
 			value: TRUE,
 			validator: Lang.isBoolean,
@@ -456,6 +623,7 @@ jet().add("container", function ($) {
 				return value;
 			}
 			
+		// rendering process
 		}).on(RENDER, function (e) {
 			var height = myself.get(HEIGHT);
 			var contentBox = myself.get(CONTENT_BOX);
@@ -494,6 +662,13 @@ jet().add("container", function ($) {
 	Panel.NAME = "panel";
 	$.extend(Panel, Overlay);
 	
+	/**
+	 * A SimpleDialog is a Panel with simple form options and a button row instead of the footer
+	 * @class SimpleDialog
+	 * @extends Panel
+	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
 	var SimpleDialog = function () {
 		SimpleDialog.superclass.constructor.apply(this, arguments);
 		var myself = this;
@@ -502,13 +677,18 @@ jet().add("container", function ($) {
 				readOnly: TRUE,
 				value: $(NEW_DIV).addClass(FOOTER)
 			},
+			/**
+			 * @config buttons
+			 * @description An array of configuration objects for the Button class
+			 * @type Array
+			 */
 			buttons: {
 				validator: Lang.isArray,
 				value: []
 			}
 		}).set(CLASS_NAME, SimpleDialog.NAME);
 		
-		
+		// rendering process
 		myself.on(RENDER, function (e) {
 			myself.get(BOUNDING_BOX).addClass(myself.get(CLASS_PREFIX) + SimpleDialog.NAME);
 			var buttonArea = $(NEW_DIV).addClass("button-group");
@@ -525,7 +705,7 @@ jet().add("container", function ($) {
 		});
 	};
 	SimpleDialog.NAME = "dialog";
-	$.extend(SimpleDialog, Panel);
+	$.extend(SimpleDialog, Panel);	
 	
 	$.add({
 		Module: Module,

@@ -1,3 +1,13 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License:
+ http://code.google.com/p/jet-js/wiki/License
+*/
+/**
+ * Animations
+ * @module anim
+ * @namespace
+ */
 jet().add('anim', function ($) {
 	
 	var TRUE = true,
@@ -5,146 +15,174 @@ jet().add('anim', function ($) {
 		
 	var Lang = $.Lang,
 		Hash = $.Hash,
-		ArrayHelper = $.Array;
+		A = $.Array;
 	
 	var PLAYING = "playing",
 		ENTER_FRAME = "enterFrame";
 		
-	var TimeFrame = function () {
-		TimeFrame.superclass.constructor.apply(this, arguments);
-		
-		var paused = FALSE;
-		var playing = FALSE;
-		var tweens = [];
-		
-		var myself = this.addAttrs({
-			node: {
-				writeOnce: TRUE,
-				setter: function (value) {
-					return $(value);
-				},
-				value: "<canvas/>"
-			},
-			paused: {
-				readOnly: TRUE,
-				getter: function () {
-					return !!paused;
-				}
-			},
-			playing: {
-				readOnly: TRUE,
-				getter: function () {
-					return !!playing;
-				}
-			},
-			tweens: {
-				readOnly: TRUE,
-				getter: function () {
-					return $.clone(tweens);
-				}
-			},
-			fps: {
-				validator: function () {
-					return !playing;
-				},
-				value: 50
-			}
-		});
-		
-		var interval;
-		var time = 0;
-		var frameLength = Math.round(1000 / myself.get("fps"));
-		
-		myself.play = function () {
-			paused = FALSE;
-			playing = TRUE;
-			if (interval) {
-				clearInterval(interval);
-			}
-			ArrayHelper.each(tweens, function (tween) {
-				tween.play(0, frameLength);
-			});
-			time = 0;
-			interval = setInterval(function () {
-				time += frameLength;
-				myself.fire(ENTER_FRAME, time);
-			}, frameLength);
-			return myself;
-		};
-		myself.stop = function () {
-			paused = playing = FALSE;
-			if (interval) {
-				clearInterval(interval);
-			}
-			return myself;
-		};
-		myself.pause = function () {
-			playing = FALSE;
-			paused = TRUE;
-			return myself;
-		};
-		
-		myself.addTween = function (tween) {
-			tweens[tweens.length] = tween;
-			myself.on(ENTER_FRAME, tween.frame);
-			tween.on("stop", myself.stop);
-			return myself;
-		};
-		myself.removeTween = function (tween) {
-			myself.unbind(ENTER_FRAME, tween.frame);
-			ArrayHelper.remove(tween, tweens);
-			return myself;
-		};
+	var pxToFloat = function(str){
+		return !Lang.isString(str) ? str :
+		    str.substr(-2, str.length) == "px" ? parseFloat(str.substr(0, str.length - 2)) : parseFloat(str);
 	};
-	$.extend(TimeFrame, $.Base);
 	
-	TimeFrame.easing = {
-        DEFAULT: function (x, y0, yf, dur) {
-            return (yf - y0) * x / dur + y0;
-        },
-        EASEIN: function (x, y0, yf, dur, pw) {
-            return yf + y0 - yf * Math.pow((dur - x) / dur, pw) + y0;
-        },
-        EASEOUT: function (x, y0, yf, dur, pw) {
-            return yf * Math.pow(x / dur, pw) + y0;
-        }
-    };
+	if (!jet.TimeFrame) {
+		/**
+		 * A time frame for queueing animations
+		 * @class TimeFrame
+		 * @uses EventTarget
+		 * @static
+		 */
+		jet.TimeFrame = (function () {
+			var tweens = [];
+			var interval;
+			var frameLength;
+			var time = 0;
 	
+			return {
+				/**
+				 * @property fps
+				 * @description Refresh speed in frames per second.
+				 * Can't be changed during playback
+				 * @default 35
+				 */
+				fps: 50,
+				/**
+				 * @method play
+				 * @description Starts the playback
+				 * @chainable
+				 */
+				play: function () {
+					var myself = this;
+					if (interval) {
+						clearInterval(interval);
+					}
+					var frameLength = Math.round(1000 / myself.fps);
+					interval = setInterval(function () {
+						time += frameLength;
+						myself.fire(ENTER_FRAME, time);
+					}, frameLength);
+					return myself;
+				},
+				/**
+				 * @method stop
+				 * @description Stops the playback
+				 * @chainable
+				 */
+				stop: function () {
+					if (interval) {
+						clearInterval(interval);
+					}
+					return this;
+				},
+				/**
+				 * @method addTween
+				 * @description Adds a Tween to the queue
+				 * @param {Tween} tween
+				 * @chainable
+				 */
+				addTween: function (tween) {
+					tweens[tweens.length] = tween;
+					return this;
+				},
+				/**
+				 * @method removeTween
+				 * @description Removes a Tween from the queue
+				 * @param {Tween} tween
+				 * @chainable
+				 */
+				removeTween: function (tween) {
+					A.remove(tween, tweens);
+					return tweens.length === 0 ? this.stop() : this;
+				}
+			};
+		}());
+		$.mix(jet.TimeFrame, new $.EventTarget());
+	}
+	
+	/**
+	 * A Tween is a variation of a property during a laps of time that has a certain easing associated
+	 * @class Tween
+	 * @extends Base
+	 * @constructor
+	 * @namespace
+	 * @param {Object} config Object literal specifying configuration properties
+	 */
 	var Tween = function () {
 		Tween.superclass.constructor.apply(this, arguments);
 		
+		var timeframe = jet.TimeFrame;
 		var playing = FALSE;
-		var isPlaying = function () {
-			return !!playing;
+		var notPlaying = function () {
+			return !playing;
 		};
 		
 		var myself = this.addAttrs({
+			/**
+			 * @config node
+			 * @description The node that will be animated
+			 * @required
+			 * @writeOnce
+			 */
 			node: {
+				writeOnce: TRUE,
 				required: TRUE,
 				setter: function (value) {
 					return $(value);
 				}
 			},
+			/**
+			 * @config from
+			 * @description an object literal with properties that will be animated
+			 * @type Object
+			 */
 			from: {
-				value: {},
-				validator: isPlaying
+				value: FALSE,
+				validator: notPlaying
 			},
+			/**
+			 * @config to
+			 * @description an object literal with the target properties for the animation
+			 * @type Object
+			 */
 			to: {
 				required: TRUE,
-				validator: isPlaying
+				validator: notPlaying
 			},
+			/**
+			 * @config easing
+			 * @description The easing used by the animation
+			 * @type TimeFrame.easing
+			 * @default TimeFrame.easing.DEFAULT
+			 */
 			easing: {
-				value: TimeFrame.easing.DEFAULT
+				value: Tween.easing.DEFAULT
 			},
+			/**
+			 * @config easingStrength
+			 * @description The strength of the easing if applicable
+			 * @default 2
+			 */
 			easingStrength: {
 				value: 2,
 				setter: function (value) {
 					return Math.abs(value);
 				}
 			},
+			/**
+			 * @config startFrame
+			 * @description Where in the TimeFrame to start the tween
+			 * @type Number
+			 * @default 0 Start inmediately
+			 */
 			startFrame: {
 				value: 0
 			},
+			/**
+			 * @config duration
+			 * @description The duration of the animation
+			 * @default 1000
+			 * @type {String, Number} Allowd strings: "fast", "slow", "normal". Numbers are milliseconds
+			 */
 			duration: {
 				value: 1000,
                 setter: function (value) {
@@ -157,61 +195,209 @@ jet().add('anim', function ($) {
 		});
 		
 		var node = myself.get("node");
-		var height = myself.get("height");
-		if (height) {
-			node.height(height);
-		}
-		var width = myself.get("width");
-		if (width) {
-			node.height(width);
-		}
-		var currentStyle = node.currentStyle();
-		var time = 0;
-		var from, to, dur;
-		var timeFrame;
+		var from;
+		var to;
+		var startTime;
+		var previous = 0;
+		var easing, duration, strength;
 		
-		myself.play = function (startTime, frameLength) {
-			playing = TRUE;
-			time = 0;
-			from = myself.get("from");
-            to = myself.get("to");
-            dur = myself.get("duration");
-			timeFrame = {};
-            Hash.each(to, function (name, end) {
-                from[name] = Lang.isNumber(from[name]) ? from[name] : $.pxToFloat(currentStyle[name]);
-            });
-			var strength = myself.get("easingStrength");
-			var easing = myself.get("easing");
-			for (var i = 0; i <= dur; i += frameLength) {
-				timeFrame[i] = {};
-				Hash.each(to, function (name, end) {
-					timeFrame[i][name] = easing(i, from[name], end, dur, strength);
+		var enterFrame = function (e, time) {
+			if (playing) {
+				if (!startTime) {
+					startTime = time;
+				}
+				var elapsed = time - startTime + previous;
+				var check = 0;
+				var against = Hash.keys(to).length;
+				Hash.each(to, function (name, val) {
+					var go = easing(elapsed, from[name], val, duration, strength);
+					if ((val >= from[name] && go >= val) || (val <= from[name] && go <= val)) {
+						++check;
+					}
+					node.css(name, go);
 				});
+				if (check == against) {
+					myself.stop();
+					myself.fire("finish");
+				}
 			}
+		};
+		
+		/**
+		 * Play the tween's animation
+		 * @method play
+		 * @param {Number} startTime
+		 * @param {Number} frameLength
+		 * @chainable
+		 */
+		myself.play = function () {
+			var startStyle = node.currentStyle();
+			playing = TRUE;
+			from = myself.get("from");
+			to = myself.get("to");
+			if (!from) {
+				from = { css: {} };
+			}
+			Hash.each(to, function (name, val) {
+				to[name] = pxToFloat(val);
+				if (!from[name]) {
+					var offset = node.offset();
+					switch (name) {
+					case "left":
+						from[name] = offset.left;
+						break;
+					case "top":
+						from[name] = offset.top;
+						break;
+					case "width":
+						from[name] = offset.width;
+						break;
+					case "height":
+						from[name] = offset.height;
+						break;
+					default:
+						from[name] = pxToFloat(startStyle[name]);
+					}
+				} 
+			});
+			easing = myself.get("easing");
+			duration = myself.get("duration");
+			strength = myself.get("easingStrength");
+			timeframe.on(ENTER_FRAME, enterFrame);
+			timeframe.addTween(myself).play();
 			return myself;
 		};
+		/**
+		 * Stops the tween
+		 * @method stop
+		 * @chainable
+		 */
 		myself.stop = function () {
 			playing = FALSE;
+			timeframe.removeTween(myself);
+			timeframe.unbind(ENTER_FRAME, enterFrame);
+			previous = startTime = 0;
 			return myself;
 		};
+		/**
+		 * Pauses the tween
+		 * @method pause
+		 * @chainable
+		 */
 		myself.pause = function () {
-			return myself;
-		};
-		myself.frame = function (e, time) {
-			if (time > dur) {
-				playing = FALSE;
-				myself.fire("stop");
-			}
-			if (playing) {
-                node.css(timeFrame[time]);
-			}
+			playing = FALSE;
+			timeframe.removeTween(myself);
+			timeframe.unbind(ENTER_FRAME, enterFrame);
+			previous = (new Date()).getTime() - startTime;
 			return myself;
 		};
 	};
 	$.extend(Tween, $.Base);
 	
+	/**
+	 * Easing modes
+	 * @class easing
+	 * @static
+	 * @namespace Tween
+	 */
+	Tween.easing = {
+		/**
+		 * @method DEFAULT
+		 * @description Linear easing
+		 * @param {Number} x The time variable
+		 * @param {Number} y0 The start value of the property that will be changed
+		 * @param {Number} yf The final value of the property that will be changed
+		 * @param {Number} dur Duration of the animation
+		 */
+        DEFAULT: function (x, y0, yf, dur) {
+            return (yf - y0) * x / dur + y0;
+        },
+		/**
+		 * @method EASEIN
+		 * @description An easing that's stronger at the beginning and softer at the end
+		 * @param {Number} x The time variable
+		 * @param {Number} y0 The start value of the property that will be changed
+		 * @param {Number} yf The final value of the property that will be changed
+		 * @param {Number} dur Duration of the animation
+		 * @param {Number} pw Easing strengh
+		 */
+        EASEIN: function (x, y0, yf, dur, pw) {
+            return yf + y0 - yf * Math.pow((dur - x) / dur, pw) + y0;
+        },
+		/**
+		 * @method EASEOUT
+		 * @description An easing that's softer at the beginning and stronger at the end
+		 * @param {Number} x The time variable
+		 * @param {Number} y0 The start value of the property that will be changed
+		 * @param {Number} yf The final value of the property that will be changed
+		 * @param {Number} dur Duration of the animation
+		 * @param {Number} pw Easing strengh
+		 */
+        EASEOUT: function (x, y0, yf, dur, pw) {
+            return yf * Math.pow(x / dur, pw) + y0;
+        }
+    };
+    
+    $.augment($.NodeList, {
+    	animate: function (props, curation, easing, callback) {
+    		var tw = new Tween({
+    			node: this,
+    			to: props,
+    			duration: curation,
+    			easing: easing
+    		});
+    		this.tw = tw.on("finish", callback).play();
+    		return this;
+    	},
+    	fadeIn: function (duration, callback) {
+    		return this.animate({
+    			opacity: 1 
+    		}, duration, null, callback);
+    	},
+    	fadeOut: function (duration, callback) {
+    		return this.animate({
+    			opacity: 0
+    		}, duration, null, callback);
+    	},
+    	fadeToggle: function (duration, callback) {
+    		return this.each(function (node) {
+    			node = $(node);
+    			if (node.css("opacity") == 1) {
+    				node.fadeOut(duration, callback);
+    			} else {
+    				node.fadeIn(duration, callback);
+    			}
+    		});
+    	},
+    	slideDown: function (duration, callback) {
+    		var myself = this;
+    		var overflow = myself.css("overflow");
+    		return myself.css("overflow", "hidden").animate({
+    			height: myself.oHeight
+    		}, duration, null, function () {
+    			myself.css("overflow", overflow);
+    			callback.call(myself);
+    		});
+    	},
+    	slideUp: function (duration, callback) {
+    		var myself = this;
+    		var overflow = myself.css("overflow");
+    		return myself.css("overflow", "hidden").animate({
+    			height: 0
+    		}, duration, null, function () {
+    			myself.css("overflow", overflow);
+    			callback.call(myself);
+    		});
+    	},
+    	stop: function () {
+    		if (this.tw) {
+    			this.tw.stop();
+    		}
+    		return this;
+    	}
+    });
+	
 	$.add({
-		TimeFrame: TimeFrame,
 		Tween: Tween
 	});
 });

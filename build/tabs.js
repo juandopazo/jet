@@ -1,3 +1,8 @@
+/**
+ * A TabView
+ * @module tabs
+ * @requires jet, lang, node, base
+ */
 jet().add("tabs", function ($) {
 	var SELECTED = "selected";
 	var Lang = $.Lang;

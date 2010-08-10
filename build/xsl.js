@@ -1,3 +1,7 @@
+/**
+ * Cross-browser XSL Transformations support
+ * @module xsl
+ */
 jet().add('xsl', function ($) {
 	var win = $.win;
 	var Lang = $.Lang;

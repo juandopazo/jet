@@ -3,6 +3,8 @@
  *  Copyright 2009, The Dojo Foundation
  *  Released under the MIT, BSD, and GPL Licenses.
  *  More information: http://sizzlejs.com/
+ * 
+ * @module sizzle
  */
 (function(){
 
@@ -1090,4 +1092,3 @@ jet().add('sizzle', function ($) {
 });
 
 })();
-

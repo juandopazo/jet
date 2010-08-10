@@ -1,3 +1,8 @@
+/**
+ * DataSources are different ways of accessing data and parsing it into an schema
+ * @module datasource
+ * @namespace
+ */
 jet().add('datasource', function ($) {
 	
 	if (!jet.DataSource) {
@@ -12,7 +17,8 @@ jet().add('datasource', function ($) {
 	
 	var Lang = $.Lang,
 		Hash = $.Hash,
-		A = $.Array;
+		A = $.Array,
+		IO = $.IO;
 
 	var RESPONSE_TYPE_JSON		= 1,
 		RESPONSE_TYPE_XML		= 2,
@@ -43,21 +49,44 @@ jet().add('datasource', function ($) {
 	
 	/**
 	 * A record is a Hash width a unique id
+	 * @class Record
+	 * @constructor
+	 * @param {Object} An object literal
 	 */
 	var Record = function (data) {
 		var id = jet.Record.ids++;
 		var myself = this;
 		
+		/**
+		 * Returns the id of the record. Each record has a unique id globally.alert
+		 * This allows for easy filtering, ordering, etc of records.alert
+		 * @method getId
+		 * @return Number
+		 */
 		myself.getId = function () {
 			return id;
 		};
+		/**
+		 * Returns the data of the record. Must be an object literal
+		 * @method getData
+		 */
 		myself.getData = function () {
 			return data;
 		};
+		/**
+		 * Shortcut for getting a value from the record's data
+		 * @method get
+		 * @param {String} key
+		 */
 		myself.get = function (key) {
 			return data[key];
 		};
 	};
+	/**
+	 * Returns if an object is a Record
+	 * @method isRecord
+	 * @for Lang
+	 */
 	Lang.isRecord = function (o) {
 		return o instanceof Record;
 	};
@@ -89,7 +118,8 @@ jet().add('datasource', function ($) {
 	
 	/**
 	 * A collections of Records
-	 * 
+	 * @class RecordSet
+	 * @constructor
 	 * @param {Array} data If data is passed, it is converted into several Records
 	 */
 	var RecordSet = function (data) {
@@ -104,14 +134,30 @@ jet().add('datasource', function ($) {
 			records[records.length] = new Record(recordData);
 		});
 		
+		/**
+		 * Returns all records in the set
+		 * @method getRecords
+		 */
 		myself.getRecords = function () {
 			return records;
 		};
 		
+		/**
+		 * Returns the number of records in the set
+		 * @method getCount
+		 * @return Number
+		 */
 		myself.getCount = function () {
 			return records.length;
 		};
 		
+		/**
+		 * Sorts the records based on a key of the data they hold
+		 * @method sortBy
+		 * @param {String} key The data key that will be sorted
+		 * @param {String} order the order in which to sort. May be "asc" or "desc"
+		 * @chainable
+		 */
 		myself.sortBy =  function (key, newOrder) {
 			var myself = this;
 			if (records.length > 1) {
@@ -131,12 +177,24 @@ jet().add('datasource', function ($) {
 			return data;
 		};
 		
+		/**
+		 * Replaces all records with new data
+		 * @method replace
+		 * @param {Array} data
+		 * @chainable
+		 */
 		myself.replace = function (data) {
 			data = toData(data);
 			myself.fire("replace", data);
 			return sortedBy ? myself.sortBy(sortedBy, order) : myself;
 		};
 		
+		/**
+		 * Adds data to the set, creating new Records
+		 * @method push
+		 * @param {Array} data
+		 * @chainable
+		 */
 		myself.push = function (data) {
 			records = records.concat(toData(data));
 			myself.fire("push", records, data);
@@ -144,12 +202,22 @@ jet().add('datasource', function ($) {
 		};
 	};
 	$.extend(RecordSet, $.EventTarget);
+	/**
+	 * Returns whether an object is a RecordSet
+	 * @method isRecordSet
+	 * @for Lang
+	 */
 	Lang.isRecordSet = function (o) {
 		return o instanceof RecordSet;
 	};
 		
 	/**
+	 * Base class for all data sources. The DataSource class shouldn't be used directly
+	 * @class DataSource
 	 * @extends Utility
+	 * @protected
+	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
 	var DataSource = function () {
 		DataSource.superclass.constructor.apply(this, arguments);
@@ -275,15 +343,15 @@ jet().add('datasource', function ($) {
 			 */
 			else if (responseType == RESPONSE_TYPE_XML) {
 
-				var resultNode = $(rawData).find(responseSchema.resultNode)._nodes[0];
-				A.each(resultNode.children()._nodes, function (node) {
+				var resultNode = $(rawData).find(responseSchema.resultNode)[0];
+				A.each(resultNode.children(), function (node) {
 					var record = {};
 					A.each(responseSchema.fields, function (field) {
 						var value;
-						if (node._node.nodeName != field.node) {
-							value = node.find(field.node)._DOMNodes[0];
+						if (node[0].nodeName != field.node) {
+							value = node.find(field.node)[0];
 						} else {
-							value = node._node;
+							value = node[0];
 						}
 						if (field.attr) {
 							value = value.getAttribute(field.attr);
@@ -310,9 +378,11 @@ jet().add('datasource', function ($) {
 		};
 		
 		/**
-		 * 
+		 * Sends a request
+		 * @method sendRequest
 		 * @param {Object} request
-		 * @param {BOOLEAN} ignoreCache
+		 * @param {Boolean} ignoreCache
+		 * @chainable
 		 */
 		myself.sendRequest = function (request, ignoreCache) {
 			myself.get(REQUEST_LOGIC)(request, function (rawData) {
@@ -339,16 +409,32 @@ jet().add('datasource', function ($) {
 					reason: reason
 				});
 			});
+			return myself;
 		};
 		
+		/**
+		 * Adds an event listener to the "beforeParse" event
+		 * @method onBeforeParse
+		 * @param {Function} callback
+		 * @chainable
+		 */
 		myself.onBeforeParse = function (callback) {
 			myself.get("internalEvents").on("beforeParse", function (e, rawData) {
 				myself.set(TEMP_DATA, callback(rawData));
 			});
+			return myself;
 		};
 	};
 	$.extend(DataSource, $.Utility);
 	
+	/**
+	 * An AJAX DataSource
+	 * @namespace DataSource
+	 * @class Ajax
+	 * @extends DataSource
+	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
 	var Ajax = function () {
 		Ajax.superclass.constructor.apply(this, arguments);
 		
@@ -360,7 +446,7 @@ jet().add('datasource', function ($) {
 		
 		myself.set(REQUEST_LOGIC, function (request, success, failure) {
 			var type = myself.get(RESPONSE_TYPE);
-			$.ajax({
+			IO.ajax({
 				url: myself.get(URL),
 				data: request,
 				dataType: type == RESPONSE_TYPE_XML ? "xml" : type == RESPONSE_TYPE_TEXT ? "text" : "json",
@@ -373,6 +459,13 @@ jet().add('datasource', function ($) {
 	};
 	$.extend(Ajax, DataSource);
 	
+	/**
+	 * A Get DataSource that uses JSON for getting data across domains
+	 * @class Get
+	 * @extends DataSource
+	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
 	var Get = function () {
 		Get.superclass.constructor.apply(this, arguments);
 		
@@ -421,6 +514,13 @@ jet().add('datasource', function ($) {
 	};
 	$.extend(Get, DataSource);
 	
+	/**
+	 * A Local DataSource uses local variables
+	 * @class Local
+	 * @extends DataSource
+	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
 	var Local = function () {
 		Local.superclass.constructor.apply(this, arguments);
 		
@@ -441,18 +541,20 @@ jet().add('datasource', function ($) {
 	};
 	$.extend(Local, DataSource);
 	
-	$.add({
-		DataSource: {
-			responseType: {
-				JSON: RESPONSE_TYPE_JSON,
-				XML: RESPONSE_TYPE_XML,
-				TEXT: RESPONSE_TYPE_TEXT,
-				JSARRAY: RESPONSE_TYPE_JSARRAY
-			},
-			Ajax: Ajax,
-			Get: Get,
-			Local: Local
+	$.mix(DataSource, {
+		responseType: {
+			JSON: RESPONSE_TYPE_JSON,
+			XML: RESPONSE_TYPE_XML,
+			TEXT: RESPONSE_TYPE_TEXT,
+			JSARRAY: RESPONSE_TYPE_JSARRAY
 		},
+		Ajax: Ajax,
+		Get: Get,
+		Local: Local
+	});
+	
+	$.add({
+		DataSource: DataSource,
 		Record: Record,
 		RecordSet: RecordSet
 	});
