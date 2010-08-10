@@ -82,7 +82,11 @@ jet().add('base', function ($) {
 			if (!collection[eventType]) {
 				collection[eventType] = [];
 			}
-			collection[eventType].push(callback);
+			if (Lang.isFunction(callback)) {
+				collection[eventType].push(callback);
+			} else if (Lang.isFunction(callback.handleEvent)) {
+				collection[eventType].push(callback.handleEvent);
+			}
 			return myself;
 		};
 		

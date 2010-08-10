@@ -12,7 +12,8 @@ jet().add("node", function ($) {
 		Lang = $.Lang,
 		Hash = $.Hash,
 		A = $.Array,
-		SLICE = Array.prototype.slice;
+		AP = Array.prototype,
+		SLICE = AP.slice;
 	
 	/**
 	 * Keeps a record of all listeners attached to the DOM in order to remove them when necessary
@@ -271,13 +272,13 @@ jet().add("node", function ($) {
 				}
 			}
 		} else if (Lang.isNumber(nodes.length)) {
-			nodes = Array.prototype.slice.call(nodes);
+			nodes = SLICE.call(nodes);
 		} else {
 			$.error("Wrong argument for NodeList");
 		}
-		this.push.apply(this, nodes);
+		AP.push.apply(this, nodes);
 	};
-	$.extend(NodeList, Array, {
+	NodeList.prototype = {
 		/**
 		 * Iterates through the NodeList
 		 * The callback is passed a reference to the node and an iteration index. 
@@ -294,7 +295,8 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		each: function (fn) {
-			for (var myself = this, length = myself.length, i = 0; i < length; i++) {
+			var i = -1, myself = this;
+			while (this[++i]) {
 				fn.call(myself[i], myself[i], i);
 			}
 			return myself;

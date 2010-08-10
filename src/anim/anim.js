@@ -329,11 +329,14 @@ jet().add('anim', function ($) {
             });
 			var strength = myself.get("easingStrength");
 			var easing = myself.get("easing");
+			var name, end;
 			for (var i = 0; i <= dur; i += frameLength) {
 				timeFrame[i] = {};
-				Hash.each(to, function (name, end) {
-					timeFrame[i][name] = easing(i, from[name], end, dur, strength);
-				});
+				for (name in to) {
+					if (to.hasOwnProperty(name)) {
+						timeFrame[i][name] = easing(i, from[name], end, dur, strength);
+					}
+				}
 			}
 			return myself;
 		};
