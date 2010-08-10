@@ -82,10 +82,8 @@ jet().add('base', function ($) {
 			if (!collection[eventType]) {
 				collection[eventType] = [];
 			}
-			if (Lang.isFunction(callback)) {
+			if (Lang.isObject(callback)) {
 				collection[eventType].push(callback);
-			} else if (Lang.isFunction(callback.handleEvent)) {
-				collection[eventType].push(callback.handleEvent);
 			}
 			return myself;
 		};
@@ -114,8 +112,9 @@ jet().add('base', function ($) {
 			if (collection["*"]) {
 				handlers = handlers.concat(collection["*"]);
 			}
-			var i, collecLength = handlers.length, args = Array.prototype.slice.call(arguments, 1);
+			var i, collecLength = handlers.length;
 			var stop = FALSE;
+			var args = Array.prototype.slice.call(arguments, 1);
 			args.unshift({
 				stopPropagation: function () {
 					stop = TRUE;
@@ -123,10 +122,17 @@ jet().add('base', function ($) {
 				preventDefault: function () {
 					returnValue = FALSE;
 				},
-				type: eventType
+				type: eventType,
+				target: myself
 			});
 			for (i = 0; i < collecLength; i++) {
-				handlers[i].apply(this, args);
+				if (Lang.isFunction(handlers[i])) {
+					handlers[i].apply(myself, args);
+				// if the event handler is an object with a handleEvent method,
+				// that method is used but the context is the object itself
+				} else if (handlers[i].handleEvent) {
+					handlers[i].handleEvent.apply(handlers[i], args);
+				}
 				if (stop) {
 					break;
 				}
