@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+	<title>jet Test</title>
+	<style type="text/css">
+		div {
+			position: absolute;
+			width: 200px;
+			height: 200px;
+		}
+		#test {
+			background: #F00;
+		}
+		#test2 {
+			background: #0F0;
+		}
+		#test3 {
+			background: #00F;
+		}
+	</style>
+</head>
+
+<body>
+	<p>Hace click sobre algun cuadrado para animarlo</p>
+	<h1>jQuery</h1>
+	<div id="test"></div>
+	<div id="test2"></div>
+	<div id="test3"></div>
+	<script type="text/javascript" src="http://jet-js.googlecode.com/svn/trunk/build/jet.min.js"></script>
+	<script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+	<script type="text/javascript">
+		jet().use('anim', function ($) {
+			
+			var random = function (num) {
+				num = Math.random() * num;
+				return num === 0 ? 0 : Math.ceil(num) - 1;
+			};
+			
+			var usejquery = true;
+			
+			var h1 = $("h1");
+			
+			var tmp;
+			
+			$("div").on("click", function () {
+				h1.html(usejquery ? "jQuery" : "jet");
+				if (tmp) {
+					tmp.stop();
+				}
+				tmp = (usejquery ? jQuery : $)("div").each(function () {
+					(usejquery ? jQuery : $)(this).animate({
+						top: random(500)
+					}, random(1000) + 500, usejquery ? "swing" : $.Tween.easing.DEFAULT);
+					(usejquery ? jQuery : $)(this).animate({
+						left: random(1000)
+					}, random(1000) + 500, usejquery ? "swing" : $.Tween.easing.DEFAULT);
+				});
+				usejquery = !usejquery;
+			});
+			
+			
+		});
+	</script>
+</body>
+</html>
