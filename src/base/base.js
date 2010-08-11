@@ -155,7 +155,7 @@ jet().add('base', function ($) {
 					break;
 				}
 			}
-			return this;
+			return returnValue;
 		};
 		
 		/**
@@ -172,7 +172,7 @@ jet().add('base', function ($) {
 	/**
 	 * Provides get() and set() methods, along with getters, setters and options for configuration attributres
 	 * @class Attribute
-	 * @uses EventTarget
+	 * @extends EventTarget
 	 * @constructor
 	 */
 	var Attribute = function (classConfig) {
@@ -307,7 +307,7 @@ jet().add('base', function ($) {
 			return Lang.isValue(classConfig[attrName]);
 		};
 	};
-	augment(Attribute, EventTarget);
+	extend(Attribute, EventTarget);
 	
 	/**
 	 * Base class for all widgets and utilities.

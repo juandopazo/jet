@@ -10,7 +10,8 @@ jet().add("container", function ($) {
 		FALSE = false,
 		Lang = $.Lang,
 		Hash = $.Hash,
-		A = $.Array;
+		A = $.Array,
+		DOM = $.DOM;
 	
 	// definitions for better minification
 	var BOUNDING_BOX = "boundingBox",
@@ -460,7 +461,7 @@ jet().add("container", function ($) {
 		
 		// centers the overlay in the screen
 		var center = function (boundingBox) {
-			var screenSize = $.screenSize();
+			var screenSize = DOM.screenSize();
 			boundingBox.css({
 				left: (screenSize.width - (rendered ? boundingBox.width() : myself.get(WIDTH))) / 2 + PX,
 				top: (screenSize.height - (rendered ? boundingBox.height() : myself.get(HEIGHT))) / 2 + PX
@@ -484,7 +485,7 @@ jet().add("container", function ($) {
 				if (UA_SUPPORTS_FIXED) {
 					boundingBox.css(position, myself.isSet(position) ? ((myself.get(position) - bodyMargin + PX)) : AUTO);
 				} else {
-					var screenSize = $.screenSize();
+					var screenSize = DOM.screenSize();
 					if (position == BOTTOM) {
 						boundingBox.css(TOP, myself.isSet(position) ? ((screenSize.height - myself.get(HEIGHT) - bodyMargin + boundingBox.scrollTop()) + PX) : AUTO);
 					} else if (position == RIGHT) {

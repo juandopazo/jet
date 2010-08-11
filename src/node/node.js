@@ -264,7 +264,7 @@ jet().add("node", function ($) {
 		} else if (Lang.isArray(nodes)) {
 			var i = 0;
 			while (i < nodes.length) {
-				if (!(nodes.nodeType || nodes.body || nodes.navigator)) {
+				if (!(nodes[i].nodeType || nodes[i].body || nodes[i].navigator)) {
 					nodes.splice(i, 1);
 				} else {
 					i++;
