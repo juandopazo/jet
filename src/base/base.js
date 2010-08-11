@@ -350,7 +350,10 @@ jet().add('base', function ($) {
 		var myself = this;
 		
 		$($.win).on(UNLOAD, function () {
-			myself.destroy();
+			// destroy only if it wasn't destroyed earlier
+			if (myself.destroy) {
+				myself.destroy();
+			}
 		}); 
 	};
 	extend(Utility, Base, {
