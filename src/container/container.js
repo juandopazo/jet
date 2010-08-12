@@ -115,7 +115,7 @@ jet().add("container", function ($) {
 			}).on("blur", function () {
 				boundingBox.removeClass(prefix + Button.NAME + "-focus", prefix + type + Button.NAME + "-focus");
 			}).on(CLICK, function (e) {
-				node[0].blur();
+				node._nodes[0].blur();
 				if (myself.fire(PRESSED)) {
 					e.preventDefault();
 				}

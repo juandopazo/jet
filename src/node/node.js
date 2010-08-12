@@ -280,7 +280,8 @@ jet().add("node", function ($) {
 		} else {
 			$.error("Wrong argument for NodeList");
 		}
-		AP.push.apply(this, nodes);
+		this._nodes = [];
+		AP.push.apply(this._nodes, nodes);
 	};
 	NodeList.prototype = {
 		/**
@@ -301,7 +302,7 @@ jet().add("node", function ($) {
 		each: function (fn) {
 			var i = -1, myself = this;
 			while (this[++i]) {
-				fn.call(myself[i], myself[i], i);
+				fn.call(myself._nodes[i], myself._nodes[i], i);
 			}
 			return myself;
 		},
@@ -351,7 +352,7 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		hasClass: function (className) {
-			var node = this[0];
+			var node = this._nodes[0];
 			return A.inArray(className, node.className ? node.className.split(" ") : []);
 		},
 		/**
@@ -426,7 +427,7 @@ jet().add("node", function ($) {
 		 * @return {Hash}
 		 */
 		offset: function () {
-			var node = this[0];
+			var node = this._nodes[0];
 			var offset = {
 				left: 0,
 				top: 0,
@@ -445,9 +446,7 @@ jet().add("node", function ($) {
 					offset.left = box.left + DOM.scrollLeft() - (de.clientLeft || body.clientLeft || 0);
 					offset.top = box.top + DOM.scrollTop() - (de.clientTop || body.clientTop || 0);
 				} else if (node.offsetParent) {
-					/*
-					 * Not interested in supporting other browsers very well
-					 */
+					// Not interested in supporting other browsers very well
 					do {
 						offset.left += node.offsetLeft;
 						offset.top += node.offsetTop;
@@ -477,7 +476,7 @@ jet().add("node", function ($) {
 					node.style.width = width;
 				});
 			}
-			return this[0].offsetWidth;
+			return this._nodes[0].offsetWidth;
 		},
 		/**
 		 * Gets/sets the height of all the nodes in the collection
@@ -495,7 +494,7 @@ jet().add("node", function ($) {
 					node.style.height = height;
 				});
 			}
-			return this[0].offsetHeight;
+			return this._nodes[0].offsetHeight;
 		},
 		/**
 		 * Returns a new NodeList with all nodes cloned from the current one
@@ -505,11 +504,11 @@ jet().add("node", function ($) {
 		 */
 		clone: function (deep) {
 			deep = Lang.isValue(deep) ? deep : TRUE;
-			var result = new NodeList();
+			var result = [];;
 			this.each(function (node) {
 				result.push(node.cloneNode(deep));
 			});
-			return result;
+			return new NodeList(result);
 		},
 		/**
 		 * Appends nodes to the ones in the current node list
@@ -532,7 +531,7 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		appendTo: function (target) {
-			target = $(target)[0];
+			target = $(target)._nodes[0];
 			return this.each(function (node) {
 				target.appendChild(node);
 			});
@@ -562,7 +561,7 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		prependTo: function (target) {
-			target = $(target)[0];
+			target = $(target)._nodes[0];
 			return this.each(function (node) {
 				if (target.firstChild) {
 					target.insertBefore(node, target.firstChild);
@@ -578,7 +577,7 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		insertBefore: function (before) {
-			before = $(before)[0];
+			before = $(before)._nodes[0];
 			return this.each(function (node) {
 				before.parentNode.insertBefore(node, before);
 			});
@@ -589,13 +588,13 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		parent: function () {
-			var result = new NodeList();
+			var result = [];;
 			this.each(function (node) {
 				if (A.indexOf(node.parentNode, result) == -1) {
 					result.push(node.parentNode);
 				}
 			});
-			return result;
+			return new NodeList(result);
 		},
 		/**
 		 * Returns a new NodeList with all the first children of the nodes in the collection
@@ -603,14 +602,14 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		first: function () {
-			var result = new NodeList();
+			var result = [];;
 			this.each(function (node) {
-				node = $(node).children(0)[0];
+				node = $(node).children(0)._nodes[0];
 				if (node) {
 					result.push(node);
 				}
 			});
-			return result;
+			return new NodeList(result);
 		},
 		/**
 		 * Returns a new NodeList with all the next siblings of the nodes in the collection
@@ -618,7 +617,7 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		next: function () {
-			var result = new NodeList();
+			var result = [];;
 			this.each(function (next) {
 				do {
 					next = next.nextSibling;
@@ -628,7 +627,7 @@ jet().add("node", function ($) {
 					result.push(next);
 				}
 			});
-			return result;
+			return new NodeList(result);
 		},
 		/**
 		 * Returns a new NodeList with all the previous siblings of the nodes in the collection
@@ -636,7 +635,7 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		previous: function () {
-			var result = new NodeList();
+			var result = [];;
 			this.each(function (previous) {
 				do {
 					previous = previous.previousSibling;
@@ -646,7 +645,7 @@ jet().add("node", function ($) {
 					result.push(previous);
 				}
 			});
-			return result;
+			return new NodeList(result);
 		},
 		/**
 		 * Returns a new NodeList with all the last children of the nodes in the collection
@@ -654,14 +653,14 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		last: function () {
-			var result = new NodeList();
+			var result = [];;
 			this.each(function (node) {
-				node = $(node).children().pop();
+				node = SLICE.call($(node).children()).pop();
 				if (node) {
 					result.push(node);
 				}
 			});
-			return result;
+			return new NodeList(result);
 		},
 		/**
 		 * Gets or sets the innerHTML of all the nodes in the node list
@@ -672,7 +671,7 @@ jet().add("node", function ($) {
 		html: function (html) {
 			return Lang.isValue(html) ? this.each(function (node) {
 				node.innerHTML = html;
-			}) : this[0].innerHTML;
+			}) : this._nodes[0].innerHTML;
 		},
 		/**
 		 * Gets or sets tag attributes to the nodes in the collection
@@ -689,7 +688,7 @@ jet().add("node", function ($) {
 			} else if (Lang.isValue(value)) {
 				attrs[key] = value;
 			} else {
-				return this[0][key];
+				return this._nodes[0][key];
 			}
 			return this.each(function (node) {
 				Hash.each(attrs, function (name, val) {
@@ -711,7 +710,7 @@ jet().add("node", function ($) {
 			} else if (Lang.isValue(value)) {
 				css[key] = value;
 			} else {
-				return $(this[0]).currentStyle()[key];
+				return $(this._nodes[0]).currentStyle()[key];
 			}
 			return this.each(function (node) {
 				Hash.each(css, function (prop, value) {
@@ -738,11 +737,11 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		find: function (query) {
-			var result = new NodeList();
+			var result = [];;
 			this.each(function (node) {
 				result.push.apply(result, $(query, node));
 			});
-			return result;
+			return new NodeList(result);
 		},
 		/**
 		 * Returns a new NodeList with all the children of the current nodes
@@ -753,7 +752,7 @@ jet().add("node", function ($) {
 		children: function (filter) {
 			filter = !Lang.isValue(filter) ? FALSE :
 					  Lang.isString(filter) ? filter.toUpperCase() : filter;
-			var result = new NodeList();
+			var result = [];;
 			this.each(function (node) {
 				var children = node.childNodes;
 				var newChildren = [];
@@ -774,7 +773,7 @@ jet().add("node", function ($) {
 					result.push.apply(result, newChildren);
 				}
 			});
-			return result;
+			return new NodeList(result);
 		},
 		/**
 		 * Adds an event listener to all the nods in the list
@@ -856,7 +855,7 @@ jet().add("node", function ($) {
 		 * @return {CSSDeclaration}
 		 */
 		currentStyle: function () {
-			var node = this[0];
+			var node = this._nodes[0];
 			return $.win[GET_COMPUTED_STYLE] ? $.win[GET_COMPUTED_STYLE](node, null) : 
 					node[CURRENT_STYLE] ? node[CURRENT_STYLE] : node.style;
 		},
@@ -875,11 +874,11 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		link: function (nodelist) {
-			var result = new NodeList(SLICE.call(this));
+			var result = new NodeList(this._nodes);
 			A.each(nodelist, function (node) {
 				result.push(node);
 			});
-			return result;
+			return new NodeList(result);
 		}
 	};
 	NodeList.is = Lang.is;

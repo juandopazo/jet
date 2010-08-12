@@ -342,38 +342,36 @@ jet().add('datasource', function ($) {
 			 * }
 			 */
 			else if (responseType == RESPONSE_TYPE_XML) {
-
-				var resultNode = $(rawData).find(responseSchema.resultNode)[0];
-				A.each(resultNode.children(), function (node) {
+				var doc = $.context;
+				var root = rawData.documentElement; 
+				var resultNode = root.nodeName == responseSchema.resultNode ? $(root) : $(root).find(responseSchema.resultNode).eq(0);
+				A.each(resultNode.children()._nodes, function (node) {
 					var record = {};
 					A.each(responseSchema.fields, function (field) {
-						var value;
-						if (node[0].nodeName != field.node) {
-							value = node.find(field.node)[0];
-						} else {
-							value = node[0];
-						}
-						if (field.attr) {
-							value = value.getAttribute(field.attr);
-						} else {
-							value = value.firstChild.nodeValue;
-						}
-						if (field.parser) {
-							switch (field.parser.toLowerCase()) {
-							case "float":
-								value = parseFloat(value);
-								break;
-							case "10":
-								value = parseInt(value, 10);
-								break; 
+						var value = node.nodeName != field.node ? $(node).find(field.node)._nodes[0] : node;
+						if (value) {
+							if (field.attr) {
+								value = value.getAttribute(field.attr);
+							} else {
+								value = value.firstChild ? value.firstChild.nodeValue : "";
+							}
+							if (field.parser) {
+								switch (field.parser.toLowerCase()) {
+								case "float":
+									value = parseFloat(value);
+									break;
+								case "10":
+									value = parseInt(value, 10);
+									break; 
+								}
 							}
 						}
 						record[field.key] = value;
 					});
 					data[data.length] = record;
 				});
+				$.context = doc;
 			}
-			
 			return new RecordSet(data);
 		};
 		
