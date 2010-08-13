@@ -162,7 +162,7 @@
 			isFunction: function (o) {
 				return type(o) === FUNCTION;
 			},
-			isObject: function(o, failfn) {
+			isObject: function (o, failfn) {
 				var t = typeof o;
 				return (o && (t === OBJECT || (!failfn && (t === FUNCTION || Lang.isFunction(o))))) || false;
 			},

@@ -20,9 +20,27 @@ jet().add('anim', function ($) {
 	var PLAYING = "playing",
 		ENTER_FRAME = "enterFrame";
 		
-	var pxToFloat = function(str){
+	var pxToFloat = function (str) {
 		return !Lang.isString(str) ? str :
 			str.substr(-2, str.length) == "px" ? parseFloat(str.substr(0, str.length - 2)) : parseFloat(str);
+	};
+	
+	var oneDBezier = function (points, t) {  
+	    var n = points.length;
+	    var tmp = [];
+	
+	    for (var i = 0; i < n; ++i) {
+	        tmp[i] = points[i]; // save input
+	    }
+	    
+	    for (var j = 1; j < n; ++j) {
+	        for (i = 0; i < n - j; ++i) {
+	            tmp[i] = (1 - t) * tmp[i] + t * tmp[parseInt(i + 1, 10)];
+	        }
+	    }
+	
+	    return tmp[0];
+	
 	};
 	
 	/**
@@ -32,7 +50,7 @@ jet().add('anim', function ($) {
 	 */
 	var Easing = {
 		/**
-		 * @method DEFAULT
+		 * @method linear
 		 * @description Linear easing
 		 * @param {Number} x The time variable
 		 * @param {Number} y0 The start value of the property that will be changed
@@ -43,7 +61,7 @@ jet().add('anim', function ($) {
 			return (yf - y0) * x / dur + y0;
 		},
 		/**
-		 * @method EASEIN
+		 * @method easein
 		 * @description An easing that's stronger at the beginning and softer at the end
 		 * @param {Number} x The time variable
 		 * @param {Number} y0 The start value of the property that will be changed
@@ -52,10 +70,10 @@ jet().add('anim', function ($) {
 		 * @param {Number} pw Easing strengh
 		 */
 		easein: function (x, y0, yf, dur, pw) {
-			return yf + y0 - yf * Math.pow((dur - x) / dur, pw) + y0;
+			return yf - (yf - y0) * Math.pow((yf >= y0 ? -1 : 1) * (x / dur - 1), pw);
 		},
 		/**
-		 * @method EASEOUT
+		 * @method easeout
 		 * @description An easing that's softer at the beginning and stronger at the end
 		 * @param {Number} x The time variable
 		 * @param {Number} y0 The start value of the property that will be changed
@@ -64,7 +82,22 @@ jet().add('anim', function ($) {
 		 * @param {Number} pw Easing strengh
 		 */
 		easeout: function (x, y0, yf, dur, pw) {
-			return yf * Math.pow(x / dur, pw) + y0;
+			return y0 + (yf - y0) * Math.pow(x / dur, pw);
+		},
+		/*bounce: function (x, y0, yf, dur, pw) {
+			return oneDBezier([y0, yf + pw, yf], x / dur);
+		},*/
+		/**
+		 * @method sling
+		 * @description An easing that goes back before going forward
+		 * @param {Number} x The time variable
+		 * @param {Number} y0 The start value of the property that will be changed
+		 * @param {Number} yf The final value of the property that will be changed
+		 * @param {Number} dur Duration of the animation
+		 * @param {Number} pw Easing strengh
+		 */
+		sling: function (x, y0, yf, dur, pw) {
+			return oneDBezier([y0, y0 + (yf < y0 ? 1 : -1) * pw, yf], x / dur);
 		}
 	};
 	
@@ -80,6 +113,7 @@ jet().add('anim', function ($) {
 			var interval;
 			var frameLength;
 			var time = 0;
+			var playing = FALSE;
 	
 			return {
 				/**
@@ -96,14 +130,16 @@ jet().add('anim', function ($) {
 				 */
 				play: function () {
 					var myself = this;
-					if (interval) {
-						clearInterval(interval);
+					if (!playing) {
+						if (interval) {
+							clearInterval(interval);
+						}
+						var frameLength = Math.round(1000 / myself.fps);
+						interval = setInterval(function () {
+							myself.fire(ENTER_FRAME, (new Date()).getTime());
+						}, frameLength);
+						playing = TRUE;
 					}
-					var frameLength = Math.round(1000 / myself.fps);
-					interval = setInterval(function () {
-						time += frameLength;
-						myself.fire(ENTER_FRAME, time);
-					}, frameLength);
 					return myself;
 				},
 				/**
@@ -115,6 +151,7 @@ jet().add('anim', function ($) {
 					if (interval) {
 						clearInterval(interval);
 					}
+					playing = FALSE;
 					return this;
 				},
 				/**
@@ -179,8 +216,7 @@ jet().add('anim', function ($) {
 			 * @type Object
 			 */
 			from: {
-				value: FALSE,
-				validator: notPlaying
+				value: FALSE
 			},
 			/**
 			 * @config to
@@ -188,8 +224,7 @@ jet().add('anim', function ($) {
 			 * @type Object
 			 */
 			to: {
-				required: TRUE,
-				validator: notPlaying
+				required: TRUE
 			},
 			/**
 			 * @config easing
@@ -210,15 +245,6 @@ jet().add('anim', function ($) {
 				setter: function (value) {
 					return Math.abs(value);
 				}
-			},
-			/**
-			 * @config startFrame
-			 * @description Where in the TimeFrame to start the tween
-			 * @type Number
-			 * @default 0 Start inmediately
-			 */
-			startFrame: {
-				value: 0
 			},
 			/**
 			 * @config duration
@@ -259,18 +285,12 @@ jet().add('anim', function ($) {
 				var against = Hash.keys(to).length;
 				Hash.each(to, function (name, val) {
 					var go = easing(elapsed, from[name], val, duration, strength);
-					/*
-					 * The animation is considered finished not when the time span has finished
-					 * but when all properties get to where they have to go
-					 * Time is not guaranteed. This makes less "perfect" animations, but ensures
-					 * things end up where they are supposed to.
-					 */
-					if ((val >= from[name] && go >= val) || (val <= from[name] && go <= val)) {
-						++check;
+					if ((val > from[name] && go > val) || (val < from[name] && go < val)) {
+						go = val;
 					}
 					node.css(name, go);
 				});
-				if (check == against) {
+				if (elapsed >= duration) {
 					myself.stop();
 					// @TODO: investigate if this should be wrapped in a setTimeout or something similar
 					// to allow chaining of animations without hanging the browser 
@@ -289,15 +309,12 @@ jet().add('anim', function ($) {
 		myself.play = function () {
 			var startStyle = node.currentStyle();
 			playing = TRUE;
-			from = myself.get("from");
+			from = myself.get("from") || {};
 			to = myself.get("to");
-			if (!from) {
-				from = { css: {} };
-			}
+			var offset = node.offset();
 			Hash.each(to, function (name, val) {
 				to[name] = pxToFloat(val);
 				if (!from[name]) {
-					var offset = node.offset();
 					// Some properties shouldn't be get from the computed style because
 					// they might have non numeric values such as "auto"
 					// @TODO: handle "auto" for margin, padding, etc
@@ -350,6 +367,14 @@ jet().add('anim', function ($) {
 			timeframe.unbind(ENTER_FRAME, enterFrame);
 			previous = (new Date()).getTime() - startTime;
 			return myself;
+		};
+		/**
+		 * Reverses the tween
+		 * @method reverse
+		 * @chainable
+		 */
+		myself.reverse = function () {
+			return myself.set("from", to).set("to", from);
 		};
 	};
 	$.extend(Tween, $.Base);

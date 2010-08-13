@@ -103,7 +103,7 @@ jet().add('base', function ($) {
 			if (Lang.isObject(callback)) {
 				collection[eventType].push(callback);
 			}
-			return this;
+			return myself;
 		};
 		
 		/**
@@ -115,7 +115,7 @@ jet().add('base', function ($) {
 		 */
 		myself.unbind = function (eventType, callback) {
 			$.Array.remove(callback, collection[eventType] || []);
-			return this;
+			return myself;
 		};
 		
 		/**
@@ -165,7 +165,7 @@ jet().add('base', function ($) {
 		 */
 		myself.unbindAll = function () {
 			collection = {};
-			return this;
+			return myself;
 		};
 	};
 	
@@ -176,6 +176,7 @@ jet().add('base', function ($) {
 	 * @constructor
 	 */
 	var Attribute = function (classConfig) {
+		Attribute.superclass.constructor.apply(this);
 		classConfig = classConfig || {};
 		var myself = this;
 		
@@ -437,7 +438,9 @@ jet().add('base', function ($) {
 		 * avoiding memory leaks and helping garbage collection 
 		 */ 
 		$($.win).on(UNLOAD, function () {
-			myself.destroy();
+			if (myself.destroy) {
+				myself.destroy();
+			}
 		}); 
 	};
 	extend(Widget, Base, {

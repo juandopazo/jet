@@ -343,8 +343,8 @@ jet().add('datasource', function ($) {
 			 */
 			else if (responseType == RESPONSE_TYPE_XML) {
 				var doc = $.context;
-				var root = rawData.documentElement; 
-				var resultNode = root.nodeName == responseSchema.resultNode ? $(root) : $(root).find(responseSchema.resultNode).eq(0);
+				var de = rawData.documentElement; 
+				var resultNode = de.nodeName == responseSchema.resultNode ? $(de) : $(de).find(responseSchema.resultNode).eq(0);
 				A.each(resultNode.children()._nodes, function (node) {
 					var record = {};
 					A.each(responseSchema.fields, function (field) {

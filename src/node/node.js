@@ -271,8 +271,8 @@ jet().add("node", function ($) {
 				}
 			}
 		} else if (Lang.isNumber(nodes.length)) {
-			var tmp = []
-			for (var i = 0; i < nodes.length; i++) {
+			var tmp = [];
+			for (i = 0; i < nodes.length; i++) {
 				tmp[i] = nodes[i];
 			}
 			nodes = tmp;
@@ -300,8 +300,8 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		each: function (fn) {
-			var i = -1, myself = this;
-			while (this[++i]) {
+			var myself = this, i, length = myself._nodes.length;
+			for (i = 0; i < length; i++) {
 				fn.call(myself._nodes[i], myself._nodes[i], i);
 			}
 			return myself;
@@ -327,7 +327,6 @@ jet().add("node", function ($) {
 		 */
 		show: function () {
 			return this.each(function (node) {
-				console.log(node);
 				node.style.display = node.JET_oDisplay || "";
 			});
 		},
@@ -437,9 +436,6 @@ jet().add("node", function ($) {
 			var doc = node.ownerDocument;
 			if (node && doc) {
 				if (node.getBoundingClientRect) {
-					/*
-					 * getBoundingClientRect implementation from jQuery
-					 */
 					var box  = node.getBoundingClientRect();
 					var body = doc.body;
 					var de = doc[DOCUMENT_ELEMENT];
@@ -504,7 +500,7 @@ jet().add("node", function ($) {
 		 */
 		clone: function (deep) {
 			deep = Lang.isValue(deep) ? deep : TRUE;
-			var result = [];;
+			var result = [];
 			this.each(function (node) {
 				result.push(node.cloneNode(deep));
 			});
@@ -588,7 +584,7 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		parent: function () {
-			var result = [];;
+			var result = [];
 			this.each(function (node) {
 				if (A.indexOf(node.parentNode, result) == -1) {
 					result.push(node.parentNode);
@@ -602,7 +598,7 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		first: function () {
-			var result = [];;
+			var result = [];
 			this.each(function (node) {
 				node = $(node).children(0)._nodes[0];
 				if (node) {
@@ -617,7 +613,7 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		next: function () {
-			var result = [];;
+			var result = [];
 			this.each(function (next) {
 				do {
 					next = next.nextSibling;
@@ -635,7 +631,7 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		previous: function () {
-			var result = [];;
+			var result = [];
 			this.each(function (previous) {
 				do {
 					previous = previous.previousSibling;
@@ -653,7 +649,7 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		last: function () {
-			var result = [];;
+			var result = [];
 			this.each(function (node) {
 				node = SLICE.call($(node).children()).pop();
 				if (node) {
@@ -737,7 +733,7 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		find: function (query) {
-			var result = [];;
+			var result = [];
 			this.each(function (node) {
 				result.push.apply(result, $(query, node));
 			});
@@ -752,7 +748,7 @@ jet().add("node", function ($) {
 		children: function (filter) {
 			filter = !Lang.isValue(filter) ? FALSE :
 					  Lang.isString(filter) ? filter.toUpperCase() : filter;
-			var result = [];;
+			var result = [];
 			this.each(function (node) {
 				var children = node.childNodes;
 				var newChildren = [];
