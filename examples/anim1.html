@@ -7,59 +7,92 @@
 
 	<title>jet Test</title>
 	<style type="text/css">
-		div {
+		body {
+			margin: 0;
+			padding: 0;
+		}
+		.movable {
 			position: absolute;
-			width: 200px;
-			height: 200px;
-		}
-		#test {
-			background: #F00;
-		}
-		#test2 {
-			background: #0F0;
-		}
-		#test3 {
-			background: #00F;
+			width: 5px;
+			height: 5px;
 		}
 	</style>
 </head>
 
 <body>
-	<p>Hace click sobre algun cuadrado para animarlo</p>
-	<h1>jQuery</h1>
-	<div id="test"></div>
-	<div id="test2"></div>
-	<div id="test3"></div>
-	<script type="text/javascript" src="http://jet-js.googlecode.com/svn/trunk/build/jet.min.js"></script>
-	<script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="../src/jet/jet.js"></script>
 	<script type="text/javascript">
-		jet().use('anim', function ($) {
+		jet({
+			base: "../src"
+		}).use('anim', function ($) {
 			
-			var random = function (num) {
-				num = Math.random() * num;
-				return num === 0 ? 0 : Math.ceil(num) - 1;
+			var random = $.Lang.random;
+			
+			var decToHex = function (dec) {
+				return dec.toString(16);
 			};
 			
-			var usejquery = true;
-			
-			var h1 = $("h1");
-			
-			var tmp;
-			
-			$("div").on("click", function () {
-				h1.html(usejquery ? "jQuery" : "jet");
-				if (tmp) {
-					tmp.stop();
+			var colorArrayToHex = function (arr) {
+				for (var i = 0; i < 3; i++) {
+					arr[i] = decToHex(arr[i]);
+					if (arr[i].length == 1) {
+						arr[i] = "0" + arr[i];
+					}
 				}
-				tmp = (usejquery ? jQuery : $)("div").each(function () {
-					(usejquery ? jQuery : $)(this).animate({
-						top: random(500)
-					}, random(1000) + 500, usejquery ? "swing" : $.Tween.easing.DEFAULT);
-					(usejquery ? jQuery : $)(this).animate({
-						left: random(1000)
-					}, random(1000) + 500, usejquery ? "swing" : $.Tween.easing.DEFAULT);
+				return "#" + arr.join("");
+			};
+			
+			for (var i = 0; i < 100; i++) {
+				$("<div/>").addClass("movable").css({
+					background: colorArrayToHex([random(256), random(256), random(256)]),
+					top: random(300) + 100,
+					left: random(900) + 100
+				}).appendTo(document.body);
+			}
+			
+			var x = random(900) + 100;
+			var y = random(300) + 100;
+			$(".movable").each(function () {
+				var dur = random(1000) + 2000;
+				var node = this;
+				var tw = new $.Tween({
+					node: node,
+					to: {
+						left: x
+					},
+					duration: dur,
+					easing: "sling",
+					easingStrength: 100,
+					on: {
+						finish: function () {
+							/*tw.set("duration", random(1000) + 500).set("to", {
+								left: random(900) + 100,
+								top: random(300) + 100
+							}).set("from", $(node).offset()).play();*/
+							tw.reverse().play();
+						}
+					}
 				});
-				usejquery = !usejquery;
+				tw.play();
+				var tw2 = new $.Tween({
+					node: node,
+					to: {
+						top: y
+					},
+					duration: dur,
+					easing: "sling",
+					easingStrength: 300,
+					on: {
+						finish: function () {
+							/*tw.set("duration", random(1000) + 500).set("to", {
+								left: random(900) + 100,
+								top: random(300) + 100
+							}).set("from", $(node).offset()).play();*/
+							tw2.reverse().play();
+						}
+					}
+				});
+				tw2.play();
 			});
 			
 			
