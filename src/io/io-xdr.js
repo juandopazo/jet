@@ -13,7 +13,7 @@ jet().add("io-xdr", function ($) {
 			IO.fire("xdr:ready");
 		}
 		$("<div/>").attr("id", "flajax").appendTo($("#jet-tracker"));
-		$.swfobject.embedSWF("../src/io/flajax.swf", "flajax", "1", "1", "9.0.0", "expressInstall.swf", {}, {}, {}, function (e) {
+		$.swfobject.embedSWF("http://jet-js.googlecode.com/svn/trunk/src/io/flajax.swf", "flajax", "1", "1", "9.0.0", "expressInstall.swf", {}, {}, {}, function (e) {
 			flajax = jet.IO.flajax = e.ref;
 		});
 	}

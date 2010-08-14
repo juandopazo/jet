@@ -34,7 +34,7 @@
 		log: TRUE,
 		node: ["log", "ua"],
 		xsl: [NODE],
-		flash: [NODE],
+		swf: TRUE,
 		"simple-progressbar": [NODE],
 		json: [NODE],
 		cookie: [NODE],
