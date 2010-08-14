@@ -5,13 +5,15 @@
  */
 jet().add('io', function ($) {
 	var win = $.win;
+	var Lang = $.Lang;
 	
 	var TRUE = true,
 	FALSE = false,
 
 	XML = "xml",
 	XSL = "xsl",
-	TYPE_JSON = "json";
+	TYPE_JSON = "json",
+	GET = "GET";
 	
 	var newAXO = function (t) {
 		return new win.ActiveXObject(t);
@@ -21,6 +23,10 @@ jet().add('io', function ($) {
 		var freeThreadedDOM = "Msxml2.FreeThreadedDOMDocument.",
 			domDocument = "Msxml2.DOMDocument.",
 			test,
+		/* La eleccion de versiones 6.0 y 3.0 es adrede.
+		   La version 4.0 es especifica de windows 2000 y la 5.0 viene unicamente con Microsoft Office
+		   La version 6 viene con Windows Vista y uno de los service pack de XP, por lo que el usuario quizas no la tenga
+		   Se la usa porque es considerablemente mas rapida */
 			v6 = "6.0",
 			v3 = "3.0";
 		try {
@@ -77,10 +83,6 @@ jet().add('io', function ($) {
 	En Internet Explorer instancia un objeto ActiveX llamado MSXML. En el resto usa XMLHttpRequest.responseXML */
 	var parseXML = function (xmlFile, type, errorHandler) {
 		var xmlDoc = null;
-		/* La eleccion de versiones 6.0 y 3.0 es adrede.
-		   La version 4.0 es especifica de windows 2000 y la 5.0 viene unicamente con Microsoft Office
-		   La version 6 viene con Windows Vista y uno de los service pack de XP, por lo que el usuario quizas no la tenga
-		   Se la usa porque es considerablemente mas rapida */
 		if (!XMLHttpRequest) {
 			xmlDoc = getActiveXParser(type);
 			xmlDoc.async = FALSE;
@@ -88,8 +90,11 @@ jet().add('io', function ($) {
 			if (xmlDoc.parseError.errorCode !== 0) {
 				errorHandler(noStatusError, xmlDoc.parseError);
 			}
-		} else {
+		} else if (!Lang.isString(xmlFile)) {
 			xmlDoc = xmlFile.responseXML;
+		} else {
+			xmlDoc = new win.DOMParser();
+			xmlDoc = xmlDoc.parseFromString(xmlFile, "text/xml");
 		}
 		return xmlDoc;
 	};
@@ -191,6 +196,9 @@ jet().add('io', function ($) {
 				}
 			}
 			return result || $;
+		},
+		utils: {
+			parseXML: parseXML
 		}
 	};
 });
