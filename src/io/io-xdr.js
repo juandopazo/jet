@@ -1,6 +1,5 @@
 jet().add("io-xdr", function ($) {
 	
-	$.mix($.IO, new $.EventTarget());
 	var IO = $.IO;
 	
 	if (!jet.IO) {
@@ -8,9 +7,14 @@ jet().add("io-xdr", function ($) {
 	}
 	var flajax = jet.IO.flajax;
 	if (!flajax) {
+		jet.IO.xdrWaitList = [];
 		window.flajaxLoad = function () {
+			console.log(jet.IO.xdrWaitList);
 			jet.IO.xdrReady = true;
-			IO.fire("xdr:ready");
+			for (var i = 0; i < jet.IO.xdrWaitList.length; i++) {
+				IO.flajax(jet.IO.xdrWaitList[i]);
+			}
+			jet.IO.xdrWaitList = [];
 		}
 		$("<div/>").attr("id", "flajax").appendTo($("#jet-tracker"));
 		$.swfobject.embedSWF("http://jet-js.googlecode.com/svn/trunk/src/io/flajax.swf", "flajax", "1", "1", "9.0.0", "expressInstall.swf", {}, {}, {}, function (e) {
@@ -57,9 +61,7 @@ jet().add("io-xdr", function ($) {
 			jet.IO.xdrCallbacks["flajax" + callbackId + "_Error"] = error;
 			jet.IO.flajax.call(settings.url, "jet.IO.xdrCallbacks.flajax" + callbackId, method, settings.data);
 		} else {
-			IO.on("xdr:ready", function () {
-				IO.flajax(settings);
-			});
+			jet.IO.xdrWaitList.push(settings);
 		}
 	}
 	
