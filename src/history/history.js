@@ -21,7 +21,7 @@ jet().add('history', function ($) {
 	
 	var safari = false,
 		uaOpera = UA.opera;
-	
+		
 	/*Private - CSS strings utilized by both objects to hide or show behind-the-scenes DOM elements*/
 	var showStyles = {
 		border: "0",
@@ -46,6 +46,11 @@ jet().add('history', function ($) {
 		
 		/*Private - debug mode flag*/
 		var debugMode;
+		
+		var fake = function (a) {
+			return a;
+		};
+		var encode, decode;
 	
 		/*Private: Our hash of key name/values.*/
 		var storageHash = {};
@@ -90,6 +95,8 @@ jet().add('history', function ($) {
 			setup: function (options) {
 				options = options || {};
 				debugMode = !!options.debugMode;
+				encode = options.encodeURI ? encodeURIComponent : fake;
+				decode = options.encodeURI ? decodeURIComponent : fake;
 							
 				/*write a hidden form and textarea into the page; we'll stow our history stack here*/
 				var formStyles = debugMode ? showStyles : hideStyles;
@@ -110,7 +117,7 @@ jet().add('history', function ($) {
 			/*Public*/
 			put: function (key, value) {
 				
-				var encodedKey = encodeURIComponent(key);
+				var encodedKey = encode(key);
 				
 				assertValidKey(encodedKey);
 				/*if we already have a value for this, remove the value before adding the new one*/
@@ -127,7 +134,7 @@ jet().add('history', function ($) {
 			/*Public*/
 			get: function (key) {
 		
-				var encodedKey = encodeURIComponent(key);
+				var encodedKey = encode(key);
 				
 				assertValidKey(encodedKey);
 				/*make sure the hash table has been loaded from the form*/
@@ -142,7 +149,7 @@ jet().add('history', function ($) {
 			/*Public*/
 			remove: function (key) {
 				
-				var encodedKey = encodeURIComponent(key);
+				var encodedKey = encode(key);
 		
 				assertValidKey(encodedKey);
 				/*make sure the hash table has been loaded from the form*/
@@ -163,7 +170,7 @@ jet().add('history', function ($) {
 			/*Public*/
 			hasKey: function (key) {
 				
-				var encodedKey = encodeURIComponent(key);
+				var encodedKey = encode(key);
 		
 				assertValidKey(encodedKey);
 				/*make sure the hash table has been loaded from the form*/
@@ -176,7 +183,13 @@ jet().add('history', function ($) {
 		};
 	}());
 	
-	
+	/**
+	 * History management class
+	 * @class History
+	 * @extends Base
+	 * @constructor
+	 * @param {Object} config Object literal specifying configuration properties
+	 */
 	var History = function () {
 		History.superclass.constructor.apply(this, arguments);
 	
@@ -186,12 +199,29 @@ jet().add('history', function ($) {
 		for another one, and then return, the page's onload listener fires again. We need a way to differentiate between the first page
 		load and subsequent ones. This variable works hand in hand with the pageLoaded variable we store into historyStorage.*/
 		var firstLoad;
+		
+		var fake = function (a) {
+			return a;
+		};
+		var encode = fake,
+			decode = fake;
 	
 		var myself = this.addAttrs({
+			/**
+			 * @config firstLoad
+			 * @description Whether this is the first time the History loaded or not
+			 * @type Boolean
+			 * @readOnly
+			 */
 			firstLoad: {
 				readOnly: true,
 				value: firstLoad
 			},
+			/**
+			 * @config baseTitle
+			 * @description pattern for title changes. Example: "Armchair DJ [@@@]" - @@@ will be replaced
+			 * @type String
+			 */
 			baseTitle: {
 				validator: function (value) {
 					var ok = value.indexOf("@@@") >= 0;
@@ -201,11 +231,28 @@ jet().add('history', function ($) {
 					return ok;
 				}
 			},
+			/**
+			 * @config blankURL
+			 * @description string to override the default location of blank.html. Must end in "?"
+			 * @default "blank.html?"
+			 */
 			blankURL: {
 				setter: function (value) {
 					return value.substr(-1) != "?" ? value + "?" : value;
 				},
 				value: "blank.html?"
+			},
+			/**
+			 * @config encodeURI
+			 * @description Whether to encode the URI or not
+			 * @type Boolean
+			 */
+			encodeURI: {
+				setter: function (value) {
+					encode = value ? encodeURIComponent : fake;
+					decode = value ? decodeURIComponent : fake;
+				},
+				value: false
 			}
 		});
 		
@@ -347,7 +394,7 @@ jet().add('history', function ($) {
 	
 		/*Private: Notify the listener of new history changes.*/
 		var fireHistoryEvent = function (newHash) {
-			var decodedHash = decodeURIComponent(newHash);
+			var decodedHash = decode(newHash);
 			/*extract the value from our history storage for this hash*/
 			var historyData = historyStorage.get(decodedHash);
 			var hashData = {};
@@ -355,6 +402,12 @@ jet().add('history', function ($) {
 				var parts = val.split("=");
 				hashData[parts[0]] = parts[1];
 			});
+			/**
+			 * Fires when the history changes
+			 * @event change
+			 * @param {Hash} hashData A hash with the URI data
+			 * @param {Object} Additional data associated with the current state
+			 */
 			myself.changeTitle(historyData).fire("change", hashData, historyData);
 		};
 		
@@ -513,9 +566,9 @@ jet().add('history', function ($) {
 			
 			/*If non-IE, reload the hash so the new title "sticks" in the browser history object*/
 			if (!UA.ie && !uaOpera) {
-				var hash = decodeURIComponent(document.location.hash);
+				var hash = decode(document.location.hash);
 				if (hash !== "") {
-					var encodedHash = encodeURIComponent(removeHash(hash));
+					var encodedHash = encode(removeHash(hash));
 					document.location.hash = encodedHash;
 				} else {
 					//document.location.hash = "#";
@@ -542,7 +595,7 @@ jet().add('history', function ($) {
 			
 			var that = myself;
 			/*Escape the location and remove any leading hash symbols*/
-			var encodedLocation = encodeURIComponent(removeHash(newLocation));
+			var encodedLocation = encode(removeHash(newLocation));
 			
 			if (safari) {
 	
@@ -577,9 +630,9 @@ jet().add('history', function ($) {
 					document, then the history action gets recorded twice; throw a programmer exception if
 					there is an element with this ID*/
 					if (document.getElementById(encodedLocation) && myself.get("debugMode")) {
-						var e = "Exception: History locations can not have the same value as _any_ IDs that might be in the document,"
-						+ " due to a bug in IE; please ask the developer to choose a history location that does not match any HTML"
-						+ " IDs in this document. The following ID is already taken and cannot be a location: " + newLocation;
+						var e = "Exception: History locations can not have the same value as _any_ IDs that might be in the document,";
+						e += " due to a bug in IE; please ask the developer to choose a history location that does not match any HTML";
+						e += " IDs in this document. The following ID is already taken and cannot be a location: " + newLocation;
 						throw new Error(e); 
 					}
 	
@@ -617,6 +670,7 @@ jet().add('history', function ($) {
 				/*Indicate that the next request will have to wait for awhile*/
 				currentWaitTime = currentWaitTime + waitTime;
 			}
+			return myself;
 		};
 					
 		/*Set up the historyStorage object; pass in options bundle*/

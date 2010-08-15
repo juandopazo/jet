@@ -51,7 +51,7 @@ jet().add('cookie', function (L) {
 	        return null;
 	    },
 	    /**
-	     * Removes a cookir
+	     * Removes a cookie
 	     * @method unset
 	     * @param {String} name
 	     * @chainable

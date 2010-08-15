@@ -17,14 +17,14 @@ jet().add('datasource', function ($) {
 		A = $.Array,
 		IO = $.IO;
 
-	var RESPONSE_TYPE_JSON		= 1,
-		RESPONSE_TYPE_XML		= 2,
-		RESPONSE_TYPE_JSARRAY	= 3,
-		RESPONSE_TYPE_TEXT		= 4;
+	var RESPONSE_TYPE_JSON		= 'json',
+		RESPONSE_TYPE_XML		= 'xml',
+		RESPONSE_TYPE_JSARRAY	= 'jsarray',
+		RESPONSE_TYPE_TEXT		= 'text';
 	
-	var SOURCE_TYPE_XHR			= 1,
-		SOURCE_TYPE_JSONP		= 2,
-		SOURCE_TYPE_LOCAL		= 3;
+	var SOURCE_TYPE_XHR			= 'xhr',
+		SOURCE_TYPE_JSONP		= 'jsonp',
+		SOURCE_TYPE_LOCAL		= 'local';
 		
 	var PARSER = "parser",
 		REQUEST_LOGIC = "requestLogic",
@@ -221,26 +221,46 @@ jet().add('datasource', function ($) {
 		
 		var recordSet = new RecordSet([]);
 		var myself = this.addAttrs({
+			/**
+			 * @config recordSet
+			 * @description This datasource's associated recordset
+			 * @type RecordSet
+			 * @readOnly
+			 */
 			recordSet: {
 				readOnly: true,
 				getter: function () {
 					return recordSet;
 				}
 			},
+			/**
+			 * @config responseType
+			 * @description The expected response type ('xml', 'jsarray', 'json', 'text')
+			 * @required
+			 */
 			responseType: {
 				required: true
 			},
+			/**
+			 * @config responseSchema
+			 * @description The schema by which to parse the response data
+			 * @required
+			 */
 			responseSchema: {
 				required: true
 			},
+			/**
+			 * @config requestLogic
+			 * @description The logic for the chosen source type. Should only be usef when extending the DataSource class
+			 * @protected
+			 * @writeOnce
+			 */
 			requestLogic: {
 				writeOnce: true
-			},
-			internalEvents: {
-				readOnly: true,
-				value: new $.EventTarget()
 			}
 		});
+		
+		var internalEvents = new $.EventTarget();
 		
 		var parser = function (rawData) {
 			var responseType = myself.get("responseType");
@@ -383,7 +403,7 @@ jet().add('datasource', function ($) {
 			myself.get(REQUEST_LOGIC)(request, function (rawData) {
 				myself.set(TEMP_DATA, rawData);
 				var tempData = rawData;
-				if (myself.get("internalEvents").fire("beforeParse", rawData)) {
+				if (internalEvents.fire("beforeParse", rawData)) {
 					tempData = parser(myself.get(TEMP_DATA));
 				}
 				recordSet = tempData;
@@ -414,7 +434,7 @@ jet().add('datasource', function ($) {
 		 * @chainable
 		 */
 		myself.onBeforeParse = function (callback) {
-			myself.get("internalEvents").on("beforeParse", function (e, rawData) {
+			internalEvents.on("beforeParse", function (e, rawData) {
 				myself.set(TEMP_DATA, callback(rawData));
 			});
 			return myself;

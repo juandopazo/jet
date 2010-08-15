@@ -208,7 +208,7 @@ jet().add('base', function ($) {
 						classConfig[attrName] = config.value;
 					}
 					classConfig[attrName] = classConfig[attrName] == attrValue ? attrValue :
-											myself.fire(attrName + "Change", attrValue) ? attrValue :
+											myself.fire(attrName + "Change", attrValue, classConfig[attrName]) ? attrValue :
 											classConfig[attrName];
 				}
 				if (config.writeOnce && !config.readOnly) {
@@ -491,7 +491,7 @@ jet().add('base', function ($) {
 			 */
 			if (myself.fire("render")) {
 				var node = myself.get(SRC_NODE);
-				myself.get(BOUNDING_BOX).addClass(myself.get("classPrefix") + myself.get("className") + "-container").appendTo(node).css(VISIBILITY, "visible");
+				myself.get(BOUNDING_BOX).addClass(myself.get("classPrefix") + myself.get("className")).appendTo(node).css(VISIBILITY, "visible");
 				myself.set("rendered", true);
 				/**
 				 * Fires after the render process is finished

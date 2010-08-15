@@ -291,7 +291,7 @@ jet().add('anim', function ($) {
 					myself.stop();
 					// @TODO: investigate if this should be wrapped in a setTimeout or something similar
 					// to allow chaining of animations without hanging the browser 
-					myself.fire("finish");
+					myself.fire("complete");
 				}
 			}
 		};
@@ -397,7 +397,7 @@ jet().add('anim', function ($) {
 				duration: duration,
 				easing: easing
 			});
-			this.tw = tw.on("finish", callback).play();
+			this.tw = tw.on("complete", callback).play();
 			return this;
 		},
 		fadeIn: function (duration, callback) {

@@ -50,6 +50,15 @@
 				value: "solid"
 			}
 		}],
+		button: [BASE, {
+			name: "button-css",
+			type: "css",
+			fileName: "button",
+			beacon: {
+				name: "borderBottomStyle",
+				value: "solid"
+			}
+		}],
 		container: [BASE, {
 			name: "container-css",
 			type: "css",
@@ -72,6 +81,7 @@
 				value: "solid"
 			}
 		}],
+		treeview: [BASE],
 		plasma: ["anim"]
 	};
 	
@@ -847,7 +857,7 @@
 			var predef = mix(clone(predefinedModules), config.modules || {}, true);
 			
 			var loadCssModule = function (module) {
-				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + (config.minify ? ".min.css" : ".css")));
+				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + "/" + module.fileName + (config.minify ? ".min.css" : ".css")));
 				loadCSS(url);
 				var t = setInterval(function () {
 					if (getCurrentStyle(trackerDiv)[module.beacon.name] == module.beacon.value) {
