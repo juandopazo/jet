@@ -2,6 +2,7 @@
  * TreeView module
  * @module treeview
  * @requires jet, node, base
+ * @namespace
  */
 jet().add('treeview', function ($) {
 	
@@ -12,10 +13,25 @@ jet().add('treeview', function ($) {
 	var EXPAND = "expand",
 		COLLAPSE = "collapse",
 		EXPANDED = EXPAND + "ed",
-		COLLAPSED = COLLAPSE + "d";
+		COLLAPSED = COLLAPSE + "d",
+		CHILDREN = "children",
+		TREEVIEW = "treeview",
+		CONTROL = "control",
+		LABEL = "label",
+		HOVER = "hover",
+		DASH = "-",
+		CLICK = "click",
+		NEW_DIV = "<div/>";
 	
 	var BOUNDING_BOX = "boundingBox";
 		
+	/**
+	 * A node in a TreeView
+	 * @class Node
+	 * @extends Widget
+	 * @constructor
+	 * @param {Object} config Object literal specifying configuration properties
+	 */
 	var Node = function () {
 		Node.superclass.constructor.apply(this, arguments);
 		
@@ -86,20 +102,20 @@ jet().add('treeview', function ($) {
 				required: true
 			},
 			className: {
-				value: this.get("treeview").get("className") + "-node"
+				value: this.get(TREEVIEW).get("className") + "-node"
 			}
 		});
-		var treeview = myself.get("treeview");
-		var content = $("<div/>");
-		var nodeControl = $("<div/>");
+		var treeview = myself.get(TREEVIEW);
+		var content = $(NEW_DIV);
+		var nodeControl = $(NEW_DIV);
 		
 		var expandedChange = function (e, newVal, oldVal) {
 			var boundingBox = myself.get(BOUNDING_BOX);
 			var eventType = oldVal ? COLLAPSE : EXPAND;
 			var nodeClass = myself.get("classPrefix") + myself.get("className");
-			var controlClass = nodeClass + "-control-";
+			var controlClass = nodeClass + DASH + CONTROL + DASH;
 			var contentClass = nodeClass + "-content-";
-			var hasChildren = myself.get("children").length > 0;
+			var hasChildren = myself.get(CHILDREN).length > 0;
 			if (hasChildren) {
 				if (myself.fire(eventType) && treeview.fire("node:" + eventType, myself)) {
 					if (newVal) {
@@ -116,10 +132,10 @@ jet().add('treeview', function ($) {
 		this.on(EXPANDED + "Change", expandedChange).on("render", function () {
 			var nodeClass = myself.get("classPrefix") + myself.get("className");
 			var boundingBox = myself.get(BOUNDING_BOX);
-			var expandedClass = nodeClass + "-control-" + EXPANDED + "-hover";
-			var collapsedClass = nodeClass + "-control-" + COLLAPSED + "-hover";
+			var expandedClass = [nodeClass, CONTROL, EXPANDED, HOVER].join(DASH);
+			var collapsedClass = [nodeClass, CONTROL, COLLAPSED, HOVER].join(DASH);
 			var mouseOver = function () {
-				if (myself.get("children").length > 0) {
+				if (myself.get(CHILDREN).length > 0) {
 					if (myself.get(EXPANDED)) {
 						nodeControl.addClass(expandedClass).removeClass(collapsedClass);
 					} else {
@@ -127,10 +143,14 @@ jet().add('treeview', function ($) {
 					}
 				}
 			};
-			nodeControl.addClass(nodeClass + "-control").appendTo(boundingBox);
-			label.addClass(nodeClass + "-label").html(myself.get("label")).appendTo(boundingBox);
-			label.link(nodeControl).on("click", function (e) {
-				if (!myself.fire("click")) {
+			nodeControl.addClass(nodeClass + DASH + CONTROL).appendTo(boundingBox);
+			label.addClass(nodeClass + DASH + LABEL).html(myself.get(LABEL)).appendTo(boundingBox);
+			label.link(nodeControl).on(CLICK, function (e) {
+				/**
+				 * @event click
+				 * @description Fires when a label or node control is clicked
+				 */
+				if (!myself.fire(CLICK)) {
 					e.preventDefault();
 				}
 				myself.toggle();
@@ -139,7 +159,7 @@ jet().add('treeview', function ($) {
 				nodeControl.removeClass(expandedClass).removeClass(collapsedClass);
 			});
 			content.addClass(nodeClass + "-content").appendTo(boundingBox);
-			A.each(myself.get("children"), function (child) {
+			A.each(myself.get(CHILDREN), function (child) {
 				child.parent = myself;
 				child.treeview = treeview;
 				var childNode = new Node(child);
@@ -150,17 +170,39 @@ jet().add('treeview', function ($) {
 		});
 	};
 	$.extend(Node, $.Widget, {
+		/**
+		 * @method expand
+		 * @description Expand this node
+		 * @chainable
+		 */
 		expand: function () {
 			return this.set(EXPANDED, true);
 		},
+		/**
+		 * @method collapse
+		 * @description Collapse this node
+		 * @chainable
+		 */
 		collapse: function () {
 			return this.set(EXPANDED, false);
 		},
+		/**
+		 * @method toggle
+		 * @description Toggle this node
+		 * @chainable
+		 */
 		toggle: function () {
 			return this.set(EXPANDED, !this.get(EXPANDED));
 		}
 	});
 		
+	/**
+	 * A labeled tree
+	 * @class TreeView
+	 * @extends Widget
+	 * @constructor
+	 * @param {Object} config Object literal specifying configuration properties
+	 */
 	var TreeView = function () {
 		TreeView.superclass.constructor.apply(this, arguments);
 		
@@ -175,15 +217,21 @@ jet().add('treeview', function ($) {
 				required: true
 			},
 			className: {
-				value: "treeview"
+				value: TREEVIEW
 			}
 		});
 		
 		/**
 		 * @event node:expand
+		 * @description Fires when a node is expanded. Preventing the default behavior will
+		 * stop the node from expanding
+		 * @param {Node} The node that initiated the action
+		 */
+		/**
 		 * @event node:collapse
-		 * @event node:click
-		 * @event label:click
+		 * @description Fires when a node is collapsed. Preventing the default behavior will
+		 * stop the node from collapsing
+		 * @param {Node} The node that initiated the action
 		 */
 		
 		this.on("render", function () {

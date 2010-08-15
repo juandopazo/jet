@@ -2,6 +2,7 @@
  * Different kinds of buttons and form elements
  * @module button
  * @require jet, node, base
+ * @namespace
  */
 jet().add('button', function ($) {
 	

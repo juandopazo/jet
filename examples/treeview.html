@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title></title>
+	<meta name="generator" content="Studio 3 http://aptana.com/">
+	<meta name="author" content="Juan Ignacio">
+	<!-- Date: 2010-08-15 -->
+	<style type="text/css">
+	body {
+		margin: 0;
+		padding: 0;
+	}
+	</style>
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.1.1/build/cssfonts/fonts-min.css&3.1.1/build/cssreset/reset-min.css">
+	<link rel="stylesheet" type="text/css" href="../src/treeview/treeview.css">
+</head>
+<body>
+<script type="text/javascript" src="../src/jet/jet.js"></script>
+<script type="text/javascript">
+	jet({
+		base: "../src"
+	}).use('treeview', function ($) {
+		
+		var treeview = new $.TreeView({
+			branches: [
+				{
+					label: "hola"
+				},
+				{
+					label: "que onda",
+					children: [
+						{
+							label: "todo bien?"
+						}
+					],
+					expanded: false
+				},
+				{
+					label: "sarasa"
+				}
+			]
+		});
+		treeview.render(document.body);
+		
+	});
+</script>
+</body>
+</html>

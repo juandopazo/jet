@@ -13,8 +13,8 @@
 		}
 		.movable {
 			position: absolute;
-			width: 5px;
-			height: 5px;
+			width: 15px;
+			height: 15px;
 		}
 	</style>
 </head>
@@ -52,47 +52,26 @@
 			
 			var x = random(900) + 100;
 			var y = random(300) + 100;
+			
 			$(".movable").each(function () {
-				var dur = random(1000) + 2000;
-				var node = this;
-				var tw = new $.Tween({
-					node: node,
+				var tween = new $.Tween({
+					node: this,
 					to: {
-						left: x
+						left: x,
+						top: y
 					},
-					duration: dur,
+					duration: random(1000) + 1000,
 					easing: "sling",
 					easingStrength: 100,
 					on: {
 						finish: function () {
-							/*tw.set("duration", random(1000) + 500).set("to", {
-								left: random(900) + 100,
-								top: random(300) + 100
-							}).set("from", $(node).offset()).play();*/
-							tw.reverse().play();
+							setTimeout(function () {
+								tween.reverse().play();
+							}, random(3000));
 						}
 					}
 				});
-				tw.play();
-				var tw2 = new $.Tween({
-					node: node,
-					to: {
-						top: y
-					},
-					duration: dur,
-					easing: "sling",
-					easingStrength: 300,
-					on: {
-						finish: function () {
-							/*tw.set("duration", random(1000) + 500).set("to", {
-								left: random(900) + 100,
-								top: random(300) + 100
-							}).set("from", $(node).offset()).play();*/
-							tw2.reverse().play();
-						}
-					}
-				});
-				tw2.play();
+				tween.play();
 			});
 			
 			
