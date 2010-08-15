@@ -20,8 +20,6 @@
 		SP = String.prototype,
 		SLICE = AP.slice,
 		TOSTRING = OP.toString,
-		TRUE = true,
-		FALSE = false,
 		BASE = "base",
 		NODE = "node";
 	
@@ -30,17 +28,18 @@
 	 * Each module should be defined after its requirements
 	 */
 	var predefinedModules = {
-		ua: TRUE,
-		log: TRUE,
+		ua: true,
+		log: true,
 		node: ["log", "ua"],
 		xsl: [NODE],
-		swf: TRUE,
-		"simple-progressbar": [NODE],
+		swf: true,
+		spbar: [NODE],
 		json: [NODE],
 		cookie: [NODE],
 		sizzle: [NODE],
 		base: [NODE],
 		io: ["json"],
+		"history": [BASE, "json"],
 		tabs: [BASE],
 		resize: [BASE, {
 			name: "resize-css",
@@ -206,9 +205,9 @@
 					return isFinite(o);
 				case NULL:
 				case UNDEFINED:
-					return FALSE;
+					return false;
 				case BOOLEAN:
-					return TRUE;
+					return true;
 				default:
 					return !!(t);
 				}
@@ -364,7 +363,7 @@
 		each: function (hash, fn, thisp) {
 			for (var x in hash) {
 				if (hash.hasOwnProperty(x)) {
-					if (fn.call(thisp || hash, x, hash[x], hash) === FALSE) {
+					if (fn.call(thisp || hash, x, hash[x], hash) === false) {
 						break;
 					}
 				}
@@ -420,7 +419,7 @@
 	var loadScript = function (url, keep) {
 		var script = createNode("script", {
 			type: "text/javascript",
-			asyng: TRUE,
+			asyng: true,
 			src: url
 		});
 		head.appendChild(script);
@@ -537,7 +536,7 @@
 		};
 		
 		var add = function (o) {
-			mix($, o, TRUE);
+			mix($, o, true);
 		};
 		
 		if (win.JSON) {
@@ -641,7 +640,7 @@
 			
 			/**
 			 * Copies all properties from B to A.
-			 * Doesn't overwrite properties unless the overwrite parameter is TRUE
+			 * Doesn't overwrite properties unless the overwrite parameter is true
 			 * @method mix
 			 * @param {Object} A
 			 * @param {Object} B
@@ -832,20 +831,20 @@
  			 * @type Boolean
  			 * @default true
  			 */
-			config.minify = Lang.isBoolean(config.minify) ? config.minify : FALSE;
+			config.minify = Lang.isBoolean(config.minify) ? config.minify : false;
 			/**
 			 * @config loadCss
 			 * @description If true, css modules are loaded
 			 * @type Boolean
 			 * @default true
 			 */
-			config.loadCss = Lang.isBoolean(config.loadCss) ? config.loadCss : TRUE;
+			config.loadCss = Lang.isBoolean(config.loadCss) ? config.loadCss : true;
 			/**
 			 * @config modules
 			 * @description Allows to define your own modules. Currently the same as using object literals in the use() method
 			 * @type Array
 			 */
-			var predef = mix(clone(predefinedModules), config.modules || {}, TRUE);
+			var predef = mix(clone(predefinedModules), config.modules || {}, true);
 			
 			var loadCssModule = function (module) {
 				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + (config.minify ? ".min.css" : ".css")));

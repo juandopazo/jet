@@ -5,9 +5,7 @@
  */
 jet().add("node", function ($) {
 	
-	var TRUE = true,
-		FALSE = false,
-		NONE = "none",
+	var NONE = "none",
 		ON = "on",
 		Lang = $.Lang,
 		Hash = $.Hash,
@@ -126,7 +124,7 @@ jet().add("node", function ($) {
 	var addEvent = function (obj, type, callback) {
 		if (obj.addEventListener) {
 			addEvent = function (obj, type, callback) {
-				obj.addEventListener(type, callback, FALSE);
+				obj.addEventListener(type, callback, false);
 				EventCache.add(obj, type, callback);
 			};
 		} else if (obj.attachEvent) {
@@ -135,10 +133,10 @@ jet().add("node", function ($) {
 					var ev = window.event;
 					ev.target = ev.srcElement;
 					ev.preventDefault = function () {
-						ev.returnValue = FALSE;
+						ev.returnValue = false;
 					};
 					ev.stopPropagation = function () {
-						ev.cancelBubble = TRUE;
+						ev.cancelBubble = true;
 					};
 					callback.call(event.srcElement, ev);
 				});
@@ -152,7 +150,7 @@ jet().add("node", function ($) {
 	var removeEvent = function (obj, type, callback) {
 		if (obj.removeEventListener) {
 			removeEvent = function (obj, type, callback) {
-				obj.removeEventListener(type, callback, FALSE);
+				obj.removeEventListener(type, callback, false);
 				EventCache.remove(obj, type, callback);
 			};
 		} else if (obj.detachEvent) {
@@ -280,8 +278,7 @@ jet().add("node", function ($) {
 		} else {
 			$.error("Wrong argument for NodeList");
 		}
-		this._nodes = [];
-		AP.push.apply(this._nodes, nodes);
+		AP.push.apply(this, nodes);
 	};
 	NodeList.prototype = {
 		/**
@@ -300,9 +297,9 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		each: function (fn) {
-			var myself = this, i, length = myself._nodes.length;
-			for (i = 0; i < length; i++) {
-				fn.call(myself._nodes[i], myself._nodes[i], i);
+			var i = -1, myself = this;
+			while (myself[++i]) {
+				fn.call(myself[i], myself[i], i);
 			}
 			return myself;
 		},
@@ -351,7 +348,7 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		hasClass: function (className) {
-			var node = this._nodes[0];
+			var node = this[0];
 			return A.inArray(className, node.className ? node.className.split(" ") : []);
 		},
 		/**
@@ -426,7 +423,7 @@ jet().add("node", function ($) {
 		 * @return {Hash}
 		 */
 		offset: function () {
-			var node = this._nodes[0];
+			var node = this[0];
 			var offset = {
 				left: 0,
 				top: 0,
@@ -472,7 +469,7 @@ jet().add("node", function ($) {
 					node.style.width = width;
 				});
 			}
-			return this._nodes[0].offsetWidth;
+			return this[0].offsetWidth;
 		},
 		/**
 		 * Gets/sets the height of all the nodes in the collection
@@ -490,7 +487,7 @@ jet().add("node", function ($) {
 					node.style.height = height;
 				});
 			}
-			return this._nodes[0].offsetHeight;
+			return this[0].offsetHeight;
 		},
 		/**
 		 * Returns a new NodeList with all nodes cloned from the current one
@@ -499,7 +496,7 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		clone: function (deep) {
-			deep = Lang.isValue(deep) ? deep : TRUE;
+			deep = Lang.isValue(deep) ? deep : true;
 			var result = [];
 			this.each(function (node) {
 				result.push(node.cloneNode(deep));
@@ -527,7 +524,7 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		appendTo: function (target) {
-			target = $(target)._nodes[0];
+			target = $(target)[0];
 			return this.each(function (node) {
 				target.appendChild(node);
 			});
@@ -557,7 +554,7 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		prependTo: function (target) {
-			target = $(target)._nodes[0];
+			target = $(target)[0];
 			return this.each(function (node) {
 				if (target.firstChild) {
 					target.insertBefore(node, target.firstChild);
@@ -573,7 +570,7 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		insertBefore: function (before) {
-			before = $(before)._nodes[0];
+			before = $(before)[0];
 			return this.each(function (node) {
 				before.parentNode.insertBefore(node, before);
 			});
@@ -600,7 +597,7 @@ jet().add("node", function ($) {
 		first: function () {
 			var result = [];
 			this.each(function (node) {
-				node = $(node).children(0)._nodes[0];
+				node = $(node).children(0)[0];
 				if (node) {
 					result.push(node);
 				}
@@ -667,7 +664,7 @@ jet().add("node", function ($) {
 		html: function (html) {
 			return Lang.isValue(html) ? this.each(function (node) {
 				node.innerHTML = html;
-			}) : this._nodes[0].innerHTML;
+			}) : this[0].innerHTML;
 		},
 		/**
 		 * Gets or sets tag attributes to the nodes in the collection
@@ -684,7 +681,7 @@ jet().add("node", function ($) {
 			} else if (Lang.isValue(value)) {
 				attrs[key] = value;
 			} else {
-				return this._nodes[0][key];
+				return this[0][key];
 			}
 			return this.each(function (node) {
 				Hash.each(attrs, function (name, val) {
@@ -706,7 +703,7 @@ jet().add("node", function ($) {
 			} else if (Lang.isValue(value)) {
 				css[key] = value;
 			} else {
-				return $(this._nodes[0]).currentStyle()[key];
+				return $(this[0]).currentStyle()[key];
 			}
 			return this.each(function (node) {
 				Hash.each(css, function (prop, value) {
@@ -746,7 +743,7 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		children: function (filter) {
-			filter = !Lang.isValue(filter) ? FALSE :
+			filter = !Lang.isValue(filter) ? false :
 					  Lang.isString(filter) ? filter.toUpperCase() : filter;
 			var result = [];
 			this.each(function (node) {
@@ -758,7 +755,7 @@ jet().add("node", function ($) {
 						newChildren[newChildren.length] = children[i];
 					}
 				}
-				if (filter !== FALSE) {
+				if (filter !== false) {
 					length = newChildren.length;
 					for (i = 0; i < length; i++) {
 						if (i == filter || newChildren[i].nodeName == filter) {
@@ -851,7 +848,7 @@ jet().add("node", function ($) {
 		 * @return {CSSDeclaration}
 		 */
 		currentStyle: function () {
-			var node = this._nodes[0];
+			var node = this[0];
 			return $.win[GET_COMPUTED_STYLE] ? $.win[GET_COMPUTED_STYLE](node, null) : 
 					node[CURRENT_STYLE] ? node[CURRENT_STYLE] : node.style;
 		},
@@ -870,11 +867,34 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		link: function (nodelist) {
-			var result = new NodeList(this._nodes);
-			A.each(nodelist, function (node) {
+			var result = [];
+			this.each(function (node) {
+				result.push(node);
+			});
+			nodelist.each(function (node) {
 				result.push(node);
 			});
 			return new NodeList(result);
+		},
+		/**
+		 * Fires the blur event
+		 * @method blur
+		 * @chainable
+		 */
+		blur: function () {
+			return this.each(function (node) {
+				node.blur();
+			});
+		},
+		/**
+		 * Fires the focus event
+		 * @method focus
+		 * @chainable
+		 */
+		focus: function () {
+			return this.each(function (node) {
+				node.focus();
+			});
 		}
 	};
 	NodeList.is = Lang.is;

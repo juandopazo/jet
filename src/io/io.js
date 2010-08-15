@@ -7,13 +7,13 @@ jet().add('io', function ($) {
 	var win = $.win;
 	var Lang = $.Lang;
 	
-	var TRUE = true,
-	FALSE = false,
-
-	XML = "xml",
+	var XML = "xml",
 	XSL = "xsl",
 	TYPE_JSON = "json",
 	GET = "GET";
+	
+	var HAS_AXO = !!win.ActiveXObject;
+	var HAS_XHR = !!win.XMLHttpRequest;
 	
 	var newAXO = function (t) {
 		return new win.ActiveXObject(t);
@@ -59,15 +59,15 @@ jet().add('io', function ($) {
 		var hostname = location.host,
 			msxml = "Microsoft.XMLHTTP",
 			test;
-		if ((location.protocol == "file:" || hostname == "localhost" || hostname == "127.0.0.1") && win.ActiveXObject) {
+		if ((location.protocol == "file:" || hostname == "localhost" || hostname == "127.0.0.1") && HAS_AXO) {
 			getAjaxObject = function () {
 				return newAXO(msxml);
 			};
-		} else if (XMLHttpRequest) {
+		} else if (HAS_XHR) {
 			getAjaxObject = function () {
 				return new XMLHttpRequest();
 			};
-		} else if (win.ActiveXObject) {
+		} else if (HAS_AXO) {
 			getAjaxObject = function () {
 				return newAXO(msxml);
 			};
@@ -75,26 +75,31 @@ jet().add('io', function ($) {
 		return getAjaxObject();
 	};
 	
-	var timeoutError = 'timeout',
-	noObjectError = 'Can\'t create object',
-	noStatusError = 'Bad status';
+	var timeoutError = "timeout",
+	noObjectError = "Can't create object",
+	noStatusError = "Bad status";
 	
 	/* Parsea un XML
 	En Internet Explorer instancia un objeto ActiveX llamado MSXML. En el resto usa XMLHttpRequest.responseXML */
 	var parseXML = function (xmlFile, type, errorHandler) {
 		var xmlDoc = null;
-		if (!XMLHttpRequest) {
+		if (xmlFile.responseXML) {
+			xmlDoc = xmlFile.responseXML;
+		} else if (win.DOMParser) {
+			xmlDoc = new win.DOMParser();
+			xmlDoc = xmlDoc.parseFromString(xmlFile.responseText || xmlFile, "text/xml");
+		} else if (HAS_AXO) {
 			xmlDoc = getActiveXParser(type);
-			xmlDoc.async = FALSE;
-			xmlDoc.loadXML(xmlFile.responseText);
+			xmlDoc.async = false;
+			xmlDoc.loadXML(xmlFile.responseText || xmlFile);
 			if (xmlDoc.parseError.errorCode !== 0) {
 				errorHandler(noStatusError, xmlDoc.parseError);
 			}
-		} else if (!Lang.isString(xmlFile)) {
-			xmlDoc = xmlFile.responseXML;
 		} else {
-			xmlDoc = new win.DOMParser();
-			xmlDoc = xmlDoc.parseFromString(xmlFile, "text/xml");
+			errorHandler(0, {
+				reason: "Can't find a suitable XML parser",
+				srcText: xmlFile
+			});
 		}
 		return xmlDoc;
 	};
@@ -139,7 +144,7 @@ jet().add('io', function ($) {
 			var dataType 		= settings.dataType;
 			var timeout			= settings.timeout || 10000; /* Tiempo que tarda en cancelarse la transaccion */
 			var method			= settings.method || "GET"; /* Metodo para enviar informacion al servidor */
-			var async			= settings.async || TRUE;
+			var async			= settings.async || true;
 			var complete		= settings.complete || function () {};
 			var onSuccess		= function () {
 				if (success) {
@@ -160,7 +165,7 @@ jet().add('io', function ($) {
 					xhr.overrideMimeType('text/xml');
 				}
 				if (settings.url) {
-					if (async === TRUE) {
+					if (async === true) {
 						xhr.onreadystatechange = function () {
 							if (xhr.readyState === 4) {
 								/* Normalmente deberia chequearse unicamente el status == 200, pero cuando se hace una transaccion local el status en IE termina siendo 0
@@ -183,7 +188,7 @@ jet().add('io', function ($) {
 					} catch (e) {
 						onError(noStatusError, 404, xhr); 
 					}
-					if (async === FALSE) {
+					if (async === false) {
 						result = getResultByContentType(xhr, dataType, onError);
 					} else {
 						setTimeout(function () {

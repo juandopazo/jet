@@ -8,9 +8,6 @@ jet().add('imageloader', function ($) {
 	var Lang = $.Lang,
 		ArrayHelper = $.Array;
 	
-	var TRUE = true,
-		FALSE = false;
-		
 	var LOAD = "load",
 		ERROR = "error",
 		TIMEOUT = "timeout",
@@ -37,8 +34,8 @@ jet().add('imageloader', function ($) {
 			 * @type String
 			 */
 			src: {
-				required: TRUE,
-				writeOnce: TRUE,
+				required: true,
+				writeOnce: true,
 				validator: Lang.isString
 			},
 			/**
@@ -47,7 +44,7 @@ jet().add('imageloader', function ($) {
 			 * @readOnly
 			 */
 			image: {
-				readOnly: TRUE,
+				readOnly: true,
 				value: img
 			},
 			/**
@@ -68,7 +65,7 @@ jet().add('imageloader', function ($) {
 				value: 5000
 			}
 		});
-		var loaded = FALSE;
+		var loaded = false;
 		myself.addAttrs({
 			/**
 			 * @config type
@@ -89,7 +86,7 @@ jet().add('imageloader', function ($) {
 			 * @type Boolean
 			 */
 			loaded: {
-				readOnly: TRUE,
+				readOnly: true,
 				getter: function () {
 					return !!loaded;
 				}
@@ -100,7 +97,7 @@ jet().add('imageloader', function ($) {
 		 * @chainable
 		 */
 		}).load = function () {
-			var completed = FALSE;
+			var completed = false;
 			img.onload = function () {
 				if (myself.get("type") == "png" && $.UA.ie) {
 					myself.set("node", $("<span/>").css({
@@ -118,8 +115,8 @@ jet().add('imageloader', function ($) {
 				 * @event complete
 				 */
 				myself.fire(COMPLETE);
-				completed = TRUE;
-				loaded = TRUE;
+				completed = true;
+				loaded = true;
 			};
 			img.onerror = function () {
 				/**
@@ -128,7 +125,7 @@ jet().add('imageloader', function ($) {
 				 */
 				myself.fire(ERROR);
 				myself.fire(COMPLETE);
-				completed = TRUE;
+				completed = true;
 			};
 			setTimeout(function () {
 				if (!completed) {

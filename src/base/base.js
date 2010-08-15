@@ -5,9 +5,7 @@
  */
 jet().add('base', function ($) {
 	
-	var TRUE = true,
-		FALSE = false,
-		OP = Object.prototype;
+	var OP = Object.prototype;
 
 	var Hash = $.Hash,
 		Lang = $.Lang,
@@ -126,19 +124,19 @@ jet().add('base', function ($) {
 		 */
 		myself.fire = function (eventType) {
 			var handlers = collection[eventType] || [];
-			var returnValue = TRUE;
+			var returnValue = true;
 			if (collection["*"]) {
 				handlers = handlers.concat(collection["*"]);
 			}
 			var i, collecLength = handlers.length;
-			var stop = FALSE;
+			var stop = false;
 			var args = Array.prototype.slice.call(arguments, 1);
 			args.unshift({
 				stopPropagation: function () {
-					stop = TRUE;
+					stop = true;
 				},
 				preventDefault: function () {
-					returnValue = FALSE;
+					returnValue = false;
 				},
 				type: eventType,
 				target: myself
@@ -214,7 +212,7 @@ jet().add('base', function ($) {
 											classConfig[attrName];
 				}
 				if (config.writeOnce && !config.readOnly) {
-					attrConfig[attrName].readOnly = TRUE;
+					attrConfig[attrName].readOnly = true;
 				}
 			} else {
 				$.error(attrName + " is a " + (config.writeOnce ? "write-once" : "read-only") + " attribute");
@@ -233,7 +231,7 @@ jet().add('base', function ($) {
 			 * If it is write-once and it wasn't set before, use the default value and mark it as written (readOnly works as written)
 			 */
 			if (config.writeOnce && !config.readOnly) {
-				attrConfig[attrName].readOnly = TRUE;
+				attrConfig[attrName].readOnly = true;
 			}
 			if (!Lang.isValue(classConfig[attrName])) {
 				classConfig[attrName] = config.value;
@@ -329,7 +327,7 @@ jet().add('base', function ($) {
 		 * @config on
 		 */
 		var myself = this.addAttr("on", {
-			writeOnce: TRUE,
+			writeOnce: true,
 			value: {}
 		});
 		
@@ -417,8 +415,8 @@ jet().add('base', function ($) {
 			 * @default false
 			 */
 			rendered: {
-				writeOnce: TRUE,
-				value: FALSE
+				writeOnce: true,
+				value: false
 			}
 			/**
 			 * The bounding box contains all the parts of the widget
@@ -428,7 +426,7 @@ jet().add('base', function ($) {
 			 * @default <div/>
 			 */
 		}).addAttr(BOUNDING_BOX, {
-			readOnly: TRUE,
+			readOnly: true,
 			value: $("<div/>")
 		});
 		
@@ -494,7 +492,7 @@ jet().add('base', function ($) {
 			if (myself.fire("render")) {
 				var node = myself.get(SRC_NODE);
 				myself.get(BOUNDING_BOX).addClass(myself.get("classPrefix") + myself.get("className") + "-container").appendTo(node).css(VISIBILITY, "visible");
-				myself.set("rendered", TRUE);
+				myself.set("rendered", true);
 				/**
 				 * Fires after the render process is finished
 				 * @event afterRender
@@ -517,7 +515,7 @@ jet().add('base', function ($) {
 				/*
 				 * Avoiding memory leaks, specially in IE
 				 */
-				myself.get(BOUNDING_BOX).unbindAll(TRUE).remove();
+				myself.get(BOUNDING_BOX).unbindAll(true).remove();
 				/*
 				 * Helping gargage collection
 				 */
@@ -552,7 +550,7 @@ jet().add('base', function ($) {
 		
 		var clientX, clientY;
 		var interval;
-		var capturing = FALSE;
+		var capturing = false;
 		
 		var shim = new $.NodeList([]);
 		var iframes;
@@ -564,7 +562,7 @@ jet().add('base', function ($) {
 		 * @default false
 		 */
 		myself.addAttr(TRACKING, {
-			value: FALSE,
+			value: false,
 			validator: Lang.isBoolean
 			
 		}).on(TRACKING + "Change", function (e, value) {
@@ -585,12 +583,12 @@ jet().add('base', function ($) {
 					interval = setInterval(function () {
 						myself.fire(MOUSEMOVE, clientX, clientY);
 					}, myself.get(FREQUENCY));
-					capturing = TRUE;
+					capturing = true;
 				}
 			} else {
 				shim.hide();
 				clearInterval(interval);
-				capturing = FALSE;
+				capturing = false;
 			}
 		});
 		
@@ -606,7 +604,7 @@ jet().add('base', function ($) {
 		 * because the native mousemove event fires too quickly
 		 * @event move
 		 */
-		shim.link($($.context), TRUE).on(MOUSEMOVE, function (e) {
+		shim.link($($.context), true).on(MOUSEMOVE, function (e) {
 			clientX = e.clientX;
 			clientY = e.clientY;
 			if (myself.get(TRACKING) && myself.get("shim")) {
@@ -623,7 +621,7 @@ jet().add('base', function ($) {
 			 * Fires when the mouse button is released
 			 * @event up
 			 */
-			myself.set(TRACKING, FALSE).fire("up", clientX, clientY);
+			myself.set(TRACKING, false).fire("up", clientX, clientY);
 		});
 		
 		myself.on(DESTROY, function () {
@@ -638,7 +636,7 @@ jet().add('base', function ($) {
 		 * @chainable
 		 */
 		down: function () {
-			return this.set(TRACKING, TRUE);
+			return this.set(TRACKING, true);
 		},
 		/**
 		 * Stop tracking. Equivalent to setting the tracking attribute to false
@@ -647,7 +645,7 @@ jet().add('base', function ($) {
 		 * @chainable
 		 */
 		up: function () {
-			return this.set(TRACKING, FALSE);
+			return this.set(TRACKING, false);
 		}
 	});
 	

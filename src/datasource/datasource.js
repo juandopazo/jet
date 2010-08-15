@@ -12,9 +12,6 @@ jet().add('datasource', function ($) {
 		jet.DataSource.jsonpCallbacks = [];
 	}
 	
-	var FALSE = false,
-		TRUE = true;
-	
 	var Lang = $.Lang,
 		Hash = $.Hash,
 		A = $.Array,
@@ -125,7 +122,7 @@ jet().add('datasource', function ($) {
 	var RecordSet = function (data) {
 		RecordSet.superclass.constructor.call(this);
 		var records = [];
-		var sortedBy = FALSE;
+		var sortedBy = false;
 		var order;
 		
 		var myself = this;
@@ -225,22 +222,22 @@ jet().add('datasource', function ($) {
 		var recordSet = new RecordSet([]);
 		var myself = this.addAttrs({
 			recordSet: {
-				readOnly: TRUE,
+				readOnly: true,
 				getter: function () {
 					return recordSet;
 				}
 			},
 			responseType: {
-				required: TRUE
+				required: true
 			},
 			responseSchema: {
-				required: TRUE
+				required: true
 			},
 			requestLogic: {
-				writeOnce: TRUE
+				writeOnce: true
 			},
 			internalEvents: {
-				readOnly: TRUE,
+				readOnly: true,
 				value: new $.EventTarget()
 			}
 		});
@@ -295,13 +292,13 @@ jet().add('datasource', function ($) {
 				}
 			 */
 			} else if (responseType == RESPONSE_TYPE_JSON) {
-				var found = TRUE;
+				var found = true;
 				var root = rawData;
 				if (responseSchema.resultList) {
 					var resultList = responseSchema.resultList.split(".");
 					A.each(resultList, function (key) {
 						if (!root[key]) {
-							found = FALSE;
+							found = false;
 						} else {
 							root = root[key];
 						}
@@ -438,7 +435,7 @@ jet().add('datasource', function ($) {
 		
 		var myself = this.addAttrs({
 			url: {
-				required: TRUE
+				required: true
 			}
 		});
 		
@@ -475,7 +472,7 @@ jet().add('datasource', function ($) {
 				value: 10000
 			},
 			url: {
-				required: TRUE
+				required: true
 			}
 		});
 		
@@ -492,9 +489,9 @@ jet().add('datasource', function ($) {
 		
 		myself.set(REQUEST_LOGIC, function (request, success, failure) {
 			var index = jet.DataSource.jsonpCallbacks.length;
-			var loaded = FALSE;
+			var loaded = false;
 			jet.DataSource.jsonpCallbacks[index] = function (data) {
-				loaded = TRUE;
+				loaded = true;
 				success(data);
 			};
 			$.Get.script(myself.get(URL) + prepareRequest(request) + AMPERSAND + myself.get("jsonCallbackParam") + EQUAL_SIGN + "jet.DataSource.jsonpCallbacks[" + index + "]");
@@ -512,6 +509,33 @@ jet().add('datasource', function ($) {
 	};
 	$.extend(Get, DataSource);
 	
+	var XDR = function () {
+		XDR.superclass.constructor.apply(this, arguments);
+		
+		var myself = this.addAttrs({
+			url: {
+				required: true
+			},
+			dataType: {
+				value: "text"
+			}
+		});
+		
+		myself.set(REQUEST_LOGIC, function (request, success, failure) {
+			var type = myself.get(RESPONSE_TYPE);
+			IO.flajax({
+				url: myself.get(URL),
+				data: request,
+				dataType: myself.get("dataType"),
+				success: success,
+				error: failure
+			});
+		});
+		
+		myself.sendRequest(myself.get("initialRequest"));
+	};
+	$.extend(XDR, DataSource);
+	
 	/**
 	 * A Local DataSource uses local variables
 	 * @class Local
@@ -523,7 +547,7 @@ jet().add('datasource', function ($) {
 		Local.superclass.constructor.apply(this, arguments);
 		
 		var myself = this.addAttr("localData", {
-			required: TRUE
+			required: true
 		});
 		
 		myself.set(REQUEST_LOGIC, function (request, success, failure) {
@@ -548,7 +572,8 @@ jet().add('datasource', function ($) {
 		},
 		Ajax: Ajax,
 		Get: Get,
-		Local: Local
+		Local: Local,
+		XDR: XDR
 	});
 	
 	$.add({

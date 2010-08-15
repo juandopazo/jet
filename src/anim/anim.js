@@ -10,9 +10,6 @@
  */
 jet().add('anim', function ($) {
 	
-	var TRUE = true,
-		FALSE = false;
-		
 	var Lang = $.Lang,
 		Hash = $.Hash,
 		A = $.Array;
@@ -113,7 +110,7 @@ jet().add('anim', function ($) {
 			var interval;
 			var frameLength;
 			var time = 0;
-			var playing = FALSE;
+			var playing = false;
 	
 			return {
 				/**
@@ -138,7 +135,7 @@ jet().add('anim', function ($) {
 						interval = setInterval(function () {
 							myself.fire(ENTER_FRAME, (new Date()).getTime());
 						}, frameLength);
-						playing = TRUE;
+						playing = true;
 					}
 					return myself;
 				},
@@ -151,7 +148,7 @@ jet().add('anim', function ($) {
 					if (interval) {
 						clearInterval(interval);
 					}
-					playing = FALSE;
+					playing = false;
 					return this;
 				},
 				/**
@@ -191,7 +188,7 @@ jet().add('anim', function ($) {
 		Tween.superclass.constructor.apply(this, arguments);
 		
 		var timeframe = jet.TimeFrame;
-		var playing = FALSE;
+		var playing = false;
 		var notPlaying = function () {
 			return !playing;
 		};
@@ -204,8 +201,8 @@ jet().add('anim', function ($) {
 			 * @writeOnce
 			 */
 			node: {
-				writeOnce: TRUE,
-				required: TRUE,
+				writeOnce: true,
+				required: true,
 				setter: function (value) {
 					return $(value);
 				}
@@ -216,7 +213,7 @@ jet().add('anim', function ($) {
 			 * @type Object
 			 */
 			from: {
-				value: FALSE
+				value: false
 			},
 			/**
 			 * @config to
@@ -224,7 +221,7 @@ jet().add('anim', function ($) {
 			 * @type Object
 			 */
 			to: {
-				required: TRUE
+				required: true
 			},
 			/**
 			 * @config easing
@@ -308,7 +305,7 @@ jet().add('anim', function ($) {
 		 */
 		myself.play = function () {
 			var startStyle = node.currentStyle();
-			playing = TRUE;
+			playing = true;
 			from = myself.get("from") || {};
 			to = myself.get("to");
 			var offset = node.offset();
@@ -350,7 +347,7 @@ jet().add('anim', function ($) {
 		 * @chainable
 		 */
 		myself.stop = function () {
-			playing = FALSE;
+			playing = false;
 			timeframe.removeTween(myself);
 			timeframe.unbind(ENTER_FRAME, enterFrame);
 			previous = startTime = 0;
@@ -362,7 +359,7 @@ jet().add('anim', function ($) {
 		 * @chainable
 		 */
 		myself.pause = function () {
-			playing = FALSE;
+			playing = false;
 			timeframe.removeTween(myself);
 			timeframe.unbind(ENTER_FRAME, enterFrame);
 			previous = (new Date()).getTime() - startTime;

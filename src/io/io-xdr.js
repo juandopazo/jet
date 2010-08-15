@@ -9,15 +9,14 @@ jet().add("io-xdr", function ($) {
 	if (!flajax) {
 		jet.IO.xdrWaitList = [];
 		window.flajaxLoad = function () {
-			console.log(jet.IO.xdrWaitList);
 			jet.IO.xdrReady = true;
 			for (var i = 0; i < jet.IO.xdrWaitList.length; i++) {
 				IO.flajax(jet.IO.xdrWaitList[i]);
 			}
 			jet.IO.xdrWaitList = [];
-		}
+		};
 		$("<div/>").attr("id", "flajax").appendTo($("#jet-tracker"));
-		$.swfobject.embedSWF("http://jet-js.googlecode.com/svn/trunk/src/io/flajax.swf", "flajax", "1", "1", "9.0.0", "expressInstall.swf", {}, {}, {}, function (e) {
+		$.swfobject.embedSWF("/jet/src/io/flajax.swf", "flajax", "1", "1", "9.0.0", "expressInstall.swf", {}, {}, {}, function (e) {
 			flajax = jet.IO.flajax = e.ref;
 		});
 	}
@@ -34,12 +33,12 @@ jet().add("io-xdr", function ($) {
 			var method = settings.method || "GET";
 			var success = function (data) {
 				switch (settings.dataType) {
-					case "xml":
-						data = IO.utils.parseXML(data);
-						break;
-					case "json":
-						data = $.JSON.parse(data);
-						break;
+				case "xml":
+					data = IO.utils.parseXML(data);
+					break;
+				case "json":
+					data = $.JSON.parse(data);
+					break;
 				}
 				if (settings.success) {
 					settings.success(data);
@@ -63,6 +62,6 @@ jet().add("io-xdr", function ($) {
 		} else {
 			jet.IO.xdrWaitList.push(settings);
 		}
-	}
+	};
 	
 });
