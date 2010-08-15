@@ -10,9 +10,6 @@
  */
 jet().add('anim', function ($) {
 	
-	var TRUE = true,
-		FALSE = false;
-		
 	var Lang = $.Lang,
 		Hash = $.Hash,
 		A = $.Array;
@@ -20,9 +17,85 @@ jet().add('anim', function ($) {
 	var PLAYING = "playing",
 		ENTER_FRAME = "enterFrame";
 		
-	var pxToFloat = function(str){
+	var pxToFloat = function (str) {
 		return !Lang.isString(str) ? str :
-		    str.substr(-2, str.length) == "px" ? parseFloat(str.substr(0, str.length - 2)) : parseFloat(str);
+			str.substr(-2, str.length) == "px" ? parseFloat(str.substr(0, str.length - 2)) : parseFloat(str);
+	};
+	
+	var oneDBezier = function (points, t) {  
+	    var n = points.length;
+	    var tmp = [];
+	
+	    for (var i = 0; i < n; ++i) {
+	        tmp[i] = points[i]; // save input
+	    }
+	    
+	    for (var j = 1; j < n; ++j) {
+	        for (i = 0; i < n - j; ++i) {
+	            tmp[i] = (1 - t) * tmp[i] + t * tmp[parseInt(i + 1, 10)];
+	        }
+	    }
+	
+	    return tmp[0];
+	
+	};
+	
+	/**
+	 * Easing modes
+	 * @class Easing
+	 * @static
+	 */
+	var Easing = {
+		/**
+		 * @method linear
+		 * @description Linear easing
+		 * @param {Number} x The time variable
+		 * @param {Number} y0 The start value of the property that will be changed
+		 * @param {Number} yf The final value of the property that will be changed
+		 * @param {Number} dur Duration of the animation
+		 */
+		linear: function (x, y0, yf, dur) {
+			return (yf - y0) * x / dur + y0;
+		},
+		/**
+		 * @method easein
+		 * @description An easing that's stronger at the beginning and softer at the end
+		 * @param {Number} x The time variable
+		 * @param {Number} y0 The start value of the property that will be changed
+		 * @param {Number} yf The final value of the property that will be changed
+		 * @param {Number} dur Duration of the animation
+		 * @param {Number} pw Easing strengh
+		 */
+		easein: function (x, y0, yf, dur, pw) {
+			return yf - (yf - y0) * Math.pow((yf >= y0 ? -1 : 1) * (x / dur - 1), pw);
+		},
+		/**
+		 * @method easeout
+		 * @description An easing that's softer at the beginning and stronger at the end
+		 * @param {Number} x The time variable
+		 * @param {Number} y0 The start value of the property that will be changed
+		 * @param {Number} yf The final value of the property that will be changed
+		 * @param {Number} dur Duration of the animation
+		 * @param {Number} pw Easing strengh
+		 */
+		easeout: function (x, y0, yf, dur, pw) {
+			return y0 + (yf - y0) * Math.pow(x / dur, pw);
+		},
+		/*bounce: function (x, y0, yf, dur, pw) {
+			return oneDBezier([y0, yf + pw, yf], x / dur);
+		},*/
+		/**
+		 * @method sling
+		 * @description An easing that goes back before going forward
+		 * @param {Number} x The time variable
+		 * @param {Number} y0 The start value of the property that will be changed
+		 * @param {Number} yf The final value of the property that will be changed
+		 * @param {Number} dur Duration of the animation
+		 * @param {Number} pw Easing strengh
+		 */
+		sling: function (x, y0, yf, dur, pw) {
+			return oneDBezier([y0, y0 + (yf < y0 ? 1 : -1) * pw, yf], x / dur);
+		}
 	};
 	
 	if (!jet.TimeFrame) {
@@ -37,6 +110,7 @@ jet().add('anim', function ($) {
 			var interval;
 			var frameLength;
 			var time = 0;
+			var playing = false;
 	
 			return {
 				/**
@@ -53,14 +127,16 @@ jet().add('anim', function ($) {
 				 */
 				play: function () {
 					var myself = this;
-					if (interval) {
-						clearInterval(interval);
+					if (!playing) {
+						if (interval) {
+							clearInterval(interval);
+						}
+						var frameLength = Math.round(1000 / myself.fps);
+						interval = setInterval(function () {
+							myself.fire(ENTER_FRAME, (new Date()).getTime());
+						}, frameLength);
+						playing = true;
 					}
-					var frameLength = Math.round(1000 / myself.fps);
-					interval = setInterval(function () {
-						time += frameLength;
-						myself.fire(ENTER_FRAME, time);
-					}, frameLength);
 					return myself;
 				},
 				/**
@@ -72,6 +148,7 @@ jet().add('anim', function ($) {
 					if (interval) {
 						clearInterval(interval);
 					}
+					playing = false;
 					return this;
 				},
 				/**
@@ -100,7 +177,7 @@ jet().add('anim', function ($) {
 	}
 	
 	/**
-	 * A Tween is a variation of a property during a laps of time that has a certain easing associated
+	 * A Tween is a variation of a property during a lapse of time that has a certain easing associated
 	 * @class Tween
 	 * @extends Base
 	 * @constructor
@@ -111,7 +188,7 @@ jet().add('anim', function ($) {
 		Tween.superclass.constructor.apply(this, arguments);
 		
 		var timeframe = jet.TimeFrame;
-		var playing = FALSE;
+		var playing = false;
 		var notPlaying = function () {
 			return !playing;
 		};
@@ -124,8 +201,8 @@ jet().add('anim', function ($) {
 			 * @writeOnce
 			 */
 			node: {
-				writeOnce: TRUE,
-				required: TRUE,
+				writeOnce: true,
+				required: true,
 				setter: function (value) {
 					return $(value);
 				}
@@ -136,8 +213,7 @@ jet().add('anim', function ($) {
 			 * @type Object
 			 */
 			from: {
-				value: FALSE,
-				validator: notPlaying
+				value: false
 			},
 			/**
 			 * @config to
@@ -145,8 +221,7 @@ jet().add('anim', function ($) {
 			 * @type Object
 			 */
 			to: {
-				required: TRUE,
-				validator: notPlaying
+				required: true
 			},
 			/**
 			 * @config easing
@@ -155,7 +230,7 @@ jet().add('anim', function ($) {
 			 * @default TimeFrame.easing.DEFAULT
 			 */
 			easing: {
-				value: Tween.easing.DEFAULT
+				value: Easing.linear
 			},
 			/**
 			 * @config easingStrength
@@ -169,15 +244,6 @@ jet().add('anim', function ($) {
 				}
 			},
 			/**
-			 * @config startFrame
-			 * @description Where in the TimeFrame to start the tween
-			 * @type Number
-			 * @default 0 Start inmediately
-			 */
-			startFrame: {
-				value: 0
-			},
-			/**
 			 * @config duration
 			 * @description The duration of the animation
 			 * @default 1000
@@ -185,12 +251,12 @@ jet().add('anim', function ($) {
 			 */
 			duration: {
 				value: 1000,
-                setter: function (value) {
-                    return value == "fast" ? 500 :
-                           value == "slow" ? 4000 :
-                           Lang.isNumber(value) ? value :
-                           1000; 
-                }
+				setter: function (value) {
+					return value == "fast" ? 500 :
+						   value == "slow" ? 4000 :
+						   Lang.isNumber(value) ? value :
+						   1000; 
+				}
 			}
 		});
 		
@@ -198,6 +264,11 @@ jet().add('anim', function ($) {
 		var from;
 		var to;
 		var startTime;
+		/*
+		 * Previous time is used for pausing. It keeps how much time had
+		 * elapsed in the last run before the tween was _paused_.
+		 * When stopped, "previous" is reset to 0.
+		 */
 		var previous = 0;
 		var easing, duration, strength;
 		
@@ -211,14 +282,16 @@ jet().add('anim', function ($) {
 				var against = Hash.keys(to).length;
 				Hash.each(to, function (name, val) {
 					var go = easing(elapsed, from[name], val, duration, strength);
-					if ((val >= from[name] && go >= val) || (val <= from[name] && go <= val)) {
-						++check;
+					if ((val > from[name] && go > val) || (val < from[name] && go < val)) {
+						go = val;
 					}
 					node.css(name, go);
 				});
-				if (check == against) {
+				if (elapsed >= duration) {
 					myself.stop();
-					myself.fire("finish");
+					// @TODO: investigate if this should be wrapped in a setTimeout or something similar
+					// to allow chaining of animations without hanging the browser 
+					myself.fire("complete");
 				}
 			}
 		};
@@ -232,16 +305,16 @@ jet().add('anim', function ($) {
 		 */
 		myself.play = function () {
 			var startStyle = node.currentStyle();
-			playing = TRUE;
-			from = myself.get("from");
+			playing = true;
+			from = myself.get("from") || {};
 			to = myself.get("to");
-			if (!from) {
-				from = { css: {} };
-			}
+			var offset = node.offset();
 			Hash.each(to, function (name, val) {
 				to[name] = pxToFloat(val);
 				if (!from[name]) {
-					var offset = node.offset();
+					// Some properties shouldn't be get from the computed style because
+					// they might have non numeric values such as "auto"
+					// @TODO: handle "auto" for margin, padding, etc
 					switch (name) {
 					case "left":
 						from[name] = offset.left;
@@ -261,6 +334,7 @@ jet().add('anim', function ($) {
 				} 
 			});
 			easing = myself.get("easing");
+			easing = Lang.isFunction(easing) ? easing : Easing[easing];
 			duration = myself.get("duration");
 			strength = myself.get("easingStrength");
 			timeframe.on(ENTER_FRAME, enterFrame);
@@ -273,7 +347,7 @@ jet().add('anim', function ($) {
 		 * @chainable
 		 */
 		myself.stop = function () {
-			playing = FALSE;
+			playing = false;
 			timeframe.removeTween(myself);
 			timeframe.unbind(ENTER_FRAME, enterFrame);
 			previous = startTime = 0;
@@ -285,119 +359,97 @@ jet().add('anim', function ($) {
 		 * @chainable
 		 */
 		myself.pause = function () {
-			playing = FALSE;
+			playing = false;
 			timeframe.removeTween(myself);
 			timeframe.unbind(ENTER_FRAME, enterFrame);
 			previous = (new Date()).getTime() - startTime;
 			return myself;
 		};
+		/**
+		 * Reverses the tween
+		 * @method reverse
+		 * @chainable
+		 */
+		myself.reverse = function () {
+			return myself.set("from", to).set("to", from);
+		};
 	};
 	$.extend(Tween, $.Base);
 	
 	/**
-	 * Easing modes
-	 * @class easing
+	 * Methods added to NodeList
+	 * @class NodeListAnim
 	 * @static
-	 * @namespace Tween
 	 */
-	Tween.easing = {
+	$.augment($.NodeList, {
 		/**
-		 * @method DEFAULT
-		 * @description Linear easing
-		 * @param {Number} x The time variable
-		 * @param {Number} y0 The start value of the property that will be changed
-		 * @param {Number} yf The final value of the property that will be changed
-		 * @param {Number} dur Duration of the animation
+		 * @method animate
+		 * @description animates all members of the node list
+		 * @param {Hash} props
+		 * @param {Number | String} duration
+		 * @param {Function} easing
+		 * @param {Function} callback
 		 */
-        DEFAULT: function (x, y0, yf, dur) {
-            return (yf - y0) * x / dur + y0;
-        },
-		/**
-		 * @method EASEIN
-		 * @description An easing that's stronger at the beginning and softer at the end
-		 * @param {Number} x The time variable
-		 * @param {Number} y0 The start value of the property that will be changed
-		 * @param {Number} yf The final value of the property that will be changed
-		 * @param {Number} dur Duration of the animation
-		 * @param {Number} pw Easing strengh
-		 */
-        EASEIN: function (x, y0, yf, dur, pw) {
-            return yf + y0 - yf * Math.pow((dur - x) / dur, pw) + y0;
-        },
-		/**
-		 * @method EASEOUT
-		 * @description An easing that's softer at the beginning and stronger at the end
-		 * @param {Number} x The time variable
-		 * @param {Number} y0 The start value of the property that will be changed
-		 * @param {Number} yf The final value of the property that will be changed
-		 * @param {Number} dur Duration of the animation
-		 * @param {Number} pw Easing strengh
-		 */
-        EASEOUT: function (x, y0, yf, dur, pw) {
-            return yf * Math.pow(x / dur, pw) + y0;
-        }
-    };
-    
-    $.augment($.NodeList, {
-    	animate: function (props, curation, easing, callback) {
-    		var tw = new Tween({
-    			node: this,
-    			to: props,
-    			duration: curation,
-    			easing: easing
-    		});
-    		this.tw = tw.on("finish", callback).play();
-    		return this;
-    	},
-    	fadeIn: function (duration, callback) {
-    		return this.animate({
-    			opacity: 1 
-    		}, duration, null, callback);
-    	},
-    	fadeOut: function (duration, callback) {
-    		return this.animate({
-    			opacity: 0
-    		}, duration, null, callback);
-    	},
-    	fadeToggle: function (duration, callback) {
-    		return this.each(function (node) {
-    			node = $(node);
-    			if (node.css("opacity") == 1) {
-    				node.fadeOut(duration, callback);
-    			} else {
-    				node.fadeIn(duration, callback);
-    			}
-    		});
-    	},
-    	slideDown: function (duration, callback) {
-    		var myself = this;
-    		var overflow = myself.css("overflow");
-    		return myself.css("overflow", "hidden").animate({
-    			height: myself.oHeight
-    		}, duration, null, function () {
-    			myself.css("overflow", overflow);
-    			callback.call(myself);
-    		});
-    	},
-    	slideUp: function (duration, callback) {
-    		var myself = this;
-    		var overflow = myself.css("overflow");
-    		return myself.css("overflow", "hidden").animate({
-    			height: 0
-    		}, duration, null, function () {
-    			myself.css("overflow", overflow);
-    			callback.call(myself);
-    		});
-    	},
-    	stop: function () {
-    		if (this.tw) {
-    			this.tw.stop();
-    		}
-    		return this;
-    	}
-    });
+		animate: function (props, duration, easing, callback) {
+			var tw = new Tween({
+				node: this,
+				to: props,
+				duration: duration,
+				easing: easing
+			});
+			this.tw = tw.on("complete", callback).play();
+			return this;
+		},
+		fadeIn: function (duration, callback) {
+			return this.animate({
+				opacity: 1 
+			}, duration, null, callback);
+		},
+		fadeOut: function (duration, callback) {
+			return this.animate({
+				opacity: 0
+			}, duration, null, callback);
+		},
+		fadeToggle: function (duration, callback) {
+			return this.each(function (node) {
+				node = $(node);
+				if (node.css("opacity") == 1) {
+					node.fadeOut(duration, callback);
+				} else {
+					node.fadeIn(duration, callback);
+				}
+			});
+		},
+		slideDown: function (duration, callback) {
+			var myself = this;
+			var overflow = myself.css("overflow");
+			return myself.css("overflow", "hidden").animate({
+				height: myself.oHeight
+			}, duration, null, function () {
+				myself.css("overflow", overflow);
+				callback.call(myself);
+			});
+		},
+		slideUp: function (duration, callback) {
+			var myself = this;
+			var overflow = myself.css("overflow");
+			return myself.css("overflow", "hidden").animate({
+				height: 0
+			}, duration, null, function () {
+				myself.css("overflow", overflow);
+				callback.call(myself);
+			});
+		},
+		stop: function () {
+			if (this.tw) {
+				this.tw.stop();
+			}
+			return this;
+		}
+	});
 	
 	$.add({
-		Tween: Tween
+		Tween: Tween,
+		Easing: Easing
 	});
 });

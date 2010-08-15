@@ -20,8 +20,6 @@
 		SP = String.prototype,
 		SLICE = AP.slice,
 		TOSTRING = OP.toString,
-		TRUE = true,
-		FALSE = false,
 		BASE = "base",
 		NODE = "node";
 	
@@ -30,17 +28,18 @@
 	 * Each module should be defined after its requirements
 	 */
 	var predefinedModules = {
-		ua: TRUE,
-		log: TRUE,
+		ua: true,
+		log: true,
 		node: ["log", "ua"],
 		xsl: [NODE],
-		flash: [NODE],
-		"simple-progressbar": [NODE],
+		swf: true,
+		spbar: [NODE],
 		json: [NODE],
 		cookie: [NODE],
 		sizzle: [NODE],
 		base: [NODE],
 		io: ["json"],
+		"history": [BASE, "json"],
 		tabs: [BASE],
 		resize: [BASE, {
 			name: "resize-css",
@@ -48,6 +47,15 @@
 			fileName: "resize",
 			beacon: {
 				name: "borderLeftStyle",
+				value: "solid"
+			}
+		}],
+		button: [BASE, {
+			name: "button-css",
+			type: "css",
+			fileName: "button",
+			beacon: {
+				name: "borderBottomStyle",
 				value: "solid"
 			}
 		}],
@@ -73,6 +81,7 @@
 				value: "solid"
 			}
 		}],
+		treeview: [BASE],
 		plasma: ["anim"]
 	};
 	
@@ -162,7 +171,7 @@
 			isFunction: function (o) {
 				return type(o) === FUNCTION;
 			},
-			isObject: function(o, failfn) {
+			isObject: function (o, failfn) {
 				var t = typeof o;
 				return (o && (t === OBJECT || (!failfn && (t === FUNCTION || Lang.isFunction(o))))) || false;
 			},
@@ -206,9 +215,9 @@
 					return isFinite(o);
 				case NULL:
 				case UNDEFINED:
-					return FALSE;
+					return false;
 				case BOOLEAN:
-					return TRUE;
+					return true;
 				default:
 					return !!(t);
 				}
@@ -364,7 +373,7 @@
 		each: function (hash, fn, thisp) {
 			for (var x in hash) {
 				if (hash.hasOwnProperty(x)) {
-					if (fn.call(thisp || hash, x, hash[x], hash) === FALSE) {
+					if (fn.call(thisp || hash, x, hash[x], hash) === false) {
 						break;
 					}
 				}
@@ -420,7 +429,7 @@
 	var loadScript = function (url, keep) {
 		var script = createNode("script", {
 			type: "text/javascript",
-			asyng: TRUE,
+			asyng: true,
 			src: url
 		});
 		head.appendChild(script);
@@ -537,7 +546,7 @@
 		};
 		
 		var add = function (o) {
-			mix($, o, TRUE);
+			mix($, o, true);
 		};
 		
 		if (win.JSON) {
@@ -641,7 +650,7 @@
 			
 			/**
 			 * Copies all properties from B to A.
-			 * Doesn't overwrite properties unless the overwrite parameter is TRUE
+			 * Doesn't overwrite properties unless the overwrite parameter is true
 			 * @method mix
 			 * @param {Object} A
 			 * @param {Object} B
@@ -832,23 +841,23 @@
  			 * @type Boolean
  			 * @default true
  			 */
-			config.minify = Lang.isBoolean(config.minify) ? config.minify : FALSE;
+			config.minify = Lang.isBoolean(config.minify) ? config.minify : false;
 			/**
 			 * @config loadCss
 			 * @description If true, css modules are loaded
 			 * @type Boolean
 			 * @default true
 			 */
-			config.loadCss = Lang.isBoolean(config.loadCss) ? config.loadCss : TRUE;
+			config.loadCss = Lang.isBoolean(config.loadCss) ? config.loadCss : true;
 			/**
 			 * @config modules
 			 * @description Allows to define your own modules. Currently the same as using object literals in the use() method
 			 * @type Array
 			 */
-			var predef = mix(clone(predefinedModules), config.modules || {}, TRUE);
+			var predef = mix(clone(predefinedModules), config.modules || {}, true);
 			
 			var loadCssModule = function (module) {
-				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + (config.minify ? ".min.css" : ".css")));
+				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + "/" + module.fileName + (config.minify ? ".min.css" : ".css")));
 				loadCSS(url);
 				var t = setInterval(function () {
 					if (getCurrentStyle(trackerDiv)[module.beacon.name] == module.beacon.value) {
@@ -921,7 +930,7 @@
 						if (Lang.isString(module) && predef[module]) {
 							request[i] = module = Lang.isHash(predef[module]) ? predef[module] : {
 								name: module,
-								path: module + (config.minify ? ".min.js" : ".js")
+								path: module + "/" + module + (config.minify ? ".min.js" : ".js")
 							};
 						}
 						if (module.type == "css" && !config.loadCss) {
@@ -965,1168 +974,3 @@
 		};
 	}
 }());
-
-/**
- * Base structure for logging
- * @module log
- */
-jet().add("log", function ($) {
-	
-	$.error = function (msg) {
-		throw new Error(msg);
-	};
-
-});
-
-/**
- * Browser sniffing
- * @module ua
- */
-jet().add("ua", function ($) {
-	/**
-	 * Browser sniffing
-	 * @class UA
-	 * @static
-	 */
-	$.UA = (function () {
-		var nav = $.win.navigator,
-			ua = nav.userAgent.toLowerCase(),
-        	p = nav.platform.toLowerCase();
-
-		var webkit = /KHTML/.test(ua) || /webkit/i.test(ua),
-			opera = /opera/i.test(ua),
-			ie = /(msie) ([\w.]+)/.exec(ua);
-		
-        return {
-			/**
-			 * true if the browser uses the Webkit rendering engine (ie: Safari, Chrome)
-			 * @property webkit
-			 */
-			webkit: webkit,
-			/**
-			 * If the browser is Internet Explorer, this property is equal to the IE version. If not, it is false
-			 * @property ie
-			 */
-			ie: ie && ie[1] && ie[2] ? parseFloat(ie[2]) : false, // ie is false, 6, 7 or 8
-			/**
-			 * true if the browser is Opera
-			 * @property opera
-			 */
-			opera: opera,
-			/**
-			 * true if the browser is based on the Gecko rendering engine (ie: Firefox)
-			 * @property gecko
-			 */
-			gecko: !webkit && !opera && !ie && /Gecko/i.test(ua),
-			/**
-			 * true if the operating system is Windows
-			 * @property win
-			 */
-			win: p ? /win/.test(p) : /win/.test(ua), 
-			/**
-			 * true if the operating system is Apple OSX
-			 * @property mac
-			 */
-			mac: p ? /mac/.test(p) : /mac/.test(ua)
-		};
-    }());
-});
-
-/**
- * Node collections and DOM abstraction
- * @module node
- * @requires lang, ua
- */
-jet().add("node", function ($) {
-	
-	var TRUE = true,
-		FALSE = false,
-		NONE = "none",
-		ON = "on",
-		Lang = $.Lang,
-		Hash = $.Hash,
-		A = $.Array,
-		AP = Array.prototype,
-		SLICE = AP.slice;
-	
-	/**
-	 * Keeps a record of all listeners attached to the DOM in order to remove them when necessary
-	 * @class EventCache
-	 * @static
-	 * @private
-	 */
-	var EventCache = (function () {
-		var cache = {};
-		
-		/**
-		 * Removes all listeners from a node
-		 * @method clear
-		 * @param {DOMNode} obj
-		 */
-		var clear = function (obj) {
-			if (obj.detachEvent) {
-				clear = function (obj) {
-					var type, c, i;
-					for (type in cache) {
-						if (cache.hasOwnProperty(type)) {
-							c = cache[type];
-							i = 0;
-							while (i < c.length) {
-								if (c[i].obj == obj) {
-									c[i].obj.detachEvent(ON + type, c[i].fn);
-									c.splice(i, 1);
-								} else {
-									i++;
-								}
-							}
-						}
-					}
-				};
-			} else {
-				clear = function (obj) {
-					var type, c, i;
-					for (type in cache) {
-						if (cache.hasOwnProperty(type)) {
-							c = cache[type];
-							i = 0;
-							while (i < c.length) {
-								if (c[i].obj == obj) {
-									c[i].obj.removeEventListener(type, c[i].fn, false);
-									c.splice(i, 1);
-								} else {
-									i++;
-								}
-							}
-						}
-					}
-				};
-			}
-			clear(obj);
-		};
-		
-		var getCache = function (type) {
-			if (!cache[type]) {
-				cache[type] = [];
-			}
-			return cache[type];
-		};
-		
-		return {
-			/**
-			 * Adds a listener to the cache
-			 * @method add
-			 * @param {DOMNode} obj
-			 * @param {String} type
-			 * @param {Function} fn
-			 */
-			add: function (obj, type, fn) {
-				if (obj.nodeType) {
-					var c = getCache(type);
-					c[c.length] = {
-						obj: obj,
-						fn: fn
-					};
-				}
-			},
-			/**
-			 * Removes a method from the cache, but doesn't do anything to the node's listener
-			 * @method remove
-			 * @param {DOMNode} obj
-			 * @param {String} type
-			 * @param {Function} fn
-			 */
-			remove: function (obj, type, fn) {
-				A.remove(getCache(type), {
-					obj: obj,
-					fn: fn
-				});
-			},
-			clear: clear,
-			/**
-			 * Removes all listeners from all nodes recorded in the cache
-			 * @method flush
-			 */
-			flush: function () {
-				for (var o in cache) {
-					if (cache.hasOwnProperty(o)) {
-						clear(o);
-					}
-				}
-			}
-		};
-	}());
-	
-	// adds a DOM event and provides event object normalization
-	var addEvent = function (obj, type, callback) {
-		if (obj.addEventListener) {
-			addEvent = function (obj, type, callback) {
-				obj.addEventListener(type, callback, FALSE);
-				EventCache.add(obj, type, callback);
-			};
-		} else if (obj.attachEvent) {
-			addEvent = function (obj, type, callback) {
-				obj.attachEvent(ON + type, function () {
-					var ev = window.event;
-					ev.target = ev.srcElement;
-					ev.preventDefault = function () {
-						ev.returnValue = FALSE;
-					};
-					ev.stopPropagation = function () {
-						ev.cancelBubble = TRUE;
-					};
-					callback.call(event.srcElement, ev);
-				});
-				EventCache.add(obj, type, callback);
-			};
-		}
-		addEvent(obj, type, callback);
-	};
-	
-	// cross browser listener removal
-	var removeEvent = function (obj, type, callback) {
-		if (obj.removeEventListener) {
-			removeEvent = function (obj, type, callback) {
-				obj.removeEventListener(type, callback, FALSE);
-				EventCache.remove(obj, type, callback);
-			};
-		} else if (obj.detachEvent) {
-			removeEvent = function (obj, type, callback) {
-				obj.detachEvent(ON + type, callback);
-				EventCache.remove(obj, type, callback);
-			};
-		}
-		removeEvent(obj, type, callback);
-	};
-	
-	
-	var TEXT_NODE = 3;
-	var DOCUMENT_ELEMENT = "documentElement";
-	var GET_COMPUTED_STYLE = "getComputedStyle";
-	var CURRENT_STYLE = "currentStyle";
-	
-	/**
-	 * Bla
-	 * @class DOM
-	 * @static
-	 */
-	var DOM = {
-		/**
-		 * Returns the window object to which the current document belongs
-		 * @method getWindowFromDocument
-		 * @param {Document} document
-		 */
-		getWindowFromDocument: function (doc) {
-			doc = doc || $.context;
-			return doc.defaultView || doc.parentWindow || $.win;
-		},
-		/**
-		 * Gets the scrolling width or makes the browser scroll
-		 * @method scrollLeft
-		 * @param {Number} value
-		 * @chainable
-		 */
-		scrollLeft: function (value) {
-			if (Lang.isValue(value)) {
-				$.win.scrollTo(value, this.scrollTop());
-			} else {
-				var doc = $.context;
-				var dv = doc.defaultView;
-		        return Math.max(doc[DOCUMENT_ELEMENT].scrollLeft, doc.body.scrollLeft, (dv) ? dv.pageXOffset : 0);
-			}
-			return this;
-		},
-		/**
-		 * Gets the scrolling height or makes the browser scroll
-		 * @method scrollTop
-		 * @param {Number} value
-		 * @chainable
-		 */
-		scrollTop: function (value) {
-			if (Lang.isValue(value)) {
-				$.win.scrollTo(this.scrollTop(), value);
-			} else {
-				var doc = $.context;
-				var dv = doc.defaultView;
-		        return Math.max(doc[DOCUMENT_ELEMENT].scrollTop, doc.body.scrollTop, (dv) ? dv.pageYOffset : 0);
-			}
-			return this;
-		},
-		/**
-		 * Returns the inner size of the screen
-		 * @method screenSize
-		 */
-		screenSize: function () {
-			var doc = $.context,
-				de = doc.documentElement,
-				db = doc.body;
-			return {
-				height: de.clientHeight || $.win.innerHeight || db.clientHeight,
-				width: de.clientWidth || $.win.innerWidth || db.clientWidth
-			};
-		}
-	};
-	 
-	var ready = function (fn) {
-		var myself = this;
-		if ((myself[0].ownerDocument || myself[0]).body) {
-			fn.call(myself);
-		} else {
-			setTimeout(function () {
-				ready(fn);
-			}, 13);
-		}
-		return myself;
-	};
-	
-	/**
-	 * A collection of DOM Nodes
-	 * @class NodeList
-	 * @constructor
-	 * @param {Array|DOMCollection|DOMNode} nodes
-	 * @param {DOMNode|Document} root
-	 */
-	var NodeList = function (nodes, root) {
-		root = root || $.context;
-		nodes = Lang.isValue(nodes) ? nodes : [];
-		if (NodeList.is(nodes)) {
-			return nodes;
-		}
-		if (Lang.isString(nodes)) {
-			nodes = [root.createElement(nodes)];
-		} else if (nodes.nodeType || nodes.body || nodes.navigator) {
-			nodes = [nodes];
-		} else if (Lang.isArray(nodes)) {
-			var i = 0;
-			while (i < nodes.length) {
-				if (!(nodes.nodeType || nodes.body || nodes.navigator)) {
-					nodes.splice(i, 1);
-				} else {
-					i++;
-				}
-			}
-		} else if (Lang.isNumber(nodes.length)) {
-			var tmp = []
-			for (var i = 0; i < nodes.length; i++) {
-				tmp[i] = nodes[i];
-			}
-			nodes = tmp;
-			//nodes = SLICE.call(nodes);
-		} else {
-			$.error("Wrong argument for NodeList");
-		}
-		AP.push.apply(this, nodes);
-	};
-	NodeList.prototype = {
-		/**
-		 * Iterates through the NodeList
-		 * The callback is passed a reference to the node and an iteration index. 
-		 * The "this" keyword also refers to the node. ie:<br/>
-		 * <code>$("div").each(function (node, i) {<br/>
-		 * &nbsp;&nbsp;&nbsp;&nbsp;if (i % 2 == 1) {<br/>
-		 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(node).addClass("even");<br/>
-		 * &nbsp;&nbsp;&nbsp;&nbsp;} else {<br/>
-		 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(node).addClass("odd");<br/>
-		 * &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-		 * });</code>
-		 * @method each
-		 * @param {Function} callback
-		 * @chainable
-		 */
-		each: function (fn) {
-			var i = -1, myself = this;
-			while (this[++i]) {
-				fn.call(myself[i], myself[i], i);
-			}
-			return myself;
-		},
-		/**
-		 * Hides all nodes
-		 * @method hide
-		 * @chainable
-		 */
-		hide: function () {
-			return this.each(function (node) {
-				var display = node.style.display;
-				if (!node.JET_oDisplay && display != NONE) {
-					node.JET_oDisplay = display;
-				}
-				node.style.display = NONE;
-			});
-		},
-		/**
-		 * Shows all nodes
-		 * @method show
-		 * @chainable
-		 */
-		show: function () {
-			return this.each(function (node) {
-				console.log(node);
-				node.style.display = node.JET_oDisplay || "";
-			});
-		},
-		/**
-		 * If a node in the collection is hidden, it shows it. If it is visible, it hides it.
-		 * @method toggle
-		 * @chainable
-		 */
-		toggle: function () {
-			return this.each(function (node) {
-				var ns = node.style;
-				var oDisplay = node.LIB_oDisplay;
-				ns.display = ns.display != NONE ? NONE :
-							oDisplay ? oDisplay :
-							"";
-			});
-		},
-		/**
-		 * Returns true if the first node in the collection has the className CSS class
-		 * @method hasClass
-		 * @param {String} className
-		 * @chainable
-		 */
-		hasClass: function (className) {
-			var node = this[0];
-			return A.inArray(className, node.className ? node.className.split(" ") : []);
-		},
-		/**
-		 * Removes a number of classes from all nodes in the collection.
-		 * Takes multiple string parameters
-		 * @method removeClass
-		 * @chainable
-		 */
-		removeClass: function () {
-			var args = SLICE.call(arguments);
-			return this.each(function (node) {
-				A.each(args, function (sClass) {
-					node.className = A.remove(sClass, node.className ? node.className.split(" ") : []).join(" ");
-				});
-			});
-		},
-		/**
-		 * Adds a number of classes to all nodes in the collection
-		 * Takes multiple string parameters
-		 * @method addClass
-		 * @chainable
-		 */
-		addClass: function () {
-			var args = SLICE.call(arguments);
-			return this.each(function (node) {
-				A.each(args, function (sClass) {
-					var classes = node.className ? node.className.split(" ") : [];
-					if (!A.inArray(sClass, classes)) {
-						classes[classes.length] = sClass;
-						node.className = classes.join(" ");
-					}
-				});
-			});
-		},
-		/**
-		 * Adds/removes a certain class from all nodes in the collection
-		 * @method toggleClass
-		 * @param {String} sClass
-		 * @chainable
-		 */
-		toggleClass: function (sClass) {
-			return this.each(function (node) {
-				var classes = node.className ? node.className.split(" ") : [];
-				if (!A.inArray(sClass, classes)) {
-					classes[classes.length] = sClass;
-				} else {
-					A.remove(sClass, classes);
-				}
-				node.className = classes.join(" ");
-			});
-		},
-		/**
-		 * Sets the class name of all nodes in the collection
-		 * @method setClass
-		 * @param {String} sClass
-		 * @chainable
-		 */
-		setClass: function (sClass) {
-			return this.each(function (node) {
-				node.className = sClass;
-			});
-		},
-		/**
-		 * Returns an object literal containing:
-		 * <ul>
-		 * <li><strong>top</strong>: top position in px</li>
-		 * <li><strong>left</strong>: left position in px</li>
-		 * <li><strong>width</strong>: width in px</li>
-		 * <li><strong>height</strong>: height in px</li>
-		 * </ul>
-		 * @method offset
-		 * @return {Hash}
-		 */
-		offset: function () {
-			var node = this[0];
-			var offset = {
-				left: 0,
-				top: 0,
-				width: node.offsetWidth,
-				height: node.offsetHeight
-			};
-			var doc = node.ownerDocument;
-			if (node && doc) {
-				if (node.getBoundingClientRect) {
-					/*
-					 * getBoundingClientRect implementation from jQuery
-					 */
-					var box  = node.getBoundingClientRect();
-					var body = doc.body;
-					var de = doc[DOCUMENT_ELEMENT];
-					offset.left = box.left + DOM.scrollLeft() - (de.clientLeft || body.clientLeft || 0);
-					offset.top = box.top + DOM.scrollTop() - (de.clientTop || body.clientTop || 0);
-				} else if (node.offsetParent) {
-					/*
-					 * Not interested in supporting other browsers very well
-					 */
-					do {
-						offset.left += node.offsetLeft;
-						offset.top += node.offsetTop;
-						node = node.offsetParent;
-					} while (node);
-				}
-			} else {
-				offset = null;
-			}
-			
-			return offset;
-		},
-		/**
-		 * Gets/sets the width of all the nodes in the collection
-		 * @method width
-		 * @param {String|Number} [width]
-		 * @memberOf NodeList
-		 * @chainable
-		 */
-		width: function (width) {
-			if (Lang.isValue(width)) {
-				if (Lang.isNumber(width) && width < 0) {
-					width = 0;
-				}
-				width = Lang.isString(width) ? width : width + "px";
-				return this.each(function (node) {
-					node.style.width = width;
-				});
-			}
-			return this[0].offsetWidth;
-		},
-		/**
-		 * Gets/sets the height of all the nodes in the collection
-		 * @method height
-		 * @param {String|Number} [height]
-		 * @chainable
-		 */
-		height: function (height) {
-			if (Lang.isValue(height)) {
-				if (Lang.isNumber(height) && height < 0) {
-					height = 0;
-				}
-				height = Lang.isString(height) ? height : height + "px";
-				return this.each(function (node) {
-					node.style.height = height;
-				});
-			}
-			return this[0].offsetHeight;
-		},
-		/**
-		 * Returns a new NodeList with all nodes cloned from the current one
-		 * @method clone
-		 * @param {Boolean} deep If true, all nodes in the brach are cloned. If not, only the ones in the collection
-		 * @return {NodeList}
-		 */
-		clone: function (deep) {
-			deep = Lang.isValue(deep) ? deep : TRUE;
-			var result = new NodeList();
-			this.each(function (node) {
-				result.push(node.cloneNode(deep));
-			});
-			return result;
-		},
-		/**
-		 * Appends nodes to the ones in the current node list
-		 * @method append
-		 * @param {DOMNode|Array|NodeList} appended
-		 * @chainable
-		 */
-		append: function (appended) {
-			appended = $(appended);
-			return this.each(function (node) {
-				appended.each(function (app) {
-					node.appendChild(app);
-				});
-			});
-		},
-		/**
-		 * Appends all nodes in the current collection to the target node
-		 * @method appendTo
-		 * @param {DOMNode|NodeList} target
-		 * @chainable
-		 */
-		appendTo: function (target) {
-			target = $(target)[0];
-			return this.each(function (node) {
-				target.appendChild(node);
-			});
-		},
-		/**
-		 * Insert nodes to the ones in the current node list, before their first children
-		 * @method append
-		 * @param {DOMNode|Array|NodeList} appended
-		 * @chainable
-		 */
-		prepend: function (prepended) {
-			prepended = $(prepended);
-			return this.each(function (node) {
-				prepended.each(function (prep) {
-					if (node.firstChild) {
-						node.insertBefore(prep, node.firstChild);
-					} else {
-						node.appendChild(prep);
-					}
-				});
-			});
-		},
-		/**
-		 * Inserts all nodes in the current collection before the first child of the target node
-		 * @method prependTo
-		 * @param {DOMNode|NodeList} target
-		 * @chainable
-		 */
-		prependTo: function (target) {
-			target = $(target)[0];
-			return this.each(function (node) {
-				if (target.firstChild) {
-					target.insertBefore(node, target.firstChild);
-				} else {
-					target.appendChild(node);
-				}
-			});
-		},
-		/**
-		 * Inserts all nodes in the current node list before the target node
-		 * @method insertBefore
-		 * @param {DOMNode|NodeList} before
-		 * @chainable
-		 */
-		insertBefore: function (before) {
-			before = $(before)[0];
-			return this.each(function (node) {
-				before.parentNode.insertBefore(node, before);
-			});
-		},
-		/**
-		 * Returns a new NodeList with all the parents of the current nodes
-		 * @method parent
-		 * @return {NodeList}
-		 */
-		parent: function () {
-			var result = new NodeList();
-			this.each(function (node) {
-				if (A.indexOf(node.parentNode, result) == -1) {
-					result.push(node.parentNode);
-				}
-			});
-			return result;
-		},
-		/**
-		 * Returns a new NodeList with all the first children of the nodes in the collection
-		 * @method first
-		 * @return {NodeList}
-		 */
-		first: function () {
-			var result = new NodeList();
-			this.each(function (node) {
-				node = $(node).children(0)[0];
-				if (node) {
-					result.push(node);
-				}
-			});
-			return result;
-		},
-		/**
-		 * Returns a new NodeList with all the next siblings of the nodes in the collection
-		 * @method next
-		 * @return {NodeList}
-		 */
-		next: function () {
-			var result = new NodeList();
-			this.each(function (next) {
-				do {
-					next = next.nextSibling;
-				}
-				while (next && next.nodeType == TEXT_NODE);
-				if (next) {
-					result.push(next);
-				}
-			});
-			return result;
-		},
-		/**
-		 * Returns a new NodeList with all the previous siblings of the nodes in the collection
-		 * @method previous
-		 * @return {NodeList}
-		 */
-		previous: function () {
-			var result = new NodeList();
-			this.each(function (previous) {
-				do {
-					previous = previous.previousSibling;
-				}
-				while (previous && previous.nodeType == TEXT_NODE);
-				if (previous) {
-					result.push(previous);
-				}
-			});
-			return result;
-		},
-		/**
-		 * Returns a new NodeList with all the last children of the nodes in the collection
-		 * @method first
-		 * @return {NodeList}
-		 */
-		last: function () {
-			var result = new NodeList();
-			this.each(function (node) {
-				node = $(node).children().pop();
-				if (node) {
-					result.push(node);
-				}
-			});
-			return result;
-		},
-		/**
-		 * Gets or sets the innerHTML of all the nodes in the node list
-		 * @method html
-		 * @param {String} html
-		 * @chainable
-		 */
-		html: function (html) {
-			return Lang.isValue(html) ? this.each(function (node) {
-				node.innerHTML = html;
-			}) : this[0].innerHTML;
-		},
-		/**
-		 * Gets or sets tag attributes to the nodes in the collection
-		 * @method attr
-		 * @param {String|Hash} key
-		 * @param {String} [value]
-		 * @chainable
-		 */
-		attr: function (key, value) {
-			key = key || {};
-			var attrs = {};
-			if (Lang.isHash(key)) {
-				attrs = key;
-			} else if (Lang.isValue(value)) {
-				attrs[key] = value;
-			} else {
-				return this[0][key];
-			}
-			return this.each(function (node) {
-				Hash.each(attrs, function (name, val) {
-					node[name] = val;
-				});
-			});
-		},
-		/**
-		 * Gets or sets CSS styles
-		 * @method css
-		 * @param {String|Hash} key
-		 * @param {String} [value]
-		 * @chainable
-		 */
-		css: function (key, value) {
-			var css = {};
-			if (Lang.isHash(key)) {
-				css = key;
-			} else if (Lang.isValue(value)) {
-				css[key] = value;
-			} else {
-				return $(this[0]).currentStyle()[key];
-			}
-			return this.each(function (node) {
-				Hash.each(css, function (prop, value) {
-					if (prop == "opacity" && $.UA.ie) {
-						var ieOpacity = Math.ceil(value * 100);
-						if ($.UA.ie < 7) {
-							node.style["-ms-filter"] = "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + ieOpacity + ")";
-						} else {
-							node.style.filter = "alpha(opacity=" + ieOpacity + ")";
-						}
-					} else {
-						if (Lang.isNumber(value) && prop != "zIndex" && prop != "zoom" && prop != "opacity") {
-							value += "px";
-						}
-						node.style[prop] = value;
-					}
-				});
-			});
-		},
-		/**
-		 * Finds all the nodes below the ones in the current collection that match the search query
-		 * @method find
-		 * @param {String} query
-		 * @return {NodeList}
-		 */
-		find: function (query) {
-			var result = new NodeList();
-			this.each(function (node) {
-				result.push.apply(result, $(query, node));
-			});
-			return result;
-		},
-		/**
-		 * Returns a new NodeList with all the children of the current nodes
-		 * @method children
-		 * @param {String|Number} filter Return only the children that match the tag or index in this parameter
-		 * @return {NodeList}
-		 */
-		children: function (filter) {
-			filter = !Lang.isValue(filter) ? FALSE :
-					  Lang.isString(filter) ? filter.toUpperCase() : filter;
-			var result = new NodeList();
-			this.each(function (node) {
-				var children = node.childNodes;
-				var newChildren = [];
-				var length = children.length;
-				for (var i = 0; i < length; i++) {
-					if (children[i].nodeType != TEXT_NODE) {
-						newChildren[newChildren.length] = children[i];
-					}
-				}
-				if (filter !== FALSE) {
-					length = newChildren.length;
-					for (i = 0; i < length; i++) {
-						if (i == filter || newChildren[i].nodeName == filter) {
-							result.push(newChildren[i]);
-						}
-					}
-				} else {
-					result.push.apply(result, newChildren);
-				}
-			});
-			return result;
-		},
-		/**
-		 * Adds an event listener to all the nods in the list
-		 * @method on
-		 * @param {String} type
-		 * @param {Function} callback
-		 * @chainable
-		 */
-		on: function (type, callback) {
-			return this.each(function (node) {
-				addEvent(node, type, callback);
-			});
-		},
-		/**
-		 * Removes an event listener from all the nodes
-		 * @method unbind
-		 * @param {String} type
-		 * @param {Function} callback
-		 * @chainable
-		 */
-		unbind: function (type, callback) {
-			return this.each(function (node) {
-				removeEvent(node, type, callback);
-			});
-		},
-		/**
-		 * Removes all event listeners from all the current nodes
-		 * If "crawl" is true, it also removes them from all the nodes in the branches defined by the nodes
-		 * @method unbindAll
-		 * @param {Boolean} crawl
-		 * @chainable 
-		 */
-		unbindAll: function (crawl) {
-			return this.each(function (node) {
-				if (crawl) {
-					$.walkTheDOM(node, EventCache.clear);
-				} else {
-					EventCache.clear(node);
-				}
-			});
-		},
-		/**
-		 * Removes all the nodes from the DOM tree.
-		 * Unless keepEvents is true, it alse removes all event listeners from the nodes
-		 * @method remove
-		 * @param {Boolean} keepEvents
-		 * @chainable
-		 */
-		remove: function (keepEvents) {
-			return this.each(function (node) {
-				if (!keepEvents) {
-					$.walkTheDOM(node, EventCache.clear);
-				}
-				if (node.parentNode) {
-					node.parentNode.removeChild(node);
-				}
-			});
-		},
-		/**
-		 * Returns a new NodeList with all the documents of all the nodes in the collection that are Iframes
-		 * @method getDocument
-		 * @return {NodeList}
-		 */
-		getDocument: function () {
-			var result = [];
-			this.each(function (node) {
-				if (node.nodeName == "IFRAME") {
-					var doc = node.contentDocument || node.contentWindow.document || node.document || null;
-					if (doc) {
-						result[result.length] = doc;
-					}
-				}
-			});
-			return $(result);
-		},
-		/**
-		 * Returns the computed style of the first node in the collection
-		 * @method currentStyle
-		 * @return {CSSDeclaration}
-		 */
-		currentStyle: function () {
-			var node = this[0];
-			return $.win[GET_COMPUTED_STYLE] ? $.win[GET_COMPUTED_STYLE](node, null) : 
-					node[CURRENT_STYLE] ? node[CURRENT_STYLE] : node.style;
-		},
-		/**
-		 * Executes a callback when the DOM to which the first node in the collection belongs is ready
-		 * @method ready
-		 * @param {Function} callback
-		 * @chainable
-		 */
-		ready: ready,
-		/**
-		 * Returns a new NodeList containing all the nodes in the current list and the ones in the new one
-		 * Useful for applying properties to a bigger group of nodes, while keeping the original references
-		 * @method link
-		 * @param {NodeList} nodelist
-		 * @return {NodeList}
-		 */
-		link: function (nodelist) {
-			var result = new NodeList(SLICE.call(this));
-			A.each(nodelist, function (node) {
-				result.push(node);
-			});
-			return result;
-		}
-	};
-	NodeList.is = Lang.is;
-	
-
-	$.add({
-
-		NodeList: NodeList,
-		
-		DOM: DOM,
-		
-		pxToFloat: function (px) {
-			return Lang.isNumber(parseFloat(px)) ? parseFloat(px) :
-				   Lang.isString(px) ? parseFloat(px.substr(0, px.length - 2)) : px;
-		}
-	});
-	
-	addEvent($.win, "unload", EventCache.flush);
-});
-
-/**
- * Handles AJAX requests
- * @module io
- * @namespace
- */
-jet().add('io', function ($) {
-	var win = $.win;
-	
-	var TRUE = true,
-	FALSE = false,
-
-	XML = "xml",
-	XSL = "xsl",
-	TYPE_JSON = "json";
-	
-	var newAXO = function (t) {
-		return new win.ActiveXObject(t);
-	};
-	
-	var getActiveXParser = function (type) {
-		var freeThreadedDOM = "Msxml2.FreeThreadedDOMDocument.",
-			domDocument = "Msxml2.DOMDocument.",
-			test,
-			v6 = "6.0",
-			v3 = "3.0";
-		try {
-			test = newAXO(domDocument + v6);
-			getActiveXParser = function (type) {
-				if (type == XSL) {
-					return newAXO(freeThreadedDOM + v6);
-				} else {
-					return newAXO(domDocument + v6);
-				}
-			};
-		} catch (e) {
-			try {
-				test = newAXO(domDocument + v3);
-				getActiveXParser = function (type) {
-					if (type == XSL) {
-						return newAXO(freeThreadedDOM + v3);
-					} else {
-						return newAXO(domDocument + v3);
-					}
-				};
-			} catch (ex) {
-				
-			}
-		}
-		return getActiveXParser(type);
-	},
-	
-	getAjaxObject = function () {
-		var hostname = location.host,
-			msxml = "Microsoft.XMLHTTP",
-			test;
-		if ((location.protocol == "file:" || hostname == "localhost" || hostname == "127.0.0.1") && win.ActiveXObject) {
-			getAjaxObject = function () {
-				return newAXO(msxml);
-			};
-		} else if (XMLHttpRequest) {
-			getAjaxObject = function () {
-				return new XMLHttpRequest();
-			};
-		} else if (win.ActiveXObject) {
-			getAjaxObject = function () {
-				return newAXO(msxml);
-			};
-		}
-		return getAjaxObject();
-	};
-	
-	var timeoutError = 'timeout',
-	noObjectError = 'Can\'t create object',
-	noStatusError = 'Bad status';
-	
-	/* Parsea un XML
-	En Internet Explorer instancia un objeto ActiveX llamado MSXML. En el resto usa XMLHttpRequest.responseXML */
-	var parseXML = function (xmlFile, type, errorHandler) {
-		var xmlDoc = null;
-		/* La eleccion de versiones 6.0 y 3.0 es adrede.
-		   La version 4.0 es especifica de windows 2000 y la 5.0 viene unicamente con Microsoft Office
-		   La version 6 viene con Windows Vista y uno de los service pack de XP, por lo que el usuario quizas no la tenga
-		   Se la usa porque es considerablemente mas rapida */
-		if (!XMLHttpRequest) {
-			xmlDoc = getActiveXParser(type);
-			xmlDoc.async = FALSE;
-			xmlDoc.loadXML(xmlFile.responseText);
-			if (xmlDoc.parseError.errorCode !== 0) {
-				errorHandler(noStatusError, xmlDoc.parseError);
-			}
-		} else {
-			xmlDoc = xmlFile.responseXML;
-		}
-		return xmlDoc;
-	};
-				
-	var getResultByContentType = function (xhr, dataType, onError) {
-		var contentType = dataType || xhr.getResponseHeader('Content-type');
-		switch (contentType) {
-		case 'application/xml':
-		case XML:
-		case XSL:
-			return parseXML(xhr, contentType, onError);
-		case TYPE_JSON:
-			try {
-				return $.JSON.parse(xhr.responseText);
-			} catch (e) {
-				$.error(e);
-			}
-			break;
-		default:					
-			return xhr.responseText;
-		}
-	};
-
-	/**
-	 * Handles AJAX requests
-	 * @class IO
-	 * @static
-	 */
-	$.IO = {
-		/**
-		 * Makes an ajax request
-		 * @method ajax
-		 * @param {Hash} settings
-		 */
-		ajax: function (settings) {
-			var xhr = getAjaxObject();
-		   
-			var success = settings.success,
-	
-			result = null;
-			
-			var dataType 		= settings.dataType;
-			var timeout			= settings.timeout || 10000; /* Tiempo que tarda en cancelarse la transaccion */
-			var method			= settings.method || "GET"; /* Metodo para enviar informacion al servidor */
-			var async			= settings.async || TRUE;
-			var complete		= settings.complete || function () {};
-			var onSuccess		= function () {
-				if (success) {
-					success.apply($, arguments);
-				}
-				complete.apply($, arguments);
-			};
-			var onError			= function (a, b, c) {
-				if (settings.error) {
-					settings.error(a, b, c);
-				}
-				complete.apply($, arguments);
-			};
-		
-			if (xhr) {
-				/* Esto corrije el problema de ausencia de tipos mime solo si existe el metodo overrideMimeType (no existe en IE) */
-				if (dataType && (dataType === XML || dataType === XSL) && xhr.overrideMimeType) {
-					xhr.overrideMimeType('text/xml');
-				}
-				if (settings.url) {
-					if (async === TRUE) {
-						xhr.onreadystatechange = function () {
-							if (xhr.readyState === 4) {
-								/* Normalmente deberia chequearse unicamente el status == 200, pero cuando se hace una transaccion local el status en IE termina siendo 0
-								 por lo que con revisar que exista la respuesta alcanza */
-								if (xhr.status === 200 || xhr.responseText || xhr.responseXML) { 
-									onSuccess(getResultByContentType(xhr, dataType, onError), xhr);
-								} else if (xhr.status === 408) {
-									onError(timeoutError, xhr.status, xhr);
-								} else {
-									onError(noStatusError, xhr.status, xhr); 
-								}
-							}
-						};
-					}
-					/* Cuando la transaccion se hace en un filesystem local y el archivo de destino no existe,
-					   no se llega a pasar por el evento onreadystatechange sino que puede lanzar una excepcion en algunos navegadores */
-					try {
-						xhr.open(method, settings.url, async);
-						xhr.send(null);
-					} catch (e) {
-						onError(noStatusError, 404, xhr); 
-					}
-					if (async === FALSE) {
-						result = getResultByContentType(xhr, dataType, onError);
-					} else {
-						setTimeout(function () {
-							if (xhr.readyState !== 4) {
-								xhr.abort();
-								onError(timeoutError, 408, xhr);
-							}
-						}, timeout);
-					}
-				}
-			}
-			return result || $;
-		}
-	};
-});

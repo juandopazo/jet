@@ -12,22 +12,19 @@ jet().add('datasource', function ($) {
 		jet.DataSource.jsonpCallbacks = [];
 	}
 	
-	var FALSE = false,
-		TRUE = true;
-	
 	var Lang = $.Lang,
 		Hash = $.Hash,
 		A = $.Array,
 		IO = $.IO;
 
-	var RESPONSE_TYPE_JSON		= 1,
-		RESPONSE_TYPE_XML		= 2,
-		RESPONSE_TYPE_JSARRAY	= 3,
-		RESPONSE_TYPE_TEXT		= 4;
+	var RESPONSE_TYPE_JSON		= 'json',
+		RESPONSE_TYPE_XML		= 'xml',
+		RESPONSE_TYPE_JSARRAY	= 'jsarray',
+		RESPONSE_TYPE_TEXT		= 'text';
 	
-	var SOURCE_TYPE_XHR			= 1,
-		SOURCE_TYPE_JSONP		= 2,
-		SOURCE_TYPE_LOCAL		= 3;
+	var SOURCE_TYPE_XHR			= 'xhr',
+		SOURCE_TYPE_JSONP		= 'jsonp',
+		SOURCE_TYPE_LOCAL		= 'local';
 		
 	var PARSER = "parser",
 		REQUEST_LOGIC = "requestLogic",
@@ -125,7 +122,7 @@ jet().add('datasource', function ($) {
 	var RecordSet = function (data) {
 		RecordSet.superclass.constructor.call(this);
 		var records = [];
-		var sortedBy = FALSE;
+		var sortedBy = false;
 		var order;
 		
 		var myself = this;
@@ -224,26 +221,46 @@ jet().add('datasource', function ($) {
 		
 		var recordSet = new RecordSet([]);
 		var myself = this.addAttrs({
+			/**
+			 * @config recordSet
+			 * @description This datasource's associated recordset
+			 * @type RecordSet
+			 * @readOnly
+			 */
 			recordSet: {
-				readOnly: TRUE,
+				readOnly: true,
 				getter: function () {
 					return recordSet;
 				}
 			},
+			/**
+			 * @config responseType
+			 * @description The expected response type ('xml', 'jsarray', 'json', 'text')
+			 * @required
+			 */
 			responseType: {
-				required: TRUE
+				required: true
 			},
+			/**
+			 * @config responseSchema
+			 * @description The schema by which to parse the response data
+			 * @required
+			 */
 			responseSchema: {
-				required: TRUE
+				required: true
 			},
+			/**
+			 * @config requestLogic
+			 * @description The logic for the chosen source type. Should only be usef when extending the DataSource class
+			 * @protected
+			 * @writeOnce
+			 */
 			requestLogic: {
-				writeOnce: TRUE
-			},
-			internalEvents: {
-				readOnly: TRUE,
-				value: new $.EventTarget()
+				writeOnce: true
 			}
 		});
+		
+		var internalEvents = new $.EventTarget();
 		
 		var parser = function (rawData) {
 			var responseType = myself.get("responseType");
@@ -295,13 +312,13 @@ jet().add('datasource', function ($) {
 				}
 			 */
 			} else if (responseType == RESPONSE_TYPE_JSON) {
-				var found = TRUE;
+				var found = true;
 				var root = rawData;
 				if (responseSchema.resultList) {
 					var resultList = responseSchema.resultList.split(".");
 					A.each(resultList, function (key) {
 						if (!root[key]) {
-							found = FALSE;
+							found = false;
 						} else {
 							root = root[key];
 						}
@@ -342,38 +359,36 @@ jet().add('datasource', function ($) {
 			 * }
 			 */
 			else if (responseType == RESPONSE_TYPE_XML) {
-
-				var resultNode = $(rawData).find(responseSchema.resultNode)[0];
-				A.each(resultNode.children(), function (node) {
+				var doc = $.context;
+				var de = rawData.documentElement; 
+				var resultNode = de.nodeName == responseSchema.resultNode ? $(de) : $(de).find(responseSchema.resultNode).eq(0);
+				A.each(resultNode.children()._nodes, function (node) {
 					var record = {};
 					A.each(responseSchema.fields, function (field) {
-						var value;
-						if (node[0].nodeName != field.node) {
-							value = node.find(field.node)[0];
-						} else {
-							value = node[0];
-						}
-						if (field.attr) {
-							value = value.getAttribute(field.attr);
-						} else {
-							value = value.firstChild.nodeValue;
-						}
-						if (field.parser) {
-							switch (field.parser.toLowerCase()) {
-							case "float":
-								value = parseFloat(value);
-								break;
-							case "10":
-								value = parseInt(value, 10);
-								break; 
+						var value = node.nodeName != field.node ? $(node).find(field.node)._nodes[0] : node;
+						if (value) {
+							if (field.attr) {
+								value = value.getAttribute(field.attr);
+							} else {
+								value = value.firstChild ? value.firstChild.nodeValue : "";
+							}
+							if (field.parser) {
+								switch (field.parser.toLowerCase()) {
+								case "float":
+									value = parseFloat(value);
+									break;
+								case "10":
+									value = parseInt(value, 10);
+									break; 
+								}
 							}
 						}
 						record[field.key] = value;
 					});
 					data[data.length] = record;
 				});
+				$.context = doc;
 			}
-			
 			return new RecordSet(data);
 		};
 		
@@ -388,7 +403,7 @@ jet().add('datasource', function ($) {
 			myself.get(REQUEST_LOGIC)(request, function (rawData) {
 				myself.set(TEMP_DATA, rawData);
 				var tempData = rawData;
-				if (myself.get("internalEvents").fire("beforeParse", rawData)) {
+				if (internalEvents.fire("beforeParse", rawData)) {
 					tempData = parser(myself.get(TEMP_DATA));
 				}
 				recordSet = tempData;
@@ -419,7 +434,7 @@ jet().add('datasource', function ($) {
 		 * @chainable
 		 */
 		myself.onBeforeParse = function (callback) {
-			myself.get("internalEvents").on("beforeParse", function (e, rawData) {
+			internalEvents.on("beforeParse", function (e, rawData) {
 				myself.set(TEMP_DATA, callback(rawData));
 			});
 			return myself;
@@ -440,7 +455,7 @@ jet().add('datasource', function ($) {
 		
 		var myself = this.addAttrs({
 			url: {
-				required: TRUE
+				required: true
 			}
 		});
 		
@@ -477,7 +492,7 @@ jet().add('datasource', function ($) {
 				value: 10000
 			},
 			url: {
-				required: TRUE
+				required: true
 			}
 		});
 		
@@ -494,9 +509,9 @@ jet().add('datasource', function ($) {
 		
 		myself.set(REQUEST_LOGIC, function (request, success, failure) {
 			var index = jet.DataSource.jsonpCallbacks.length;
-			var loaded = FALSE;
+			var loaded = false;
 			jet.DataSource.jsonpCallbacks[index] = function (data) {
-				loaded = TRUE;
+				loaded = true;
 				success(data);
 			};
 			$.Get.script(myself.get(URL) + prepareRequest(request) + AMPERSAND + myself.get("jsonCallbackParam") + EQUAL_SIGN + "jet.DataSource.jsonpCallbacks[" + index + "]");
@@ -514,6 +529,33 @@ jet().add('datasource', function ($) {
 	};
 	$.extend(Get, DataSource);
 	
+	var XDR = function () {
+		XDR.superclass.constructor.apply(this, arguments);
+		
+		var myself = this.addAttrs({
+			url: {
+				required: true
+			},
+			dataType: {
+				value: "text"
+			}
+		});
+		
+		myself.set(REQUEST_LOGIC, function (request, success, failure) {
+			var type = myself.get(RESPONSE_TYPE);
+			IO.flajax({
+				url: myself.get(URL),
+				data: request,
+				dataType: myself.get("dataType"),
+				success: success,
+				error: failure
+			});
+		});
+		
+		myself.sendRequest(myself.get("initialRequest"));
+	};
+	$.extend(XDR, DataSource);
+	
 	/**
 	 * A Local DataSource uses local variables
 	 * @class Local
@@ -525,7 +567,7 @@ jet().add('datasource', function ($) {
 		Local.superclass.constructor.apply(this, arguments);
 		
 		var myself = this.addAttr("localData", {
-			required: TRUE
+			required: true
 		});
 		
 		myself.set(REQUEST_LOGIC, function (request, success, failure) {
@@ -550,7 +592,8 @@ jet().add('datasource', function ($) {
 		},
 		Ajax: Ajax,
 		Get: Get,
-		Local: Local
+		Local: Local,
+		XDR: XDR
 	});
 	
 	$.add({

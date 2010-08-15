@@ -8,9 +8,6 @@ jet().add("tabs", function ($) {
 	var Lang = $.Lang;
 	var ArrayHelper = $.Array;
 	
-	var TRUE = true,
-		FALSE = false;
-	
 	var LI = "li",
 		LABEL = "label",
 		PANEL = "panel";
@@ -21,19 +18,19 @@ jet().add("tabs", function ($) {
 		
 		myself.addAttrs({
 			label: {
-				required: TRUE,
+				required: true,
 				setter: function (value) {
 					return Lang.isString(value) ? $.create(LI).append($.create("a").html(value)) : $(value);
 				}
 			},
 			panel: {
-				required: TRUE,
+				required: true,
 				setter: function (value) {
 					return Lang.isString(value) ? $.create("div").html(value) : $(value);
 				} 
 			},
 			selected: {
-				value: FALSE
+				value: false
 			}
 		}).addAttrs({
 			labelContent: {
@@ -60,8 +57,8 @@ jet().add("tabs", function ($) {
 	};
 	$.extend(Tab, $.Attribute, {
 		select: function (silent) {
-			silent = silent || FALSE;
-			var myself = this.set(SELECTED, TRUE);
+			silent = silent || false;
+			var myself = this.set(SELECTED, true);
 			myself.get(LABEL).addClass(SELECTED);
 			myself.get(PANEL).show();
 			if (!silent) {
@@ -70,8 +67,8 @@ jet().add("tabs", function ($) {
 			return myself;
 		},
 		unselect: function (silent) {
-			silent = silent || FALSE;
-			var myself = this.set(SELECTED, FALSE);
+			silent = silent || false;
+			var myself = this.set(SELECTED, false);
 			myself.get(LABEL).removeClass(SELECTED);
 			myself.get(PANEL).hide();
 			if (!silent) {

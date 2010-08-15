@@ -6,9 +6,6 @@
  */
 jet().add('datatable', function ($) {
 	
-	var FALSE = false,
-		TRUE = true;
-	
 	var Lang = $.Lang,
 		Hash = $.Hash,
 		A = $.Array;	
@@ -54,14 +51,14 @@ jet().add('datatable', function ($) {
 		
 		var myself = this.addAttrs({
 			dataSource: {
-				required: TRUE
+				required: true
 			},
 			columnDefinitions: {
-				required: TRUE,
+				required: true,
 				validator: Lang.isArray
 			},
 			className: {
-				writeOnce: TRUE,
+				writeOnce: true,
 				value: "dt"
 			}
 		});
@@ -184,7 +181,7 @@ jet().add('datatable', function ($) {
 			}
 			A.each(rows, addRow);
 			if (sortedBy) {
-				sort($(NUMERAL + thIdPrefix + sortedBy), TRUE);
+				sort($(NUMERAL + thIdPrefix + sortedBy), true);
 			}
 		};
 		/*@TODO

@@ -13,9 +13,6 @@ jet().add('resize', function ($) {
 		LEFT = "l",
 		RIGHT = "r";
 	
-	var TRUE = true,
-		FALSE = false;
-		
 	var NEW_DIV = "<div/>",
 		LOCKED = "locked",
 		HOVER = "hover";
@@ -35,7 +32,7 @@ jet().add('resize', function ($) {
 		var myself = this;
 		myself.addAttrs({
 			node: {
-				required: TRUE,
+				required: true,
 				setter: function (value) {
 					return $(value);
 				}
@@ -54,10 +51,10 @@ jet().add('resize', function ($) {
 				value: 0
 			},
 			constrain: {
-				value: FALSE
+				value: false
 			},
 			animate: {
-				value: FALSE,
+				value: false,
 				validator: function () {
 					return myself.get("proxy");
 				}
@@ -89,7 +86,7 @@ jet().add('resize', function ($) {
 					
 		var originalStyle = node.currentStyle();
 		if (useProxy) {
-			if (useProxy === TRUE) {
+			if (useProxy === true) {
 				var offset = node.offset();
 				proxy.addClass("yui-resize-proxy").css({
 					left: originalStyle.left,
@@ -108,7 +105,7 @@ jet().add('resize', function ($) {
 			proxy.appendTo(node.parent());
 		}
 		
-		var capturing = FALSE;
+		var capturing = false;
 		var start = {
 			X: 0,
 			Y: 0
@@ -119,15 +116,15 @@ jet().add('resize', function ($) {
 			width: 0,
 			height: 0
 		};
-		var resizeVertical = FALSE, resizeHorizontal = FALSE;
+		var resizeVertical = false, resizeHorizontal = false;
 		
 		var startResize = function (x, y, left, top) {
 			resizeVertical = capturing.indexOf(TOP) > -1 ? TOP :
 							 capturing.indexOf(BOTTOM) > -1 ? BOTTOM :
-							 FALSE;
+							 false;
 			resizeHorizontal = capturing.indexOf(RIGHT) > -1 ? RIGHT :
 								capturing.indexOf(LEFT) > -1 ? LEFT :
-								FALSE;
+								false;
 			start.X = x;
 			start.Y = y;
 			
@@ -199,7 +196,7 @@ jet().add('resize', function ($) {
 						})).start();
 					}
 				}
-				capturing = FALSE;
+				capturing = false;
 				var offset;
 				if (useProxy) {
 					proxy.css(VISIBILITY, "hidden");
@@ -249,7 +246,7 @@ jet().add('resize', function ($) {
 					var offset = proxy.offset();
 					capturing = type;
 					tracker.get("shim").css("cursor", handle.currentStyle().cursor);
-					tracker.set("tracking", TRUE);
+					tracker.set("tracking", true);
 					startResize(e.clientX, e.clientY, offset.left, offset.top, type);
 					myself.fire("startResize", currentWidth, currentHeight, offset.left, offset.top, type);
 				}
@@ -285,12 +282,12 @@ jet().add('resize', function ($) {
 	$.extend(Resize, $.Utility, {
 		lock: function () {
 			if (this.fire("lock")) {
-				this.set(LOCKED, TRUE);
+				this.set(LOCKED, true);
 			}
 		},
 		unlock: function () {
 			if (this.fire("unlock")) {
-				this.set(LOCKED, FALSE);
+				this.set(LOCKED, false);
 			}
 		},
 		isLocked: function () {

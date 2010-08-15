@@ -5,9 +5,6 @@
  */
 jet().add('dragdrop', function ($) {
 	
-	var FALSE = false,
-		TRUE = true;
-	
 	var ArrayHelper = $.Array,
 		Lang = $.Lang;
 		
@@ -33,7 +30,7 @@ jet().add('dragdrop', function ($) {
 			 * @required
 			 */
 			node: {
-				required: TRUE,
+				required: true,
 				setter: function (value) {
 					return $(value);
 				}
@@ -52,7 +49,7 @@ jet().add('dragdrop', function ($) {
 			 * @type Boolean
 			 */
 			tracking: {
-				value: FALSE
+				value: false
 			}
 		});
 		/**
@@ -86,7 +83,7 @@ jet().add('dragdrop', function ($) {
 					var offset = $(this).offset();
 					startLeft = offset.left;
 					startTop = offset.top;
-					tracker.set(TRACKING, TRUE);
+					tracker.set(TRACKING, true);
 				}
 			});
 		};
@@ -110,18 +107,18 @@ jet().add('dragdrop', function ($) {
 		}
 		
 		$($.context).on("mouseup", function () {
-			tracker.set(TRACKING, FALSE);
+			tracker.set(TRACKING, false);
 		});
-		var firstTime = TRUE;
+		var firstTime = true;
 		tracker.on("trackingChange", function (e, value) {
-			if (!firstTime && value === FALSE) {
+			if (!firstTime && value === false) {
 				/**
 				 * Fires when the drag ends
 				 * @event drag:end
 				 */
 				myself.fire("drag:end", currentX, currentY);
 			}
-			firstTime = FALSE;
+			firstTime = false;
 		});
 		var node = myself.get(NODE);
 		tracker.on("mousemove", function (e, clientX, clientY) {
@@ -183,7 +180,7 @@ jet().add('dragdrop', function ($) {
 		
 		myself.on("end", function (e, clientX, clientY) {
 			var targets = myself.get("targets").concat(myTargets);
-			var hit = FALSE;
+			var hit = false;
 			ArrayHelper.each(targets, function (target) {
 				if (insideOffset(clientX, clientY, target.offset())) {
 					/**
@@ -191,7 +188,7 @@ jet().add('dragdrop', function ($) {
 					 * @event drop:hit
 					 */
 					myself.fire("drop:hit", target);
-					hit = TRUE;
+					hit = true;
 				}
 			});
 			if (!hit) {

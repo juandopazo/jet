@@ -6,11 +6,10 @@
  */
 jet().add("container", function ($) {
 	
-	var TRUE = true,
-		FALSE = false,
-		Lang = $.Lang,
+	var Lang = $.Lang,
 		Hash = $.Hash,
-		A = $.Array;
+		A = $.Array,
+		DOM = $.DOM;
 	
 	// definitions for better minification
 	var BOUNDING_BOX = "boundingBox",
@@ -53,218 +52,6 @@ jet().add("container", function ($) {
 	
 	// true if the UA supports the value 'fixed' for the css 'position' attribute
 	var UA_SUPPORTS_FIXED = (!$.UA.ie || $.UA.ie < 8);
-	
-	/**
-	 * A button may be a push button, a radio button or other form elements that behave as buttons
-	 * @class Button
-	 * @constructor
-	 * @extends Widget
-	 * @param {Object} config Object literal specifying widget configuration properties
-	 */
-	var Button = function () {
-		Button.superclass.constructor.apply(this, arguments);
-		var myself = this.set(CLASS_NAME, BUTTON).addAttrs({
-			/**
-			 * @config type
-			 * @type String
-			 * @writeOnce
-			 * @default "push"
-			 */
-			type: {
-				writeOnce: TRUE,
-				value: "push"
-			},
-			// overwrite standard boundingBox (a div) with a span
-			// maybe all widgets should use a span with display: inline-block as a boundingBox?
-			boundingBox: {
-				readOnly: TRUE,
-				value: $(NEW_SPAN)
-			},
-			//overwrite standard contentBox (a div) with a span
-			contentBox: {
-				readOnly: TRUE,
-				value: $(NEW_SPAN)
-			}
-		});
-		var type = myself.get(TYPE);
-		var tag =	type == "push" ? "button" :
-					type == "link" ? "a" : "a";
-		
-		/**
-		 * The button node
-		 * @config buttonNode
-		 * @readOnly
-		 */
-		myself.addAttr("buttonNode", {
-			readOnly: TRUE,
-			value: $("<" + tag + "/>")
-		});
-		
-		myself.on(RENDER, function () {
-			var node = myself.get("buttonNode").html(myself.get("text"));
-			var prefix = myself.get(CLASS_PREFIX);
-			var boundingBox = myself.get(BOUNDING_BOX).addClass(prefix + Button.NAME, prefix + type + "-" + Button.NAME);
-			var contentBox = myself.get(CONTENT_BOX).addClass("first-child");
-			node.on("mouseover", function () {
-				boundingBox.addClass(prefix + Button.NAME + "-hover", prefix + type + Button.NAME + "-hover");
-			}).on("mouseout", function () {
-				boundingBox.removeClass(prefix + Button.NAME + "-hover", prefix + type + Button.NAME + "-hover");
-			}).on("focus", function () {
-				boundingBox.addClass(prefix + Button.NAME + "-focus", prefix + type + Button.NAME + "-focus");
-			}).on("blur", function () {
-				boundingBox.removeClass(prefix + Button.NAME + "-focus", prefix + type + Button.NAME + "-focus");
-			}).on(CLICK, function (e) {
-				node[0].blur();
-				if (myself.fire(PRESSED)) {
-					e.preventDefault();
-				}
-			});
-			node.appendTo(contentBox.appendTo(boundingBox));
-		});
-		myself.on("afterRender", function () {
-			// since the order of the nodes was changed, use visibility inherit to avoid breaking the hide() method
-			myself.get(BOUNDING_BOX).css(VISIBILITY, "inherit");
-		});
-	};
-	Button.NAME = "button";
-	$.extend(Button, $.Widget, {
-		/**
-		 * Disables the button
-		 * @method disable
-		 * @chainable
-		 */
-		disable: function () {
-			
-		},
-		/**
-		 * Enables the button
-		 * @method enable
-		 * @chainable
-		 */
-		enable: function () {
-			
-		},
-		/**
-		 * Fires the blur event
-		 * @method blur
-		 * @chainable
-		 */
-		blur: function () {
-			
-		},
-		/**
-		 * Fires the focus event and sets the button as active
-		 * @method focus
-		 * @chainable
-		 */
-		focus: function () {
-			
-		}
-	});
-	
-	var addOption = function (combo, text, value) {
-		/* Note by jdopazo:
-		 Lazy initialization for the function _add()
-		 I create a <select> element that I never attach to the dom
-		 and try to attach an <OPTION> element to it with try...catch
-		 This way I avoid using try...catch every time this function is called */
-		var doc = $.context,
-			testSelect = doc.createElement("select"),
-			testOption = doc.createElement(OPTION),
-			standards = FALSE;
-		try {
-			testSelect.add(testOption, null); //standards compliant
-			standards = TRUE;
-		} catch (ex) {
-			testSelect.add(testOption); // IE only
-		}
-		if (standards) {
-			addOption = function (combo, text, value) {
-				var newOption = doc.createElement(OPTION);
-				newOption.text = text;
-				if (value) {
-					newOption.value = value;
-				}
-				combo.add(newOption, null);
-			};
-		} else {
-			addOption = function (combo, text, value) {
-				var newOption = doc.createElement(OPTION);
-				newOption.text = text;
-				if (value) {
-					newOption.value = value;
-				}
-				combo.add(newOption);
-			};
-		}
-		addOption(combo, text, value);
-	};
-	
-	var ComboBox = function () {
-		ComboBox.superclass.constructor.apply(this, arguments);
-		
-		var myself = this.addAttrs({
-			options: {
-				value: []
-			},
-			combo: {
-				readOnly: TRUE,
-				value: $("<select/>")
-			}
-		});
-		
-		var setOptions = function (combo, opts) {
-			A.each(opts, function (value) {
-				if (Lang.isHash(value)) {
-					Hash.each(value, function (text, val) {
-						addOption(combo, text, val);
-					});
-				} else {
-					addOption(combo, value);
-				}
-			});
-		};
-		
-		myself.on("optionsChange", function (e, newOptions) {
-			var combo = myself.get(COMBO)[0];
-			combo.options.length = 0;
-			setOptions(combo, newOptions);
-		});
-		setOptions(myself.get(COMBO)[0], myself.get(OPTIONS));
-		
-		myself.on("render", function () {
-			myself.get(COMBO).appendTo(myself.get(BOUNDING_BOX));
-		});
-	};
-	$.extend(ComboBox, $.Widget, {
-		add: function (text, value) {
-			var myself = this;
-			var opt;
-			if (value) {
-				opt = {};
-				opt[text] = value;
-			} else {
-				opt = text;
-			}
-			myself.get("options").push(opt);
-			addOption(myself.get(COMBO)[0], text, value);
-			return myself;
-		},
-		fill: function (values) {
-			var myself = this;
-			if (Lang.isArray(values)) {
-				A.each(values, function (t) {
-					myself.add(t);
-				});
-			} else {
-				Hash.each(values, myself.add);
-			}
-			return myself;
-		},
-		clear: function () {
-			return this.set("options", []);
-		}
-	});
 	
 	/**
 	 * @class Module
@@ -359,7 +146,7 @@ jet().add("container", function ($) {
 			 * @default true
 			 */
 			center: {
-				value: TRUE
+				value: true
 			},
 			/**
 			 * @config fixed
@@ -368,7 +155,7 @@ jet().add("container", function ($) {
 			 * @default false
 			 */
 			fixed: {
-				value: FALSE
+				value: false
 			},
 			/**
 			 * @config width
@@ -448,19 +235,19 @@ jet().add("container", function ($) {
 				validator: function () {
 					return !!$.Drag;
 				},
-				value: FALSE
+				value: false
 			}
 		});
 		myself.set(CLASS_NAME, Overlay.NAME);
 		
-		var rendered = FALSE;
+		var rendered = false;
 		myself.on("rendered", function () {
-			rendered = TRUE;
+			rendered = true;
 		});
 		
 		// centers the overlay in the screen
 		var center = function (boundingBox) {
-			var screenSize = $.screenSize();
+			var screenSize = DOM.screenSize();
 			boundingBox.css({
 				left: (screenSize.width - (rendered ? boundingBox.width() : myself.get(WIDTH))) / 2 + PX,
 				top: (screenSize.height - (rendered ? boundingBox.height() : myself.get(HEIGHT))) / 2 + PX
@@ -484,7 +271,7 @@ jet().add("container", function ($) {
 				if (UA_SUPPORTS_FIXED) {
 					boundingBox.css(position, myself.isSet(position) ? ((myself.get(position) - bodyMargin + PX)) : AUTO);
 				} else {
-					var screenSize = $.screenSize();
+					var screenSize = DOM.screenSize();
 					if (position == BOTTOM) {
 						boundingBox.css(TOP, myself.isSet(position) ? ((screenSize.height - myself.get(HEIGHT) - bodyMargin + boundingBox.scrollTop()) + PX) : AUTO);
 					} else if (position == RIGHT) {
@@ -572,7 +359,7 @@ jet().add("container", function ($) {
 			 * @readOnly
 			 */
 			contentBox: {
-				readOnly: TRUE,
+				readOnly: true,
 				value: $(NEW_DIV)
 			},
 			/**
@@ -581,7 +368,7 @@ jet().add("container", function ($) {
 			 * @readOnly
 			 */
 			underlay: {
-				readOnly: TRUE,
+				readOnly: true,
 				value: $(NEW_DIV).addClass(UNDERLAY)
 			},
 			/**
@@ -590,7 +377,7 @@ jet().add("container", function ($) {
 			 * @default true
 			 */
 			shadow: {
-				value: TRUE
+				value: true
 			}
 		}).on(HEIGHT + "Change", function (e, height) {
 			myself.get(CONTENT_BOX).height(height);
@@ -612,7 +399,7 @@ jet().add("container", function ($) {
 		 * @default true
 		 */
 		myself.addAttr(CLOSE, {
-			value: TRUE,
+			value: true,
 			validator: Lang.isBoolean,
 			setter: function (value) {
 				if (value) {
@@ -641,13 +428,13 @@ jet().add("container", function ($) {
 				sp = sp.superclass.constructor;
 			}
 			if (head) {
-				contentBox.append(head.remove(TRUE));
+				contentBox.append(head.remove(true));
 			}
 			if (body) {
-				contentBox.append(body.remove(TRUE));
+				contentBox.append(body.remove(true));
 			}
 			if (footer) {
-				contentBox.append(footer.remove(TRUE));
+				contentBox.append(footer.remove(true));
 			}
 			if (myself.get(CLOSE)) {
 				closeButton.appendTo(contentBox);
@@ -674,7 +461,7 @@ jet().add("container", function ($) {
 		var myself = this;
 		myself.addAttrs({
 			footer: {
-				readOnly: TRUE,
+				readOnly: true,
 				value: $(NEW_DIV).addClass(FOOTER)
 			},
 			/**
@@ -693,7 +480,7 @@ jet().add("container", function ($) {
 			myself.get(BOUNDING_BOX).addClass(myself.get(CLASS_PREFIX) + SimpleDialog.NAME);
 			var buttonArea = $(NEW_DIV).addClass("button-group");
 			A.each(myself.get("buttons"), function (config, i) {
-				var button = new Button(config);
+				var button = new $.Button(config);
 				if (i === 0) {
 					button.get(BOUNDING_BOX).addClass("default");
 				}
@@ -711,9 +498,7 @@ jet().add("container", function ($) {
 		Module: Module,
 		Overlay: Overlay,
 		Panel: Panel,
-		SimpleDialog: SimpleDialog,
-		Button: Button,
-		ComboBox: ComboBox
+		SimpleDialog: SimpleDialog
 	});
 	
 });

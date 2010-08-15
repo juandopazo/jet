@@ -6,9 +6,6 @@
  */
 jet().add('paginator', function ($) {
 	
-	var TRUE = true,
-		FALSE = false;
-		
 	var Lang = $.Lang,
 		Hash = $.Hash,
 		A = $.Array;
@@ -49,7 +46,7 @@ jet().add('paginator', function ($) {
 			 * @type RecordSet
 			 */
 			recordSet: {
-				required: TRUE
+				required: true
 			},
 			/**
 			 * @config recordsPerPage
@@ -67,7 +64,7 @@ jet().add('paginator', function ($) {
 			 * @default true
 			 */
 			firstLast: {
-				value: TRUE
+				value: true
 			},
 			/**
 			 * @config prevNext
@@ -76,7 +73,7 @@ jet().add('paginator', function ($) {
 			 * @default true
 			 */
 			prevNext: {
-				value: TRUE
+				value: true
 			},
 			/**
 			 * @config pagesShown
@@ -95,7 +92,7 @@ jet().add('paginator', function ($) {
 			 * @type String
 			 */
 			firstText: {
-				writeOnce: TRUE,
+				writeOnce: true,
 				value: "<< first"
 			},
 			/**
@@ -106,7 +103,7 @@ jet().add('paginator', function ($) {
 			 * @type String
 			 */
 			prevText: {
-				writeOnce: TRUE,
+				writeOnce: true,
 				value: "< prev"
 			},
 			/**
@@ -117,7 +114,7 @@ jet().add('paginator', function ($) {
 			 * @type String
 			 */
 			nextText: {
-				writeOnce: TRUE,
+				writeOnce: true,
 				value: "next >"
 			},
 			/**
@@ -128,11 +125,11 @@ jet().add('paginator', function ($) {
 			 * @type String
 			 */
 			lastText: {
-				writeOnce: TRUE,
+				writeOnce: true,
 				value: "last >>"
 			},
 			className: {
-				writeOnce: TRUE,
+				writeOnce: true,
 				value: "pg"
 			},
 			/**
@@ -143,7 +140,7 @@ jet().add('paginator', function ($) {
 			 * @type Number
 			 */
 			currentPage: {
-				writeOnce: TRUE,
+				writeOnce: true,
 				value: currentPage
 			},
 			/**
@@ -153,7 +150,7 @@ jet().add('paginator', function ($) {
 			 * @type Number
 			 */
 			pageCount: {
-				readOnly: TRUE,
+				readOnly: true,
 				value: pageCount
 			}
 		});

@@ -5,9 +5,6 @@
  */
 jet().add('vector', function ($) {
 	
-	var TRUE = true,
-		FALSE = false;
-		
 	var Lang = $.Lang,
 		Hash = $.Hash,
 		A = $.Array;
@@ -244,8 +241,8 @@ jet().add('vector', function ($) {
 		 * @type SVG/VML node
 		 */
 		myself.addAttr(NODE, {
-			required: TRUE,
-			writeOnce: TRUE,
+			required: true,
+			writeOnce: true,
 			getter: function () {
 				return node;
 			},
@@ -302,8 +299,8 @@ jet().add('vector', function ($) {
 		Vector.superclass.constructor.apply(this, arguments);
 		var myself = this;
 		myself.addAttr(NODE, {
-			required: TRUE,
-			writeOnce: TRUE,
+			required: true,
+			writeOnce: true,
 			getter: function () {
 				return myself.node;
 			},
@@ -616,7 +613,7 @@ jet().add('vector', function ($) {
 		});
 		var myself = this.addAttrs({
 			srcNode: {
-				required: TRUE,
+				required: true,
 				setter: $
 			},
 			width: {
@@ -632,7 +629,7 @@ jet().add('vector', function ($) {
 				}
 			},
 			boundingBox: {
-				readOnly: TRUE,
+				readOnly: true,
 				getter: function () {
 					return box;
 				}
@@ -651,7 +648,7 @@ jet().add('vector', function ($) {
 
 		var myself = this.addAttrs({
 			srcNode: {
-				required: TRUE,
+				required: true,
 				setter: function (value) {
 					return $(value);
 				}
@@ -669,7 +666,7 @@ jet().add('vector', function ($) {
 				}
 			},
 			boundingBox: {
-				readOnly: TRUE,
+				readOnly: true,
 				getter: function () {
 					return box;
 				}
