@@ -1,1 +1,6 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
 .yui-skin-sam .yui-pg-container{display:block;margin:6px 0;white-space:nowrap;}.yui-skin-sam .yui-pg-first,.yui-skin-sam .yui-pg-previous,.yui-skin-sam .yui-pg-next,.yui-skin-sam .yui-pg-last,.yui-skin-sam .yui-pg-current,.yui-skin-sam .yui-pg-pages,.yui-skin-sam .yui-pg-page{display:inline-block;font-family:arial,helvetica,clean,sans-serif;padding:3px 6px;zoom:1;}.yui-skin-sam .yui-pg-pages{padding:0;}.yui-skin-sam .yui-pg-current{padding:3px 0;}.yui-skin-sam span.yui-pg-first,.yui-skin-sam span.yui-pg-previous,.yui-skin-sam span.yui-pg-next,.yui-skin-sam span.yui-pg-last{color:#a6a6a6;}.yui-skin-sam span.inactive{color:#06c;text-decoration:underline;outline:0;cursor:pointer;}.yui-skin-sam .yui-pg-page{background-color:#fff;border:1px solid #CBCBCB;padding:2px 6px;text-decoration:none;}.yui-skin-sam .yui-pg-current-page{background-color:transparent;border:none;font-weight:bold;padding:3px 6px;}.yui-skin-sam .yui-pg-page{margin-left:1px;margin-right:1px;}.yui-skin-sam .yui-pg-first,.yui-skin-sam .yui-pg-previous{padding-left:0;}.yui-skin-sam .yui-pg-next,.yui-skin-sam .yui-pg-last{padding-right:0;}.yui-skin-sam .yui-pg-current,.yui-skin-sam .yui-pg-rpp-options{margin-left:1em;margin-right:1em;}

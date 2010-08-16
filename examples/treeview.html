@@ -27,19 +27,41 @@
 		var treeview = new $.TreeView({
 			branches: [
 				{
-					label: "hola"
-				},
-				{
-					label: "que onda",
+					label: "hola",
 					children: [
 						{
-							label: "todo bien?"
+							label: "kc",
+							children: [
+								{
+									label: "todo bien?",
+									expanded: false,
+									children: [
+										{
+											label: "seh, vos?",
+											children: [
+												{
+													label: "todo tranqui"
+												}
+											],
+											expanded: false
+										},
+										{
+											label: "nah, todo mal. Se me secó el potus",
+											children: [
+												{
+													label: "uh que feo"
+												}
+											],
+											expanded: false
+										}
+									]
+								}
+							]
 						}
-					],
-					expanded: false
+					]
 				},
 				{
-					label: "sarasa"
+					label: "chau"
 				}
 			]
 		});

@@ -1,0 +1,90 @@
+<project name="jet" default="concatCore" basedir=".">
+		<description>
+			Jet library build lifecycle
+		</description>
+	<!-- set global properties for this build -->
+	<property name="src" location="src"/>
+	<property name="build" location="build"/>
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+	  <classpath>
+	    <pathelement location="C:\apache-ant\lib\ant-contrib-1.0b3.jar"/>
+	  </classpath>
+	</taskdef>
+
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp/>
+		<!-- Create the build directory structure used by compile -->
+		<delete>
+			<fileset dir="${build}" includes="*.js" />
+			<fileset dir="${build}" includes="*.css" />
+		</delete>
+	</target>
+
+	<target name="copyunmin" depends="init" description="Copy all files without minification">
+		<copy todir="${build}" flatten="true">
+			<fileset dir="${src}" includes="*/*.js" />
+			<fileset dir="${src}" includes="*/*.css" />
+		</copy>
+	</target>
+
+	<target name="minifyjs" depends="copyunmin" description="Generate minified javascript files">
+		<apply executable="java">
+			<arg value="-jar"/>
+			<arg value="compiler.jar"/>
+			<arg value="--js"/>
+			<srcfile/>
+			<arg value="--js_output_file"/>
+			<targetfile/>
+			<fileset dir="${src}" includes="*/*.js"/>
+			<mapper>
+				<chainedmapper>
+					<flattenmapper/>
+					<globmapper from="*.js" to="${build}/*.min.js"/>
+				</chainedmapper>
+			</mapper>
+		</apply>
+	</target>
+
+	<target name="minifycss" depends="minifyjs" description="Generate minified CSS files">
+		<apply executable="java">
+			<arg value="-jar"/>
+			<arg value="yuicompressor.jar"/>
+			<srcfile/>
+			<arg value="-o"/>
+			<targetfile/>
+			<fileset dir="${src}" includes="*/*.css"/>
+			<mapper>
+				<chainedmapper>
+					<flattenmapper/>
+					<globmapper from="*.css" to="${build}/*.min.css"/>
+				</chainedmapper>
+			</mapper>
+		</apply>
+	</target>
+	
+	<target name="concatCore" depends="minifycss" description="Generate the core jet file">
+		<concat destfile="${build}/jet.js" append="yes">
+			<fileset dir="${build}" includes="log.js,ua.js,node.js,io.js"/>
+		</concat>
+		<concat destfile="${build}/jet.min.js" append="yes">
+			<fileset dir="${build}" includes="log.min.js,ua.min.js,node.min.js,io.min.js"/>
+		</concat>
+		<delete>
+			<fileset dir="${build}" includes="log.*,ua.*,node.*,io.*"/>
+		</delete>
+		<foreach target="addCopyright" param="foo">
+			<path>
+				<fileset dir="${build}" includes="*.min.*"/>
+			</path>
+		</foreach>
+	</target>
+	
+	<target name="addCopyright" description="Add copyright notice to minified files">
+		<concat destfile="${foo}.tmp" append="yes">
+			<header file="license.txt"/>
+			<fileset file="${foo}"/>		</concat>
+		<move todir="${build}">
+			<fileset dir="${build}" includes="*.tmp"/>
+			<mapper type="glob" from="*.tmp" to="*"/>
+		</move>	</target></project>

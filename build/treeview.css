@@ -1,8 +1,8 @@
-.yui-treeview-node {
+.jet-treeview-node {
 	padding-left: 20px;
 	position: relative;
 }
-.yui-treeview-node-control {
+.jet-treeview-node-control {
 	width: 9px;
 	height: 9px;
 	background-repeat: no-repeat;
@@ -10,7 +10,7 @@
 	left: 6px;
 	top: 6px;
 }
-.yui-treeview-node-control-expanded, .yui-treeview-node-control-collapsed {
+.jet-treeview-node-control-expanded, .jet-treeview-node-control-collapsed {
 	background-image: url(/jet/src/treeview/treeview-control.png);
 	-moz-transition-property: -moz-box-shadow;  
 	-moz-transition-duration: 1s;
@@ -22,24 +22,24 @@
 	-webkit-box-shadow: 0px 0px 0px #FFF;
 	box-shadow: 0px 0px 0px #FFF;
 }
-.yui-treeview-node-control-expanded {
+.jet-treeview-node-control-expanded {
 	background-position: 0px 0px;
 }
-.yui-treeview-node-control-collapsed {
+.jet-treeview-node-control-collapsed {
 	background-position: -9px 0px;
 }
-.yui-treeview-node-control-expanded-hover, .yui-treeview-node-control-collapsed-hover {
+.jet-treeview-node-control-expanded-hover, .jet-treeview-node-control-collapsed-hover {
 	-moz-box-shadow: 0px 0px 4px #666;
 	-webkit-box-shadow: 0px 0px 4px #666;
 	box-shadow: 0px 0px 4px #666;
 }
-.yui-treeview-node-control, .yui-treeview-node-label {
+.jet-treeview-node-control, .jet-treeview-node-label {
 	cursor: pointer;
 }
-.yui-treeview-node-label {
+.jet-treeview-node-label {
 	display: inline-block;
 }
-.yui-treeview-node-content {
+.jet-treeview-node-content {
 	overflow: hidden;
 	-moz-transition-property: height, opacity;  
 	-moz-transition-duration: 0.5s;
@@ -50,7 +50,7 @@
 	height: 0;
 	opacity: 0.0;
 }
-.yui-treeview-node-content-expanded {
+.jet-treeview-node-content-expanded {
 	height: auto; 
 	opacity: 1;
 }

@@ -24,6 +24,14 @@ jet().add('treeview', function ($) {
 		NEW_DIV = "<div/>";
 	
 	var BOUNDING_BOX = "boundingBox";
+	
+	/*
+	 * @TODO:
+	 * - Take the recursion logic out of the Node class
+	 * - Add formatter methods and/or different Node subclasses
+	 * - Add helper methods to navigate the tree (first, last, next, previous, children)
+	 * - Add methods to insert nodes relative to other nodes (add, or append/prepend)
+	 */
 		
 	/**
 	 * A node in a TreeView
@@ -130,7 +138,9 @@ jet().add('treeview', function ($) {
 		};
 		
 		this.on(EXPANDED + "Change", expandedChange).on("render", function () {
-			var nodeClass = myself.get("classPrefix") + myself.get("className");
+			var prefix = myself.get("classPrefix");
+			var className = myself.get("className");
+			var nodeClass = prefix + className;
 			var boundingBox = myself.get(BOUNDING_BOX);
 			var expandedClass = [nodeClass, CONTROL, EXPANDED, HOVER].join(DASH);
 			var collapsedClass = [nodeClass, CONTROL, COLLAPSED, HOVER].join(DASH);
@@ -160,8 +170,12 @@ jet().add('treeview', function ($) {
 			});
 			content.addClass(nodeClass + "-content").appendTo(boundingBox);
 			A.each(myself.get(CHILDREN), function (child) {
-				child.parent = myself;
-				child.treeview = treeview;
+				$.mix(child, {
+					parent: myself,
+					treeview: treeview,
+					classPrefix: prefix,
+					className: className
+				});
 				var childNode = new Node(child);
 				childNode.render(content);
 			});
@@ -218,6 +232,9 @@ jet().add('treeview', function ($) {
 			},
 			className: {
 				value: TREEVIEW
+			},
+			classPrefix: {
+				value: "jet-"
 			}
 		});
 		
@@ -237,7 +254,10 @@ jet().add('treeview', function ($) {
 		this.on("render", function () {
 			var boundingBox = myself.get(BOUNDING_BOX);
 			A.each(myself.get("branches"), function (branch) {
-				branch.treeview = myself;
+				$.mix(branch, {
+					treeview: myself,
+					classPrefix: myself.get("classPrefix")
+				});
 				var branchNode = new Node(branch);
 				branchNode.render(boundingBox);
 			});
@@ -249,3 +269,10 @@ jet().add('treeview', function ($) {
 		TreeView: TreeView
 	});
 });
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
+
+		
