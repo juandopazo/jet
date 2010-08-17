@@ -1,3 +1,8 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
 /**
  * Cross-browser XSL Transformations support
  * @module xsl
@@ -104,10 +109,3 @@ jet().add('io-xsl', function ($) {
 		}
 	};
 });
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
-
-		

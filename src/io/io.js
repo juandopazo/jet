@@ -1,3 +1,8 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
 /**
  * Handles AJAX requests
  * @module io
@@ -77,7 +82,8 @@ jet().add('io', function ($) {
 	
 	var timeoutError = "timeout",
 	noObjectError = "Can't create object",
-	noStatusError = "Bad status";
+	noStatusError = "Bad status",
+	notFoundError = "File not found";
 	
 	/* Parsea un XML
 	En Internet Explorer instancia un objeto ActiveX llamado MSXML. En el resto usa XMLHttpRequest.responseXML */
@@ -170,10 +176,12 @@ jet().add('io', function ($) {
 							if (xhr.readyState === 4) {
 								/* Normalmente deberia chequearse unicamente el status == 200, pero cuando se hace una transaccion local el status en IE termina siendo 0
 								 por lo que con revisar que exista la respuesta alcanza */
-								if (xhr.status === 200 || xhr.responseText || xhr.responseXML) { 
-									onSuccess(getResultByContentType(xhr, dataType, onError), xhr);
+								if (xhr.status === 404) {
+									onError(notFoundError, xhr.status, xhr);
 								} else if (xhr.status === 408) {
 									onError(timeoutError, xhr.status, xhr);
+								} else if (xhr.status === 200 || xhr.responseText || xhr.responseXML) { 
+									onSuccess(getResultByContentType(xhr, dataType, onError), xhr);
 								} else {
 									onError(noStatusError, xhr.status, xhr); 
 								}
@@ -207,10 +215,3 @@ jet().add('io', function ($) {
 		}
 	};
 });
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
-
-		

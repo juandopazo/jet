@@ -1,3 +1,8 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
 jet().add("io-xdr", function ($) {
 	
 	var IO = $.IO;
@@ -57,18 +62,11 @@ jet().add("io-xdr", function ($) {
 			};
 			var callbackId = ++jet.IO.xdrCount;
 			jet.IO.xdrCallbacks["flajax" + callbackId] = success;
-			jet.IO.xdrCallbacks["flajax" + callbackId + "_Error"] = error;
+			jet.IO.xdrCallbacks["flajax" + callbackId + "Error"] = error;
 			jet.IO.flajax.call(settings.url, "jet.IO.xdrCallbacks.flajax" + callbackId, method, settings.data);
 		} else {
 			jet.IO.xdrWaitList.push(settings);
 		}
 	};
 	
-});
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
-
-		
+});	

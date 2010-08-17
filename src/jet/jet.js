@@ -1,3 +1,8 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
 /**
  * @module	jet
  * @description <p>Based on YUI3's namespace</p>
@@ -969,10 +974,3 @@
 		};
 	}
 }());
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
-
-		

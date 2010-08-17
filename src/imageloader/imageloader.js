@@ -1,3 +1,8 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
 /**
  * Provides functionality for preloading images and fixing PNGs in IE
  * @module imageloader
@@ -268,10 +273,3 @@ jet().add('imageloader', function ($) {
 		ImageLoader: ImageLoader
 	});
 });
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
-
-		

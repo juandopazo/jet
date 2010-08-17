@@ -1,3 +1,8 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
 /**
  * Node collections and DOM abstraction
  * @module node
@@ -732,7 +737,9 @@ jet().add("node", function ($) {
 		find: function (query) {
 			var result = [];
 			this.each(function (node) {
-				result.push.apply(result, $(query, node));
+				$(query, node).each(function (subnode) {
+					result.push(subnode);
+				});
 			});
 			return new NodeList(result);
 		},
@@ -866,13 +873,17 @@ jet().add("node", function ($) {
 		 * @param {NodeList} nodelist
 		 * @return {NodeList}
 		 */
-		link: function (nodelist) {
+		link: function () {
 			var result = [];
 			this.each(function (node) {
 				result.push(node);
 			});
-			nodelist.each(function (node) {
-				result.push(node);
+			A.each(arguments, function (nodelist) {
+				if (nodelist instanceof NodeList) {
+					nodelist.each(function (node) {
+						result.push(node);
+					});
+				}
 			});
 			return new NodeList(result);
 		},
@@ -914,10 +925,3 @@ jet().add("node", function ($) {
 	
 	addEvent($.win, "unload", EventCache.flush);
 });
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
-
-		

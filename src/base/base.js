@@ -1,3 +1,8 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
 /**
  * The Base module provides base classes for Utilities and Widgets.
  * @module base
@@ -415,7 +420,6 @@ jet().add('base', function ($) {
 			 * @default false
 			 */
 			rendered: {
-				writeOnce: true,
 				value: false
 			}
 			/**
@@ -661,10 +665,3 @@ jet().add('base', function ($) {
 		extend: extend
 	});
 });
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
-
-		
