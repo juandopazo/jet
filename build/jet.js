@@ -11,7 +11,7 @@
  * them when they were already loaded. Its basic use looks like:</p>
  */
 (function () {
-	var baseUrl = location.protocol + "//jet-js.googlecode.com/svn/trunk/src/";
+	var baseUrl = location.protocol + "//jet-js.googlecode.com/svn/trunk/build/";
 	
 	var win = window,
 		doc = document,
@@ -857,7 +857,7 @@
 			var predef = mix(clone(predefinedModules), config.modules || {}, true);
 			
 			var loadCssModule = function (module) {
-				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + "/" + module.fileName + (config.minify ? ".min.css" : ".css")));
+				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + (config.minify ? ".min.css" : ".css")));
 				loadCSS(url);
 				var t = setInterval(function () {
 					if (getCurrentStyle(trackerDiv)[module.beacon.name] == module.beacon.value) {
@@ -930,7 +930,7 @@
 						if (Lang.isString(module) && predef[module]) {
 							request[i] = module = Lang.isHash(predef[module]) ? predef[module] : {
 								name: module,
-								path: module + "/" + module + (config.minify ? ".min.js" : ".js")
+								path: module + (config.minify ? ".min.js" : ".js")
 							};
 						}
 						if (module.type == "css" && !config.loadCss) {

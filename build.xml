@@ -26,6 +26,24 @@
 			<fileset dir="${src}" includes="*/*.js" />
 			<fileset dir="${src}" includes="*/*.css" />
 		</copy>
+		<replace file="${build}/jet.js">
+			<replacefilter>
+				<replacetoken><![CDATA[//jet-js.googlecode.com/svn/trunk/src/]]></replacetoken>
+				<replacevalue><![CDATA[//jet-js.googlecode.com/svn/trunk/build/]]></replacevalue>
+			</replacefilter>
+			<replacefilter>
+				<replacetoken><![CDATA[path: module.split("-")[0] + "/" + module]]></replacetoken>
+				<replacevalue><![CDATA[path: module]]></replacevalue>
+			</replacefilter>
+			<replacefilter>
+				<replacetoken><![CDATA[base + module.fileName + "/" + module.fileName]]></replacetoken>
+				<replacevalue><![CDATA[base + module.fileName]]></replacevalue>
+			</replacefilter>
+			<replacefilter>
+				<replacetoken><![CDATA[config.minify = Lang.isBoolean(config.minify) ? config.minify : false]]></replacetoken>
+				<replacevalue><![CDATA[config.minify = Lang.isBoolean(config.minify) ? config.minify : true]]></replacevalue>
+			</replacefilter>
+		</replace>
 	</target>
 
 	<target name="minifyjs" depends="copyunmin" description="Generate minified javascript files">
@@ -36,7 +54,7 @@
 			<srcfile/>
 			<arg value="--js_output_file"/>
 			<targetfile/>
-			<fileset dir="${src}" includes="*/*.js"/>
+			<fileset dir="${build}" includes="*.js"/>
 			<mapper>
 				<chainedmapper>
 					<flattenmapper/>
@@ -53,7 +71,7 @@
 			<srcfile/>
 			<arg value="-o"/>
 			<targetfile/>
-			<fileset dir="${src}" includes="*/*.css"/>
+			<fileset dir="${build}" includes="*.css"/>
 			<mapper>
 				<chainedmapper>
 					<flattenmapper/>

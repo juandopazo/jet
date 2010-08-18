@@ -14,8 +14,7 @@ jet().add('base', function ($) {
 
 	var Hash = $.Hash,
 		Lang = $.Lang,
-		ArrayHelper = $.Array,
-		extend = $.extend;
+		ArrayHelper = $.Array;
 
 	/**
 	 * Utilities for object oriented programming in JavaScript.
@@ -25,6 +24,18 @@ jet().add('base', function ($) {
 	 * @static
 	 */
 	/**
+	 * Object function by Douglas Crockford
+	 * <a href="https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1">link</a>
+	 * @private
+	 * @param {Object} o
+	 */
+	var toObj = function (o) {
+		var F = function () {};
+		F.prototype = o;
+		return new F();
+	};
+	
+	/**
 	 * Allows for an inheritance strategy based on prototype chaining.
 	 * When exteiding a class with extend, you keep all prototypic methods from all superclasses
 	 * @method extend
@@ -32,6 +43,31 @@ jet().add('base', function ($) {
 	 * @param {Function} superclass
 	 * @param {Hash} optional - An object literal with methods to overwrite in the subclass' prototype
 	 */
+    var extend = function (r, s, px) {
+		// From the guys at YUI. This function is GENIUS!
+		
+        if (!s || !r) {
+            // @TODO error symbols
+            $.error("extend failed, verify dependencies");
+        }
+
+        var sp = s.prototype, rp = toObj(sp);
+        r.prototype = rp;
+
+        rp.constructor = r;
+        r.superclass = sp;
+
+        // assign constructor property
+        if (s != Object && sp.constructor == OP.constructor) {
+            sp.constructor = s;
+        }
+    
+        // add prototype overrides
+        if (px) {
+            $.mix(rp, px, true);
+        }
+
+    };
 	/**
 	 * Augments a class with the functionality of another, without chaining prototypes
 	 * @method augment

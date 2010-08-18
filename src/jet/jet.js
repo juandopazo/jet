@@ -39,6 +39,8 @@
 		sizzle: [NODE],
 		base: [NODE],
 		io: ["json"],
+		"io-xdr": [NODE, "swf", "io"],
+		"io-xsl": ["io"],
 		"history": [BASE, "json"],
 		tabs: [BASE],
 		resize: [BASE, {
@@ -552,55 +554,6 @@
 		if (win.JSON) {
 			$.JSON = win.JSON;
 		}
-			
-		/**
-		 * Object function by Douglas Crockford
-		 * <a href="https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1">link</a>
-		 * @private
-		 * @param {Object} o
-		 */
-		var toObj = function (o) {
-			var F = function () {};
-			F.prototype = o;
-			return new F();
-		};
-		
-		/**
-		 * From the guys at YUI (Thanks! This function is GENIUS!)
-	     * 
-	     * Utility to set up the prototype, constructor and superclass properties to
-	     * support an inheritance strategy that can chain constructors and methods.
-	     * Static members will not be inherited.
-	     *
-	     * @method extend
-	     * @param {Function} r	the object to modify
-	     * @param {Function} s	the object to inherit
-	     * @param {Object} [px]	prototype properties to add/override
-	     * @param {Object} [sx]	static properties to add/override
-	     */
-	    var extend = function (r, s, px) {
-	        if (!s || !r) {
-	            // @TODO error symbols
-	            $.error("extend failed, verify dependencies");
-	        }
-	
-	        var sp = s.prototype, rp = toObj(sp);
-	        r.prototype = rp;
-	
-	        rp.constructor = r;
-	        r.superclass = sp;
-	
-	        // assign constructor property
-	        if (s != Object && sp.constructor == OP.constructor) {
-	            sp.constructor = s;
-	        }
-	    
-	        // add prototype overrides
-	        if (px) {
-	            $.mix(rp, px, true);
-	        }
-	
-	    };
 		
 		add({
 			/**
@@ -665,8 +618,6 @@
 			 */
 			add: add,
 			
-			extend: extend,
-			
 			walkTheDOM: walkTheDOM,
 			
 			Lang: Lang,
@@ -679,7 +630,7 @@
 			
 			/**
 			 * Loads scripts and CSS files.
-			 * Included with the jet() core
+			 * Included in the jet() core
 			 * @class Get
 			 * @static
 			 */
@@ -930,7 +881,7 @@
 						if (Lang.isString(module) && predef[module]) {
 							request[i] = module = Lang.isHash(predef[module]) ? predef[module] : {
 								name: module,
-								path: module + "/" + module + (config.minify ? ".min.js" : ".js")
+								path: module.split("-")[0] + "/" + module + (config.minify ? ".min.js" : ".js")
 							};
 						}
 						if (module.type == "css" && !config.loadCss) {
