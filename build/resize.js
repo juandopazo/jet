@@ -1,3 +1,8 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
 /**
  * Provides a utility for resizing elements
  * @module resize
@@ -31,33 +36,116 @@ jet().add('resize', function ($) {
 		
 		var myself = this;
 		myself.addAttrs({
+			/**
+			 * @config node
+			 * @description The node to be resized
+			 * @required
+			 */
 			node: {
 				required: true,
 				setter: function (value) {
 					return $(value);
 				}
 			},
+			/**
+			 * qconfig handles
+			 * @description An array with the position of the needed handles. Posible values: "t", "b", "r", "l", "tr", "tl", etc
+			 * @type Array
+			 * @default ["b", "r", "br"]
+			 */
 			handles: {
 				value: [Resize.Bottom, Resize.Right, Resize.BottomRight],
 				validator: Lang.isArray
 			},
+			/**
+			 * @config hiddenHandles
+			 * @description If set to true, the handles are interactive but invisible
+			 * @type Boolean
+			 * @default false
+			 */
+			hiddenHandles: {
+				value: false
+			},
 			prefix: {
 				value: "yui"
 			},
+			/**
+			 * @config minWidth
+			 * @description The minimum with the node can achieve
+			 * @type Number
+			 * @default 0
+			 */
 			minWidth: {
 				value: 0
 			},
+			/**
+			 * @config minHeight
+			 * @description The minimum height the node can achieve
+			 * @type Number
+			 * @default 0
+			 */
 			minHeight: {
 				value: 0
 			},
+			/**
+			 * @config constrain
+			 * @description If set to true, the node can't become bigger than the screen
+			 * @type Boolean
+			 * @default false
+			 */
 			constrain: {
 				value: false
 			},
+			/**
+			 * @config proxy
+			 * @description Whether to use a copy of the node while resizing or not.
+			 * Possible values: false, true, "clone"
+			 * @type Boolean | String
+			 * @default false
+			 */
+			proxy: {
+				value: false
+			},
+			/**
+			 * @config animate
+			 * @description Creates an animation when the resize handle is released. Can only be set to true
+			 * if "proxy" is set to true. <strong>Requires the Anim module.</strong>
+			 * @type Boolean
+			 * @default false
+			 */
 			animate: {
 				value: false,
 				validator: function () {
 					return myself.get("proxy");
 				}
+			},
+			/**
+			 * @ocnfig reposition
+			 * @description If set to true, the resize utility will automatically change the position of the 
+			 * node so that is stays in place when resizing it in any direction
+			 * @type Boolean
+			 * @default false
+			 */
+			reposition: {
+				value: false
+			},
+			/**
+			 * @config shim
+			 * @description Uses invisible elements to be able to resize the node over iframes
+			 * @type Boolean
+			 * @default false 
+			 */
+			shim: {
+				value: false
+			},
+			/**
+			 * @config locked
+			 * @description If the resize is locked the handles are not interactive
+			 * @type Boolean
+			 * @default false
+			 */
+			locked: {
+				value: false
 			}
 		});
 
@@ -204,6 +292,10 @@ jet().add('resize', function ($) {
 				} else {
 					offset = node.offset();
 				}
+				/**
+				 * @event endResize
+				 * @description Fires when the resize action ends
+				 */
 				myself.fire("endResize", currentWidth, currentHeight, offset.left, offset.top);
 			}
 		};
@@ -214,6 +306,14 @@ jet().add('resize', function ($) {
 			lastY = y;
 			if (!myself.get(LOCKED) && capturing) {
 				var offset = proxy.offset();
+				/**
+				 * @event beforeResize
+				 * @description Fires before the resize action starts. If prevented, the resize action doesn't start
+				 * @param {Number} currentWith
+				 * @param {Number} currentHeight
+				 * @param {Number} offsetLeft
+				 * @param {Number} offsetTop 
+				 */
 				if (myself.fire("beforeResize", currentWidth, currentHeight, offset.left, offset.top)) {
 					screenSize = $.screenSize();
 					if (resizeVertical) {
@@ -223,6 +323,14 @@ jet().add('resize', function ($) {
 						currentWidth = getNew(WIDTH, x, y);
 					}
 					offset = proxy.offset();
+					/**
+					 * @event resize
+					 * @description Fires during the resize action
+					 * @param {Number} currentWith
+					 * @param {Number} currentHeight
+					 * @param {Number} offsetLeft
+					 * @param {Number} offsetTop 
+					 */
 					if (myself.fire("resize", currentWidth, currentHeight, offset.left, offset.top)) {
 						if (Lang.isNumber(currentHeight) && Lang.isNumber(currentWidth)) {
 							proxy.height(currentHeight).width(currentWidth);
@@ -275,23 +383,32 @@ jet().add('resize', function ($) {
 		tracker.on("mouseup", stopResize);
 		tracker.on("mousemove", duringResize);
 		
+		/**
+		 * @method stop
+		 * @description Makes the resize action end prematurely
+		 * @chainable
+		 */
 		this.stop = function () {
 			stopResize(lastX, lastY);
+			return this;
 		};
 	};
 	$.extend(Resize, $.Utility, {
+		/**
+		 * @method lock
+		 * @description Makes the handles non interactive
+		 * @chainable
+		 */
 		lock: function () {
-			if (this.fire("lock")) {
-				this.set(LOCKED, true);
-			}
+			return this.set(LOCKED, true);
 		},
+		/**
+		 * @method unlock
+		 * @description Makes the handles interactive
+		 * @chainable
+		 */
 		unlock: function () {
-			if (this.fire("unlock")) {
-				this.set(LOCKED, false);
-			}
-		},
-		isLocked: function () {
-			return !!this.get(LOCKED);
+			return this.set(LOCKED, false);
 		}
 	});
 	
@@ -309,10 +426,3 @@ jet().add('resize', function ($) {
 	});
 	$.Resize = Resize;
 });
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
-
-		

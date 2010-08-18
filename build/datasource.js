@@ -1,3 +1,8 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
 /**
  * DataSources are different ways of accessing data and parsing it into an schema
  * @module datasource
@@ -197,6 +202,17 @@ jet().add('datasource', function ($) {
 			myself.fire("push", records, data);
 			return sortedBy ? myself.sortBy(sortedBy, order) : myself;
 		};
+		
+		myself.getRecordById = function (id) {
+			var requiredRecord;
+			A.each(records, function (record) {
+				if (record.getId() == id) {
+					requiredRecord = record;
+					return false;
+				}
+			});
+			return requiredRecord;
+		};
 	};
 	$.extend(RecordSet, $.EventTarget);
 	/**
@@ -362,13 +378,22 @@ jet().add('datasource', function ($) {
 				var doc = $.context;
 				var de = rawData.documentElement; 
 				var resultNode = de.nodeName == responseSchema.resultNode ? $(de) : $(de).find(responseSchema.resultNode).eq(0);
-				A.each(resultNode.children()._nodes, function (node) {
+				resultNode.children().each(function (node) {
 					var record = {};
 					A.each(responseSchema.fields, function (field) {
-						var value = node.nodeName != field.node ? $(node).find(field.node)._nodes[0] : node;
+						var value = node.nodeName != field.node ? $(node).find(field.node)[0] : node;
+						var tmp;
 						if (value) {
 							if (field.attr) {
 								value = value.getAttribute(field.attr);
+							} else if (field.children) {
+								tmp = [];
+								$(value).children().each(function (child) {
+									if (child.firstChild) {
+										tmp.push(child.firstChild.nodeValue);
+									}
+								});
+								value = tmp;
 							} else {
 								value = value.firstChild ? value.firstChild.nodeValue : "";
 							}
@@ -602,10 +627,3 @@ jet().add('datasource', function ($) {
 		RecordSet: RecordSet
 	});
 });
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
-
-		

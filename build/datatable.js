@@ -1,3 +1,8 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
 /**
  * Provides a DataTable widget that can be sorted and linked to a DataSource
  * @module datatable
@@ -209,7 +214,7 @@ jet().add('datatable', function ($) {
 		/**
 		 * Returns the next html row element base on the one passed as a parameter
 		 * @method getNextTr
-		 * @param {Record, HTMLTrElement, NodeList, Number} tr
+		 * @param {Record | HTMLTrElement | NodeList | Number} tr
 		 * @return NodeList
 		 */
 		myself.getNextTr = function (tr) {
@@ -225,7 +230,7 @@ jet().add('datatable', function ($) {
 		/**
 		 * Returns the first cell element in a row
 		 * @method getFirstTd
-		 * @param {Record, HTMLTrElement, NodeList, Number} row
+		 * @param {Record | HTMLTrElement | NodeList | Number} row
 		 * @return NodeList
 		 */
 		myself.getFirstTd = function (row) {
@@ -241,7 +246,7 @@ jet().add('datatable', function ($) {
 		/**
 		 * Returns the next cell element in a row based on the one passed as a parameter
 		 * @method getNextTd
-		 * @param {Record, HTMLTrElement, NodeList, Number} td
+		 * @param {Record | HTMLTrElement | NodeList | Number} td
 		 * @return NodeList
 		 */
 		myself.getNextTd = function (td) {
@@ -329,10 +334,3 @@ jet().add('datatable', function ($) {
 		DataTable: DataTable
 	});
 });
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
-
-		

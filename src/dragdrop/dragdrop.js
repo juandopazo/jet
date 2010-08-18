@@ -96,7 +96,7 @@ jet().add('dragdrop', function ($) {
 		/**
 		 * Adds a handler to the handler list
 		 * @mehtod addHandler
-		 * @param {HTMLElement, NodeList} handler
+		 * @param {HTMLElement | NodeList} handler
 		 * @chainable
 		 */
 		myself.addHandler = function (handler) {
@@ -175,7 +175,7 @@ jet().add('dragdrop', function ($) {
 		/**
 		 * Adds a drop target
 		 * @method addTarget
-		 * @param {HTMLElement, NodeList} target
+		 * @param {HTMLElement | NodeList} target
 		 * @chainable
 		 */
 		myself.addTarget = function (target) {

@@ -2,7 +2,7 @@
 <html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-	<title>API: paginator   resize.js  (YUI Library)</title>
+	<title>API: paginator   resize.js  (Jet Library)</title>
 
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
@@ -15,9 +15,9 @@
 
 <div id="doc3" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
         <h3>paginator&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
             &gt; <a href="./module_paginator.html" title="paginator">paginator</a>
                 
                  &gt; resize.js (source view) 
@@ -47,7 +47,12 @@
                         <style>
                             #doc3 .classopts { display:none; }
                         </style>
-                        <div class="highlight"><pre><span class="cm">/**</span>
+                        <div class="highlight"><pre><span class="cm">/*</span>
+<span class="cm"> Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.</span>
+<span class="cm"> Code licensed under the BSD License</span>
+<span class="cm"> http://code.google.com/p/jet-js/wiki/Licence</span>
+<span class="cm">*/</span>
+<span class="cm">/**</span>
 <span class="cm"> * Provides a utility for resizing elements</span>
 <span class="cm"> * @module resize</span>
 <span class="cm"> * @requires jet, lang, base</span>
@@ -62,9 +67,6 @@
 		<span class="nx">LEFT</span> <span class="o">=</span> <span class="s2">&quot;l&quot;</span><span class="p">,</span>
 		<span class="nx">RIGHT</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span><span class="p">;</span>
 	
-	<span class="kd">var</span> <span class="nx">TRUE</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
-		<span class="nx">FALSE</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-		
 	<span class="kd">var</span> <span class="nx">NEW_DIV</span> <span class="o">=</span> <span class="s2">&quot;&lt;div/&gt;&quot;</span><span class="p">,</span>
 		<span class="nx">LOCKED</span> <span class="o">=</span> <span class="s2">&quot;locked&quot;</span><span class="p">,</span>
 		<span class="nx">HOVER</span> <span class="o">=</span> <span class="s2">&quot;hover&quot;</span><span class="p">;</span>
@@ -83,33 +85,116 @@
 		
 		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config node</span>
+<span class="cm">			 * @description The node to be resized</span>
+<span class="cm">			 * @required</span>
+<span class="cm">			 */</span>
 			<span class="nx">node</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">required</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
+				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
 				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
 					<span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
 				<span class="p">}</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * qconfig handles</span>
+<span class="cm">			 * @description An array with the position of the needed handles. Posible values: &quot;t&quot;, &quot;b&quot;, &quot;r&quot;, &quot;l&quot;, &quot;tr&quot;, &quot;tl&quot;, etc</span>
+<span class="cm">			 * @type Array</span>
+<span class="cm">			 * @default [&quot;b&quot;, &quot;r&quot;, &quot;br&quot;]</span>
+<span class="cm">			 */</span>
 			<span class="nx">handles</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="p">[</span><span class="nx">Resize</span><span class="p">.</span><span class="nx">Bottom</span><span class="p">,</span> <span class="nx">Resize</span><span class="p">.</span><span class="nx">Right</span><span class="p">,</span> <span class="nx">Resize</span><span class="p">.</span><span class="nx">BottomRight</span><span class="p">],</span>
 				<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isArray</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config hiddenHandles</span>
+<span class="cm">			 * @description If set to true, the handles are interactive but invisible</span>
+<span class="cm">			 * @type Boolean</span>
+<span class="cm">			 * @default false</span>
+<span class="cm">			 */</span>
+			<span class="nx">hiddenHandles</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
+			<span class="p">},</span>
 			<span class="nx">prefix</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;yui&quot;</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config minWidth</span>
+<span class="cm">			 * @description The minimum with the node can achieve</span>
+<span class="cm">			 * @type Number</span>
+<span class="cm">			 * @default 0</span>
+<span class="cm">			 */</span>
 			<span class="nx">minWidth</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="mi">0</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config minHeight</span>
+<span class="cm">			 * @description The minimum height the node can achieve</span>
+<span class="cm">			 * @type Number</span>
+<span class="cm">			 * @default 0</span>
+<span class="cm">			 */</span>
 			<span class="nx">minHeight</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="mi">0</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config constrain</span>
+<span class="cm">			 * @description If set to true, the node can&#39;t become bigger than the screen</span>
+<span class="cm">			 * @type Boolean</span>
+<span class="cm">			 * @default false</span>
+<span class="cm">			 */</span>
 			<span class="nx">constrain</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="nx">FALSE</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config proxy</span>
+<span class="cm">			 * @description Whether to use a copy of the node while resizing or not.</span>
+<span class="cm">			 * Possible values: false, true, &quot;clone&quot;</span>
+<span class="cm">			 * @type Boolean | String</span>
+<span class="cm">			 * @default false</span>
+<span class="cm">			 */</span>
+			<span class="nx">proxy</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
+			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config animate</span>
+<span class="cm">			 * @description Creates an animation when the resize handle is released. Can only be set to true</span>
+<span class="cm">			 * if &quot;proxy&quot; is set to true. &lt;strong&gt;Requires the Anim module.&lt;/strong&gt;</span>
+<span class="cm">			 * @type Boolean</span>
+<span class="cm">			 * @default false</span>
+<span class="cm">			 */</span>
 			<span class="nx">animate</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="nx">FALSE</span><span class="p">,</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
 				<span class="nx">validator</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 					<span class="k">return</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;proxy&quot;</span><span class="p">);</span>
 				<span class="p">}</span>
+			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @ocnfig reposition</span>
+<span class="cm">			 * @description If set to true, the resize utility will automatically change the position of the </span>
+<span class="cm">			 * node so that is stays in place when resizing it in any direction</span>
+<span class="cm">			 * @type Boolean</span>
+<span class="cm">			 * @default false</span>
+<span class="cm">			 */</span>
+			<span class="nx">reposition</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
+			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config shim</span>
+<span class="cm">			 * @description Uses invisible elements to be able to resize the node over iframes</span>
+<span class="cm">			 * @type Boolean</span>
+<span class="cm">			 * @default false </span>
+<span class="cm">			 */</span>
+			<span class="nx">shim</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
+			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config locked</span>
+<span class="cm">			 * @description If the resize is locked the handles are not interactive</span>
+<span class="cm">			 * @type Boolean</span>
+<span class="cm">			 * @default false</span>
+<span class="cm">			 */</span>
+			<span class="nx">locked</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
 			<span class="p">}</span>
 		<span class="p">});</span>
 
@@ -138,7 +223,7 @@
 					
 		<span class="kd">var</span> <span class="nx">originalStyle</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">currentStyle</span><span class="p">();</span>
 		<span class="k">if</span> <span class="p">(</span><span class="nx">useProxy</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">useProxy</span> <span class="o">===</span> <span class="nx">TRUE</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">useProxy</span> <span class="o">===</span> <span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
 				<span class="kd">var</span> <span class="nx">offset</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">offset</span><span class="p">();</span>
 				<span class="nx">proxy</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;yui-resize-proxy&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">({</span>
 					<span class="nx">left</span><span class="o">:</span> <span class="nx">originalStyle</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span>
@@ -157,7 +242,7 @@
 			<span class="nx">proxy</span><span class="p">.</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">node</span><span class="p">.</span><span class="nx">parent</span><span class="p">());</span>
 		<span class="p">}</span>
 		
-		<span class="kd">var</span> <span class="nx">capturing</span> <span class="o">=</span> <span class="nx">FALSE</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">capturing</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
 		<span class="kd">var</span> <span class="nx">start</span> <span class="o">=</span> <span class="p">{</span>
 			<span class="nx">X</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
 			<span class="nx">Y</span><span class="o">:</span> <span class="mi">0</span>
@@ -168,15 +253,15 @@
 			<span class="nx">width</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
 			<span class="nx">height</span><span class="o">:</span> <span class="mi">0</span>
 		<span class="p">};</span>
-		<span class="kd">var</span> <span class="nx">resizeVertical</span> <span class="o">=</span> <span class="nx">FALSE</span><span class="p">,</span> <span class="nx">resizeHorizontal</span> <span class="o">=</span> <span class="nx">FALSE</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">resizeVertical</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">resizeHorizontal</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
 		
 		<span class="kd">var</span> <span class="nx">startResize</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">left</span><span class="p">,</span> <span class="nx">top</span><span class="p">)</span> <span class="p">{</span>
 			<span class="nx">resizeVertical</span> <span class="o">=</span> <span class="nx">capturing</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">TOP</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span> <span class="o">?</span> <span class="nx">TOP</span> <span class="o">:</span>
 							 <span class="nx">capturing</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">BOTTOM</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span> <span class="o">?</span> <span class="nx">BOTTOM</span> <span class="o">:</span>
-							 <span class="nx">FALSE</span><span class="p">;</span>
+							 <span class="kc">false</span><span class="p">;</span>
 			<span class="nx">resizeHorizontal</span> <span class="o">=</span> <span class="nx">capturing</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">RIGHT</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span> <span class="o">?</span> <span class="nx">RIGHT</span> <span class="o">:</span>
 								<span class="nx">capturing</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">LEFT</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span> <span class="o">?</span> <span class="nx">LEFT</span> <span class="o">:</span>
-								<span class="nx">FALSE</span><span class="p">;</span>
+								<span class="kc">false</span><span class="p">;</span>
 			<span class="nx">start</span><span class="p">.</span><span class="nx">X</span> <span class="o">=</span> <span class="nx">x</span><span class="p">;</span>
 			<span class="nx">start</span><span class="p">.</span><span class="nx">Y</span> <span class="o">=</span> <span class="nx">y</span><span class="p">;</span>
 			
@@ -248,7 +333,7 @@
 						<span class="p">})).</span><span class="nx">start</span><span class="p">();</span>
 					<span class="p">}</span>
 				<span class="p">}</span>
-				<span class="nx">capturing</span> <span class="o">=</span> <span class="nx">FALSE</span><span class="p">;</span>
+				<span class="nx">capturing</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
 				<span class="kd">var</span> <span class="nx">offset</span><span class="p">;</span>
 				<span class="k">if</span> <span class="p">(</span><span class="nx">useProxy</span><span class="p">)</span> <span class="p">{</span>
 					<span class="nx">proxy</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="nx">VISIBILITY</span><span class="p">,</span> <span class="s2">&quot;hidden&quot;</span><span class="p">);</span>
@@ -256,6 +341,10 @@
 				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 					<span class="nx">offset</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">offset</span><span class="p">();</span>
 				<span class="p">}</span>
+				<span class="cm">/**</span>
+<span class="cm">				 * @event endResize</span>
+<span class="cm">				 * @description Fires when the resize action ends</span>
+<span class="cm">				 */</span>
 				<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;endResize&quot;</span><span class="p">,</span> <span class="nx">currentWidth</span><span class="p">,</span> <span class="nx">currentHeight</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span><span class="p">);</span>
 			<span class="p">}</span>
 		<span class="p">};</span>
@@ -266,6 +355,14 @@
 			<span class="nx">lastY</span> <span class="o">=</span> <span class="nx">y</span><span class="p">;</span>
 			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">capturing</span><span class="p">)</span> <span class="p">{</span>
 				<span class="kd">var</span> <span class="nx">offset</span> <span class="o">=</span> <span class="nx">proxy</span><span class="p">.</span><span class="nx">offset</span><span class="p">();</span>
+				<span class="cm">/**</span>
+<span class="cm">				 * @event beforeResize</span>
+<span class="cm">				 * @description Fires before the resize action starts. If prevented, the resize action doesn&#39;t start</span>
+<span class="cm">				 * @param {Number} currentWith</span>
+<span class="cm">				 * @param {Number} currentHeight</span>
+<span class="cm">				 * @param {Number} offsetLeft</span>
+<span class="cm">				 * @param {Number} offsetTop </span>
+<span class="cm">				 */</span>
 				<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;beforeResize&quot;</span><span class="p">,</span> <span class="nx">currentWidth</span><span class="p">,</span> <span class="nx">currentHeight</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span><span class="p">))</span> <span class="p">{</span>
 					<span class="nx">screenSize</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">screenSize</span><span class="p">();</span>
 					<span class="k">if</span> <span class="p">(</span><span class="nx">resizeVertical</span><span class="p">)</span> <span class="p">{</span>
@@ -275,6 +372,14 @@
 						<span class="nx">currentWidth</span> <span class="o">=</span> <span class="nx">getNew</span><span class="p">(</span><span class="nx">WIDTH</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>
 					<span class="p">}</span>
 					<span class="nx">offset</span> <span class="o">=</span> <span class="nx">proxy</span><span class="p">.</span><span class="nx">offset</span><span class="p">();</span>
+					<span class="cm">/**</span>
+<span class="cm">					 * @event resize</span>
+<span class="cm">					 * @description Fires during the resize action</span>
+<span class="cm">					 * @param {Number} currentWith</span>
+<span class="cm">					 * @param {Number} currentHeight</span>
+<span class="cm">					 * @param {Number} offsetLeft</span>
+<span class="cm">					 * @param {Number} offsetTop </span>
+<span class="cm">					 */</span>
 					<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;resize&quot;</span><span class="p">,</span> <span class="nx">currentWidth</span><span class="p">,</span> <span class="nx">currentHeight</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span><span class="p">))</span> <span class="p">{</span>
 						<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">currentHeight</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">currentWidth</span><span class="p">))</span> <span class="p">{</span>
 							<span class="nx">proxy</span><span class="p">.</span><span class="nx">height</span><span class="p">(</span><span class="nx">currentHeight</span><span class="p">).</span><span class="nx">width</span><span class="p">(</span><span class="nx">currentWidth</span><span class="p">);</span>
@@ -298,7 +403,7 @@
 					<span class="kd">var</span> <span class="nx">offset</span> <span class="o">=</span> <span class="nx">proxy</span><span class="p">.</span><span class="nx">offset</span><span class="p">();</span>
 					<span class="nx">capturing</span> <span class="o">=</span> <span class="nx">type</span><span class="p">;</span>
 					<span class="nx">tracker</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;shim&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;cursor&quot;</span><span class="p">,</span> <span class="nx">handle</span><span class="p">.</span><span class="nx">currentStyle</span><span class="p">().</span><span class="nx">cursor</span><span class="p">);</span>
-					<span class="nx">tracker</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;tracking&quot;</span><span class="p">,</span> <span class="nx">TRUE</span><span class="p">);</span>
+					<span class="nx">tracker</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;tracking&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 					<span class="nx">startResize</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">clientX</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">clientY</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span><span class="p">,</span> <span class="nx">type</span><span class="p">);</span>
 					<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;startResize&quot;</span><span class="p">,</span> <span class="nx">currentWidth</span><span class="p">,</span> <span class="nx">currentHeight</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span><span class="p">,</span> <span class="nx">type</span><span class="p">);</span>
 				<span class="p">}</span>
@@ -327,23 +432,32 @@
 		<span class="nx">tracker</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mouseup&quot;</span><span class="p">,</span> <span class="nx">stopResize</span><span class="p">);</span>
 		<span class="nx">tracker</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mousemove&quot;</span><span class="p">,</span> <span class="nx">duringResize</span><span class="p">);</span>
 		
+		<span class="cm">/**</span>
+<span class="cm">		 * @method stop</span>
+<span class="cm">		 * @description Makes the resize action end prematurely</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="k">this</span><span class="p">.</span><span class="nx">stop</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 			<span class="nx">stopResize</span><span class="p">(</span><span class="nx">lastX</span><span class="p">,</span> <span class="nx">lastY</span><span class="p">);</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
 		<span class="p">};</span>
 	<span class="p">};</span>
 	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Resize</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Utility</span><span class="p">,</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @method lock</span>
+<span class="cm">		 * @description Makes the handles non interactive</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="nx">lock</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;lock&quot;</span><span class="p">))</span> <span class="p">{</span>
-				<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">,</span> <span class="nx">TRUE</span><span class="p">);</span>
-			<span class="p">}</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @method unlock</span>
+<span class="cm">		 * @description Makes the handles interactive</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="nx">unlock</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;unlock&quot;</span><span class="p">))</span> <span class="p">{</span>
-				<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">,</span> <span class="nx">FALSE</span><span class="p">);</span>
-			<span class="p">}</span>
-		<span class="p">},</span>
-		<span class="nx">isLocked</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="o">!!</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">);</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
 		<span class="p">}</span>
 	<span class="p">});</span>
 	
@@ -374,12 +488,13 @@
                         <ul class="content">
                                 <li class=""><a href="module_anim.html" title="anim">anim</a></li>
                                 <li class=""><a href="module_base.html" title="base">base</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
                                 <li class=""><a href="module_container.html" title="container">container</a></li>
                                 <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
                                 <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
                                 <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
                                 <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
-                                <li class=""><a href="module_flash.html" title="flash">flash</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
                                 <li class=""><a href="module_jet.html" title="jet">jet</a></li>
@@ -388,11 +503,12 @@
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class="selected"><a href="module_paginator.html" title="paginator">paginator</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simple-progressbar.html" title="simple-progressbar">simple-progressbar</a></li>
+                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
                                 <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
-                                <li class=""><a href="module_xsl.html" title="xsl">xsl</a></li>
                         </ul>
                     </div>
 
@@ -419,7 +535,7 @@
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Yahoo! Inc. All rights reserved.
+        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
 <script type="text/javascript">

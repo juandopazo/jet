@@ -138,6 +138,7 @@ jet().add("container", function ($) {
 	/**
 	 * @class Overlay
 	 * @description An Overlay is a Module that floats in the page (doesn't have position static)
+	 * @extends Module
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */

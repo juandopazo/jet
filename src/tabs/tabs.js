@@ -17,23 +17,47 @@ jet().add("tabs", function ($) {
 		LABEL = "label",
 		PANEL = "panel";
 	
+	/**
+	 * A tab instance has a label and a panel
+	 * @class Tab
+	 * @extends Base
+	 * @constructor
+	 * @param {Object} config Object literal specifying configuration properties
+	 */
 	var Tab = function () {
 		Tab.superclass.constructor.apply(this);
-		var myself = this;
 		
-		myself.addAttrs({
+		var myself = this.addAttrs({
+			/**
+			 * @config label
+			 * @description The text to use as label
+			 * @type String | LI Node
+			 * @required
+			 */
 			label: {
 				required: true,
 				setter: function (value) {
 					return Lang.isString(value) ? $.create(LI).append($.create("a").html(value)) : $(value);
 				}
 			},
+			/**
+			 * @config panel
+			 * @description The element or text to use as a panel
+			 * @type String | DOM Node
+			 * @required
+			 */
 			panel: {
 				required: true,
 				setter: function (value) {
 					return Lang.isString(value) ? $.create("div").html(value) : $(value);
 				} 
 			},
+			/**
+			 * @config selected
+			 * @description True if this is the currently selected tab of a TabView
+			 * @type Boolean
+			 * @default false
+			 */
 			selected: {
 				value: false
 			}
@@ -60,7 +84,13 @@ jet().add("tabs", function ($) {
 			myself.select();
 		});
 	};
-	$.extend(Tab, $.Attribute, {
+	$.extend(Tab, $.Base, {
+		/**
+		 * @mehtod select
+		 * @description Selects this tab
+		 * @param {Boolean} silent If true, the "selected" event is not fired
+		 * @chainable
+		 */
 		select: function (silent) {
 			silent = silent || false;
 			var myself = this.set(SELECTED, true);
@@ -71,6 +101,12 @@ jet().add("tabs", function ($) {
 			}
 			return myself;
 		},
+		/**
+		 * @mehtod unselect
+		 * @description Deselects this tab
+		 * @param {Boolean} silent If true, the "selected" event is not fired
+		 * @chainable
+		 */
 		unselect: function (silent) {
 			silent = silent || false;
 			var myself = this.set(SELECTED, false);
@@ -81,6 +117,10 @@ jet().add("tabs", function ($) {
 			}
 			return myself;
 		},
+		/**
+		 * @method remove
+		 * @description Removes this tab from the DOM
+		 */
 		remove: function () {
 			var myself = this;
 			if (myself.fire("remove")) {
@@ -90,6 +130,13 @@ jet().add("tabs", function ($) {
 		}
 	});
 	
+	/**
+	 * A view of tabs
+	 * @class TabView
+	 * @extends Widget
+	 * @constructor
+	 * @param {Object} config Object literal specifying configuration properties
+	 */
     var TabView = function () {
 		TabView.superclass.constructor.apply(this, arguments);
 		var myself = this;
@@ -108,6 +155,11 @@ jet().add("tabs", function ($) {
 					tab.unselect();
 				}
 			});
+			/**
+			 * @event tabSelect
+			 * @description Fires when a tab is selected
+			 * @param {Tab} selectedTab
+			 */
 			myself.fire("tabSelect", selectedTab);
 		};
 		
@@ -147,6 +199,13 @@ jet().add("tabs", function ($) {
 			return myself;
 		});
 		
+		/**
+		 * @method add
+		 * @description Adds a tab at the specified point of the list
+		 * @param {Tab} tab
+		 * @param {Number} index
+		 * @chainable
+		 */
 		this.add = function (tab, index) {
 			if (!(tab instanceof Tab)) {
 				tab = new Tab(tab);
@@ -161,6 +220,12 @@ jet().add("tabs", function ($) {
 			tabs.splice(index, 0, tab);
 			return myself;
 		};
+		/**
+		 * @method remove
+		 * @description Removes a tab from the tabview
+		 * @param {Tab} tab
+		 * @chainable
+		 */
 		this.remove = function (tab) {
 			if (Lang.isNumber(tab)) {
 				tabs[tab].remove();
@@ -175,6 +240,12 @@ jet().add("tabs", function ($) {
 			}
 			return myself;
 		};
+		/**
+		 * @method select
+		 * @description Selects a certain tab
+		 * @param {Tab} tab
+		 * @chainable
+		 */
 		this.select = function (tab) {
 			if (Lang.isNumber(tab)) {
 				tabs[tab].select();
@@ -183,6 +254,12 @@ jet().add("tabs", function ($) {
 			}
 			return myself;
 		};
+		/**
+		 * @method getTab
+		 * @description Returns the tab in the specified position
+		 * @param {Number} index
+		 * @return {Tab} tab
+		 */
 		this.getTab = function (index) {
 			return tabs[index];
 		};

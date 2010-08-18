@@ -2,7 +2,7 @@
 <html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-	<title>API: datasource  DataSource   (YUI Library)</title>
+	<title>API: datasource  DataSource   (Jet Library)</title>
 
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
@@ -15,9 +15,9 @@
 
 <div id="doc3" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
         <h3>datasource&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
             &gt; <a href="./module_datasource.html" title="datasource">datasource</a>
                  &gt; DataSource 
                 
@@ -289,6 +289,68 @@
                     </div>
 
                     <div rel="yui:attributes" resource="#configattributes">
+                        <div class="section field details">
+                            <h3 id="configattributes">Configuration Attributes</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:attribute" resource="#config_recordSet">
+                                    <h4><a name="config_recordSet">recordSet</a>
+                                        <code>- <span property="yui:type">RecordSet</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            This datasource's associated recordset
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="protected" rel="yui:attribute" resource="#config_requestLogic">
+                                    <h4><a name="config_requestLogic">requestLogic</a>
+                                        <code>- protected writeonce <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The logic for the chosen source type. Should only be usef when extending the DataSource class
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_responseSchema">
+                                    <h4><a name="config_responseSchema">responseSchema</a>
+                                        <code>- <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The schema by which to parse the response data
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_responseType">
+                                    <h4><a name="config_responseType">responseType</a>
+                                        <code>- <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The expected response type ('xml', 'jsarray', 'json', 'text')
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+
+                            </div>
+                        </div>
 
                         <div rel="yui:inheritance">                    
                         <div class="section field inheritance" rel="yui:superclass"  resource="Base.html">
@@ -316,12 +378,13 @@
                         <ul class="content">
                                 <li class=""><a href="module_anim.html" title="anim">anim</a></li>
                                 <li class=""><a href="module_base.html" title="base">base</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
                                 <li class=""><a href="module_container.html" title="container">container</a></li>
                                 <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
                                 <li class="selected"><a href="module_datasource.html" title="datasource">datasource</a></li>
                                 <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
                                 <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
-                                <li class=""><a href="module_flash.html" title="flash">flash</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
                                 <li class=""><a href="module_jet.html" title="jet">jet</a></li>
@@ -330,11 +393,12 @@
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simple-progressbar.html" title="simple-progressbar">simple-progressbar</a></li>
+                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
                                 <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
-                                <li class=""><a href="module_xsl.html" title="xsl">xsl</a></li>
                         </ul>
                     </div>
 
@@ -367,18 +431,27 @@
                     </div>
 
 
+                    <div id="configList" class="module">
+                        <h4>Configuration Attributes</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#config_recordSet" title="recordSet">recordSet</a></li>
+                                <li class="protected"><a href="#config_requestLogic" title="requestLogic">requestLogic</a></li>
+                                <li class=""><a href="#config_responseSchema" title="responseSchema">responseSchema</a></li>
+                                <li class=""><a href="#config_responseType" title="responseType">responseType</a></li>
+                        </ul>
+                    </div>
 
             </div>
 		</div>
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Yahoo! Inc. All rights reserved.
+        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Record.html#method_get", "access": "", "host": "Record", "type": "method", "name": "get"}, {"url": "RecordSet.html#method_getCount", "access": "", "host": "RecordSet", "type": "method", "name": "getCount"}, {"url": "Record.html#method_getData", "access": "", "host": "Record", "type": "method", "name": "getData"}, {"url": "Record.html#method_getId", "access": "", "host": "Record", "type": "method", "name": "getId"}, {"url": "RecordSet.html#method_getRecords", "access": "", "host": "RecordSet", "type": "method", "name": "getRecords"}, {"url": "DataSource.html#method_onBeforeParse", "access": "", "host": "DataSource", "type": "method", "name": "onBeforeParse"}, {"url": "RecordSet.html#method_push", "access": "", "host": "RecordSet", "type": "method", "name": "push"}, {"url": "RecordSet.html#method_replace", "access": "", "host": "RecordSet", "type": "method", "name": "replace"}, {"url": "DataSource.html#method_sendRequest", "access": "", "host": "DataSource", "type": "method", "name": "sendRequest"}, {"url": "RecordSet.html#method_sortBy", "access": "", "host": "RecordSet", "type": "method", "name": "sortBy"}];
+    var ALL_YUI_PROPS = [{"url": "Record.html#method_get", "access": "", "host": "Record", "type": "method", "name": "get"}, {"url": "RecordSet.html#method_getCount", "access": "", "host": "RecordSet", "type": "method", "name": "getCount"}, {"url": "Record.html#method_getData", "access": "", "host": "Record", "type": "method", "name": "getData"}, {"url": "Record.html#method_getId", "access": "", "host": "Record", "type": "method", "name": "getId"}, {"url": "RecordSet.html#method_getRecords", "access": "", "host": "RecordSet", "type": "method", "name": "getRecords"}, {"url": "DataSource.html#method_onBeforeParse", "access": "", "host": "DataSource", "type": "method", "name": "onBeforeParse"}, {"url": "RecordSet.html#method_push", "access": "", "host": "RecordSet", "type": "method", "name": "push"}, {"url": "DataSource.html#config_recordSet", "access": "", "host": "DataSource", "type": "config", "name": "recordSet"}, {"url": "RecordSet.html#method_replace", "access": "", "host": "RecordSet", "type": "method", "name": "replace"}, {"url": "DataSource.html#config_requestLogic", "access": "protected", "host": "DataSource", "type": "config", "name": "requestLogic"}, {"url": "DataSource.html#config_responseSchema", "access": "", "host": "DataSource", "type": "config", "name": "responseSchema"}, {"url": "DataSource.html#config_responseType", "access": "", "host": "DataSource", "type": "config", "name": "responseType"}, {"url": "DataSource.html#method_sendRequest", "access": "", "host": "DataSource", "type": "method", "name": "sendRequest"}, {"url": "RecordSet.html#method_sortBy", "access": "", "host": "RecordSet", "type": "method", "name": "sortBy"}];
 </script>
 </body>
 </html>

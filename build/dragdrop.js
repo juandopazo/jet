@@ -1,3 +1,8 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
 /**
  * Provides functionality for dragging and dropping elements
  * @module dragdrop
@@ -66,7 +71,7 @@ jet().add('dragdrop', function ($) {
 		var startX, startY, startLeft, startTop;
 		var currentX, currentY;
 		
-		var tracker = new $.utils.MouseTracker({
+		var tracker = new $.utils.Mouse({
 			shim: myself.get("shim")
 		});
 		
@@ -91,7 +96,7 @@ jet().add('dragdrop', function ($) {
 		/**
 		 * Adds a handler to the handler list
 		 * @mehtod addHandler
-		 * @param {HTMLElement, NodeList} handler
+		 * @param {HTMLElement | NodeList} handler
 		 * @chainable
 		 */
 		myself.addHandler = function (handler) {
@@ -170,7 +175,7 @@ jet().add('dragdrop', function ($) {
 		/**
 		 * Adds a drop target
 		 * @method addTarget
-		 * @param {HTMLElement, NodeList} target
+		 * @param {HTMLElement | NodeList} target
 		 * @chainable
 		 */
 		myself.addTarget = function (target) {
@@ -208,10 +213,3 @@ jet().add('dragdrop', function ($) {
 	});
 	
 });
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
-
-		

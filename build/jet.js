@@ -1,3 +1,8 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
 /**
  * @module	jet
  * @description <p>Based on YUI3's namespace</p>
@@ -968,14 +973,12 @@
 			};
 		};
 	}
-}());
-/*
+}());/*
  Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
  Code licensed under the BSD License
  http://code.google.com/p/jet-js/wiki/Licence
 */
-
-		/**
+/**
  * Handles AJAX requests
  * @module io
  * @namespace
@@ -1054,7 +1057,8 @@ jet().add('io', function ($) {
 	
 	var timeoutError = "timeout",
 	noObjectError = "Can't create object",
-	noStatusError = "Bad status";
+	noStatusError = "Bad status",
+	notFoundError = "File not found";
 	
 	/* Parsea un XML
 	En Internet Explorer instancia un objeto ActiveX llamado MSXML. En el resto usa XMLHttpRequest.responseXML */
@@ -1147,10 +1151,12 @@ jet().add('io', function ($) {
 							if (xhr.readyState === 4) {
 								/* Normalmente deberia chequearse unicamente el status == 200, pero cuando se hace una transaccion local el status en IE termina siendo 0
 								 por lo que con revisar que exista la respuesta alcanza */
-								if (xhr.status === 200 || xhr.responseText || xhr.responseXML) { 
-									onSuccess(getResultByContentType(xhr, dataType, onError), xhr);
+								if (xhr.status === 404) {
+									onError(notFoundError, xhr.status, xhr);
 								} else if (xhr.status === 408) {
 									onError(timeoutError, xhr.status, xhr);
+								} else if (xhr.status === 200 || xhr.responseText || xhr.responseXML) { 
+									onSuccess(getResultByContentType(xhr, dataType, onError), xhr);
 								} else {
 									onError(noStatusError, xhr.status, xhr); 
 								}
@@ -1183,14 +1189,12 @@ jet().add('io', function ($) {
 			parseXML: parseXML
 		}
 	};
-});
-/*
+});/*
  Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
  Code licensed under the BSD License
  http://code.google.com/p/jet-js/wiki/Licence
 */
-
-		/**
+/**
  * Base structure for logging
  * @module log
  */
@@ -1200,14 +1204,12 @@ jet().add("log", function ($) {
 		throw new Error(msg);
 	};
 
-});
-/*
+});/*
  Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
  Code licensed under the BSD License
  http://code.google.com/p/jet-js/wiki/Licence
 */
-
-		/**
+/**
  * Node collections and DOM abstraction
  * @module node
  * @requires lang, ua
@@ -1941,7 +1943,9 @@ jet().add("node", function ($) {
 		find: function (query) {
 			var result = [];
 			this.each(function (node) {
-				result.push.apply(result, $(query, node));
+				$(query, node).each(function (subnode) {
+					result.push(subnode);
+				});
 			});
 			return new NodeList(result);
 		},
@@ -2075,13 +2079,17 @@ jet().add("node", function ($) {
 		 * @param {NodeList} nodelist
 		 * @return {NodeList}
 		 */
-		link: function (nodelist) {
+		link: function () {
 			var result = [];
 			this.each(function (node) {
 				result.push(node);
 			});
-			nodelist.each(function (node) {
-				result.push(node);
+			A.each(arguments, function (nodelist) {
+				if (nodelist instanceof NodeList) {
+					nodelist.each(function (node) {
+						result.push(node);
+					});
+				}
 			});
 			return new NodeList(result);
 		},
@@ -2122,14 +2130,12 @@ jet().add("node", function ($) {
 	});
 	
 	addEvent($.win, "unload", EventCache.flush);
-});
-/*
+});/*
  Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
  Code licensed under the BSD License
  http://code.google.com/p/jet-js/wiki/Licence
 */
-
-		/**
+/**
  * Browser sniffing
  * @module ua
  */
@@ -2182,10 +2188,3 @@ jet().add("ua", function ($) {
 		};
     }());
 });
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
-
-		

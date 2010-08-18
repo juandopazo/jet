@@ -5,7 +5,8 @@
 */
 /**
  * Cross-browser XSL Transformations support
- * @module xsl
+ * @submodule io-xsl
+ * @module io
  */
 jet().add('io-xsl', function ($) {
 	var win = $.win;
@@ -47,6 +48,12 @@ jet().add('io-xsl', function ($) {
 		return transform(xml, xsl, parameters);
 	};
 		
+	/**
+	 * @method xsl
+	 * @for IO
+	 * @description Makes a XSL transformation. Loads the files with Ajax if needed. <strong>Requires the io-xsl submodule</strong>
+	 * @param {Hash} settings
+	 */
 	$.IO.xsl = function (settings) {
 		var xml = settings.xml;
 		var xsl = settings.xsl;

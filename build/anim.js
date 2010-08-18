@@ -247,7 +247,7 @@ jet().add('anim', function ($) {
 			 * @config duration
 			 * @description The duration of the animation
 			 * @default 1000
-			 * @type {String, Number} Allowd strings: "fast", "slow", "normal". Numbers are milliseconds
+			 * @type {String | Number} Allowd strings: "fast", "slow", "normal". Numbers are milliseconds
 			 */
 			duration: {
 				value: 1000,
@@ -376,19 +376,16 @@ jet().add('anim', function ($) {
 	};
 	$.extend(Tween, $.Base);
 	
-	/**
-	 * Methods added to NodeList
-	 * @class NodeListAnim
-	 * @static
-	 */
 	$.augment($.NodeList, {
 		/**
 		 * @method animate
-		 * @description animates all members of the node list
+		 * @for NodeList
+		 * @description Animates all members of the node list. <strong>Requires the Anim module</strong>
 		 * @param {Hash} props
-		 * @param {Number | String} duration
-		 * @param {Function} easing
-		 * @param {Function} callback
+		 * @param {Number | String} duration The duration in ms or "fast", "normal", or "slow"
+		 * @param {String | Function} easing A predefined easing function ("linear", "easein", "easeout", "sling") or a custom easing function  
+		 * @param {Function} callback Executes when the animation is complete
+		 * @chainable
 		 */
 		animate: function (props, duration, easing, callback) {
 			var tw = new Tween({
@@ -400,46 +397,99 @@ jet().add('anim', function ($) {
 			this.tw = tw.on("complete", callback).play();
 			return this;
 		},
-		fadeIn: function (duration, callback) {
+		/**
+		 * @method fadeIn
+		 * @for NodeList
+		 * @description Causes all nodes to fade in. <strong>Requires the Anim module</strong>
+		 * @param {Number | String} duration The duration in ms or "fast", "normal", or "slow"
+		 * @param {String | Function} easing A predefined easing function ("linear", "easein", "easeout", "sling") or a custom easing function  
+		 * @param {Function} callback Executes when the animation is complete
+		 * @chainable
+		 */
+		fadeIn: function (duration, easing, callback) {
 			return this.animate({
 				opacity: 1 
-			}, duration, null, callback);
+			}, duration, easing, callback);
 		},
-		fadeOut: function (duration, callback) {
+		/**
+		 * @method fadeOut
+		 * @for NodeList
+		 * @description Causes all nodes to fade out. <strong>Requires the Anim module</strong>
+		 * @param {Number | String} duration The duration in ms or "fast", "normal", or "slow"
+		 * @param {String | Function} easing A predefined easing function ("linear", "easein", "easeout", "sling") or a custom easing function  
+		 * @param {Function} callback Executes when the animation is complete
+		 * @chainable
+		 */
+		fadeOut: function (duration, easing, callback) {
 			return this.animate({
 				opacity: 0
-			}, duration, null, callback);
+			}, duration, easing, callback);
 		},
-		fadeToggle: function (duration, callback) {
+		/**
+		 * @method fadeToggle
+		 * @for NodeList
+		 * @description Causes all nodes to fade in or out. <strong>Requires the Anim module</strong>
+		 * @param {Number | String} duration The duration in ms or "fast", "normal", or "slow"
+		 * @param {String | Function} easing A predefined easing function ("linear", "easein", "easeout", "sling") or a custom easing function  
+		 * @param {Function} callback Executes when the animation is complete
+		 * @chainable
+		 */
+		fadeToggle: function (duration, easing, callback) {
 			return this.each(function (node) {
 				node = $(node);
 				if (node.css("opacity") == 1) {
-					node.fadeOut(duration, callback);
+					node.fadeOut(duration, easing, callback);
 				} else {
-					node.fadeIn(duration, callback);
+					node.fadeIn(duration, easing, callback);
 				}
 			});
 		},
-		slideDown: function (duration, callback) {
+		/**
+		 * @method slideDown
+		 * @for NodeList
+		 * @description Causes all nodes to slide down, changing their height and setting their overflow
+		 *  to hidden for the duration of the animation. <strong>Requires the Anim module</strong>
+		 * @param {Number | String} duration The duration in ms or "fast", "normal", or "slow"
+		 * @param {String | Function} easing A predefined easing function ("linear", "easein", "easeout", "sling") or a custom easing function  
+		 * @param {Function} callback Executes when the animation is complete
+		 * @chainable
+		 */
+		slideDown: function (duration, easing, callback) {
 			var myself = this;
 			var overflow = myself.css("overflow");
 			return myself.css("overflow", "hidden").animate({
 				height: myself.oHeight
-			}, duration, null, function () {
+			}, duration, easing, function () {
 				myself.css("overflow", overflow);
 				callback.call(myself);
 			});
 		},
-		slideUp: function (duration, callback) {
+		/**
+		 * @method slideUp
+		 * @for NodeList
+		 * @description Causes all nodes to slide up, changing their height and setting their overflow
+		 *  to hidden for the duration of the animation. <strong>Requires the Anim module</strong>
+		 * @param {Number | String} duration The duration in ms or "fast", "normal", or "slow"
+		 * @param {String | Function} easing A predefined easing function ("linear", "easein", "easeout", "sling") or a custom easing function  
+		 * @param {Function} callback Executes when the animation is complete
+		 * @chainable
+		 */
+		slideUp: function (duration, easing, callback) {
 			var myself = this;
 			var overflow = myself.css("overflow");
 			return myself.css("overflow", "hidden").animate({
 				height: 0
-			}, duration, null, function () {
+			}, duration, easing, function () {
 				myself.css("overflow", overflow);
 				callback.call(myself);
 			});
 		},
+		/**
+		 * @method stop
+		 * @for NodeList
+		 * @description Makes the current animation for this nodelist stop. <strong>Requires the Anim module</strong>
+		 * @chainable
+		 */
 		stop: function () {
 			if (this.tw) {
 				this.tw.stop();

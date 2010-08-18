@@ -1,3 +1,8 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
 /**
  * Provides functionality for preloading images and fixing PNGs in IE
  * @module imageloader
@@ -145,7 +150,7 @@ jet().add('imageloader', function ($) {
 		/**
 		 * Set the image as a background once it loaded
 		 * @method setAsBackground
-		 * @param {DOM Node, NodeList} node Which node to set the image as background of
+		 * @param {DOMNode | NodeList} node Which node to set the image as background of
 		 * @chainable
 		 */
 		setAsBackground: function (node) {
@@ -268,10 +273,3 @@ jet().add('imageloader', function ($) {
 		ImageLoader: ImageLoader
 	});
 });
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
-
-		

@@ -2,7 +2,7 @@
 <html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-	<title>API: imageloader   io.js  (YUI Library)</title>
+	<title>API: io   io.js  (Jet Library)</title>
 
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
@@ -15,10 +15,10 @@
 
 <div id="doc3" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
-        <h3>imageloader&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
-            &gt; <a href="./module_imageloader.html" title="imageloader">imageloader</a>
+        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
+        <h3>io&nbsp; <span class="subtitle">0.1.53</span></h3>
+        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
+            &gt; <a href="./module_io.html" title="io">io</a>
                 
                  &gt; io.js (source view) 
         <form onsubmit="return false">
@@ -47,20 +47,27 @@
                         <style>
                             #doc3 .classopts { display:none; }
                         </style>
-                        <div class="highlight"><pre><span class="cm">/**</span>
+                        <div class="highlight"><pre><span class="cm">/*</span>
+<span class="cm"> Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.</span>
+<span class="cm"> Code licensed under the BSD License</span>
+<span class="cm"> http://code.google.com/p/jet-js/wiki/Licence</span>
+<span class="cm">*/</span>
+<span class="cm">/**</span>
 <span class="cm"> * Handles AJAX requests</span>
 <span class="cm"> * @module io</span>
 <span class="cm"> * @namespace</span>
 <span class="cm"> */</span>
 <span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;io&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 	<span class="kd">var</span> <span class="nx">win</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">win</span><span class="p">;</span>
+	<span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">;</span>
 	
-	<span class="kd">var</span> <span class="nx">TRUE</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
-	<span class="nx">FALSE</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
-
-	<span class="nx">XML</span> <span class="o">=</span> <span class="s2">&quot;xml&quot;</span><span class="p">,</span>
+	<span class="kd">var</span> <span class="nx">XML</span> <span class="o">=</span> <span class="s2">&quot;xml&quot;</span><span class="p">,</span>
 	<span class="nx">XSL</span> <span class="o">=</span> <span class="s2">&quot;xsl&quot;</span><span class="p">,</span>
-	<span class="nx">TYPE_JSON</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">;</span>
+	<span class="nx">TYPE_JSON</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+	<span class="nx">GET</span> <span class="o">=</span> <span class="s2">&quot;GET&quot;</span><span class="p">;</span>
+	
+	<span class="kd">var</span> <span class="nx">HAS_AXO</span> <span class="o">=</span> <span class="o">!!</span><span class="nx">win</span><span class="p">.</span><span class="nx">ActiveXObject</span><span class="p">;</span>
+	<span class="kd">var</span> <span class="nx">HAS_XHR</span> <span class="o">=</span> <span class="o">!!</span><span class="nx">win</span><span class="p">.</span><span class="nx">XMLHttpRequest</span><span class="p">;</span>
 	
 	<span class="kd">var</span> <span class="nx">newAXO</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="p">{</span>
 		<span class="k">return</span> <span class="k">new</span> <span class="nx">win</span><span class="p">.</span><span class="nx">ActiveXObject</span><span class="p">(</span><span class="nx">t</span><span class="p">);</span>
@@ -70,6 +77,10 @@
 		<span class="kd">var</span> <span class="nx">freeThreadedDOM</span> <span class="o">=</span> <span class="s2">&quot;Msxml2.FreeThreadedDOMDocument.&quot;</span><span class="p">,</span>
 			<span class="nx">domDocument</span> <span class="o">=</span> <span class="s2">&quot;Msxml2.DOMDocument.&quot;</span><span class="p">,</span>
 			<span class="nx">test</span><span class="p">,</span>
+		<span class="cm">/* La eleccion de versiones 6.0 y 3.0 es adrede.</span>
+<span class="cm">		   La version 4.0 es especifica de windows 2000 y la 5.0 viene unicamente con Microsoft Office</span>
+<span class="cm">		   La version 6 viene con Windows Vista y uno de los service pack de XP, por lo que el usuario quizas no la tenga</span>
+<span class="cm">		   Se la usa porque es considerablemente mas rapida */</span>
 			<span class="nx">v6</span> <span class="o">=</span> <span class="s2">&quot;6.0&quot;</span><span class="p">,</span>
 			<span class="nx">v3</span> <span class="o">=</span> <span class="s2">&quot;3.0&quot;</span><span class="p">;</span>
 		<span class="k">try</span> <span class="p">{</span>
@@ -102,15 +113,15 @@
 		<span class="kd">var</span> <span class="nx">hostname</span> <span class="o">=</span> <span class="nx">location</span><span class="p">.</span><span class="nx">host</span><span class="p">,</span>
 			<span class="nx">msxml</span> <span class="o">=</span> <span class="s2">&quot;Microsoft.XMLHTTP&quot;</span><span class="p">,</span>
 			<span class="nx">test</span><span class="p">;</span>
-		<span class="k">if</span> <span class="p">((</span><span class="nx">location</span><span class="p">.</span><span class="nx">protocol</span> <span class="o">==</span> <span class="s2">&quot;file:&quot;</span> <span class="o">||</span> <span class="nx">hostname</span> <span class="o">==</span> <span class="s2">&quot;localhost&quot;</span> <span class="o">||</span> <span class="nx">hostname</span> <span class="o">==</span> <span class="s2">&quot;127.0.0.1&quot;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">win</span><span class="p">.</span><span class="nx">ActiveXObject</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">((</span><span class="nx">location</span><span class="p">.</span><span class="nx">protocol</span> <span class="o">==</span> <span class="s2">&quot;file:&quot;</span> <span class="o">||</span> <span class="nx">hostname</span> <span class="o">==</span> <span class="s2">&quot;localhost&quot;</span> <span class="o">||</span> <span class="nx">hostname</span> <span class="o">==</span> <span class="s2">&quot;127.0.0.1&quot;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">HAS_AXO</span><span class="p">)</span> <span class="p">{</span>
 			<span class="nx">getAjaxObject</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 				<span class="k">return</span> <span class="nx">newAXO</span><span class="p">(</span><span class="nx">msxml</span><span class="p">);</span>
 			<span class="p">};</span>
-		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">XMLHttpRequest</span><span class="p">)</span> <span class="p">{</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">HAS_XHR</span><span class="p">)</span> <span class="p">{</span>
 			<span class="nx">getAjaxObject</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 				<span class="k">return</span> <span class="k">new</span> <span class="nx">XMLHttpRequest</span><span class="p">();</span>
 			<span class="p">};</span>
-		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">win</span><span class="p">.</span><span class="nx">ActiveXObject</span><span class="p">)</span> <span class="p">{</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">HAS_AXO</span><span class="p">)</span> <span class="p">{</span>
 			<span class="nx">getAjaxObject</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 				<span class="k">return</span> <span class="nx">newAXO</span><span class="p">(</span><span class="nx">msxml</span><span class="p">);</span>
 			<span class="p">};</span>
@@ -118,27 +129,32 @@
 		<span class="k">return</span> <span class="nx">getAjaxObject</span><span class="p">();</span>
 	<span class="p">};</span>
 	
-	<span class="kd">var</span> <span class="nx">timeoutError</span> <span class="o">=</span> <span class="s1">&#39;timeout&#39;</span><span class="p">,</span>
-	<span class="nx">noObjectError</span> <span class="o">=</span> <span class="s1">&#39;Can\&#39;t create object&#39;</span><span class="p">,</span>
-	<span class="nx">noStatusError</span> <span class="o">=</span> <span class="s1">&#39;Bad status&#39;</span><span class="p">;</span>
+	<span class="kd">var</span> <span class="nx">timeoutError</span> <span class="o">=</span> <span class="s2">&quot;timeout&quot;</span><span class="p">,</span>
+	<span class="nx">noObjectError</span> <span class="o">=</span> <span class="s2">&quot;Can&#39;t create object&quot;</span><span class="p">,</span>
+	<span class="nx">noStatusError</span> <span class="o">=</span> <span class="s2">&quot;Bad status&quot;</span><span class="p">,</span>
+	<span class="nx">notFoundError</span> <span class="o">=</span> <span class="s2">&quot;File not found&quot;</span><span class="p">;</span>
 	
 	<span class="cm">/* Parsea un XML</span>
 <span class="cm">	En Internet Explorer instancia un objeto ActiveX llamado MSXML. En el resto usa XMLHttpRequest.responseXML */</span>
 	<span class="kd">var</span> <span class="nx">parseXML</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">xmlFile</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">errorHandler</span><span class="p">)</span> <span class="p">{</span>
 		<span class="kd">var</span> <span class="nx">xmlDoc</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-		<span class="cm">/* La eleccion de versiones 6.0 y 3.0 es adrede.</span>
-<span class="cm">		   La version 4.0 es especifica de windows 2000 y la 5.0 viene unicamente con Microsoft Office</span>
-<span class="cm">		   La version 6 viene con Windows Vista y uno de los service pack de XP, por lo que el usuario quizas no la tenga</span>
-<span class="cm">		   Se la usa porque es considerablemente mas rapida */</span>
-		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">XMLHttpRequest</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">xmlFile</span><span class="p">.</span><span class="nx">responseXML</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">xmlDoc</span> <span class="o">=</span> <span class="nx">xmlFile</span><span class="p">.</span><span class="nx">responseXML</span><span class="p">;</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">win</span><span class="p">.</span><span class="nx">DOMParser</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">xmlDoc</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">win</span><span class="p">.</span><span class="nx">DOMParser</span><span class="p">();</span>
+			<span class="nx">xmlDoc</span> <span class="o">=</span> <span class="nx">xmlDoc</span><span class="p">.</span><span class="nx">parseFromString</span><span class="p">(</span><span class="nx">xmlFile</span><span class="p">.</span><span class="nx">responseText</span> <span class="o">||</span> <span class="nx">xmlFile</span><span class="p">,</span> <span class="s2">&quot;text/xml&quot;</span><span class="p">);</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">HAS_AXO</span><span class="p">)</span> <span class="p">{</span>
 			<span class="nx">xmlDoc</span> <span class="o">=</span> <span class="nx">getActiveXParser</span><span class="p">(</span><span class="nx">type</span><span class="p">);</span>
-			<span class="nx">xmlDoc</span><span class="p">.</span><span class="nx">async</span> <span class="o">=</span> <span class="nx">FALSE</span><span class="p">;</span>
-			<span class="nx">xmlDoc</span><span class="p">.</span><span class="nx">loadXML</span><span class="p">(</span><span class="nx">xmlFile</span><span class="p">.</span><span class="nx">responseText</span><span class="p">);</span>
+			<span class="nx">xmlDoc</span><span class="p">.</span><span class="nx">async</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+			<span class="nx">xmlDoc</span><span class="p">.</span><span class="nx">loadXML</span><span class="p">(</span><span class="nx">xmlFile</span><span class="p">.</span><span class="nx">responseText</span> <span class="o">||</span> <span class="nx">xmlFile</span><span class="p">);</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">xmlDoc</span><span class="p">.</span><span class="nx">parseError</span><span class="p">.</span><span class="nx">errorCode</span> <span class="o">!==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
 				<span class="nx">errorHandler</span><span class="p">(</span><span class="nx">noStatusError</span><span class="p">,</span> <span class="nx">xmlDoc</span><span class="p">.</span><span class="nx">parseError</span><span class="p">);</span>
 			<span class="p">}</span>
 		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-			<span class="nx">xmlDoc</span> <span class="o">=</span> <span class="nx">xmlFile</span><span class="p">.</span><span class="nx">responseXML</span><span class="p">;</span>
+			<span class="nx">errorHandler</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">{</span>
+				<span class="nx">reason</span><span class="o">:</span> <span class="s2">&quot;Can&#39;t find a suitable XML parser&quot;</span><span class="p">,</span>
+				<span class="nx">srcText</span><span class="o">:</span> <span class="nx">xmlFile</span>
+			<span class="p">});</span>
 		<span class="p">}</span>
 		<span class="k">return</span> <span class="nx">xmlDoc</span><span class="p">;</span>
 	<span class="p">};</span>
@@ -183,7 +199,7 @@
 			<span class="kd">var</span> <span class="nx">dataType</span> 		<span class="o">=</span> <span class="nx">settings</span><span class="p">.</span><span class="nx">dataType</span><span class="p">;</span>
 			<span class="kd">var</span> <span class="nx">timeout</span>			<span class="o">=</span> <span class="nx">settings</span><span class="p">.</span><span class="nx">timeout</span> <span class="o">||</span> <span class="mi">10000</span><span class="p">;</span> <span class="cm">/* Tiempo que tarda en cancelarse la transaccion */</span>
 			<span class="kd">var</span> <span class="nx">method</span>			<span class="o">=</span> <span class="nx">settings</span><span class="p">.</span><span class="nx">method</span> <span class="o">||</span> <span class="s2">&quot;GET&quot;</span><span class="p">;</span> <span class="cm">/* Metodo para enviar informacion al servidor */</span>
-			<span class="kd">var</span> <span class="nx">async</span>			<span class="o">=</span> <span class="nx">settings</span><span class="p">.</span><span class="nx">async</span> <span class="o">||</span> <span class="nx">TRUE</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">async</span>			<span class="o">=</span> <span class="nx">settings</span><span class="p">.</span><span class="nx">async</span> <span class="o">||</span> <span class="kc">true</span><span class="p">;</span>
 			<span class="kd">var</span> <span class="nx">complete</span>		<span class="o">=</span> <span class="nx">settings</span><span class="p">.</span><span class="nx">complete</span> <span class="o">||</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{};</span>
 			<span class="kd">var</span> <span class="nx">onSuccess</span>		<span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 				<span class="k">if</span> <span class="p">(</span><span class="nx">success</span><span class="p">)</span> <span class="p">{</span>
@@ -204,15 +220,17 @@
 					<span class="nx">xhr</span><span class="p">.</span><span class="nx">overrideMimeType</span><span class="p">(</span><span class="s1">&#39;text/xml&#39;</span><span class="p">);</span>
 				<span class="p">}</span>
 				<span class="k">if</span> <span class="p">(</span><span class="nx">settings</span><span class="p">.</span><span class="nx">url</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">if</span> <span class="p">(</span><span class="nx">async</span> <span class="o">===</span> <span class="nx">TRUE</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">async</span> <span class="o">===</span> <span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
 						<span class="nx">xhr</span><span class="p">.</span><span class="nx">onreadystatechange</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 							<span class="k">if</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">readyState</span> <span class="o">===</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
 								<span class="cm">/* Normalmente deberia chequearse unicamente el status == 200, pero cuando se hace una transaccion local el status en IE termina siendo 0</span>
 <span class="cm">								 por lo que con revisar que exista la respuesta alcanza */</span>
-								<span class="k">if</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="mi">200</span> <span class="o">||</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">responseText</span> <span class="o">||</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">responseXML</span><span class="p">)</span> <span class="p">{</span> 
-									<span class="nx">onSuccess</span><span class="p">(</span><span class="nx">getResultByContentType</span><span class="p">(</span><span class="nx">xhr</span><span class="p">,</span> <span class="nx">dataType</span><span class="p">,</span> <span class="nx">onError</span><span class="p">),</span> <span class="nx">xhr</span><span class="p">);</span>
+								<span class="k">if</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="mi">404</span><span class="p">)</span> <span class="p">{</span>
+									<span class="nx">onError</span><span class="p">(</span><span class="nx">notFoundError</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">status</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">);</span>
 								<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="mi">408</span><span class="p">)</span> <span class="p">{</span>
 									<span class="nx">onError</span><span class="p">(</span><span class="nx">timeoutError</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">status</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">);</span>
+								<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">xhr</span><span class="p">.</span><span class="nx">status</span> <span class="o">===</span> <span class="mi">200</span> <span class="o">||</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">responseText</span> <span class="o">||</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">responseXML</span><span class="p">)</span> <span class="p">{</span> 
+									<span class="nx">onSuccess</span><span class="p">(</span><span class="nx">getResultByContentType</span><span class="p">(</span><span class="nx">xhr</span><span class="p">,</span> <span class="nx">dataType</span><span class="p">,</span> <span class="nx">onError</span><span class="p">),</span> <span class="nx">xhr</span><span class="p">);</span>
 								<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 									<span class="nx">onError</span><span class="p">(</span><span class="nx">noStatusError</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">.</span><span class="nx">status</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">);</span> 
 								<span class="p">}</span>
@@ -227,7 +245,7 @@
 					<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
 						<span class="nx">onError</span><span class="p">(</span><span class="nx">noStatusError</span><span class="p">,</span> <span class="mi">404</span><span class="p">,</span> <span class="nx">xhr</span><span class="p">);</span> 
 					<span class="p">}</span>
-					<span class="k">if</span> <span class="p">(</span><span class="nx">async</span> <span class="o">===</span> <span class="nx">FALSE</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">async</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
 						<span class="nx">result</span> <span class="o">=</span> <span class="nx">getResultByContentType</span><span class="p">(</span><span class="nx">xhr</span><span class="p">,</span> <span class="nx">dataType</span><span class="p">,</span> <span class="nx">onError</span><span class="p">);</span>
 					<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 						<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
@@ -240,6 +258,9 @@
 				<span class="p">}</span>
 			<span class="p">}</span>
 			<span class="k">return</span> <span class="nx">result</span> <span class="o">||</span> <span class="nx">$</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">utils</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">parseXML</span><span class="o">:</span> <span class="nx">parseXML</span>
 		<span class="p">}</span>
 	<span class="p">};</span>
 <span class="p">});</span>
@@ -256,40 +277,43 @@
                         <ul class="content">
                                 <li class=""><a href="module_anim.html" title="anim">anim</a></li>
                                 <li class=""><a href="module_base.html" title="base">base</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
                                 <li class=""><a href="module_container.html" title="container">container</a></li>
                                 <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
                                 <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
                                 <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
                                 <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
-                                <li class=""><a href="module_flash.html" title="flash">flash</a></li>
-                                <li class="selected"><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
-                                <li class=""><a href="module_io.html" title="io">io</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class="selected"><a href="module_io.html" title="io">io</a></li>
                                 <li class=""><a href="module_jet.html" title="jet">jet</a></li>
                                 <li class=""><a href="module_json.html" title="json">json</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simple-progressbar.html" title="simple-progressbar">simple-progressbar</a></li>
+                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
                                 <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
-                                <li class=""><a href="module_xsl.html" title="xsl">xsl</a></li>
                         </ul>
                     </div>
 
                     <div id="classList" class="module">
                         <h4>Classes</h4>
                         <ul class="content">
-                                <li class=""><a href="Image.html" title="Image">Image</a></li>
-                                <li class=""><a href="ImageLoader.html" title="ImageLoader">ImageLoader</a></li>
+                                <li class=""><a href="IO.html" title="IO">IO</a></li>
                         </ul>
                     </div>
 
                     <div id="fileList" class="module">
                         <h4>Files</h4>
                         <ul class="content">        
+                                <li class=""><a href="io-xsl.js.html" title="io-xsl.js">io-xsl.js</a></li>
                                 <li class="selected"><a href="io.js.html" title="io.js">io.js</a></li>
+                                <li class=""><a href="jet.js.html" title="jet.js">jet.js</a></li>
                         </ul>
                     </div>
 
@@ -302,12 +326,12 @@
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Yahoo! Inc. All rights reserved.
+        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Image.html#event_complete", "access": "", "host": "Image", "type": "event", "name": "complete"}, {"url": "ImageLoader.html#event_complete", "access": "", "host": "ImageLoader", "type": "event", "name": "complete"}, {"url": "Image.html#event_error", "access": "", "host": "Image", "type": "event", "name": "error"}, {"url": "Image.html#config_image", "access": "", "host": "Image", "type": "config", "name": "image"}, {"url": "ImageLoader.html#event_image:complete", "access": "", "host": "ImageLoader", "type": "event", "name": "image:complete"}, {"url": "ImageLoader.html#event_image:error", "access": "", "host": "ImageLoader", "type": "event", "name": "image:error"}, {"url": "ImageLoader.html#event_image:load", "access": "", "host": "ImageLoader", "type": "event", "name": "image:load"}, {"url": "ImageLoader.html#event_image:timeout", "access": "", "host": "ImageLoader", "type": "event", "name": "image:timeout"}, {"url": "Image.html#method_load", "access": "", "host": "Image", "type": "method", "name": "load"}, {"url": "Image.html#event_load", "access": "", "host": "Image", "type": "event", "name": "load"}, {"url": "ImageLoader.html#method_load", "access": "", "host": "ImageLoader", "type": "method", "name": "load"}, {"url": "Image.html#config_loaded", "access": "", "host": "Image", "type": "config", "name": "loaded"}, {"url": "Image.html#config_node", "access": "", "host": "Image", "type": "config", "name": "node"}, {"url": "ImageLoader.html#event_progress", "access": "", "host": "ImageLoader", "type": "event", "name": "progress"}, {"url": "Image.html#method_setAsBackground", "access": "", "host": "Image", "type": "method", "name": "setAsBackground"}, {"url": "Image.html#config_src", "access": "", "host": "Image", "type": "config", "name": "src"}, {"url": "ImageLoader.html#config_srcs", "access": "", "host": "ImageLoader", "type": "config", "name": "srcs"}, {"url": "Image.html#config_timeout", "access": "", "host": "Image", "type": "config", "name": "timeout"}, {"url": "Image.html#config_type", "access": "", "host": "Image", "type": "config", "name": "type"}];
+    var ALL_YUI_PROPS = [{"url": "IO.html#method_ajax", "access": "", "host": "IO", "type": "method", "name": "ajax"}, {"url": "IO.html#method_flajax", "access": "", "host": "IO", "type": "method", "name": "flajax"}, {"url": "IO.html#method_xsl", "access": "", "host": "IO", "type": "method", "name": "xsl"}];
 </script>
 </body>
 </html>

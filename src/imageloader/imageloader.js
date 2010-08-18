@@ -150,7 +150,7 @@ jet().add('imageloader', function ($) {
 		/**
 		 * Set the image as a background once it loaded
 		 * @method setAsBackground
-		 * @param {DOM Node, NodeList} node Which node to set the image as background of
+		 * @param {DOMNode | NodeList} node Which node to set the image as background of
 		 * @chainable
 		 */
 		setAsBackground: function (node) {

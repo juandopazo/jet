@@ -2,7 +2,7 @@
 <html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-	<title>API: datasource   datatable.js  (YUI Library)</title>
+	<title>API: datasource   datatable.js  (Jet Library)</title>
 
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
@@ -15,9 +15,9 @@
 
 <div id="doc3" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
         <h3>datasource&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
+        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
             &gt; <a href="./module_datasource.html" title="datasource">datasource</a>
                 
                  &gt; datatable.js (source view) 
@@ -47,16 +47,18 @@
                         <style>
                             #doc3 .classopts { display:none; }
                         </style>
-                        <div class="highlight"><pre><span class="cm">/**</span>
+                        <div class="highlight"><pre><span class="cm">/*</span>
+<span class="cm"> Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.</span>
+<span class="cm"> Code licensed under the BSD License</span>
+<span class="cm"> http://code.google.com/p/jet-js/wiki/Licence</span>
+<span class="cm">*/</span>
+<span class="cm">/**</span>
 <span class="cm"> * Provides a DataTable widget that can be sorted and linked to a DataSource</span>
 <span class="cm"> * @module datatable</span>
 <span class="cm"> * @requires base, datasource</span>
 <span class="cm"> * @namespace</span>
 <span class="cm"> */</span>
 <span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;datatable&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
-	
-	<span class="kd">var</span> <span class="nx">FALSE</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
-		<span class="nx">TRUE</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
 	
 	<span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
 		<span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span>
@@ -103,14 +105,14 @@
 		
 		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
 			<span class="nx">dataSource</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">required</span><span class="o">:</span> <span class="nx">TRUE</span>
+				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
 			<span class="p">},</span>
 			<span class="nx">columnDefinitions</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">required</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
+				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
 				<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isArray</span>
 			<span class="p">},</span>
 			<span class="nx">className</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">writeOnce</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
+				<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;dt&quot;</span>
 			<span class="p">}</span>
 		<span class="p">});</span>
@@ -233,7 +235,7 @@
 			<span class="p">}</span>
 			<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">rows</span><span class="p">,</span> <span class="nx">addRow</span><span class="p">);</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">sortedBy</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">sort</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="nx">NUMERAL</span> <span class="o">+</span> <span class="nx">thIdPrefix</span> <span class="o">+</span> <span class="nx">sortedBy</span><span class="p">),</span> <span class="nx">TRUE</span><span class="p">);</span>
+				<span class="nx">sort</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="nx">NUMERAL</span> <span class="o">+</span> <span class="nx">thIdPrefix</span> <span class="o">+</span> <span class="nx">sortedBy</span><span class="p">),</span> <span class="kc">true</span><span class="p">);</span>
 			<span class="p">}</span>
 		<span class="p">};</span>
 		<span class="cm">/*@TODO</span>
@@ -261,7 +263,7 @@
 		<span class="cm">/**</span>
 <span class="cm">		 * Returns the next html row element base on the one passed as a parameter</span>
 <span class="cm">		 * @method getNextTr</span>
-<span class="cm">		 * @param {Record, HTMLTrElement, NodeList, Number} tr</span>
+<span class="cm">		 * @param {Record | HTMLTrElement | NodeList | Number} tr</span>
 <span class="cm">		 * @return NodeList</span>
 <span class="cm">		 */</span>
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">getNextTr</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">tr</span><span class="p">)</span> <span class="p">{</span>
@@ -277,7 +279,7 @@
 		<span class="cm">/**</span>
 <span class="cm">		 * Returns the first cell element in a row</span>
 <span class="cm">		 * @method getFirstTd</span>
-<span class="cm">		 * @param {Record, HTMLTrElement, NodeList, Number} row</span>
+<span class="cm">		 * @param {Record | HTMLTrElement | NodeList | Number} row</span>
 <span class="cm">		 * @return NodeList</span>
 <span class="cm">		 */</span>
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">getFirstTd</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">row</span><span class="p">)</span> <span class="p">{</span>
@@ -293,7 +295,7 @@
 		<span class="cm">/**</span>
 <span class="cm">		 * Returns the next cell element in a row based on the one passed as a parameter</span>
 <span class="cm">		 * @method getNextTd</span>
-<span class="cm">		 * @param {Record, HTMLTrElement, NodeList, Number} td</span>
+<span class="cm">		 * @param {Record | HTMLTrElement | NodeList | Number} td</span>
 <span class="cm">		 * @return NodeList</span>
 <span class="cm">		 */</span>
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">getNextTd</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">td</span><span class="p">)</span> <span class="p">{</span>
@@ -394,12 +396,13 @@
                         <ul class="content">
                                 <li class=""><a href="module_anim.html" title="anim">anim</a></li>
                                 <li class=""><a href="module_base.html" title="base">base</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
                                 <li class=""><a href="module_container.html" title="container">container</a></li>
                                 <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
                                 <li class="selected"><a href="module_datasource.html" title="datasource">datasource</a></li>
                                 <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
                                 <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
-                                <li class=""><a href="module_flash.html" title="flash">flash</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
                                 <li class=""><a href="module_jet.html" title="jet">jet</a></li>
@@ -408,11 +411,12 @@
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simple-progressbar.html" title="simple-progressbar">simple-progressbar</a></li>
+                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
                                 <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
-                                <li class=""><a href="module_xsl.html" title="xsl">xsl</a></li>
                         </ul>
                     </div>
 
@@ -444,12 +448,12 @@
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Yahoo! Inc. All rights reserved.
+        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Record.html#method_get", "access": "", "host": "Record", "type": "method", "name": "get"}, {"url": "RecordSet.html#method_getCount", "access": "", "host": "RecordSet", "type": "method", "name": "getCount"}, {"url": "Record.html#method_getData", "access": "", "host": "Record", "type": "method", "name": "getData"}, {"url": "Record.html#method_getId", "access": "", "host": "Record", "type": "method", "name": "getId"}, {"url": "RecordSet.html#method_getRecords", "access": "", "host": "RecordSet", "type": "method", "name": "getRecords"}, {"url": "DataSource.html#method_onBeforeParse", "access": "", "host": "DataSource", "type": "method", "name": "onBeforeParse"}, {"url": "RecordSet.html#method_push", "access": "", "host": "RecordSet", "type": "method", "name": "push"}, {"url": "RecordSet.html#method_replace", "access": "", "host": "RecordSet", "type": "method", "name": "replace"}, {"url": "DataSource.html#method_sendRequest", "access": "", "host": "DataSource", "type": "method", "name": "sendRequest"}, {"url": "RecordSet.html#method_sortBy", "access": "", "host": "RecordSet", "type": "method", "name": "sortBy"}];
+    var ALL_YUI_PROPS = [{"url": "Record.html#method_get", "access": "", "host": "Record", "type": "method", "name": "get"}, {"url": "RecordSet.html#method_getCount", "access": "", "host": "RecordSet", "type": "method", "name": "getCount"}, {"url": "Record.html#method_getData", "access": "", "host": "Record", "type": "method", "name": "getData"}, {"url": "Record.html#method_getId", "access": "", "host": "Record", "type": "method", "name": "getId"}, {"url": "RecordSet.html#method_getRecords", "access": "", "host": "RecordSet", "type": "method", "name": "getRecords"}, {"url": "DataSource.html#method_onBeforeParse", "access": "", "host": "DataSource", "type": "method", "name": "onBeforeParse"}, {"url": "RecordSet.html#method_push", "access": "", "host": "RecordSet", "type": "method", "name": "push"}, {"url": "DataSource.html#config_recordSet", "access": "", "host": "DataSource", "type": "config", "name": "recordSet"}, {"url": "RecordSet.html#method_replace", "access": "", "host": "RecordSet", "type": "method", "name": "replace"}, {"url": "DataSource.html#config_requestLogic", "access": "protected", "host": "DataSource", "type": "config", "name": "requestLogic"}, {"url": "DataSource.html#config_responseSchema", "access": "", "host": "DataSource", "type": "config", "name": "responseSchema"}, {"url": "DataSource.html#config_responseType", "access": "", "host": "DataSource", "type": "config", "name": "responseType"}, {"url": "DataSource.html#method_sendRequest", "access": "", "host": "DataSource", "type": "method", "name": "sendRequest"}, {"url": "RecordSet.html#method_sortBy", "access": "", "host": "RecordSet", "type": "method", "name": "sortBy"}];
 </script>
 </body>
 </html>

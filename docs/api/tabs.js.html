@@ -2,7 +2,7 @@
 <html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-	<title>API: simple-progressbar   tabs.js  (YUI Library)</title>
+	<title>API: swf   tabs.js  (Jet Library)</title>
 
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
@@ -15,10 +15,10 @@
 
 <div id="doc3" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
-        <h3>simple-progressbar&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
-            &gt; <a href="./module_simple-progressbar.html" title="simple-progressbar">simple-progressbar</a>
+        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
+        <h3>swf&nbsp; <span class="subtitle">0.1.53</span></h3>
+        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
+            &gt; <a href="./module_swf.html" title="swf">swf</a>
                 
                  &gt; tabs.js (source view) 
         <form onsubmit="return false">
@@ -47,7 +47,12 @@
                         <style>
                             #doc3 .classopts { display:none; }
                         </style>
-                        <div class="highlight"><pre><span class="cm">/**</span>
+                        <div class="highlight"><pre><span class="cm">/*</span>
+<span class="cm"> Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.</span>
+<span class="cm"> Code licensed under the BSD License</span>
+<span class="cm"> http://code.google.com/p/jet-js/wiki/Licence</span>
+<span class="cm">*/</span>
+<span class="cm">/**</span>
 <span class="cm"> * A TabView</span>
 <span class="cm"> * @module tabs</span>
 <span class="cm"> * @requires jet, lang, node, base</span>
@@ -57,32 +62,53 @@
 	<span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">;</span>
 	<span class="kd">var</span> <span class="nx">ArrayHelper</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">;</span>
 	
-	<span class="kd">var</span> <span class="nx">TRUE</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span>
-		<span class="nx">FALSE</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-	
 	<span class="kd">var</span> <span class="nx">LI</span> <span class="o">=</span> <span class="s2">&quot;li&quot;</span><span class="p">,</span>
 		<span class="nx">LABEL</span> <span class="o">=</span> <span class="s2">&quot;label&quot;</span><span class="p">,</span>
 		<span class="nx">PANEL</span> <span class="o">=</span> <span class="s2">&quot;panel&quot;</span><span class="p">;</span>
 	
+	<span class="cm">/**</span>
+<span class="cm">	 * A tab instance has a label and a panel</span>
+<span class="cm">	 * @class Tab</span>
+<span class="cm">	 * @extends Base</span>
+<span class="cm">	 * @constructor</span>
+<span class="cm">	 * @param {Object} config Object literal specifying configuration properties</span>
+<span class="cm">	 */</span>
 	<span class="kd">var</span> <span class="nx">Tab</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 		<span class="nx">Tab</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
 		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
+		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config label</span>
+<span class="cm">			 * @description The text to use as label</span>
+<span class="cm">			 * @type String | LI Node</span>
+<span class="cm">			 * @required</span>
+<span class="cm">			 */</span>
 			<span class="nx">label</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">required</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
+				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
 				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
 					<span class="k">return</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">?</span> <span class="nx">$</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">LI</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
 				<span class="p">}</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config panel</span>
+<span class="cm">			 * @description The element or text to use as a panel</span>
+<span class="cm">			 * @type String | DOM Node</span>
+<span class="cm">			 * @required</span>
+<span class="cm">			 */</span>
 			<span class="nx">panel</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">required</span><span class="o">:</span> <span class="nx">TRUE</span><span class="p">,</span>
+				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
 				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
 					<span class="k">return</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">?</span> <span class="nx">$</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
 				<span class="p">}</span> 
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config selected</span>
+<span class="cm">			 * @description True if this is the currently selected tab of a TabView</span>
+<span class="cm">			 * @type Boolean</span>
+<span class="cm">			 * @default false</span>
+<span class="cm">			 */</span>
 			<span class="nx">selected</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="nx">FALSE</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
 			<span class="p">}</span>
 		<span class="p">}).</span><span class="nx">addAttrs</span><span class="p">({</span>
 			<span class="nx">labelContent</span><span class="o">:</span> <span class="p">{</span>
@@ -107,10 +133,16 @@
 			<span class="nx">myself</span><span class="p">.</span><span class="nx">select</span><span class="p">();</span>
 		<span class="p">});</span>
 	<span class="p">};</span>
-	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Tab</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Attribute</span><span class="p">,</span> <span class="p">{</span>
+	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Tab</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">,</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @mehtod select</span>
+<span class="cm">		 * @description Selects this tab</span>
+<span class="cm">		 * @param {Boolean} silent If true, the &quot;selected&quot; event is not fired</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="nx">select</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">silent</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">silent</span> <span class="o">=</span> <span class="nx">silent</span> <span class="o">||</span> <span class="nx">FALSE</span><span class="p">;</span>
-			<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">SELECTED</span><span class="p">,</span> <span class="nx">TRUE</span><span class="p">);</span>
+			<span class="nx">silent</span> <span class="o">=</span> <span class="nx">silent</span> <span class="o">||</span> <span class="kc">false</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">SELECTED</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 			<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LABEL</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">SELECTED</span><span class="p">);</span>
 			<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">PANEL</span><span class="p">).</span><span class="nx">show</span><span class="p">();</span>
 			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">silent</span><span class="p">)</span> <span class="p">{</span>
@@ -118,9 +150,15 @@
 			<span class="p">}</span>
 			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
 		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @mehtod unselect</span>
+<span class="cm">		 * @description Deselects this tab</span>
+<span class="cm">		 * @param {Boolean} silent If true, the &quot;selected&quot; event is not fired</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="nx">unselect</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">silent</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">silent</span> <span class="o">=</span> <span class="nx">silent</span> <span class="o">||</span> <span class="nx">FALSE</span><span class="p">;</span>
-			<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">SELECTED</span><span class="p">,</span> <span class="nx">FALSE</span><span class="p">);</span>
+			<span class="nx">silent</span> <span class="o">=</span> <span class="nx">silent</span> <span class="o">||</span> <span class="kc">false</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">SELECTED</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
 			<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LABEL</span><span class="p">).</span><span class="nx">removeClass</span><span class="p">(</span><span class="nx">SELECTED</span><span class="p">);</span>
 			<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">PANEL</span><span class="p">).</span><span class="nx">hide</span><span class="p">();</span>
 			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">silent</span><span class="p">)</span> <span class="p">{</span>
@@ -128,6 +166,10 @@
 			<span class="p">}</span>
 			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
 		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @method remove</span>
+<span class="cm">		 * @description Removes this tab from the DOM</span>
+<span class="cm">		 */</span>
 		<span class="nx">remove</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 			<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;remove&quot;</span><span class="p">))</span> <span class="p">{</span>
@@ -137,6 +179,13 @@
 		<span class="p">}</span>
 	<span class="p">});</span>
 	
+	<span class="cm">/**</span>
+<span class="cm">	 * A view of tabs</span>
+<span class="cm">	 * @class TabView</span>
+<span class="cm">	 * @extends Widget</span>
+<span class="cm">	 * @constructor</span>
+<span class="cm">	 * @param {Object} config Object literal specifying configuration properties</span>
+<span class="cm">	 */</span>
     <span class="kd">var</span> <span class="nx">TabView</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 		<span class="nx">TabView</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
 		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
@@ -155,6 +204,11 @@
 					<span class="nx">tab</span><span class="p">.</span><span class="nx">unselect</span><span class="p">();</span>
 				<span class="p">}</span>
 			<span class="p">});</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @event tabSelect</span>
+<span class="cm">			 * @description Fires when a tab is selected</span>
+<span class="cm">			 * @param {Tab} selectedTab</span>
+<span class="cm">			 */</span>
 			<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;tabSelect&quot;</span><span class="p">,</span> <span class="nx">selectedTab</span><span class="p">);</span>
 		<span class="p">};</span>
 		
@@ -194,6 +248,13 @@
 			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
 		<span class="p">});</span>
 		
+		<span class="cm">/**</span>
+<span class="cm">		 * @method add</span>
+<span class="cm">		 * @description Adds a tab at the specified point of the list</span>
+<span class="cm">		 * @param {Tab} tab</span>
+<span class="cm">		 * @param {Number} index</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="k">this</span><span class="p">.</span><span class="nx">add</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">tab</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
 			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">tab</span> <span class="k">instanceof</span> <span class="nx">Tab</span><span class="p">))</span> <span class="p">{</span>
 				<span class="nx">tab</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Tab</span><span class="p">(</span><span class="nx">tab</span><span class="p">);</span>
@@ -208,6 +269,12 @@
 			<span class="nx">tabs</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">tab</span><span class="p">);</span>
 			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
 		<span class="p">};</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @method remove</span>
+<span class="cm">		 * @description Removes a tab from the tabview</span>
+<span class="cm">		 * @param {Tab} tab</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="k">this</span><span class="p">.</span><span class="nx">remove</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">tab</span><span class="p">)</span> <span class="p">{</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">tab</span><span class="p">))</span> <span class="p">{</span>
 				<span class="nx">tabs</span><span class="p">[</span><span class="nx">tab</span><span class="p">].</span><span class="nx">remove</span><span class="p">();</span>
@@ -222,6 +289,12 @@
 			<span class="p">}</span>
 			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
 		<span class="p">};</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @method select</span>
+<span class="cm">		 * @description Selects a certain tab</span>
+<span class="cm">		 * @param {Tab} tab</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
 		<span class="k">this</span><span class="p">.</span><span class="nx">select</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">tab</span><span class="p">)</span> <span class="p">{</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">tab</span><span class="p">))</span> <span class="p">{</span>
 				<span class="nx">tabs</span><span class="p">[</span><span class="nx">tab</span><span class="p">].</span><span class="nx">select</span><span class="p">();</span>
@@ -230,6 +303,12 @@
 			<span class="p">}</span>
 			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
 		<span class="p">};</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @method getTab</span>
+<span class="cm">		 * @description Returns the tab in the specified position</span>
+<span class="cm">		 * @param {Number} index</span>
+<span class="cm">		 * @return {Tab} tab</span>
+<span class="cm">		 */</span>
 		<span class="k">this</span><span class="p">.</span><span class="nx">getTab</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
 			<span class="k">return</span> <span class="nx">tabs</span><span class="p">[</span><span class="nx">index</span><span class="p">];</span>
 		<span class="p">};</span>
@@ -254,12 +333,13 @@
                         <ul class="content">
                                 <li class=""><a href="module_anim.html" title="anim">anim</a></li>
                                 <li class=""><a href="module_base.html" title="base">base</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
                                 <li class=""><a href="module_container.html" title="container">container</a></li>
                                 <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
                                 <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
                                 <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
                                 <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
-                                <li class=""><a href="module_flash.html" title="flash">flash</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
                                 <li class=""><a href="module_jet.html" title="jet">jet</a></li>
@@ -268,25 +348,19 @@
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class="selected"><a href="module_simple-progressbar.html" title="simple-progressbar">simple-progressbar</a></li>
+                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
+                                <li class="selected"><a href="module_swf.html" title="swf">swf</a></li>
                                 <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
-                                <li class=""><a href="module_xsl.html" title="xsl">xsl</a></li>
                         </ul>
                     </div>
 
-                    <div id="classList" class="module">
-                        <h4>Classes</h4>
-                        <ul class="content">
-                                <li class=""><a href="SimpleProgressBar.html" title="SimpleProgressBar">SimpleProgressBar</a></li>
-                        </ul>
-                    </div>
 
                     <div id="fileList" class="module">
                         <h4>Files</h4>
                         <ul class="content">        
-                                <li class=""><a href="sizzle.js.html" title="sizzle.js">sizzle.js</a></li>
                                 <li class="selected"><a href="tabs.js.html" title="tabs.js">tabs.js</a></li>
                         </ul>
                     </div>
@@ -300,12 +374,12 @@
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Yahoo! Inc. All rights reserved.
+        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "SimpleProgressBar.html#method_render", "access": "", "host": "SimpleProgressBar", "type": "method", "name": "render"}, {"url": "SimpleProgressBar.html#method_update", "access": "", "host": "SimpleProgressBar", "type": "method", "name": "update"}];
+    var ALL_YUI_PROPS = [];
 </script>
 </body>
 </html>

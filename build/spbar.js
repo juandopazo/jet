@@ -1,6 +1,11 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
 /**
  * A simple progressbar for when a lot of modules are needed
- * @module simple-progressbar
+ * @module simpleprogressbar
  */
 jet().add('spbar', function ($) {
 	
@@ -40,7 +45,7 @@ jet().add('spbar', function ($) {
 		/**
 		 * @method render
 		 * @description Renders the progressbar
-		 * @param {DOM Node, NodeList} target 
+		 * @param {DOMNode | NodeList} target 
 		 */
 		this.render = function (target) {
 			boundingBox.appendTo(target);
@@ -48,10 +53,3 @@ jet().add('spbar', function ($) {
 	};
 	
 });
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
-
-		
