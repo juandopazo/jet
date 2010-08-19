@@ -290,6 +290,10 @@ jet().add('vector', function ($) {
 		 * @config width
 		 * @description width
 		 */
+		/**
+		 * @config fill-opacity
+		 * @description Opacity
+		 */
 		myself.addAttrs(Vector_ATTRS).addAttr("fill-opacity", {
 			getter: function () {
 				return this.get(NODE).getAttribute("fill-opacity");
@@ -417,6 +421,10 @@ jet().add('vector', function ($) {
 		Ellipse.superclass.constructor.apply(this, arguments);
 		
 		var myself = this.addAttrs({
+			/**
+			 * @cponfig rx
+			 * @description Horizontal radius length
+			 */
 			rx: {
 				getter: UA_SUPPORTS_SVG ? function () {
 					return this.node.getAttribute("rx");
@@ -431,6 +439,10 @@ jet().add('vector', function ($) {
 					return value;
 				}
 			},
+			/**
+			 * @config ry
+			 * @description Vertical radius length
+			 */
 			ry: {
 				getter: UA_SUPPORTS_SVG ? function () {
 					return this.node.getAttribute("ry");
@@ -447,6 +459,10 @@ jet().add('vector', function ($) {
 			}		
 		});
 		myself.addAttrs({
+			/**
+			 * @config cx
+			 * @description X coordinate of the ellipse's center
+			 */
 			cx: {
 				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING.cx ? VML_ATTR_MAPPING.cx : "cx"),
 				setter: UA_SUPPORTS_SVG ? function (value) {
@@ -457,6 +473,10 @@ jet().add('vector', function ($) {
 					return value;
 				}
 			},
+			/**
+			 * @config cy
+			 * @description Y coordinate of the ellipse's center
+			 */
 			cy: {
 				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING.cy ? VML_ATTR_MAPPING.cy : "cy"),
 				setter: UA_SUPPORTS_SVG ? function (value) {
@@ -483,6 +503,10 @@ jet().add('vector', function ($) {
 		config.node = UA_SUPPORTS_SVG ? "circle" : "oval";
 		Circle.superclass.constructor.apply(this, arguments);
 		var myself = this.addAttrs({
+			/**
+			 * @config r
+			 * @description Radius of the circle
+			 */
 			r: {
 				getter: UA_SUPPORTS_SVG ? function () {
 					return this.node.getAttribute("r");
@@ -499,8 +523,11 @@ jet().add('vector', function ($) {
 					return value;
 				}
 			}
-		});
-		myself.addAttrs({
+		}).addAttrs({
+			/**
+			 * @config cx
+			 * @description X coordinate of the circle's center
+			 */
 			cx: {
 				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING.cx ? VML_ATTR_MAPPING.cx : "cx"),
 				setter: UA_SUPPORTS_SVG ? function (value) {
@@ -511,6 +538,10 @@ jet().add('vector', function ($) {
 					return value;
 				}
 			},
+			/**
+			 * @config cy
+			 * @description Y coordinate of the circle's center
+			 */
 			cy: {
 				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING.cy ? VML_ATTR_MAPPING.cy : "cy"),
 				setter: UA_SUPPORTS_SVG ? function (value) {
@@ -538,18 +569,34 @@ jet().add('vector', function ($) {
 		Line.superclass.constructor.apply(this, arguments);
 		
 		this.addAttrs({
+			/**
+			 * @config x1
+			 * @description X coordinate of the line's starting point
+			 */
 			x1: {
 				getter: getDefaultGetter("x1"),
 				setter: getDefaultSetter("x1")
 			},
+			/**
+			 * @config x2
+			 * @description X coordinate of the line's ending point
+			 */
 			x2: {
 				getter: getDefaultGetter("x2"),
 				setter: getDefaultSetter("x2")
 			},
+			/**
+			 * @config y1
+			 * @description Y coordinate of the line's starting point
+			 */
 			y1: {
 				getter: getDefaultGetter("y1"),
 				setter: getDefaultSetter("y1")
 			},
+			/**
+			 * @config y2
+			 * @description Y coordinate of the line's ending point
+			 */
 			y2: {
 				getter: getDefaultGetter("y2"),
 				setter: getDefaultSetter("y2")
@@ -600,12 +647,10 @@ jet().add('vector', function ($) {
 	$.extend(Path, Vector);
 	
 	/**
-	 * @namespace
-	 */
-	/**
 	 * A canvas for Vectors
 	 * @class VectorView
-	 * @extends TimeFrame
+	 * @namespace
+	 * @extends Widget
 	 * @constructor
 	 * @param {Object} config
 	 */
@@ -617,16 +662,20 @@ jet().add('vector', function ($) {
 			version: "1.1"
 		});
 		var myself = this.addAttrs({
-			srcNode: {
-				required: true,
-				setter: $
-			},
+			/**
+			 * @config width
+			 * @description Width of the VectorView (a vector "canvas")
+			 */
 			width: {
 				setter: function (value) {
 					box.set("width", value);
 					return value;
 				}
 			},
+			/**
+			 * @config height
+			 * @description Height of the VectorView (a vector "canvas")
+			 */
 			height: {
 				setter: function (value) {
 					box.set("height", value);
@@ -652,12 +701,6 @@ jet().add('vector', function ($) {
 		});
 
 		var myself = this.addAttrs({
-			srcNode: {
-				required: true,
-				setter: function (value) {
-					return $(value);
-				}
-			},
 			width: {
 				setter: function (value) {
 					box.css("width", value);
@@ -684,28 +727,75 @@ jet().add('vector', function ($) {
 	var appendToVectorView = function (shape, plasma) {
 		return shape.set(VECTOR, plasma).appendTo(plasma.get(BOUNDING_BOX));
 	};
-	$.extend(VectorView, $.TimeFrame, {
+	$.extend(VectorView, $.Widget, {
+		/**
+		 * @method rectangle
+		 * @description Draw a rectangle in this vector view
+		 * @param {Object} config
+		 * @return Vector.Rectangle
+		 */
 		rectangle: function (config) {
 			return appendToVectorView(new Rectangle(config), this);
 		},
+		/**
+		 * @method circle
+		 * @description Draw a circle in this vector view
+		 * @param {Object} config
+		 * @return Vector.Circle
+		 */
 		circle: function (config) {
 			return appendToVectorView(new Circle(config), this);
 		},
+		/**
+		 * @method ellipse
+		 * @description Draw an ellipse in this vector view
+		 * @param {Object} config
+		 * @return Vector.Ellipse
+		 */
 		ellipse: function (config) {
 			return appendToVectorView(new Ellipse(config), this);
 		},
+		/**
+		 * @method image
+		 * @description Draw an image in this vector view
+		 * @param {Object} config
+		 * @return Vector.Image
+		 */
 		image: function (config) {
 			return appendToVectorView(new ImageVector(config), this);
 		},
+		/**
+		 * @method text
+		 * @description Draw text in this vector view
+		 * @param {Object} config
+		 * @return Vector.Text
+		 */
 		text: function (config) {
 			return appendToVectorView(new Text(config), this);
 		},
+		/**
+		 * @method line
+		 * @description Draw a line in this vector view
+		 * @param {Object} config
+		 * @return Vector.Line
+		 */
 		line: function (config) {
 			return appendToVectorView(new Line(config), this);
 		},
+		/**
+		 * @method path
+		 * @description Draw a path in this vector view
+		 * @param {Object} config
+		 * @return Vector.Path
+		 */
 		path: function (config) {
 			return appendToVectorView(new Path(config), this);
 		},
+		/**
+		 * @method clear
+		 * @description Remove all vectors from this vector view
+		 * @chainable
+		 */
 		clear: function () {
 			this.get(BOUNDING_BOX).children().remove();
 		}

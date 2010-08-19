@@ -233,7 +233,9 @@ jet().add('history', function ($) {
 			},
 			/**
 			 * @config blankURL
-			 * @description string to override the default location of blank.html. Must end in "?"
+			 * @description URL for the blank html file we use for IE; can be overridden via the options bundle. 
+			 * Otherwise it must be served in same directory as this library
+			 * @type String
 			 * @default "blank.html?"
 			 */
 			blankURL: {
@@ -267,10 +269,6 @@ jet().add('history', function ($) {
 		
 		/*Private: Placeholder variable for the original document title; will be set in ititialize()*/
 		var originalTitle = document.title;
-		
-		/*Private: URL for the blank html file we use for IE; can be overridden via the options bundle. Otherwise it must be served
-		in same directory as this library*/
-		var blankURL = "blank.html?";
 		
 		/*Private: Our history change listener.*/
 		var listener;
@@ -452,7 +450,7 @@ jet().add('history', function ($) {
 			we can return*/
 			ieAtomicLocationChange = true;
 	
-			if (UA.ie && getIframeHash() != hash) {
+			if (UA.ie && UA.ie < 8 && getIframeHash() != hash) {
 				iframe.src = myself.get("blankURL") + hash;
 			}
 			else if (UA.ie) {
@@ -511,6 +509,17 @@ jet().add('history', function ($) {
 	
 			/*Notify listeners of the change*/
 			fireHistoryEvent(hash);
+		};
+		
+		var useHashEvent = function () {
+			var evTarget = new $.EventTarget();
+			if (body.onhashchange) {
+				evTarget.on("hashchange", body.onhashchange);
+			}
+			body.onhashchange = function () {
+				evTarget.fire("hashchange", window.location.hash);
+			};
+			evTarget.on("hashchange", fireHistoryEvent);
 		};
 	
 		/**
@@ -692,8 +701,10 @@ jet().add('history', function ($) {
 		currentLocation = initialHash;
 
 		/*Now that we have a hash, create IE-specific code*/
-		if (UA.ie) {
+		if (UA.ie && UA.ie < 8) {
 			createIE(initialHash);
+		} else if (UA.ie >= 8) {
+			useHashEvent();
 		}
 
 		/*Add an unload listener for the page; this is needed for FF 1.5+ because this browser caches all dynamic updates to the
