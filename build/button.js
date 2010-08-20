@@ -259,10 +259,23 @@ jet().add('button', function ($) {
 				value: "combobox"
 			},
 			selected: {
-				readOnly: true,
+				validator: Lang.isNumber,
 				getter: function () {
 					var combo = myself.get(BUTTON_NODE)[0]; 
 					return combo.options[combo.selectedIndex];
+				},
+				setter: function (val) {
+					var combo = myself.get(BUTTON_NODE)[0];
+					if (myself.fire("change", combo.options[val])) {
+						combo.selectedIndex = val;
+					}
+					return val;
+				}
+			},
+			count: {
+				readOnly: true,
+				getter: function () {
+					return myself.get(BUTTON_NODE)[0].options.length;
 				}
 			}
 		});
@@ -349,6 +362,15 @@ jet().add('button', function ($) {
 		 */
 		clear: function () {
 			return this.set("options", []);
+		},
+		/**
+		 * @method select
+		 * @description Selects a certain option based on an index
+		 * @param {Number} index
+		 * @chainable
+		 */
+		select: function (index) {
+			return this.set("selected", index);
 		}
 	});
 	
