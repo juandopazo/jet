@@ -242,6 +242,17 @@ jet().add("container", function ($) {
 					return !!$.Drag;
 				},
 				value: false
+			},
+			/**
+			 * @config zIndex
+			 * @description zIndex to apply to the boundingBox
+			 * @default 100
+			 */
+			zIndex: {
+				value: 100
+			},
+			modal: {
+				value: false
 			}
 		});
 		myself.set(CLASS_NAME, Overlay.NAME);
@@ -294,21 +305,42 @@ jet().add("container", function ($) {
 			var win = $($.win);
 			var boundingBox = myself.get(BOUNDING_BOX);
 			var header = myself.get(HEADER);
-			if (header) {
-				boundingBox.append(header);
-			}
 			var body = myself.get(BODY);
-			if (body) {
-				boundingBox.append(body);
-			}
 			var footer = myself.get(FOOTER);
-			if (footer) {
-				boundingBox.append(footer);
-			}
 			var fixed = myself.get(FIXED);
 			var pos = fixed && UA_SUPPORTS_FIXED ? FIXED : "absolute";
 			var height = myself.get(HEIGHT);
-			boundingBox.css("position", pos).width(myself.get(WIDTH));
+			var screenSize = DOM.screenSize();
+			var modal = $("<div/>").css({
+				position: "fixed",
+				top: "0px",
+				left: "0px",
+				background: "#000",
+				visibility: !myself.get("modal") ? "hidden" : "",
+				zIndex: myself.get("zIndex") - 1,
+				opacity: 0.4
+			}).width(screenSize.width).height(screenSize.height).appendTo($.context.body);
+			win.on("resize", function () {
+				var screenSize = DOM.screenSize();
+				modal.width(screenSize.width).height(screenSize.height);
+			});
+			myself.on("hide", function () {
+				modal.hide();
+			}).on("show", function () {
+				if (myself.get("modal")) {
+					modal.show();
+				}
+			});
+			if (header) {
+				boundingBox.append(header);
+			}
+			if (body) {
+				boundingBox.append(body);
+			}
+			if (footer) {
+				boundingBox.append(footer);
+			}
+			boundingBox.css("position", pos).css("zIndex", myself.get("zIndex")).width(myself.get(WIDTH));
 			if (height) {
 				boundingBox.height(height);
 			}

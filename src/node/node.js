@@ -232,6 +232,26 @@ jet().add("node", function ($) {
 				height: de.clientHeight || $.win.innerHeight || db.clientHeight,
 				width: de.clientWidth || $.win.innerWidth || db.clientWidth
 			};
+		},
+		/**
+		 * Returns the complete size of the page
+		 * @method pageSize
+		 */
+		pageSize: function () {
+			var win = $.win,
+				doc = $.context,
+				compatMode = doc.compatMode != "CSS1Compat",
+				innerWidth = win.innerWidth,
+				innerHeight = win.innerHeight,
+				root = compatMode ? doc.body : doc.documentElement;
+			if (doc.compatMode && !$.UA.opera) {
+				innerWidth = root.clientWidth;
+				innerHeight = root.clientHeight;
+			}
+			return {
+				width: Math.max(root.scrollWidth, innerWidth),
+				height: Math.max(root.scrollHeight, innerHeight)
+			};
 		}
 	};
 	 
@@ -574,10 +594,10 @@ jet().add("node", function ($) {
 		 * @param {DOMNode|NodeList} before
 		 * @chainable
 		 */
-		insertBefore: function (before) {
-			before = $(before)[0];
+		insertBefore: function (target) {
+			target = $(target)[0];
 			return this.each(function (node) {
-				before.parentNode.insertBefore(node, before);
+				target.parentNode.insertBefore(node, target);
 			});
 		},
 		/**
