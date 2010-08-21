@@ -63,8 +63,7 @@
 
 	<span class="kd">var</span> <span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span>
 		<span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
-		<span class="nx">ArrayHelper</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">,</span>
-		<span class="nx">extend</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">;</span>
+		<span class="nx">ArrayHelper</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">;</span>
 
 	<span class="cm">/**</span>
 <span class="cm">	 * Utilities for object oriented programming in JavaScript.</span>
@@ -74,6 +73,18 @@
 <span class="cm">	 * @static</span>
 <span class="cm">	 */</span>
 	<span class="cm">/**</span>
+<span class="cm">	 * Object function by Douglas Crockford</span>
+<span class="cm">	 * &lt;a href=&quot;https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&amp;pli=1&quot;&gt;link&lt;/a&gt;</span>
+<span class="cm">	 * @private</span>
+<span class="cm">	 * @param {Object} o</span>
+<span class="cm">	 */</span>
+	<span class="kd">var</span> <span class="nx">toObj</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">F</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{};</span>
+		<span class="nx">F</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nx">o</span><span class="p">;</span>
+		<span class="k">return</span> <span class="k">new</span> <span class="nx">F</span><span class="p">();</span>
+	<span class="p">};</span>
+	
+	<span class="cm">/**</span>
 <span class="cm">	 * Allows for an inheritance strategy based on prototype chaining.</span>
 <span class="cm">	 * When exteiding a class with extend, you keep all prototypic methods from all superclasses</span>
 <span class="cm">	 * @method extend</span>
@@ -81,6 +92,31 @@
 <span class="cm">	 * @param {Function} superclass</span>
 <span class="cm">	 * @param {Hash} optional - An object literal with methods to overwrite in the subclass&#39; prototype</span>
 <span class="cm">	 */</span>
+    <span class="kd">var</span> <span class="nx">extend</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">r</span><span class="p">,</span> <span class="nx">s</span><span class="p">,</span> <span class="nx">px</span><span class="p">)</span> <span class="p">{</span>
+		<span class="c1">// From the guys at YUI. This function is GENIUS!</span>
+		
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">s</span> <span class="o">||</span> <span class="o">!</span><span class="nx">r</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// @TODO error symbols</span>
+            <span class="nx">$</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&quot;extend failed, verify dependencies&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="kd">var</span> <span class="nx">sp</span> <span class="o">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="nx">rp</span> <span class="o">=</span> <span class="nx">toObj</span><span class="p">(</span><span class="nx">sp</span><span class="p">);</span>
+        <span class="nx">r</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nx">rp</span><span class="p">;</span>
+
+        <span class="nx">rp</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">=</span> <span class="nx">r</span><span class="p">;</span>
+        <span class="nx">r</span><span class="p">.</span><span class="nx">superclass</span> <span class="o">=</span> <span class="nx">sp</span><span class="p">;</span>
+
+        <span class="c1">// assign constructor property</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">s</span> <span class="o">!=</span> <span class="nb">Object</span> <span class="o">&amp;&amp;</span> <span class="nx">sp</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">==</span> <span class="nx">OP</span><span class="p">.</span><span class="nx">constructor</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">sp</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">=</span> <span class="nx">s</span><span class="p">;</span>
+        <span class="p">}</span>
+    
+        <span class="c1">// add prototype overrides</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">px</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">$</span><span class="p">.</span><span class="nx">mix</span><span class="p">(</span><span class="nx">rp</span><span class="p">,</span> <span class="nx">px</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+        <span class="p">}</span>
+
+    <span class="p">};</span>
 	<span class="cm">/**</span>
 <span class="cm">	 * Augments a class with the functionality of another, without chaining prototypes</span>
 <span class="cm">	 * @method augment</span>

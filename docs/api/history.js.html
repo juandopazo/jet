@@ -282,7 +282,9 @@
 			<span class="p">},</span>
 			<span class="cm">/**</span>
 <span class="cm">			 * @config blankURL</span>
-<span class="cm">			 * @description string to override the default location of blank.html. Must end in &quot;?&quot;</span>
+<span class="cm">			 * @description URL for the blank html file we use for IE; can be overridden via the options bundle. </span>
+<span class="cm">			 * Otherwise it must be served in same directory as this library</span>
+<span class="cm">			 * @type String</span>
 <span class="cm">			 * @default &quot;blank.html?&quot;</span>
 <span class="cm">			 */</span>
 			<span class="nx">blankURL</span><span class="o">:</span> <span class="p">{</span>
@@ -316,10 +318,6 @@
 		
 		<span class="cm">/*Private: Placeholder variable for the original document title; will be set in ititialize()*/</span>
 		<span class="kd">var</span> <span class="nx">originalTitle</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">title</span><span class="p">;</span>
-		
-		<span class="cm">/*Private: URL for the blank html file we use for IE; can be overridden via the options bundle. Otherwise it must be served</span>
-<span class="cm">		in same directory as this library*/</span>
-		<span class="kd">var</span> <span class="nx">blankURL</span> <span class="o">=</span> <span class="s2">&quot;blank.html?&quot;</span><span class="p">;</span>
 		
 		<span class="cm">/*Private: Our history change listener.*/</span>
 		<span class="kd">var</span> <span class="nx">listener</span><span class="p">;</span>
@@ -501,7 +499,7 @@
 <span class="cm">			we can return*/</span>
 			<span class="nx">ieAtomicLocationChange</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
 	
-			<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">getIframeHash</span><span class="p">()</span> <span class="o">!=</span> <span class="nx">hash</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&lt;</span> <span class="mi">8</span> <span class="o">&amp;&amp;</span> <span class="nx">getIframeHash</span><span class="p">()</span> <span class="o">!=</span> <span class="nx">hash</span><span class="p">)</span> <span class="p">{</span>
 				<span class="nx">iframe</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;blankURL&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="nx">hash</span><span class="p">;</span>
 			<span class="p">}</span>
 			<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="p">{</span>
@@ -560,6 +558,17 @@
 	
 			<span class="cm">/*Notify listeners of the change*/</span>
 			<span class="nx">fireHistoryEvent</span><span class="p">(</span><span class="nx">hash</span><span class="p">);</span>
+		<span class="p">};</span>
+		
+		<span class="kd">var</span> <span class="nx">useHashEvent</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">evTarget</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">EventTarget</span><span class="p">();</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">body</span><span class="p">.</span><span class="nx">onhashchange</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">evTarget</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;hashchange&quot;</span><span class="p">,</span> <span class="nx">body</span><span class="p">.</span><span class="nx">onhashchange</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="nx">body</span><span class="p">.</span><span class="nx">onhashchange</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+				<span class="nx">evTarget</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;hashchange&quot;</span><span class="p">,</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">hash</span><span class="p">);</span>
+			<span class="p">};</span>
+			<span class="nx">evTarget</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;hashchange&quot;</span><span class="p">,</span> <span class="nx">fireHistoryEvent</span><span class="p">);</span>
 		<span class="p">};</span>
 	
 		<span class="cm">/**</span>
@@ -741,8 +750,10 @@
 		<span class="nx">currentLocation</span> <span class="o">=</span> <span class="nx">initialHash</span><span class="p">;</span>
 
 		<span class="cm">/*Now that we have a hash, create IE-specific code*/</span>
-		<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&lt;</span> <span class="mi">8</span><span class="p">)</span> <span class="p">{</span>
 			<span class="nx">createIE</span><span class="p">(</span><span class="nx">initialHash</span><span class="p">);</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&gt;=</span> <span class="mi">8</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">useHashEvent</span><span class="p">();</span>
 		<span class="p">}</span>
 
 		<span class="cm">/*Add an unload listener for the page; this is needed for FF 1.5+ because this browser caches all dynamic updates to the</span>

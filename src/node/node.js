@@ -303,7 +303,10 @@ jet().add("node", function ($) {
 		} else {
 			$.error("Wrong argument for NodeList");
 		}
-		AP.push.apply(this, nodes);
+		var i, length = nodes.length;
+		for (var i = 0; i < length; i++) {
+			this[i] = nodes[i];
+		}
 	};
 	NodeList.prototype = {
 		/**
@@ -836,17 +839,25 @@ jet().add("node", function ($) {
 			});
 		},
 		/**
-		 * Removes all the nodes from the DOM tree.
-		 * Unless keepEvents is true, it alse removes all event listeners from the nodes
+		 * Removes all the nodes from the DOM tree and removes all event listeners from the nodes
 		 * @method remove
-		 * @param {Boolean} keepEvents
 		 * @chainable
 		 */
-		remove: function (keepEvents) {
+		remove: function () {
 			return this.each(function (node) {
-				if (!keepEvents) {
-					$.walkTheDOM(node, EventCache.clear);
+				$.walkTheDOM(node, EventCache.clear);
+				if (node.parentNode) {
+					node.parentNode.removeChild(node);
 				}
+			});
+		},
+		/**
+		 * Removes all the nodes from the DOM tree. Unline remove(), it keeps all event listeners
+		 * @method detach
+		 * @chainable
+		 */
+		detach: function () {
+			return this.each(function (node) {
 				if (node.parentNode) {
 					node.parentNode.removeChild(node);
 				}
@@ -926,6 +937,14 @@ jet().add("node", function ($) {
 			return this.each(function (node) {
 				node.focus();
 			});
+		},
+		/**
+		 * @method eq
+		 * @description Returns a new NodeList with the nth element of the current list
+		 * @param {Number} nth
+		 */
+		eq: function (nth) {
+			return new NodeList(this[nth]);
 		}
 	};
 	NodeList.is = Lang.is;

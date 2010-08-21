@@ -7,7 +7,6 @@
 	<title></title>
 	<meta name="generator" content="Studio 3 http://aptana.com/">
 	<meta name="author" content="Juan Ignacio">
-	<link rel="stylesheet" type="text/css" href="../src/button/button.css">
 	<style type="text/css">
 		body {
 			margin: 0;
@@ -17,18 +16,19 @@
 	</style>
 </head>
 <body class="yui-skin-sam">
-<script type="text/javascript" src="../src/jet/jet.js"></script>
-<script type="text/javascript">
+	<div style="background: #F00; width: 100px; height: 100px">a</div>
+	<div style="background: #00F; width: 100px; height: 100px">b</div>
+	<script type="text/javascript" src="../src/jet/jet.js"></script>
+	<script type="text/javascript">
 	jet({
-		base: "../src",
-		loadCss: false
-	}).use('button', 'container', function ($) {
+		base: "../src"
+	}).use(function ($) {
 		
-		var button = new $.Button({
-			text: "Hola"
+		$("div").each(function (node) {
+			alert(node.id);
 		});
-		button.render(document.body);
+		
 	});
-</script>
+	</script>
 </body>
 </html>

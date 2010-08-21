@@ -88,6 +88,8 @@
 		<span class="nx">sizzle</span><span class="o">:</span> <span class="p">[</span><span class="nx">NODE</span><span class="p">],</span>
 		<span class="nx">base</span><span class="o">:</span> <span class="p">[</span><span class="nx">NODE</span><span class="p">],</span>
 		<span class="nx">io</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;json&quot;</span><span class="p">],</span>
+		<span class="s2">&quot;io-xdr&quot;</span><span class="o">:</span> <span class="p">[</span><span class="nx">NODE</span><span class="p">,</span> <span class="s2">&quot;swf&quot;</span><span class="p">,</span> <span class="s2">&quot;io&quot;</span><span class="p">],</span>
+		<span class="s2">&quot;io-xsl&quot;</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;io&quot;</span><span class="p">],</span>
 		<span class="s2">&quot;history&quot;</span><span class="o">:</span> <span class="p">[</span><span class="nx">BASE</span><span class="p">,</span> <span class="s2">&quot;json&quot;</span><span class="p">],</span>
 		<span class="nx">tabs</span><span class="o">:</span> <span class="p">[</span><span class="nx">BASE</span><span class="p">],</span>
 		<span class="nx">resize</span><span class="o">:</span> <span class="p">[</span><span class="nx">BASE</span><span class="p">,</span> <span class="p">{</span>
@@ -601,55 +603,6 @@
 		<span class="k">if</span> <span class="p">(</span><span class="nx">win</span><span class="p">.</span><span class="nx">JSON</span><span class="p">)</span> <span class="p">{</span>
 			<span class="nx">$</span><span class="p">.</span><span class="nx">JSON</span> <span class="o">=</span> <span class="nx">win</span><span class="p">.</span><span class="nx">JSON</span><span class="p">;</span>
 		<span class="p">}</span>
-			
-		<span class="cm">/**</span>
-<span class="cm">		 * Object function by Douglas Crockford</span>
-<span class="cm">		 * &lt;a href=&quot;https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&amp;pli=1&quot;&gt;link&lt;/a&gt;</span>
-<span class="cm">		 * @private</span>
-<span class="cm">		 * @param {Object} o</span>
-<span class="cm">		 */</span>
-		<span class="kd">var</span> <span class="nx">toObj</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">F</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{};</span>
-			<span class="nx">F</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nx">o</span><span class="p">;</span>
-			<span class="k">return</span> <span class="k">new</span> <span class="nx">F</span><span class="p">();</span>
-		<span class="p">};</span>
-		
-		<span class="cm">/**</span>
-<span class="cm">		 * From the guys at YUI (Thanks! This function is GENIUS!)</span>
-<span class="cm">	     * </span>
-<span class="cm">	     * Utility to set up the prototype, constructor and superclass properties to</span>
-<span class="cm">	     * support an inheritance strategy that can chain constructors and methods.</span>
-<span class="cm">	     * Static members will not be inherited.</span>
-<span class="cm">	     *</span>
-<span class="cm">	     * @method extend</span>
-<span class="cm">	     * @param {Function} r	the object to modify</span>
-<span class="cm">	     * @param {Function} s	the object to inherit</span>
-<span class="cm">	     * @param {Object} [px]	prototype properties to add/override</span>
-<span class="cm">	     * @param {Object} [sx]	static properties to add/override</span>
-<span class="cm">	     */</span>
-	    <span class="kd">var</span> <span class="nx">extend</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">r</span><span class="p">,</span> <span class="nx">s</span><span class="p">,</span> <span class="nx">px</span><span class="p">)</span> <span class="p">{</span>
-	        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">s</span> <span class="o">||</span> <span class="o">!</span><span class="nx">r</span><span class="p">)</span> <span class="p">{</span>
-	            <span class="c1">// @TODO error symbols</span>
-	            <span class="nx">$</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">&quot;extend failed, verify dependencies&quot;</span><span class="p">);</span>
-	        <span class="p">}</span>
-	
-	        <span class="kd">var</span> <span class="nx">sp</span> <span class="o">=</span> <span class="nx">s</span><span class="p">.</span><span class="nx">prototype</span><span class="p">,</span> <span class="nx">rp</span> <span class="o">=</span> <span class="nx">toObj</span><span class="p">(</span><span class="nx">sp</span><span class="p">);</span>
-	        <span class="nx">r</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="nx">rp</span><span class="p">;</span>
-	
-	        <span class="nx">rp</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">=</span> <span class="nx">r</span><span class="p">;</span>
-	        <span class="nx">r</span><span class="p">.</span><span class="nx">superclass</span> <span class="o">=</span> <span class="nx">sp</span><span class="p">;</span>
-	
-	        <span class="c1">// assign constructor property</span>
-	        <span class="k">if</span> <span class="p">(</span><span class="nx">s</span> <span class="o">!=</span> <span class="nb">Object</span> <span class="o">&amp;&amp;</span> <span class="nx">sp</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">==</span> <span class="nx">OP</span><span class="p">.</span><span class="nx">constructor</span><span class="p">)</span> <span class="p">{</span>
-	            <span class="nx">sp</span><span class="p">.</span><span class="nx">constructor</span> <span class="o">=</span> <span class="nx">s</span><span class="p">;</span>
-	        <span class="p">}</span>
-	    
-	        <span class="c1">// add prototype overrides</span>
-	        <span class="k">if</span> <span class="p">(</span><span class="nx">px</span><span class="p">)</span> <span class="p">{</span>
-	            <span class="nx">$</span><span class="p">.</span><span class="nx">mix</span><span class="p">(</span><span class="nx">rp</span><span class="p">,</span> <span class="nx">px</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
-	        <span class="p">}</span>
-	
-	    <span class="p">};</span>
 		
 		<span class="nx">add</span><span class="p">({</span>
 			<span class="cm">/**</span>
@@ -714,8 +667,6 @@
 <span class="cm">			 */</span>
 			<span class="nx">add</span><span class="o">:</span> <span class="nx">add</span><span class="p">,</span>
 			
-			<span class="nx">extend</span><span class="o">:</span> <span class="nx">extend</span><span class="p">,</span>
-			
 			<span class="nx">walkTheDOM</span><span class="o">:</span> <span class="nx">walkTheDOM</span><span class="p">,</span>
 			
 			<span class="nx">Lang</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">,</span>
@@ -728,7 +679,7 @@
 			
 			<span class="cm">/**</span>
 <span class="cm">			 * Loads scripts and CSS files.</span>
-<span class="cm">			 * Included with the jet() core</span>
+<span class="cm">			 * Included in the jet() core</span>
 <span class="cm">			 * @class Get</span>
 <span class="cm">			 * @static</span>
 <span class="cm">			 */</span>
@@ -979,7 +930,7 @@
 						<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">module</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">predef</span><span class="p">[</span><span class="nx">module</span><span class="p">])</span> <span class="p">{</span>
 							<span class="nx">request</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">module</span> <span class="o">=</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isHash</span><span class="p">(</span><span class="nx">predef</span><span class="p">[</span><span class="nx">module</span><span class="p">])</span> <span class="o">?</span> <span class="nx">predef</span><span class="p">[</span><span class="nx">module</span><span class="p">]</span> <span class="o">:</span> <span class="p">{</span>
 								<span class="nx">name</span><span class="o">:</span> <span class="nx">module</span><span class="p">,</span>
-								<span class="nx">path</span><span class="o">:</span> <span class="nx">module</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="nx">module</span> <span class="o">+</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">minify</span> <span class="o">?</span> <span class="s2">&quot;.min.js&quot;</span> <span class="o">:</span> <span class="s2">&quot;.js&quot;</span><span class="p">)</span>
+								<span class="nx">path</span><span class="o">:</span> <span class="nx">module</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="nx">module</span> <span class="o">+</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">minify</span> <span class="o">?</span> <span class="s2">&quot;.min.js&quot;</span> <span class="o">:</span> <span class="s2">&quot;.js&quot;</span><span class="p">)</span>
 							<span class="p">};</span>
 						<span class="p">}</span>
 						<span class="k">if</span> <span class="p">(</span><span class="nx">module</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;css&quot;</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">config</span><span class="p">.</span><span class="nx">loadCss</span><span class="p">)</span> <span class="p">{</span>

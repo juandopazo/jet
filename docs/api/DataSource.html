@@ -68,6 +68,9 @@
                                     <span rel="yui:subclass" resource="DataSource.Ajax.html">
                                     <a href="DataSource.Ajax.html" property="yui:name" title="DataSource.Ajax">DataSource.Ajax</a>
                                     </span>
+                                    <span rel="yui:subclass" resource="DataSource.XDR.html">
+                                    <a href="DataSource.XDR.html" property="yui:name" title="DataSource.XDR">DataSource.XDR</a>
+                                    </span>
                             </dd>
                        </dl>
                 
@@ -292,6 +295,20 @@
                         <div class="section field details">
                             <h3 id="configattributes">Configuration Attributes</h3>
                             <div class="content">
+                                    <div class="" rel="yui:attribute" resource="#config_initialRequest">
+                                    <h4><a name="config_initialRequest">initialRequest</a>
+                                        <code>- <span property="yui:type">Object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Data to send in the automatic initial request
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
                                     <div class="" rel="yui:attribute" resource="#config_recordSet">
                                     <h4><a name="config_recordSet">recordSet</a>
                                         <code>- <span property="yui:type">RecordSet</span></code>
@@ -312,7 +329,7 @@
                                     </h4>
                                     <div class="detail">
                                         <div class="description" property="yui:description">
-                                            The logic for the chosen source type. Should only be usef when extending the DataSource class
+                                            The logic for the chosen source type. Should only be used when extending the DataSource class
                                         </div>
                                     </div>
  
@@ -322,11 +339,48 @@
                                     </div>        
                                     <div class="" rel="yui:attribute" resource="#config_responseSchema">
                                     <h4><a name="config_responseSchema">responseSchema</a>
-                                        <code>- <span property="yui:type">object</span></code>
+                                        <code>- <span property="yui:type">Hash</span></code>
                                     </h4>
                                     <div class="detail">
                                         <div class="description" property="yui:description">
-                                            The schema by which to parse the response data
+                                            <p>The schema by which to parse the response data. May be:</p>
+<p><strong>DataSource.responseType.JSARRAY schema</strong><br/>
+A JSARRAY response type assumes the following response shape:</p>
+<code>//All records are listed as an array<br/>
+[<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;['value1', 'value2', 'value3'], //one record<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;['another1', 'another2', 'another3'] //another record<br/>
+]</code>
+<p></p>
+<p><strong>DataSource.responseType.TEXT schema</strong><br/>
+This schema essentially splits the string and then acts as if it where a DataSource.responseType.JSARRAY.<br/>
+Must define a <strong>fieldDelim</strong> property. Example (comma separated value):</p>
+<code>responseSchema: {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;fieldDelim: ","<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;fields: ["firstField", "secondField"]<br/>
+}</code>
+<p></p>
+<p><strong>DataSource.responseType.JSON schema</strong><br/>
+Example:</p>
+<code>responseSchema = {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;resultList : "Response.Results", // String pointer to result data<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;// Field order doesn't matter and not all data is required to have a field<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;fields : [<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ key: "id" },                    // simple location<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ key: "obj" }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;]<br/>
+}</code>
+<p></p>
+<p><strong>DataSource.responseType.XML schema</strong><br/>
+Example:</p> 
+<code>responseSchema: {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;resultNode: "rootNode", // every result field will be looked for between this node's children<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;fields: [<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ key: "keyName", node: "nodeName" }, // in this case, the value of the field will be the node's value<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ key: "otherKey", node: "otherNode", attr: "type" }, // in this other case, the field value will be the "type" attribute<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ key: "aNumber", node: "someNode", parser: "parseFloat" } // this value will be parsed as a Float<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;]<br/>
+}</code>
                                         </div>
                                     </div>
  
@@ -409,6 +463,7 @@
                                 <li class=""><a href="DataSource.Ajax.html" title="DataSource.Ajax">DataSource.Ajax</a></li>
                                 <li class=""><a href="DataSource.Get.html" title="DataSource.Get">DataSource.Get</a></li>
                                 <li class=""><a href="DataSource.Local.html" title="DataSource.Local">DataSource.Local</a></li>
+                                <li class=""><a href="DataSource.XDR.html" title="DataSource.XDR">DataSource.XDR</a></li>
                                 <li class=""><a href="Record.html" title="Record">Record</a></li>
                                 <li class=""><a href="RecordSet.html" title="RecordSet">RecordSet</a></li>
                         </ul>
@@ -434,6 +489,7 @@
                     <div id="configList" class="module">
                         <h4>Configuration Attributes</h4>
                         <ul class="content">        
+                                <li class=""><a href="#config_initialRequest" title="initialRequest">initialRequest</a></li>
                                 <li class=""><a href="#config_recordSet" title="recordSet">recordSet</a></li>
                                 <li class="protected"><a href="#config_requestLogic" title="requestLogic">requestLogic</a></li>
                                 <li class=""><a href="#config_responseSchema" title="responseSchema">responseSchema</a></li>
@@ -451,7 +507,7 @@
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Record.html#method_get", "access": "", "host": "Record", "type": "method", "name": "get"}, {"url": "RecordSet.html#method_getCount", "access": "", "host": "RecordSet", "type": "method", "name": "getCount"}, {"url": "Record.html#method_getData", "access": "", "host": "Record", "type": "method", "name": "getData"}, {"url": "Record.html#method_getId", "access": "", "host": "Record", "type": "method", "name": "getId"}, {"url": "RecordSet.html#method_getRecords", "access": "", "host": "RecordSet", "type": "method", "name": "getRecords"}, {"url": "DataSource.html#method_onBeforeParse", "access": "", "host": "DataSource", "type": "method", "name": "onBeforeParse"}, {"url": "RecordSet.html#method_push", "access": "", "host": "RecordSet", "type": "method", "name": "push"}, {"url": "DataSource.html#config_recordSet", "access": "", "host": "DataSource", "type": "config", "name": "recordSet"}, {"url": "RecordSet.html#method_replace", "access": "", "host": "RecordSet", "type": "method", "name": "replace"}, {"url": "DataSource.html#config_requestLogic", "access": "protected", "host": "DataSource", "type": "config", "name": "requestLogic"}, {"url": "DataSource.html#config_responseSchema", "access": "", "host": "DataSource", "type": "config", "name": "responseSchema"}, {"url": "DataSource.html#config_responseType", "access": "", "host": "DataSource", "type": "config", "name": "responseType"}, {"url": "DataSource.html#method_sendRequest", "access": "", "host": "DataSource", "type": "method", "name": "sendRequest"}, {"url": "RecordSet.html#method_sortBy", "access": "", "host": "RecordSet", "type": "method", "name": "sortBy"}];
+    var ALL_YUI_PROPS = [{"url": "Record.html#method_get", "access": "", "host": "Record", "type": "method", "name": "get"}, {"url": "RecordSet.html#method_getCount", "access": "", "host": "RecordSet", "type": "method", "name": "getCount"}, {"url": "Record.html#method_getData", "access": "", "host": "Record", "type": "method", "name": "getData"}, {"url": "Record.html#method_getId", "access": "", "host": "Record", "type": "method", "name": "getId"}, {"url": "RecordSet.html#method_getRecords", "access": "", "host": "RecordSet", "type": "method", "name": "getRecords"}, {"url": "DataSource.html#config_initialRequest", "access": "", "host": "DataSource", "type": "config", "name": "initialRequest"}, {"url": "DataSource.html#method_onBeforeParse", "access": "", "host": "DataSource", "type": "method", "name": "onBeforeParse"}, {"url": "RecordSet.html#method_push", "access": "", "host": "RecordSet", "type": "method", "name": "push"}, {"url": "DataSource.html#config_recordSet", "access": "", "host": "DataSource", "type": "config", "name": "recordSet"}, {"url": "RecordSet.html#method_replace", "access": "", "host": "RecordSet", "type": "method", "name": "replace"}, {"url": "DataSource.html#config_requestLogic", "access": "protected", "host": "DataSource", "type": "config", "name": "requestLogic"}, {"url": "DataSource.html#config_responseSchema", "access": "", "host": "DataSource", "type": "config", "name": "responseSchema"}, {"url": "DataSource.html#config_responseType", "access": "", "host": "DataSource", "type": "config", "name": "responseType"}, {"url": "DataSource.html#method_sendRequest", "access": "", "host": "DataSource", "type": "method", "name": "sendRequest"}, {"url": "RecordSet.html#method_sortBy", "access": "", "host": "RecordSet", "type": "method", "name": "sortBy"}];
 </script>
 </body>
 </html>

@@ -40,7 +40,8 @@ jet().add('datasource', function ($) {
 		AMPERSAND = "&",
 		EQUAL_SIGN = "=",
 		TIMEOUT = "timeout",
-		TEMP_DATA = "tempData";
+		TEMP_DATA = "tempData",
+		INITIAL_REQUEST = "initialRequest";
 
 	if (!jet.Record) {
 		jet.Record = {};
@@ -259,7 +260,45 @@ jet().add('datasource', function ($) {
 			},
 			/**
 			 * @config responseSchema
-			 * @description The schema by which to parse the response data
+			 * @description <p>The schema by which to parse the response data. May be:</p>
+			 * <p><strong>DataSource.responseType.JSARRAY schema</strong><br/>
+			 * A JSARRAY response type assumes the following response shape:</p>
+			 * <code>//All records are listed as an array<br/>
+			 * [<br/>
+			 * &nbsp;&nbsp;&nbsp;&nbsp;['value1', 'value2', 'value3'], //one record<br/>
+			 * &nbsp;&nbsp;&nbsp;&nbsp;['another1', 'another2', 'another3'] //another record<br/>
+			 * ]</code>
+			 * <p></p>
+			 * <p><strong>DataSource.responseType.TEXT schema</strong><br/>
+			 * This schema essentially splits the string and then acts as if it where a DataSource.responseType.JSARRAY.<br/>
+			 * Must define a <strong>fieldDelim</strong> property. Example (comma separated value):</p>
+			 * <code>responseSchema: {<br/>
+			 * &nbsp;&nbsp;&nbsp;&nbsp;fieldDelim: ","<br/>
+			 * &nbsp;&nbsp;&nbsp;&nbsp;fields: ["firstField", "secondField"]<br/>
+			 * }</code>
+			 * <p></p>
+			 * <p><strong>DataSource.responseType.JSON schema</strong><br/>
+			 * Example:</p>
+			 * <code>responseSchema = {<br/>
+			 * &nbsp;&nbsp;&nbsp;&nbsp;resultList : "Response.Results", // String pointer to result data<br/>
+			 * &nbsp;&nbsp;&nbsp;&nbsp;// Field order doesn't matter and not all data is required to have a field<br/>
+			 * &nbsp;&nbsp;&nbsp;&nbsp;fields : [<br/>
+			 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ key: "id" },                    // simple location<br/>
+			 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ key: "obj" }<br/>
+			 * &nbsp;&nbsp;&nbsp;&nbsp;]<br/>
+			 * }</code>
+			 * <p></p>
+			 * <p><strong>DataSource.responseType.XML schema</strong><br/>
+			 * Example:</p> 
+			 * <code>responseSchema: {<br/>
+			 * &nbsp;&nbsp;&nbsp;&nbsp;resultNode: "rootNode", // every result field will be looked for between this node's children<br/>
+			 * &nbsp;&nbsp;&nbsp;&nbsp;fields: [<br/>
+			 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ key: "keyName", node: "nodeName" }, // in this case, the value of the field will be the node's value<br/>
+			 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ key: "otherKey", node: "otherNode", attr: "type" }, // in this other case, the field value will be the "type" attribute<br/>
+			 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ key: "aNumber", node: "someNode", parser: "parseFloat" } // this value will be parsed as a Float<br/>
+			 * &nbsp;&nbsp;&nbsp;&nbsp;]<br/>
+			 * }</code>
+			 * @type Hash
 			 * @required
 			 */
 			responseSchema: {
@@ -267,19 +306,24 @@ jet().add('datasource', function ($) {
 			},
 			/**
 			 * @config requestLogic
-			 * @description The logic for the chosen source type. Should only be usef when extending the DataSource class
+			 * @description The logic for the chosen source type. Should only be used when extending the DataSource class
 			 * @protected
 			 * @writeOnce
 			 */
 			requestLogic: {
 				writeOnce: true
 			}
+			/**
+			 * @config initialRequest
+			 * @description Data to send in the automatic initial request
+			 * @type Object
+			 */
 		});
 		
 		var internalEvents = new $.EventTarget();
 		
 		var parser = function (rawData) {
-			var responseType = myself.get("responseType");
+			var responseType = myself.get(RESPONSE_TYPE);
 			var responseSchema = myself.get("responseSchema");
 			
 			var data = [];
@@ -479,23 +523,28 @@ jet().add('datasource', function ($) {
 		Ajax.superclass.constructor.apply(this, arguments);
 		
 		var myself = this.addAttrs({
+			/**
+			 * @config url
+			 * @description Url from which to fetch the data
+			 * @type String
+			 * @required
+			 */
 			url: {
 				required: true
 			}
 		});
 		
 		myself.set(REQUEST_LOGIC, function (request, success, failure) {
-			var type = myself.get(RESPONSE_TYPE);
 			IO.ajax({
 				url: myself.get(URL),
 				data: request,
-				dataType: type == RESPONSE_TYPE_XML ? "xml" : type == RESPONSE_TYPE_TEXT ? "text" : "json",
+				dataType: myself.get(RESPONSE_TYPE),
 				success: success,
 				error: failure
 			});
 		});
 		
-		myself.sendRequest(myself.get("initialRequest"));
+		myself.sendRequest(myself.get(INITIAL_REQUEST));
 	};
 	$.extend(Ajax, DataSource);
 	
@@ -504,20 +553,41 @@ jet().add('datasource', function ($) {
 	 * @class Get
 	 * @extends DataSource
 	 * @constructor
-	 * @param {Object} config Object literal specifying widget configuration properties
+	 * @param {Object} config Object literal specifying configuration properties
 	 */
 	var Get = function () {
 		Get.superclass.constructor.apply(this, arguments);
 		
 		var myself = this.addAttrs({
+			/**
+			 * @config jsonCallbackParam
+			 * @description Name of the URL parameter that defines the name of the JSONP callback
+			 * @type String
+			 * @default "p"
+			 */
 			jsonCallbackParam: {
 				value: "p"
 			},
+			/**
+			 * @config timeout
+			 * @description Ms after which the request is considered to have timed out
+			 * @type Number
+			 * @default 10000
+			 */
 			timeout: {
 				value: 10000
 			},
+			/**
+			 * @config url
+			 * @description Url from which to fetch the data
+			 * @type String
+			 * @required
+			 */
 			url: {
-				required: true
+				required: true,
+				setter: function (val) {
+					return val.substr(val.length - 1) == "?" ? val : val + "?";
+				}
 			}
 		});
 		
@@ -525,7 +595,7 @@ jet().add('datasource', function ($) {
 			var result = [];
 			if (Lang.isHash(request)) {
 				Hash.each(request, function (key, val) {
-					result[result.length] = key + EQUAL_SIGN + val;
+					result[result.length] = encodeURIComponent(key) + EQUAL_SIGN + encodeURIComponent(val);
 				});
 				request = result.join(AMPERSAND);
 			}
@@ -550,19 +620,30 @@ jet().add('datasource', function ($) {
 			}, myself.get(TIMEOUT));
 		});
 		
-		myself.sendRequest(myself.get("initialRequest"));
+		myself.sendRequest(myself.get(INITIAL_REQUEST));
 	};
 	$.extend(Get, DataSource);
 	
+	/**
+	 * Cross-domain data source
+	 * @class XDR
+	 * @extends DataSource
+	 * @namespace DataSource
+	 * @constructor
+	 * @param {Object} config Object literal specifying configuration properties
+	 */
 	var XDR = function () {
 		XDR.superclass.constructor.apply(this, arguments);
 		
 		var myself = this.addAttrs({
+			/**
+			 * @config url
+			 * @description Url from which to fetch the data
+			 * @type String
+			 * @required
+			 */
 			url: {
 				required: true
-			},
-			dataType: {
-				value: "text"
 			}
 		});
 		
@@ -571,13 +652,13 @@ jet().add('datasource', function ($) {
 			IO.flajax({
 				url: myself.get(URL),
 				data: request,
-				dataType: myself.get("dataType"),
+				dataType: myself.get(RESPONSE_TYPE),
 				success: success,
 				error: failure
 			});
 		});
 		
-		myself.sendRequest(myself.get("initialRequest"));
+		myself.sendRequest(myself.get(INITIAL_REQUEST));
 	};
 	$.extend(XDR, DataSource);
 	
@@ -604,7 +685,7 @@ jet().add('datasource', function ($) {
 			}
 		});
 		
-		myself.sendRequest(myself.get("initialRequest"));
+		myself.sendRequest(myself.get(INITIAL_REQUEST));
 	};
 	$.extend(Local, DataSource);
 	

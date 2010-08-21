@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>YUI Grids CSS </title>
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.1/build/reset-fonts-grids/reset-fonts-grids.css">
+	<style type="text/css">
+		body {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+<body class="yui-skin-sam">
+	<div id="doc">
+		<div id="bd"></div>
+	</div>
+<script type="text/javascript" src="../src/jet/jet.js"></script>
+<script type="text/javascript">
+	jet({
+		base: "../src"
+	}).use('button', 'datatable', function ($) {
+		
+		var body = $("#bd");
+		
+		var button = new $.Button({
+			text: "Update"
+		});
+		button.render(body);
+
+		var recentPhotosRequest = {
+			q: "select * from flickr.photos.recent",
+			format: "json",
+			diagnostics: "true",
+			numeroAlAzar: Math.ceil(Math.random() * 1000)
+		};
+		
+		var dataTable = new $.DataTable({
+			columnDefinitions: [
+				{ key: "title", label: "Title", sortable: true },
+				{ key: "owner", label: "Photographer", sortable: true },
+				{ key: "id", label: "Thumbnail", formatter: function (val, data) {
+					return '<a href="http://www.flickr.com/photos/' + data.owner + '/' + data.id + '/"><img src="http://farm' + data.farm + '.static.flickr.com/' + data.server + '/' + data.id + '_' + data.secret + '_t.jpg" /></a>';
+				}}
+			]
+		});
+		dataTable.render(body);
+		var dataSource = new $.DataSource.Get({
+			url: "http://query.yahooapis.com/v1/public/yql?",
+			jsonCallbackParam: "callback",
+			responseType: "json",
+			responseSchema: {
+				resultList: "query.results.photo",
+				fields: [
+					{ key: "title" },
+					{ key: "owner" },
+					{ key: "id" },
+					{ key: "farm" },
+					{ key: "server" },
+					{ key: "secret" }
+				]
+			},
+			initialRequest: recentPhotosRequest,
+			on: {
+				update: dataTable.onDataReturnAddRows
+			}
+		});
+		button.on("pressed", function () {
+			dataSource.sendRequest(recentPhotosRequest);
+		});
+	});
+</script>
+</body>
+</html>

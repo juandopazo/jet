@@ -89,7 +89,8 @@
 		<span class="nx">AMPERSAND</span> <span class="o">=</span> <span class="s2">&quot;&amp;&quot;</span><span class="p">,</span>
 		<span class="nx">EQUAL_SIGN</span> <span class="o">=</span> <span class="s2">&quot;=&quot;</span><span class="p">,</span>
 		<span class="nx">TIMEOUT</span> <span class="o">=</span> <span class="s2">&quot;timeout&quot;</span><span class="p">,</span>
-		<span class="nx">TEMP_DATA</span> <span class="o">=</span> <span class="s2">&quot;tempData&quot;</span><span class="p">;</span>
+		<span class="nx">TEMP_DATA</span> <span class="o">=</span> <span class="s2">&quot;tempData&quot;</span><span class="p">,</span>
+		<span class="nx">INITIAL_REQUEST</span> <span class="o">=</span> <span class="s2">&quot;initialRequest&quot;</span><span class="p">;</span>
 
 	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">Record</span><span class="p">)</span> <span class="p">{</span>
 		<span class="nx">jet</span><span class="p">.</span><span class="nx">Record</span> <span class="o">=</span> <span class="p">{};</span>
@@ -308,7 +309,45 @@
 			<span class="p">},</span>
 			<span class="cm">/**</span>
 <span class="cm">			 * @config responseSchema</span>
-<span class="cm">			 * @description The schema by which to parse the response data</span>
+<span class="cm">			 * @description &lt;p&gt;The schema by which to parse the response data. May be:&lt;/p&gt;</span>
+<span class="cm">			 * &lt;p&gt;&lt;strong&gt;DataSource.responseType.JSARRAY schema&lt;/strong&gt;&lt;br/&gt;</span>
+<span class="cm">			 * A JSARRAY response type assumes the following response shape:&lt;/p&gt;</span>
+<span class="cm">			 * &lt;code&gt;//All records are listed as an array&lt;br/&gt;</span>
+<span class="cm">			 * [&lt;br/&gt;</span>
+<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[&#39;value1&#39;, &#39;value2&#39;, &#39;value3&#39;], //one record&lt;br/&gt;</span>
+<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[&#39;another1&#39;, &#39;another2&#39;, &#39;another3&#39;] //another record&lt;br/&gt;</span>
+<span class="cm">			 * ]&lt;/code&gt;</span>
+<span class="cm">			 * &lt;p&gt;&lt;/p&gt;</span>
+<span class="cm">			 * &lt;p&gt;&lt;strong&gt;DataSource.responseType.TEXT schema&lt;/strong&gt;&lt;br/&gt;</span>
+<span class="cm">			 * This schema essentially splits the string and then acts as if it where a DataSource.responseType.JSARRAY.&lt;br/&gt;</span>
+<span class="cm">			 * Must define a &lt;strong&gt;fieldDelim&lt;/strong&gt; property. Example (comma separated value):&lt;/p&gt;</span>
+<span class="cm">			 * &lt;code&gt;responseSchema: {&lt;br/&gt;</span>
+<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;fieldDelim: &quot;,&quot;&lt;br/&gt;</span>
+<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;fields: [&quot;firstField&quot;, &quot;secondField&quot;]&lt;br/&gt;</span>
+<span class="cm">			 * }&lt;/code&gt;</span>
+<span class="cm">			 * &lt;p&gt;&lt;/p&gt;</span>
+<span class="cm">			 * &lt;p&gt;&lt;strong&gt;DataSource.responseType.JSON schema&lt;/strong&gt;&lt;br/&gt;</span>
+<span class="cm">			 * Example:&lt;/p&gt;</span>
+<span class="cm">			 * &lt;code&gt;responseSchema = {&lt;br/&gt;</span>
+<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;resultList : &quot;Response.Results&quot;, // String pointer to result data&lt;br/&gt;</span>
+<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;// Field order doesn&#39;t matter and not all data is required to have a field&lt;br/&gt;</span>
+<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;fields : [&lt;br/&gt;</span>
+<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;{ key: &quot;id&quot; },                    // simple location&lt;br/&gt;</span>
+<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;{ key: &quot;obj&quot; }&lt;br/&gt;</span>
+<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;]&lt;br/&gt;</span>
+<span class="cm">			 * }&lt;/code&gt;</span>
+<span class="cm">			 * &lt;p&gt;&lt;/p&gt;</span>
+<span class="cm">			 * &lt;p&gt;&lt;strong&gt;DataSource.responseType.XML schema&lt;/strong&gt;&lt;br/&gt;</span>
+<span class="cm">			 * Example:&lt;/p&gt; </span>
+<span class="cm">			 * &lt;code&gt;responseSchema: {&lt;br/&gt;</span>
+<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;resultNode: &quot;rootNode&quot;, // every result field will be looked for between this node&#39;s children&lt;br/&gt;</span>
+<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;fields: [&lt;br/&gt;</span>
+<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;{ key: &quot;keyName&quot;, node: &quot;nodeName&quot; }, // in this case, the value of the field will be the node&#39;s value&lt;br/&gt;</span>
+<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;{ key: &quot;otherKey&quot;, node: &quot;otherNode&quot;, attr: &quot;type&quot; }, // in this other case, the field value will be the &quot;type&quot; attribute&lt;br/&gt;</span>
+<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;{ key: &quot;aNumber&quot;, node: &quot;someNode&quot;, parser: &quot;parseFloat&quot; } // this value will be parsed as a Float&lt;br/&gt;</span>
+<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;]&lt;br/&gt;</span>
+<span class="cm">			 * }&lt;/code&gt;</span>
+<span class="cm">			 * @type Hash</span>
 <span class="cm">			 * @required</span>
 <span class="cm">			 */</span>
 			<span class="nx">responseSchema</span><span class="o">:</span> <span class="p">{</span>
@@ -316,19 +355,24 @@
 			<span class="p">},</span>
 			<span class="cm">/**</span>
 <span class="cm">			 * @config requestLogic</span>
-<span class="cm">			 * @description The logic for the chosen source type. Should only be usef when extending the DataSource class</span>
+<span class="cm">			 * @description The logic for the chosen source type. Should only be used when extending the DataSource class</span>
 <span class="cm">			 * @protected</span>
 <span class="cm">			 * @writeOnce</span>
 <span class="cm">			 */</span>
 			<span class="nx">requestLogic</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span>
 			<span class="p">}</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config initialRequest</span>
+<span class="cm">			 * @description Data to send in the automatic initial request</span>
+<span class="cm">			 * @type Object</span>
+<span class="cm">			 */</span>
 		<span class="p">});</span>
 		
 		<span class="kd">var</span> <span class="nx">internalEvents</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">EventTarget</span><span class="p">();</span>
 		
 		<span class="kd">var</span> <span class="nx">parser</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">rawData</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">responseType</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;responseType&quot;</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">responseType</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">RESPONSE_TYPE</span><span class="p">);</span>
 			<span class="kd">var</span> <span class="nx">responseSchema</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;responseSchema&quot;</span><span class="p">);</span>
 			
 			<span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">[];</span>
@@ -528,23 +572,28 @@
 		<span class="nx">Ajax</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
 		
 		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config url</span>
+<span class="cm">			 * @description Url from which to fetch the data</span>
+<span class="cm">			 * @type String</span>
+<span class="cm">			 * @required</span>
+<span class="cm">			 */</span>
 			<span class="nx">url</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
 			<span class="p">}</span>
 		<span class="p">});</span>
 		
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">REQUEST_LOGIC</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">success</span><span class="p">,</span> <span class="nx">failure</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">type</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">RESPONSE_TYPE</span><span class="p">);</span>
 			<span class="nx">IO</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
 				<span class="nx">url</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">URL</span><span class="p">),</span>
 				<span class="nx">data</span><span class="o">:</span> <span class="nx">request</span><span class="p">,</span>
-				<span class="nx">dataType</span><span class="o">:</span> <span class="nx">type</span> <span class="o">==</span> <span class="nx">RESPONSE_TYPE_XML</span> <span class="o">?</span> <span class="s2">&quot;xml&quot;</span> <span class="o">:</span> <span class="nx">type</span> <span class="o">==</span> <span class="nx">RESPONSE_TYPE_TEXT</span> <span class="o">?</span> <span class="s2">&quot;text&quot;</span> <span class="o">:</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+				<span class="nx">dataType</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">RESPONSE_TYPE</span><span class="p">),</span>
 				<span class="nx">success</span><span class="o">:</span> <span class="nx">success</span><span class="p">,</span>
 				<span class="nx">error</span><span class="o">:</span> <span class="nx">failure</span>
 			<span class="p">});</span>
 		<span class="p">});</span>
 		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;initialRequest&quot;</span><span class="p">));</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">INITIAL_REQUEST</span><span class="p">));</span>
 	<span class="p">};</span>
 	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Ajax</span><span class="p">,</span> <span class="nx">DataSource</span><span class="p">);</span>
 	
@@ -553,20 +602,41 @@
 <span class="cm">	 * @class Get</span>
 <span class="cm">	 * @extends DataSource</span>
 <span class="cm">	 * @constructor</span>
-<span class="cm">	 * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm">	 * @param {Object} config Object literal specifying configuration properties</span>
 <span class="cm">	 */</span>
 	<span class="kd">var</span> <span class="nx">Get</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 		<span class="nx">Get</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
 		
 		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config jsonCallbackParam</span>
+<span class="cm">			 * @description Name of the URL parameter that defines the name of the JSONP callback</span>
+<span class="cm">			 * @type String</span>
+<span class="cm">			 * @default &quot;p&quot;</span>
+<span class="cm">			 */</span>
 			<span class="nx">jsonCallbackParam</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;p&quot;</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config timeout</span>
+<span class="cm">			 * @description Ms after which the request is considered to have timed out</span>
+<span class="cm">			 * @type Number</span>
+<span class="cm">			 * @default 10000</span>
+<span class="cm">			 */</span>
 			<span class="nx">timeout</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="mi">10000</span>
 			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config url</span>
+<span class="cm">			 * @description Url from which to fetch the data</span>
+<span class="cm">			 * @type String</span>
+<span class="cm">			 * @required</span>
+<span class="cm">			 */</span>
 			<span class="nx">url</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
+				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">return</span> <span class="nx">val</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span> <span class="o">?</span> <span class="nx">val</span> <span class="o">:</span> <span class="nx">val</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span><span class="p">;</span>
+				<span class="p">}</span>
 			<span class="p">}</span>
 		<span class="p">});</span>
 		
@@ -574,7 +644,7 @@
 			<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">[];</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isHash</span><span class="p">(</span><span class="nx">request</span><span class="p">))</span> <span class="p">{</span>
 				<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">result</span><span class="p">[</span><span class="nx">result</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">key</span> <span class="o">+</span> <span class="nx">EQUAL_SIGN</span> <span class="o">+</span> <span class="nx">val</span><span class="p">;</span>
+					<span class="nx">result</span><span class="p">[</span><span class="nx">result</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="o">+</span> <span class="nx">EQUAL_SIGN</span> <span class="o">+</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">val</span><span class="p">);</span>
 				<span class="p">});</span>
 				<span class="nx">request</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">AMPERSAND</span><span class="p">);</span>
 			<span class="p">}</span>
@@ -599,19 +669,30 @@
 			<span class="p">},</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">TIMEOUT</span><span class="p">));</span>
 		<span class="p">});</span>
 		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;initialRequest&quot;</span><span class="p">));</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">INITIAL_REQUEST</span><span class="p">));</span>
 	<span class="p">};</span>
 	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Get</span><span class="p">,</span> <span class="nx">DataSource</span><span class="p">);</span>
 	
+	<span class="cm">/**</span>
+<span class="cm">	 * Cross-domain data source</span>
+<span class="cm">	 * @class XDR</span>
+<span class="cm">	 * @extends DataSource</span>
+<span class="cm">	 * @namespace DataSource</span>
+<span class="cm">	 * @constructor</span>
+<span class="cm">	 * @param {Object} config Object literal specifying configuration properties</span>
+<span class="cm">	 */</span>
 	<span class="kd">var</span> <span class="nx">XDR</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 		<span class="nx">XDR</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
 		
 		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config url</span>
+<span class="cm">			 * @description Url from which to fetch the data</span>
+<span class="cm">			 * @type String</span>
+<span class="cm">			 * @required</span>
+<span class="cm">			 */</span>
 			<span class="nx">url</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
-			<span class="p">},</span>
-			<span class="nx">dataType</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span>
 			<span class="p">}</span>
 		<span class="p">});</span>
 		
@@ -620,13 +701,13 @@
 			<span class="nx">IO</span><span class="p">.</span><span class="nx">flajax</span><span class="p">({</span>
 				<span class="nx">url</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">URL</span><span class="p">),</span>
 				<span class="nx">data</span><span class="o">:</span> <span class="nx">request</span><span class="p">,</span>
-				<span class="nx">dataType</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;dataType&quot;</span><span class="p">),</span>
+				<span class="nx">dataType</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">RESPONSE_TYPE</span><span class="p">),</span>
 				<span class="nx">success</span><span class="o">:</span> <span class="nx">success</span><span class="p">,</span>
 				<span class="nx">error</span><span class="o">:</span> <span class="nx">failure</span>
 			<span class="p">});</span>
 		<span class="p">});</span>
 		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;initialRequest&quot;</span><span class="p">));</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">INITIAL_REQUEST</span><span class="p">));</span>
 	<span class="p">};</span>
 	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">XDR</span><span class="p">,</span> <span class="nx">DataSource</span><span class="p">);</span>
 	
@@ -653,7 +734,7 @@
 			<span class="p">}</span>
 		<span class="p">});</span>
 		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;initialRequest&quot;</span><span class="p">));</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">INITIAL_REQUEST</span><span class="p">));</span>
 	<span class="p">};</span>
 	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Local</span><span class="p">,</span> <span class="nx">DataSource</span><span class="p">);</span>
 	
