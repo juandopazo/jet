@@ -39,6 +39,8 @@
 		sizzle: [NODE],
 		base: [NODE],
 		io: ["json"],
+		"io-xdr": [NODE, "swf", "io"],
+		"io-xsl": ["io"],
 		"history": [BASE, "json"],
 		tabs: [BASE],
 		resize: [BASE, {
@@ -552,55 +554,6 @@
 		if (win.JSON) {
 			$.JSON = win.JSON;
 		}
-			
-		/**
-		 * Object function by Douglas Crockford
-		 * <a href="https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1">link</a>
-		 * @private
-		 * @param {Object} o
-		 */
-		var toObj = function (o) {
-			var F = function () {};
-			F.prototype = o;
-			return new F();
-		};
-		
-		/**
-		 * From the guys at YUI (Thanks! This function is GENIUS!)
-	     * 
-	     * Utility to set up the prototype, constructor and superclass properties to
-	     * support an inheritance strategy that can chain constructors and methods.
-	     * Static members will not be inherited.
-	     *
-	     * @method extend
-	     * @param {Function} r	the object to modify
-	     * @param {Function} s	the object to inherit
-	     * @param {Object} [px]	prototype properties to add/override
-	     * @param {Object} [sx]	static properties to add/override
-	     */
-	    var extend = function (r, s, px) {
-	        if (!s || !r) {
-	            // @TODO error symbols
-	            $.error("extend failed, verify dependencies");
-	        }
-	
-	        var sp = s.prototype, rp = toObj(sp);
-	        r.prototype = rp;
-	
-	        rp.constructor = r;
-	        r.superclass = sp;
-	
-	        // assign constructor property
-	        if (s != Object && sp.constructor == OP.constructor) {
-	            sp.constructor = s;
-	        }
-	    
-	        // add prototype overrides
-	        if (px) {
-	            $.mix(rp, px, true);
-	        }
-	
-	    };
 		
 		add({
 			/**
@@ -665,8 +618,6 @@
 			 */
 			add: add,
 			
-			extend: extend,
-			
 			walkTheDOM: walkTheDOM,
 			
 			Lang: Lang,
@@ -679,7 +630,7 @@
 			
 			/**
 			 * Loads scripts and CSS files.
-			 * Included with the jet() core
+			 * Included in the jet() core
 			 * @class Get
 			 * @static
 			 */
@@ -1438,6 +1389,26 @@ jet().add("node", function ($) {
 				height: de.clientHeight || $.win.innerHeight || db.clientHeight,
 				width: de.clientWidth || $.win.innerWidth || db.clientWidth
 			};
+		},
+		/**
+		 * Returns the complete size of the page
+		 * @method pageSize
+		 */
+		pageSize: function () {
+			var win = $.win,
+				doc = $.context,
+				compatMode = doc.compatMode != "CSS1Compat",
+				innerWidth = win.innerWidth,
+				innerHeight = win.innerHeight,
+				root = compatMode ? doc.body : doc.documentElement;
+			if (doc.compatMode && !$.UA.opera) {
+				innerWidth = root.clientWidth;
+				innerHeight = root.clientHeight;
+			}
+			return {
+				width: Math.max(root.scrollWidth, innerWidth),
+				height: Math.max(root.scrollHeight, innerHeight)
+			};
 		}
 	};
 	 
@@ -1489,7 +1460,10 @@ jet().add("node", function ($) {
 		} else {
 			$.error("Wrong argument for NodeList");
 		}
-		AP.push.apply(this, nodes);
+		var i, length = nodes.length;
+		for (var i = 0; i < length; i++) {
+			this[i] = nodes[i];
+		}
 	};
 	NodeList.prototype = {
 		/**
@@ -1780,10 +1754,10 @@ jet().add("node", function ($) {
 		 * @param {DOMNode|NodeList} before
 		 * @chainable
 		 */
-		insertBefore: function (before) {
-			before = $(before)[0];
+		insertBefore: function (target) {
+			target = $(target)[0];
 			return this.each(function (node) {
-				before.parentNode.insertBefore(node, before);
+				target.parentNode.insertBefore(node, target);
 			});
 		},
 		/**
@@ -2022,17 +1996,25 @@ jet().add("node", function ($) {
 			});
 		},
 		/**
-		 * Removes all the nodes from the DOM tree.
-		 * Unless keepEvents is true, it alse removes all event listeners from the nodes
+		 * Removes all the nodes from the DOM tree and removes all event listeners from the nodes
 		 * @method remove
-		 * @param {Boolean} keepEvents
 		 * @chainable
 		 */
-		remove: function (keepEvents) {
+		remove: function () {
 			return this.each(function (node) {
-				if (!keepEvents) {
-					$.walkTheDOM(node, EventCache.clear);
+				$.walkTheDOM(node, EventCache.clear);
+				if (node.parentNode) {
+					node.parentNode.removeChild(node);
 				}
+			});
+		},
+		/**
+		 * Removes all the nodes from the DOM tree. Unline remove(), it keeps all event listeners
+		 * @method detach
+		 * @chainable
+		 */
+		detach: function () {
+			return this.each(function (node) {
 				if (node.parentNode) {
 					node.parentNode.removeChild(node);
 				}
@@ -2112,6 +2094,14 @@ jet().add("node", function ($) {
 			return this.each(function (node) {
 				node.focus();
 			});
+		},
+		/**
+		 * @method eq
+		 * @description Returns a new NodeList with the nth element of the current list
+		 * @param {Number} nth
+		 */
+		eq: function (nth) {
+			return new NodeList(this[nth]);
 		}
 	};
 	NodeList.is = Lang.is;

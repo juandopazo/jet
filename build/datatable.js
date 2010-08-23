@@ -55,9 +55,20 @@ jet().add('datatable', function ($) {
 		DataTable.superclass.constructor.apply(this, arguments);
 		
 		var myself = this.addAttrs({
-			dataSource: {
-				required: true
+			/**
+			 * @config recordSet
+			 * @description The data table's associated recordSet
+			 * @type RecordSet
+			 */
+			recordSet: {
+				value: new $.RecordSet()
 			},
+			/**
+			 * @config columnDefinitions
+			 * @description An array mapping record keys to columns
+			 * @required
+			 * @type Array
+			 */
 			columnDefinitions: {
 				required: true,
 				validator: Lang.isArray
@@ -71,7 +82,7 @@ jet().add('datatable', function ($) {
 		var id = jet.DataTable.ids++;
 		
 		var fields;
-		var recordSet = myself.get("dataSource").get("recordSet");
+		var recordSet = myself.get("recordSet");
 		
 		var prefix = myself.get("classPrefix");
 		var className = myself.get("className");
@@ -80,7 +91,7 @@ jet().add('datatable', function ($) {
 		var thIdPrefix = prefixClass + id + "th-";
 		
 		var table = $("<table/>").attr(ID, prefixClass + id);
-		var thead = $("<thead/>").appendTo(table);
+		var thead = $("<thead/>").appendTo(table).append($("<tr/>"));
 		var tbody = $("<tbody/>").addClass(prefixClass + DATA).appendTo(table);
 		
 		var sortedBy;
@@ -139,7 +150,7 @@ jet().add('datatable', function ($) {
 					sort(th);
 				});
 			}
-			thead.append(th);
+			thead.first().append(th);
 		});
 		
 		var addRow = function (row) {
@@ -154,13 +165,14 @@ jet().add('datatable', function ($) {
 			});
 			tr.addClass(tbody.children().length % 2 === 0 ? (prefixClass + EVEN) : (prefixClass + ODD)).appendTo(tbody);
 		};
+		this.set("tbody", tbody).set("thead", thead);
 		/**
 		 * Adds a row
 		 * @method addRow
 		 * @param {Record|HTMLRowElement|Array} row
 		 * @chainable
 		 */
-		myself.addRow = function (row) {
+		this.addRow = function (row) {
 			addRow(row);
 			if (sortedBy) {
 				sort($(NUMERAL + thIdPrefix + sortedBy));
@@ -174,7 +186,7 @@ jet().add('datatable', function ($) {
 		 * @param {Array} rows
 		 * @chainable
 		 */
-		myself.addRows = function (rows) {
+		this.addRows = function (rows) {
 			if (Lang.isArray(rows)) {
 				A.each(rows, function (row) {
 					if (!Lang.isRecord(row)) {
@@ -207,7 +219,7 @@ jet().add('datatable', function ($) {
 		 * @method getFirstTr
 		 * @return NodeList
 		 */
-		myself.getFirstTr = function () {
+		this.getFirstTr = function () {
 			return tbody.children().eq(0);
 		};
 		
@@ -217,7 +229,7 @@ jet().add('datatable', function ($) {
 		 * @param {Record | HTMLTrElement | NodeList | Number} tr
 		 * @return NodeList
 		 */
-		myself.getNextTr = function (tr) {
+		this.getNextTr = function (tr) {
 			if (Lang.isRecord(tr)) {
 				tr = tr.getId();
 			}
@@ -233,7 +245,7 @@ jet().add('datatable', function ($) {
 		 * @param {Record | HTMLTrElement | NodeList | Number} row
 		 * @return NodeList
 		 */
-		myself.getFirstTd = function (row) {
+		this.getFirstTd = function (row) {
 			if (Lang.isRecord(row)) {
 				row = row.getId();
 			}
@@ -249,7 +261,7 @@ jet().add('datatable', function ($) {
 		 * @param {Record | HTMLTrElement | NodeList | Number} td
 		 * @return NodeList
 		 */
-		myself.getNextTd = function (td) {
+		this.getNextTd = function (td) {
 			if (Lang.isRecord(td)) {
 				td = td.getId();
 			}
@@ -305,7 +317,7 @@ jet().add('datatable', function ($) {
 		 * @param {EventFacade} e
 		 * @param {RecordSet} recordSet
 		 */
-		myself.onDataReturnReplaceRows = function (e, newRecordSet) {
+		this.onDataReturnReplaceRows = function (e, newRecordSet) {
 			tbody.children().remove();
 			myself.addRows(newRecordSet);
 			recordSet.replace(newRecordSet);
@@ -317,20 +329,36 @@ jet().add('datatable', function ($) {
 		 * @param {EventFacade} e
 		 * @param {RecordSet} newRecordSet
 		 */
-		myself.onDataReturnAddRows = function (e, newRecordSet) {
+		this.onDataReturnAddRows = function (e, newRecordSet) {
 			myself.addRows(newRecordSet);
 			recordSet.push(newRecordSet);
 		};
 		
 		//rende lifecycle
-		myself.on("render", function () {
+		this.on("render", function () {
 			myself.onDataReturnAddRows(null, recordSet);
 			myself.get("boundingBox").addClass(prefix + className).append(table);
 		});
 	};
 	$.extend(DataTable, $.Widget);
 	
+	var ScrollableDataTable = function () {
+		ScrollableDataTable.superclass.constructor.apply(this, arguments);
+		
+		var myself = this.on("afterRender", function () {
+			var boundingBox = myself.get("boundingBox");
+			var table = $("<table/>");
+			var tbody = myself.get("tbody");
+			var thead = myself.get("thead");
+			console.log(thead.parent()[0].offsetWidth)
+			var container = $("<div/>").appendTo(boundingBox).css("overflowY", "auto").height(300).width(thead.width());;
+			table.append(tbody.detach()).appendTo(container);
+		});
+	};
+	$.extend(ScrollableDataTable, DataTable);
+	
 	$.add({
-		DataTable: DataTable
+		DataTable: DataTable,
+		ScrollableDataTable: ScrollableDataTable
 	});
 });

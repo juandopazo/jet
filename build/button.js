@@ -494,6 +494,10 @@ jet().add('button', function ($) {
 				value: false,
 				getter: function () {
 					return myself.get(BUTTON_NODE)[0].checked;
+				},
+				setter: function (val) {
+					myself.get(BUTTON_NODE)[0].checked = val;
+					return val;
 				}
 			}
 		});
