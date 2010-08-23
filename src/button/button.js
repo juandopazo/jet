@@ -266,7 +266,7 @@ jet().add('button', function ($) {
 				},
 				setter: function (val) {
 					var combo = myself.get(BUTTON_NODE)[0];
-					if (myself.fire("change", combo.options[val])) {
+					if (val >= 0 && myself.fire("change", combo.options[val])) {
 						combo.selectedIndex = val;
 					}
 					return val;
