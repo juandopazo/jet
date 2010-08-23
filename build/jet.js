@@ -1831,9 +1831,13 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		last: function () {
+			// @TODO: find another solution that doesn't involve iterations
 			var result = [];
 			this.each(function (node) {
-				node = SLICE.call($(node).children()).pop();
+				var children = $(node).children(), i = -1;
+				while (children[++i]) {
+					node = children[i];
+				}
 				if (node) {
 					result.push(node);
 				}
