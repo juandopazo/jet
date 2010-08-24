@@ -134,8 +134,7 @@ jet().add("node", function ($) {
 			};
 		} else if (obj.attachEvent) {
 			addEvent = function (obj, type, callback) {
-				obj.attachEvent(ON + type, function () {
-					var ev = window.event;
+				obj.attachEvent(ON + type, function (ev) {
 					ev.target = ev.srcElement;
 					ev.preventDefault = function () {
 						ev.returnValue = false;
