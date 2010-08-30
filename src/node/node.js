@@ -942,6 +942,14 @@ jet().add("node", function ($) {
 			});
 		},
 		/**
+		 * Sets or returns the value of the node. Useful mostly for form elements
+		 * @param {String} value - optional
+		 * @chainable
+		 */
+		value: function (val) {
+			return this.attr("value", val);
+		},
+		/**
 		 * @method eq
 		 * @description Returns a new NodeList with the nth element of the current list
 		 * @param {Number} nth

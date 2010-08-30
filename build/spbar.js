@@ -21,8 +21,9 @@ jet().add('spbar', function ($) {
 		config = config || {};
 		config.width = config.width || 200;
 		config.height = config.height || 20;
+		config.complete = config.complete || function () {};
 		
-		var boundingBox = $("<div/>");
+		var boundingBox = $("<div/>").addClass("jet-spbar");
 		var container = $(NEW_SPAN).addClass(CLASS_PREFIX + "container").height(config.height).width(config.width).appendTo(boundingBox);
 		var bar = $(NEW_SPAN).addClass(CLASS_PREFIX + "bar").height(config.height).appendTo(container);
 		var text;
@@ -41,6 +42,9 @@ jet().add('spbar', function ($) {
 			if (text) {
 				text.html(progress);
 			}
+			if (progress == "100%") {
+				config.complete();
+			}
 		};
 		/**
 		 * @method render
@@ -50,6 +54,14 @@ jet().add('spbar', function ($) {
 		this.render = function (target) {
 			boundingBox.appendTo(target);
 		};
+		
+		/**
+		 * @method destroy
+		 * @description Removes the progress bar
+		 */
+		this.destroy = function () {
+			boundingBox.remove();
+		}
 	};
 	
 });
