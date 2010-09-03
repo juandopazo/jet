@@ -492,7 +492,7 @@ jet().add('base', function ($) {
 			if (myself.fire("hide")) {
 				myself.get(BOUNDING_BOX).css(VISIBILITY, "hidden");
 			}
-			return myself;
+			return myself.fire("afterHide");
 		},
 		/**
 		 * Shows the widget
@@ -504,7 +504,7 @@ jet().add('base', function ($) {
 			if (myself.fire("show")) {
 				myself.get(BOUNDING_BOX).css(VISIBILITY, "visible");
 			}
-			return myself;
+			return myself.fire("afterShow");
 		},
 		/**
 		 * Starts the rendering process. The rendering process is based on custom events.

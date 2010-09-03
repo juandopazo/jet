@@ -306,6 +306,7 @@ jet().add("node", function ($) {
 		for (var i = 0; i < length; i++) {
 			this[i] = nodes[i];
 		}
+		this.length = length;
 	};
 	NodeList.prototype = {
 		/**
@@ -324,8 +325,8 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		each: function (fn) {
-			var i = -1, myself = this;
-			while (myself[++i]) {
+			var i, myself = this, length = myself.length;
+			for (i = 0; i < length; i++) {
 				fn.call(myself[i], myself[i], i);
 			}
 			return myself;

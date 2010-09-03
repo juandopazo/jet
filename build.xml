@@ -22,6 +22,7 @@
 			<fileset dir="${src}" includes="*/*.js" />
 			<fileset dir="${src}" includes="*/*.css" />
 		</copy>
+		<!-- @TODO: remove error messages with a regexp $.error()--> 
 		<!--<replace file="${build}/jet.js">
 			<replacefilter>
 				<replacetoken><![CDATA[//jet-js.googlecode.com/svn/trunk/src/]]></replacetoken>

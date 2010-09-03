@@ -12,7 +12,8 @@ jet().add('vector', function ($) {
 	
 	var Lang = $.Lang,
 		Hash = $.Hash,
-		A = $.Array;
+		A = $.Array,
+		SLICE = Array.prototype.slice;
 		
 	var BOUNDING_BOX = "boundingBox",
 		NODE = "node",
@@ -131,10 +132,10 @@ jet().add('vector', function ($) {
 	// Vector class attribute definitions
 	var Vector_ATTRS = {};
 	
-	// This attributes should map to styles in VML instead of DOM attributes
+	// These attributes should map to styles in VML instead of DOM attributes
 	var VML_STYLE_ATTRIBUTES = ['width', 'height', 'left', 'top'];
 	
-	// This attributes should always map to DOM attributes in both SVG and VML
+	// These attributes should always map to DOM attributes in both SVG and VML
 	var ATTR_ATTRIBUTES = ['x', 'y', 'rx', 'ry', 'xmlns', 'version', 'fill', 'opacity'].concat(VML_STYLE_ATTRIBUTES);
 	
 	// Each key in this object is a SVG attribute and its value is its VML equivalent
@@ -150,19 +151,19 @@ jet().add('vector', function ($) {
 	if (UA_SUPPORTS_SVG) {
 		// In SVG everything works as an attribute modifiable with get/setAttribute()
 		ATTR_ATTRIBUTES = ATTR_ATTRIBUTES.concat(VML_STYLE_ATTRIBUTES);
-
 	}
+	
 	/*
 	 * Create a default getter function
 	 * @param {String} attrName
 	 */
 	var getDefaultGetter = function (attrName) {
-		return UA_SUPPORTS_SVG ?  function () {
-			return parseDec(this.node.getAttribute(attrName));
+		return UA_SUPPORTS_SVG ? function () {
+			return parseDec(this.get(NODE).getAttribute(attrName));
 		} : A.inArray(attrName, VML_STYLE_ATTRIBUTES) ? function () {
-			return parseDec(this.node.style[attrName]);
+			return parseDec(this.get(NODE).style[attrName]);
 		} : function () {
-			return parseDec(this.node[attrName]);
+			return parseDec(this.get(NODE)[attrName]);
 		};
 	};
 	/*
@@ -171,13 +172,13 @@ jet().add('vector', function ($) {
 	 */
 	var getDefaultSetter = function (attrName) {
 		return UA_SUPPORTS_SVG ? function (value) {
-			this.node.setAttribute(attrName, value);
+			this.get(NODE).setAttribute(attrName, value);
 			return value;
 		} : A.inArray(attrName, VML_STYLE_ATTRIBUTES) ? function (value) {
-			this.node.style[attrName] = value;
+			this.get(NODE).style[attrName] = value;
 			return value;
 		} : function (value) {
-			this.node[attrName] = value;
+			this.get(NODE)[attrName] = value;
 			return value;
 		};
 	};
@@ -191,6 +192,7 @@ jet().add('vector', function ($) {
 	});
 	
 	
+	// Each key in this object is a SVG attribute and its value is its VML equivalent
 	var STROKE_ATTR_MAPPING = {
 		stroke: "color",
 		"stroke-width": "weight",
@@ -203,7 +205,7 @@ jet().add('vector', function ($) {
 	var strokeAttributesGetter = function (name) {
 		if (UA_SUPPORTS_SVG) {
 			return function (value) {
-				this.node.getAttribute(name);
+				this.get(NODE).getAttribute(name);
 			};
 		} else {
 			return function (value) {
@@ -214,7 +216,7 @@ jet().add('vector', function ($) {
 	var strokeAttributesSetter = function (name) {
 		if (UA_SUPPORTS_SVG) {
 			return function (value) {
-				this.node.setAttribute(name, value);
+				this.get(NODE).setAttribute(name, value);
 				return value;
 			};
 		} else {
@@ -352,18 +354,176 @@ jet().add('vector', function ($) {
 		},
 		scale: function () {
 			
-		}
-	});
-	/*
-	 * Copy methods from NodeList
-	 * After all, SVG and VML elements are DOM nodes and we don't want them to have custom events,
-	 * but we don't need every method from Node either
-	 */
-	A.each(['append', 'appendTo', 'remove', 'css', 'hide', 'show', 'children'], function (method) {
-		Vector.prototype[method] = function () {
-			var result = NP[method].apply($(this.get(NODE)), arguments);
-			return $.NodeList.is(result) ? this : result;
-		};
+		},
+		/**
+		 * @method append
+		 * @description Append the passed vector to this vector
+		 * @param {Vector} vector
+		 * @chainable
+		 */
+		append: function (vector) {
+			this.get(NODE).appendChild(vector.get(NODE));
+			return this;
+		},
+		/**
+		 * @method appendTo
+		 * @description Append this vector's node to the target node
+		 * @param {NodeList | Vector | DOMNode} target
+		 * @chainable
+		 */
+		appendTo: function (target) {
+			target = target instanceof $.NodeList ? target[0] : target instanceof Vector ? target.get(NODE) : target;
+			target.appendChild(this.get(NODE));
+			return this;
+		},
+		/**
+		 * @method remove
+		 * @description Detach this vector from the DOM and remove all event listeners
+		 * @chainable
+		 */
+		remove: function () {
+			var node = this.get(NODE);
+			if (node.parentNode) {
+				node.parentNode.removeChild(node);
+			}
+			$(node).unbindAll();
+			return this;
+		},
+		/**
+		 * @method detach
+		 * @description Detach this vector from the DOM but keep all event listeners
+		 */
+		detach: function () {
+			var node = this.get(NODE);
+			if (node.parentNode) {
+				node.parentNode.removeChild(node);
+			}
+			return this;
+		},
+		/**
+		 * Gets or sets CSS styles
+		 * @method css
+		 * @param {String|Hash} key
+		 * @param {String} [value]
+		 * @chainable
+		 */
+		css: function (key, value) {
+			var node = this.get(NODE);
+			var css = {};
+			if (Lang.isHash(key)) {
+				css = key;
+			} else if (Lang.isValue(value)) {
+				css[key] = value;
+			} else {
+				return $(node).currentStyle()[key];
+			}
+			Hash.each(css, function (name, val) {
+				node.style[name] = val;
+			});
+			return this;
+		},
+		/**
+		 * Hides all nodes
+		 * @method hide
+		 * @chainable
+		 */
+		hide: function () {
+			var node = this.get(NODE);
+			var display = node.style.display;
+			if (!node.JET_oDisplay && display != "none") {
+				node.JET_oDisplay = display;
+			}
+			node.style.display = "none";
+			return this;
+		},
+		/**
+		 * Shows all nodes
+		 * @method show
+		 * @chainable
+		 */
+		show: function () {
+			var node = this.get(NODE);
+			node.style.display = node.JET_oDisplay || "";
+			return this;
+		},
+		/**
+		 * Returns true if the first node in the collection has the className CSS class
+		 * @method hasClass
+		 * @param {String} className
+		 * @return Boolean
+		 */
+		hasClass: function (className) {
+			var node = this.get(NODE);
+			var className = UA_SUPPORTS_SVG ? node.getAttribute("class") : node.className;
+			return A.inArray(className, className ? className.split(" ") : []);
+		},
+		/**
+		 * Removes a number of classes from all nodes in the collection.
+		 * Takes multiple string parameters
+		 * @method removeClass
+		 * @chainable
+		 */
+		removeClass: function () {
+			var args = SLICE.call(arguments);
+			var node = this.get(NODE);
+			var className = UA_SUPPORTS_SVG ? node.getAttribute("class") : node.className;
+			var classes = className ? className.split(" ") : [];
+			A.each(args, function (sClass) {
+				A.remove(sClass, classes);
+			});
+			if (UA_SUPPORTS_SVG) {
+				node.setAttribute("class", classes.join(" "));
+			} else {
+				node.className = classes.join(" ");
+			}
+			return this;
+		},
+		/**
+		 * Adds a number of classes to all nodes in the collection
+		 * Takes multiple string parameters
+		 * @method addClass
+		 * @chainable
+		 */
+		addClass: function () {
+			var args = SLICE.call(arguments);
+			var node = this.get(NODE);
+			var className = UA_SUPPORTS_SVG ? node.getAttribute("class") : node.className;
+			var classes = className ? className.split(" ") : [];
+			A.each(args, function (sClass) {
+				if (!A.inArray(sClass, classes)) {
+					classes[classes.length] = sClass;
+				}
+			});
+			if (UA_SUPPORTS_SVG) {
+				node.setAttribute("class", classes.join(" "));
+			} else {
+				node.className = classes.join(" ");
+			}
+			return this;
+		},
+		/**
+		 * Adds/removes a certain class from all nodes in the collection
+		 * @method toggleClass
+		 * @param {String} sClass
+		 * @chainable
+		 */
+		toggleClass: function (sClass) {
+			var args = SLICE.call(arguments);
+			var node = this.get(NODE);
+			var className = UA_SUPPORTS_SVG ? node.getAttribute("class") : node.className;
+			var classes = className ? className.split(" ") : [];
+			if (!A.inArray(sClass, classes)) {
+				classes[classes.length] = sClass;
+			} else {
+				A.remove(sClass, classes);
+			}
+			if (UA_SUPPORTS_SVG) {
+				node.setAttribute("class", classes.join(" "));
+			} else {
+				node.className = classes.join(" ");
+			}
+			return this;
+		},
 	});
 	
 	/**
@@ -427,15 +587,15 @@ jet().add('vector', function ($) {
 			 */
 			rx: {
 				getter: UA_SUPPORTS_SVG ? function () {
-					return this.node.getAttribute("rx");
+					return this.get(NODE).getAttribute("rx");
 				} : function () {
-					return $.pxToFloat(this.node.style.width) / 2;
+					return $.pxToFloat(this.get(NODE).style.width) / 2;
 				},
 				setter: UA_SUPPORTS_SVG ? function (value) {
-					this.node.setAttribute("rx", value);
+					this.get(NODE).setAttribute("rx", value);
 					return value;
 				} : function (value) {
-					this.node.style.width = value * 2;
+					this.get(NODE).style.width = value * 2;
 					return value;
 				}
 			},
@@ -445,15 +605,15 @@ jet().add('vector', function ($) {
 			 */
 			ry: {
 				getter: UA_SUPPORTS_SVG ? function () {
-					return this.node.getAttribute("ry");
+					return this.get(NODE).getAttribute("ry");
 				} : function () {
-					return $.pxToFloat(this.node.style.width) / 2;
+					return $.pxToFloat(this.get(NODE).style.width) / 2;
 				},
 				setter: UA_SUPPORTS_SVG ? function (value) {
-					this.node.setAttribute("ry", value);
+					this.get(NODE).setAttribute("ry", value);
 					return value;
 				} : function (value) {
-					this.node.style.height = value * 2;
+					this.get(NODE).style.height = value * 2;
 					return value;
 				}
 			}		
@@ -466,10 +626,10 @@ jet().add('vector', function ($) {
 			cx: {
 				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING.cx ? VML_ATTR_MAPPING.cx : "cx"),
 				setter: UA_SUPPORTS_SVG ? function (value) {
-					this.node.setAttribute("cx", value);
+					this.get(NODE).setAttribute("cx", value);
 					return value;
 				} : function (value) {
-					this.node.style.left = (value - $.pxToFloat(myself.get("rx"))) + "px";
+					this.get(NODE).style.left = (value - $.pxToFloat(myself.get("rx"))) + "px";
 					return value;
 				}
 			},
@@ -480,10 +640,10 @@ jet().add('vector', function ($) {
 			cy: {
 				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING.cy ? VML_ATTR_MAPPING.cy : "cy"),
 				setter: UA_SUPPORTS_SVG ? function (value) {
-					this.node.setAttribute("cy", value);
+					this.get(NODE).setAttribute("cy", value);
 					return value;
 				} : function (value) {
-					this.node.style.top = (value - $.pxToFloat(myself.get("ry")) / 2) + "px";
+					this.get(NODE).style.top = (value - $.pxToFloat(myself.get("ry")) / 2) + "px";
 					return value;
 				}
 			}
@@ -509,15 +669,15 @@ jet().add('vector', function ($) {
 			 */
 			r: {
 				getter: UA_SUPPORTS_SVG ? function () {
-					return this.node.getAttribute("r");
+					return this.get(NODE).getAttribute("r");
 				} : function () {
-					return this.node.style.width;
+					return this.get(NODE).style.width;
 				},
 				setter: UA_SUPPORTS_SVG ? function (value) {
-					this.node.setAttribute("r", value);
+					this.get(NODE).setAttribute("r", value);
 					return value;
 				} : function (value) {
-					var ns = this.node.style;
+					var ns = this.get(NODE).style;
 					ns.width = value * 2;
 					ns.height = value * 2;
 					return value;
@@ -531,10 +691,10 @@ jet().add('vector', function ($) {
 			cx: {
 				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING.cx ? VML_ATTR_MAPPING.cx : "cx"),
 				setter: UA_SUPPORTS_SVG ? function (value) {
-					this.node.setAttribute("cx", value);
+					this.get(NODE).setAttribute("cx", value);
 					return value;
 				} : function (value) {
-					this.node.style.left = (value - $.pxToFloat(myself.get("r")) / 2) + "px";
+					this.get(NODE).style.left = (value - $.pxToFloat(myself.get("r")) / 2) + "px";
 					return value;
 				}
 			},
@@ -545,10 +705,10 @@ jet().add('vector', function ($) {
 			cy: {
 				getter: getDefaultGetter(!UA_SUPPORTS_SVG && VML_ATTR_MAPPING.cy ? VML_ATTR_MAPPING.cy : "cy"),
 				setter: UA_SUPPORTS_SVG ? function (value) {
-					this.node.setAttribute("cy", value);
+					this.get(NODE).setAttribute("cy", value);
 					return value;
 				} : function (value) {
-					this.node.style.top = (value - $.pxToFloat(myself.get("r")) / 2) + "px";
+					this.get(NODE).style.top = (value - $.pxToFloat(myself.get("r")) / 2) + "px";
 					return value;
 				}
 			}
@@ -687,10 +847,11 @@ jet().add('vector', function ($) {
 				getter: function () {
 					return box;
 				}
+			},
+			className: {
+				value: "vectorview"
 			}
 		});
-		
-		myself.get("srcNode").append(box);
 		
 	} : function () {
 		VectorView.superclass.constructor.apply(this, arguments);
@@ -718,14 +879,15 @@ jet().add('vector', function ($) {
 				getter: function () {
 					return box;
 				}
+			},
+			className: {
+				value: "vectorview"
 			}
 		});
 		
-		myself.get("srcNode").append(box);
-		
 	};
-	var appendToVectorView = function (shape, plasma) {
-		return shape.set(VECTOR, plasma).appendTo(plasma.get(BOUNDING_BOX));
+	var appendToVectorView = function (shape, vectorview) {
+		return shape.set(VECTOR, vectorview).appendTo(vectorview.get(BOUNDING_BOX));
 	};
 	$.extend(VectorView, $.Widget, {
 		/**
@@ -804,7 +966,7 @@ jet().add('vector', function ($) {
 	$.mix(Vector, {
 		Circle: Circle,
 		Rectangle: Rectangle,
-		"Image": ImageVector,
+		Image: ImageVector,
 		Text: Text,
 		Path: Path,
 		decToHex: decToHex,

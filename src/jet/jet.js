@@ -84,7 +84,7 @@
 			}
 		}],
 		treeview: [BASE],
-		plasma: ["anim"]
+		vector: ["anim"]
 	};
 	
 	 //A couple of functions of this module are used throughout the Loader.

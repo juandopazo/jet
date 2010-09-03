@@ -19,8 +19,7 @@ jet().add('history', function ($) {
 		
 	var body = $.context.body;
 	
-	var safari = false,
-		uaOpera = UA.opera;
+	var safari = false;
 		
 	/*Private - CSS strings utilized by both objects to hide or show behind-the-scenes DOM elements*/
 	var showStyles = {
@@ -35,6 +34,13 @@ jet().add('history', function ($) {
 		height: "1px",
 		position: "absolute"
 	};
+	
+	if (!jet.History) {
+		jet.History = {};
+	}
+	if (!jet.History.iframe) {
+		jet.History.iframe = new $.EventTarget();
+	}
 	
 	/*
 		historyStorage: An object that uses a hidden form to store history state across page loads. The mechanism for doing so relies on
@@ -108,7 +114,7 @@ jet().add('history', function ($) {
 				
 				var form = $('<form><textarea id="jet-storage-field"></textarea></form>').attr("id", "jet-storage-form");
 				storageField = form.css(formStyles).first().css(textareaStyles)[0];
-				if (uaOpera) {
+				if (UA.opera) {
 					storageField.focus();/*Opera needs to focus this element before persisting values in it*/
 				}
 				return this;
@@ -165,6 +171,7 @@ jet().add('history', function ($) {
 			reset: function () {
 				storageField.value = "";
 				storageHash = {};
+				return this;
 			},
 		
 			/*Public*/
@@ -270,9 +277,6 @@ jet().add('history', function ($) {
 		/*Private: Placeholder variable for the original document title; will be set in ititialize()*/
 		var originalTitle = document.title;
 		
-		/*Private: Our history change listener.*/
-		var listener;
-	
 		/*Private: MS to wait between add requests - will be reset for certain browsers*/
 		var waitTime = 200;
 		
@@ -488,8 +492,14 @@ jet().add('history', function ($) {
 			return r;
 		};
 	
+		var useHashEvent = function () {
+			$($.win).on("hashchange", function () {
+				fireHistoryEvent($.win.location.hash);
+			});
+		};
+		
 		/*Private: For IE, tell when the hidden iframe has finished loading.*/
-		var iframeLoaded = function (newLocation) {
+		jet.History.iframe.on("load", function (e, newLocation) {
 			/*ignore any location changes that we made ourselves*/
 			if (ignoreLocationChange) {
 				ignoreLocationChange = false;
@@ -498,36 +508,22 @@ jet().add('history', function ($) {
 	
 			/*Get the new location*/
 			var hash = String(newLocation.search);
-			if (hash.length == 1 && hash.charAt(0) == "?") {
-				hash = "";
-			}
-			else if (hash.length >= 2 && hash.charAt(0) == "?") {
-				hash = hash.substring(1);
+			if (hash.charAt(0) == "?") {
+				hash = hash.length == 1 ? "" : hash.substring(1);
 			}
 			/*Keep the browser location bar in sync with the iframe hash*/
 			window.location.hash = hash;
 	
 			/*Notify listeners of the change*/
 			fireHistoryEvent(hash);
-		};
-		
-		var useHashEvent = function () {
-			var evTarget = new $.EventTarget();
-			if (body.onhashchange) {
-				evTarget.on("hashchange", body.onhashchange);
-			}
-			body.onhashchange = function () {
-				evTarget.fire("hashchange", window.location.hash);
-			};
-			evTarget.on("hashchange", fireHistoryEvent);
-		};
+		});
 	
 		/**
 		 * @method initialize
 		 * @description Initialize our DHTML history. You must call this after the page is finished loading
 		 * @chainable
 		 */
-		myself.initialize = function () {
+		this.initialize = function () {
 	
 			/*save original document title to plug in when we hit a null-key history point*/
 			originalTitle = document.title;
@@ -555,7 +551,7 @@ jet().add('history', function ($) {
 		 * @description Change the current HTML title
 		 * @chainable
 		 */
-		myself.changeTitle = function (historyData) {
+		this.changeTitle = function (historyData) {
 			/*Plug the new title into the pattern*/
 			/*Otherwise, if there is no new title, use the original document title. This is useful when some
 			history changes have title changes and some don't; we can automatically return to the original
@@ -574,7 +570,7 @@ jet().add('history', function ($) {
 			}
 			
 			/*If non-IE, reload the hash so the new title "sticks" in the browser history object*/
-			if (!UA.ie && !uaOpera) {
+			if (!UA.ie && !UA.opera) {
 				var hash = decode(document.location.hash);
 				if (hash !== "") {
 					var encodedHash = encode(removeHash(hash));
@@ -600,7 +596,7 @@ jet().add('history', function ($) {
 		 * If you have set a baseTitle using the options bundle, the value will be plugged into the baseTitle by swapping out the @@@ replacement param.
 		 * @chainable
 		 */
-		myself.add = function (newLocation, historyData) {
+		this.add = function (newLocation, historyData) {
 			
 			var that = myself;
 			/*Escape the location and remove any leading hash symbols*/
@@ -687,26 +683,27 @@ jet().add('history', function ($) {
 			debugMode: myself.get("debugMode")
 		});
 		
-		/*Create Safari/Opera-specific code*/
-		if (safari) {
-			createSafari();
-		} else if (uaOpera) {
-			createOpera();
-		}
-		
 		/*Get our initial location*/
 		var initialHash = getCurrentLocation();
 
 		/*Save it as our current location*/
 		currentLocation = initialHash;
 
-		/*Now that we have a hash, create IE-specific code*/
-		if (UA.ie && UA.ie < 8) {
-			createIE(initialHash);
-		} else if (UA.ie >= 8) {
+		if ("onhashchange" in $.win) {
 			useHashEvent();
+		} else {
+			/*Create Safari/Opera-specific code*/
+			if (safari) {
+				createSafari();
+			} else if (UA.opera) {
+				createOpera();
+			}
+			
+			/*Now that we have a hash, create IE-specific code*/
+			if (UA.ie) {
+				createIE(initialHash);
+			}
 		}
-
 		/*Add an unload listener for the page; this is needed for FF 1.5+ because this browser caches all dynamic updates to the
 		page, which can break some of our logic related to testing whether this is the first instance a page has loaded or whether
 		it is being pulled from the cache*/

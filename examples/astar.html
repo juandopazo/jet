@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+	<title>jet Test</title>
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.1.2/build/cssreset/reset-min.css">	
+	<style type="text/css">
+		body {
+			padding: 20px 0px;
+		}
+		div {
+			font-size: 0px;
+			margin: 0 auto;
+			border-top: 1px solid #333;
+			border-left: 1px solid #333;
+		}
+		span {
+			display: inline-block;
+			border-bottom: 1px solid #333;
+			border-right: 1px solid #333;
+		}
+		.wall {
+			background: #666;
+		}
+		.start {
+			background: #069;
+		}
+		.end {
+			background: #00A000;
+		}
+		.example {
+			border: 1px solid #333;
+			width: 18px;
+			height: 19px;
+		}
+		ol {
+			position: absolute;
+			top: 20px;
+			left: 20px;
+		}
+	</style>
+</head>
+
+<body>
+	<ol>
+		<li><span class="wall example"></span> Wall</li>
+		<li><span class="example"></span> Path</li>
+		<li><span class="start example"></span> Start</li>
+		<li><span class="end example"></span> Goal</li>
+	</ol>
+	<script type="text/javascript" src="http://jet-js.googlecode.com/svn/trunk/build/jet.min.js"></script>
+	<script type="text/javascript">
+		jet().use(function ($) {
+			
+			var A = $.Array;
+			
+			var SQUARE_SIZE = 20;
+			var WIDTH = 15, HEIGHT = 15;
+			
+			// Make a container
+			var container = $("<div/>").width(WIDTH * SQUARE_SIZE).height(HEIGHT * SQUARE_SIZE).appendTo(document.body);
+			
+			// List of all tiles
+			var TILES = [];
+			// start and goal tiles
+			var start, end;
+			
+			// When a tile is clicked it is set as wall or path (true or false)
+			var toggleWall = function (x, y, tile) {
+				var isWall = TILES[x][y];
+				if ($.Lang.isBoolean(isWall)) {
+					if (isWall) {
+						tile.removeClass("wall");
+					} else {
+						tile.addClass("wall");
+					}
+					TILES[x][y] = !isWall;
+				}
+			};
+			// Double click for setting start and goal
+			var setStartEnd = function (x, y, tile) {
+				if (!start) {
+					TILES[x][y] = "start";
+					start = {
+						x: x,
+						y: y,
+						tile: tile
+					};
+					tile.removeClass("wall").addClass("start");
+				} else if (!end) {
+					if (start.x == x && start.y == y) {
+						start = null;
+					}
+					TILES[x][y] = "end";
+					end = {
+						x: x,
+						y: y,
+						tile: tile
+					};
+					tile.removeClass("wall").addClass("end");
+				}
+			};
+			
+			// set up the tile set
+			for (var i = 0, tile; i < WIDTH; i++) {
+				TILES[i] = [];
+				for (var j = 0; j < HEIGHT; j++) {
+					TILES[i][j] = true;
+					(function (x, y) {
+						
+						$("<span/>").addClass("wall").appendTo(container).width(SQUARE_SIZE - 1).height(SQUARE_SIZE - 1).on("click", function () {
+							toggleWall(x, y, $(this));
+						}).on("dblclick", function () {
+							setStartEnd(x, y, $(this));
+						});
+						
+					}(j, i));
+				}
+			}
+			
+			/************************
+			 * A* PATHFINDING
+			 * 
+			 * Rules:
+			 * - A path can only be traversed horizontally or vertically
+			 * - Distance between tiles is allways 1
+			 ***********************/
+			
+			var getStraightLineDistance = function (from, to) {
+				return Math.pow(Math.pow(from.x - to.x, 2) + Math.pow(from.y - to.y, 2), 0.5);
+			};
+			
+			var getNodeWithLowestScore = function (nodelist, scores) {
+				var lowest = scores[nodelist[0].x + "," + nodelist[0].y], 
+				result = 0, current = 0, length = nodelist.length;
+				for (var i = 1; i < length; i++) {
+					current = scores[nodelist[i].x + "," + nodelist[i].y];
+					if (current < lowest) {
+						lowest = current;
+						result = i;
+					}
+				}
+				return result;
+			};
+			
+			var getNeighborNodes = function (node) {
+				var neighbors = [];
+				var x = node.x, y = node.y;
+				if (x - 1 >= 0 && TILES[x - 1][y] !== true) {
+					neighbors[neighbors.length] = {
+						x: x - 1,
+						y: y
+					};
+				}
+				if (x + 1 <= WIDTH && TILES[x + 1][y] !== true) {
+					neighbors[neighbors.length] = {
+						x: x + 1,
+						y: y
+					};
+				}
+				if (y - 1 >= 0 && TILES[x][y - 1] !== true) {
+					neighbors[neighbors.length] = {
+						x: x,
+						y: y - 1
+					};
+				}
+				if (y + 1 <= HEIGHT && TILES[x][y + 1] !== true) {
+					neighbors[neighbors.length] = {
+						x: x,
+						y: y + 1
+					};
+				}
+				return neighbors;
+			};
+			
+			var cameFrom = {};
+			
+			var reconstructPath = function () {
+				return cameFrom;
+			};
+			
+			var aStar = function (start, end) {
+				var evaluatedNodes = [];
+				var tentativeNodes = [];
+				tentativeNodes[0] = {
+					x: start.x,
+					y: start.y
+				};
+				
+				var key = start.x + "," + start.y;
+				var gScore = {}; gScore[key] = 0;
+				var hScore = {}; hScore[key] = getStraightLineDistance(start, end);
+				var fScore = {}; fScore[key] = hScore[key];
+				
+				var x, node, neighbors, i, tentativeGScore, tentativeIsBetter;
+				var nodeKey, neighborKey;
+				var count = 0;
+				while (tentativeNodes.length > 0) {
+					x = getNodeWithLowestScore(tentativeNodes, fScore);
+					node = tentativeNodes.splice(x, 1)[0];
+					console.log(node.x, node.y);
+					if (node.x == end.x && node.y == end.y) {
+						return reconstructPath(cameFrom[end]);
+					}
+					
+					nodeKey = node.x + "," + node.y;
+					evaluatedNodes[evaluatedNodes.length] = node;
+					neighbors = getNeighborNodes(node);
+					console.log(neighbors);
+					for (i = 0; i < neighbors.length; i++) {
+						if (!A.inArray(neighbors[i], evaluatedNodes)) {
+							neighborKey = node.x + "," + node.y;
+							tentativeGScore = gScore[neighborKey] + 1;
+							
+							if (!A.inArray(neighbors[i], tentativeNodes)) {
+								tentativeNodes[tentativeNodes.length] = neighbors[i];
+								tentativeIsBetter = true;
+							} else {
+								tentativeIsBetter = tentativeGScore < gScore[nodeKey];
+							}
+							
+							if (tentativeIsBetter) {
+								cameFrom[neighborKey] = nodeKey;
+								gScore[neighborKey] = tentativeGScore;
+								hScore[neighborKey] = getStraightLineDistance(neighbors[i], end);
+								fScore[neighborKey] = gScore[neighborKey] + hScore[neighborKey];
+							}
+						}
+					}
+					
+					count++;
+					if (count == 6) {
+						return tentativeNodes;
+					}
+				}
+				return false;
+			};
+			
+			$(document.body).on("keyup", function (e) {
+				if (e.keyCode == 13 && start && end) {
+					var path = aStar(start, end);
+					console.log(path);
+				}
+			});
+			
+		});
+	</script>
+</body>
+</html>

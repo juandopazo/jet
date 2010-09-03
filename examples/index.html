@@ -22,10 +22,10 @@
 	<script type="text/javascript">
 	jet({
 		base: "../src"
-	}).use(function ($) {
+	}).use('node', function ($) {
 		
-		$("div").each(function (node) {
-			alert(node.id);
+		$($.win).on("hashchange", function () {
+			console.log(location.hash);
 		});
 		
 	});
