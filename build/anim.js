@@ -100,7 +100,7 @@ jet().add('anim', function ($) {
 	
 	if (!jet.TimeFrame) {
 		/**
-		 * A time frame for queueing animations
+		 * A timeframe for queueing animations
 		 * @class TimeFrame
 		 * @uses EventTarget
 		 * @static
@@ -226,21 +226,22 @@ jet().add('anim', function ($) {
 			/**
 			 * @config easing
 			 * @description The easing used by the animation
-			 * @type TimeFrame.easing
-			 * @default TimeFrame.easing.DEFAULT
+			 * @type Function
+			 * @default Easing.linear
 			 */
 			easing: {
 				value: Easing.linear
 			},
 			/**
 			 * @config easingStrength
-			 * @description The strength of the easing if applicable
+			 * @description The strength of the easing if applicable. Must be >= 0
+			 * @type Number
 			 * @default 2
 			 */
 			easingStrength: {
 				value: 2,
-				setter: function (value) {
-					return Math.abs(value);
+				validator: function (val) {
+					return val >= 0;
 				}
 			},
 			/**

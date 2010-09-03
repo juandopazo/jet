@@ -84,7 +84,7 @@
 			}
 		}],
 		treeview: [BASE],
-		plasma: ["anim"]
+		vector: ["anim"]
 	};
 	
 	 //A couple of functions of this module are used throughout the Loader.
@@ -1291,8 +1291,7 @@ jet().add("node", function ($) {
 			};
 		} else if (obj.attachEvent) {
 			addEvent = function (obj, type, callback) {
-				obj.attachEvent(ON + type, function () {
-					var ev = window.event;
+				obj.attachEvent(ON + type, function (ev) {
 					ev.target = ev.srcElement;
 					ev.preventDefault = function () {
 						ev.returnValue = false;
@@ -1464,6 +1463,7 @@ jet().add("node", function ($) {
 		for (var i = 0; i < length; i++) {
 			this[i] = nodes[i];
 		}
+		this.length = length;
 	};
 	NodeList.prototype = {
 		/**
@@ -1482,8 +1482,8 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		each: function (fn) {
-			var i = -1, myself = this;
-			while (myself[++i]) {
+			var i, myself = this, length = myself.length;
+			for (i = 0; i < length; i++) {
 				fn.call(myself[i], myself[i], i);
 			}
 			return myself;
@@ -2098,6 +2098,14 @@ jet().add("node", function ($) {
 			return this.each(function (node) {
 				node.focus();
 			});
+		},
+		/**
+		 * Sets or returns the value of the node. Useful mostly for form elements
+		 * @param {String} value - optional
+		 * @chainable
+		 */
+		value: function (val) {
+			return this.attr("value", val);
 		},
 		/**
 		 * @method eq

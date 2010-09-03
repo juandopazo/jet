@@ -135,7 +135,7 @@ jet().add('base', function ($) {
 		 * @param {Function} callback
 		 * @chainable
 		 */
-		myself.on = function (eventType, callback) {
+		this.on = function (eventType, callback) {
 			if (!collection[eventType]) {
 				collection[eventType] = [];
 			}
@@ -152,7 +152,7 @@ jet().add('base', function ($) {
 		 * @param {Function} callback
 		 * @chainable
 		 */
-		myself.unbind = function (eventType, callback) {
+		this.unbind = function (eventType, callback) {
 			$.Array.remove(callback, collection[eventType] || []);
 			return myself;
 		};
@@ -163,7 +163,7 @@ jet().add('base', function ($) {
 		 * @param {String} eventType
 		 * Extra parameters will be passed to all event listeners
 		 */
-		myself.fire = function (eventType) {
+		this.fire = function (eventType) {
 			var handlers = collection[eventType] || [];
 			var returnValue = true;
 			if (collection["*"]) {
@@ -202,7 +202,7 @@ jet().add('base', function ($) {
 		 * @method unbindAll
 		 * @chainable
 		 */
-		myself.unbindAll = function () {
+		this.unbindAll = function () {
 			collection = {};
 			return myself;
 		};
@@ -356,11 +356,11 @@ jet().add('base', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	/*
-	 * Base should hold basic logic shared among a lot of classes, 
-	 * to avoid having to extend the Attribute class which is very specific in what it does
-	 */
 	var Base = function () {
+		/*
+		 * Base should hold basic logic shared among a lot of classes, 
+		 * to avoid having to extend the Attribute class which is very specific in what it does
+		 */
 		Base.superclass.constructor.apply(this, arguments);
 		
 		/**
@@ -492,7 +492,7 @@ jet().add('base', function ($) {
 			if (myself.fire("hide")) {
 				myself.get(BOUNDING_BOX).css(VISIBILITY, "hidden");
 			}
-			return myself;
+			return myself.fire("afterHide");
 		},
 		/**
 		 * Shows the widget
@@ -504,7 +504,7 @@ jet().add('base', function ($) {
 			if (myself.fire("show")) {
 				myself.get(BOUNDING_BOX).css(VISIBILITY, "visible");
 			}
-			return myself;
+			return myself.fire("afterShow");
 		},
 		/**
 		 * Starts the rendering process. The rendering process is based on custom events.
@@ -512,7 +512,7 @@ jet().add('base', function ($) {
 		 * This way all listeners are fired in the order of the inheritance chain. ie:
 		 * In the Overlay class, the render process is:
 		 * <code>render() method -> Module listener -> Overlay listener -> rest of the render() method (appends the boundingBox to the srcNode)</code>
-		 * This helps use an easy pattern of OOP CSS: each subclass adds a CSS class name to the boundingBox,
+		 * This helps to use an easy pattern of OOP CSS: each subclass adds a CSS class name to the boundingBox,
 		 * for example resulting in <div class="jet-module jet-overlay jet-panel"></div>. That way
 		 * a panel can inherit css properties from module and overlay.
 		 * @method render

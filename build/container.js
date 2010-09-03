@@ -257,14 +257,10 @@ jet().add("container", function ($) {
 		});
 		myself.set(CLASS_NAME, Overlay.NAME);
 		
-		var rendered = false;
-		myself.on("rendered", function () {
-			rendered = true;
-		});
-		
 		// centers the overlay in the screen
 		var center = function (boundingBox) {
 			var screenSize = DOM.screenSize();
+			var rendered = myself.get("rendered");
 			boundingBox.css({
 				left: (screenSize.width - (rendered ? boundingBox.width() : myself.get(WIDTH))) / 2 + PX,
 				top: (screenSize.height - (rendered ? boundingBox.height() : myself.get(HEIGHT))) / 2 + PX
@@ -345,6 +341,18 @@ jet().add("container", function ($) {
 				boundingBox.height(height);
 			}
 			setPosition(boundingBox);
+		});
+		myself.on("afterRender", function () {
+			var boundingBox = myself.get(BOUNDING_BOX);
+			var win = $($.win);
+			var head = myself.get(HEADER);
+			var fixed = myself.get(FIXED);
+			if (myself.get("draggable")) {
+				myself.dd = new $.Drag({
+					node: boundingBox,
+					handlers: head
+				});
+			}
 			if (myself.get(CENTER)) {
 				center(boundingBox);
 				win.on(RESIZE, function () {
@@ -355,6 +363,9 @@ jet().add("container", function ($) {
 						center(myself.get(BOUNDING_BOX));
 					});
 				}
+				myself.on("afterShow", function () {
+					center(boundingBox);
+				});
 			} else if (fixed && !UA_SUPPORTS_FIXED) {
 				win.on(SCROLL, function () {
 					setPosition(myself.get(BOUNDING_BOX));
@@ -363,17 +374,7 @@ jet().add("container", function ($) {
 					setPosition(myself.get(BOUNDING_BOX));
 				});
 			}
-		});
-		myself.on("afterRender", function () {
-			if (myself.get("draggable")) {
-				var head = myself.get(HEADER);
-				myself.dd = new $.Drag({
-					node: myself.get(BOUNDING_BOX)
-				});
-				if (head) {
-					myself.dd.addHandler(head);
-				}
-			}
+
 		});
 	};
 	Overlay.NAME = "overlay";

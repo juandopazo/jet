@@ -31,6 +31,8 @@ jet().add('spbar', function ($) {
 			text = $(NEW_SPAN).addClass(CLASS_PREFIX + "text").html("0%").height(config.height).css("line-height", config.height).appendTo(container);
 		}
 		
+		var myself = this;
+		
 		/**
 		 * @method update
 		 * @description Updates the progressbar's progress
@@ -44,6 +46,9 @@ jet().add('spbar', function ($) {
 			}
 			if (progress == "100%") {
 				config.complete();
+				if (config.selfdestruct) {
+					myself.destroy();
+				}
 			}
 		};
 		/**
