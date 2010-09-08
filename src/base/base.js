@@ -507,6 +507,22 @@ jet().add('base', function ($) {
 			return myself.fire("afterShow");
 		},
 		/**
+		 * Focuses the widget
+		 * @method focus
+		 * @chainable
+		 */
+		focus: function () {
+			return this.set("focused", true);
+		},
+		/**
+		 * Blurrs the element
+		 * @method blur
+		 * @chainable
+		 */
+		blur: function () {
+			return this.set("focused", false);
+		},
+		/**
 		 * Starts the rendering process. The rendering process is based on custom events.
 		 * The widget class fires a "render" event to which all subclasses must subscribe.
 		 * This way all listeners are fired in the order of the inheritance chain. ie:
@@ -532,12 +548,11 @@ jet().add('base', function ($) {
 			if (myself.fire("render")) {
 				var node = myself.get(SRC_NODE);
 				myself.get(BOUNDING_BOX).addClass(myself.get("classPrefix") + myself.get("className")).appendTo(node).css(VISIBILITY, "visible");
-				myself.set("rendered", true);
 				/**
 				 * Fires after the render process is finished
 				 * @event afterRender
 				 */
-				myself.fire("afterRender");
+				myself.set("rendered", true).focus().fire("afterRender");
 			}
 			return myself;
 		},

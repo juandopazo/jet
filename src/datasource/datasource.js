@@ -672,6 +672,11 @@ jet().add('datasource', function ($) {
 	var Local = function () {
 		Local.superclass.constructor.apply(this, arguments);
 		
+		/**
+		 * @config localData
+		 * @description The data to be added to the data source
+		 * @required
+		 */
 		var myself = this.addAttr("localData", {
 			required: true
 		});

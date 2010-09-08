@@ -887,13 +887,13 @@
 						if (module.type == "css" && !config.loadCss) {
 							request.splice(i, 1);
 							i--;
-						} else if (!(modules[module.name] || queuedScripts[module.name])) {
+						} else if (!(modules[module.name] || queuedScripts[module.fullpath || (base + module.path)])) {
 							if (!module.type || module.type == "js") {
 								loadScript(module.fullpath || (base + module.path)); 
 							} else if (module.type == "css") {
 								domReady(loadCssModule, module);
 							}
-							queuedScripts[module.name] = 1;
+							queuedScripts[module.fullpath || (base + module.path)] = 1;
 						}
 					}
 					

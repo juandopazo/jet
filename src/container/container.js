@@ -425,11 +425,17 @@ jet().add("container", function ($) {
 		/*
 		 * Close button logic
 		 */
-		var closeButton = $("<a/>").attr("href", "#").addClass("container-close").on(CLICK, function (e) {
+		var close = function (e) {
 			if (myself.fire(CLOSE)) {
 				myself.hide();
 			}
 			e.preventDefault();
+		};
+		var closeButton = $("<a/>").attr("href", "#").addClass("container-close").on(CLICK, close);
+		$($.context).on("keyup", function (e) {
+			if (e.keyCode == 27 && myself.get("focused")) {
+				close(e);
+			}
 		});
 		/**
 		 * @config close
