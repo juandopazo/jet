@@ -9,8 +9,12 @@
  */
 jet().add("log", function ($) {
 	
+	if (!jet.Log) {
+		jet.Log = [];
+	}
+	
 	$.error = function (msg) {
-		throw new Error(msg);
+		jet.Log.push(msg);
 	};
 
 });

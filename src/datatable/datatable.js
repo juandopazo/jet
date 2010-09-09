@@ -37,12 +37,66 @@ jet().add('datatable', function ($) {
 		jet.DataTable.ids = 0;
 	}
 	
+	var Cell = function () {
+		Cell.superclass.constructor.apply(this, arguments);
+		
+		this.addAttrs({
+			value: {
+				required: true,
+				writeOnce: true
+			},
+			td: {
+				required: true,
+				writeOnce: true
+			},
+			record: {
+				required: true,
+				writeOnce: true
+			}
+		});
+	};
+	$.extend(Cell, $.Base);
+	
 	/*
 	 * @TODO
 	 */
 	var Column = function () {
+		Column.superclass.constructor.apply(this, arguments);
 		
+		var myself = this.addAttrs({
+			cells: {
+				required: true,
+				writeOnce: true
+			}
+		});
+		
+		this.getFirstTd = function () {
+			return myself.get("cells")[0].get("td");
+		};
+		this.getNextTd = function (td) {
+			var cells = myself.get("cells"), length = cells.length, i;
+			for (i = 0; i < length; i++) {
+				if (cells[i].get("td") == td) {
+					break;
+				}
+			}
+			return i < length - 2 ? cells[++i].get("td") : null; 
+		};
+		
+		this.getFirstCell = function () {
+			return myself.get("cells")[0];
+		};
+		this.getNextCell = function (cell) {
+			var cells = myself.get("cells"), length = cells.length, i;
+			for (i = 0; i < length; i++) {
+				if (cells[i] == cell) {
+					break;
+				}
+			}
+			return i < length - 2 ? cells[++i] : null; 
+		};
 	};
+	$.extend(Column, $.Base);
 	
 	/**
 	 * A DataTable is an HTML table that can be sorted and linked to a DataSource
@@ -209,10 +263,38 @@ jet().add('datatable', function ($) {
 		myself.deleteRows = function () {
 			
 		};
+		*/
 		
-		myself.getColumn = function () {
-			
-		};*/
+		/**
+		 * Returns a column based on an index or the column's key
+		 * @method getColumn
+		 * @param {Number | String} id
+		 * @return Column
+		 */
+		this.getColumn = function (id) {
+			var col, cells = [], i, records = recordSet.getRecords(), length = records.length;
+			var colDefs = myself.get("columnDefinitions");
+			var rows = tbody.children(), key = Lang.isNumber(id) ? colDefs[id].key : id;
+			var index = id;
+			if (!Lang.isNumber(id)) {
+				for (i = 0; i < colDefs.length; i++) {
+					if (colDefs[i].key == id) {
+						index = i;
+						break;
+					}
+				}
+			}
+			for (i = 0; i < length; i++) {
+				cells[cells.length] = new Cell({
+					record: records[i],
+					td: rows.eq(i).children().eq(index),
+					value: records[i].get(key)
+				});
+			}
+			return new Column({
+				cells: cells
+			});
+		};
 		
 		/**
 		 * Returns the first html row element in the table
@@ -270,6 +352,7 @@ jet().add('datatable', function ($) {
 			}
 			return td.next();
 		};
+		
 		/*@TODO
 		myself.getSelectedCell = function () {
 			
@@ -359,6 +442,7 @@ jet().add('datatable', function ($) {
 	
 	$.add({
 		DataTable: DataTable,
-		ScrollableDataTable: ScrollableDataTable
+		ScrollableDataTable: ScrollableDataTable,
+		Column: Column
 	});
 });
