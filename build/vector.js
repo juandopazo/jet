@@ -523,7 +523,7 @@ jet().add('vector', function ($) {
 				node.className = classes.join(" ");
 			}
 			return this;
-		}
+		},
 	});
 	
 	/**
