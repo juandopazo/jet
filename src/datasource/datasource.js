@@ -10,17 +10,9 @@
  */
 jet().add('datasource', function ($) {
 	
-	if (!jet.DataSource) {
-		jet.DataSource = {};
-	}
-	if (!jet.DataSource.jsonpCallbacks) {
-		jet.DataSource.jsonpCallbacks = [];
-	}
-	
 	var Lang = $.Lang,
 		Hash = $.Hash,
-		A = $.Array,
-		IO = $.IO;
+		A = $.Array;
 
 	var RESPONSE_TYPE_JSON		= 'json',
 		RESPONSE_TYPE_XML		= 'xml',
@@ -535,7 +527,7 @@ jet().add('datasource', function ($) {
 		});
 		
 		myself.set(REQUEST_LOGIC, function (request, success, failure) {
-			IO.ajax({
+			$.ajax({
 				url: myself.get(URL),
 				data: request,
 				dataType: myself.get(RESPONSE_TYPE),
@@ -591,33 +583,15 @@ jet().add('datasource', function ($) {
 			}
 		});
 		
-		var prepareRequest = function (request) {
-			var result = [];
-			if (Lang.isHash(request)) {
-				Hash.each(request, function (key, val) {
-					result[result.length] = encodeURIComponent(key) + EQUAL_SIGN + encodeURIComponent(val);
-				});
-				request = result.join(AMPERSAND);
-			}
-			return request;
-		};
-		
 		myself.set(REQUEST_LOGIC, function (request, success, failure) {
-			var index = jet.DataSource.jsonpCallbacks.length;
-			var loaded = false;
-			jet.DataSource.jsonpCallbacks[index] = function (data) {
-				loaded = true;
-				success(data);
-			};
-			$.Get.script(myself.get(URL) + prepareRequest(request) + AMPERSAND + myself.get("jsonCallbackParam") + EQUAL_SIGN + "jet.DataSource.jsonpCallbacks[" + index + "]");
-			setTimeout(function () {
-				if (!loaded) {
-					myself.fire(ERROR, {
-						message: REQUEST_FAILED_MSG,
-						reason: TIMEOUT
-					});
-				}
-			}, myself.get(TIMEOUT));
+			$.jsonp({
+				url: myself.get(URL),
+				data: request,
+				success: success,
+				jsonCallbackParam: myself.get("jsonCallbackParam"),
+				error: failure,
+				timeout: myself.get(TIMEOUT)
+			});
 		});
 		
 		myself.sendRequest(myself.get(INITIAL_REQUEST));

@@ -433,7 +433,6 @@ jet().add('datatable', function ($) {
 			var table = $("<table/>");
 			var tbody = myself.get("tbody");
 			var thead = myself.get("thead");
-			console.log(thead.parent()[0].offsetWidth)
 			var container = $("<div/>").appendTo(boundingBox).css("overflowY", "auto").height(300).width(thead.width());;
 			table.append(tbody.detach()).appendTo(container);
 		});

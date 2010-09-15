@@ -10,7 +10,8 @@
  */
 jet().add('io', function ($) {
 	var win = $.win;
-	var Lang = $.Lang;
+	var Lang = $.Lang,
+		Hash = $.Hash;
 	
 	var XML = "xml",
 	XSL = "xsl",
@@ -22,6 +23,14 @@ jet().add('io', function ($) {
 	
 	var newAXO = function (t) {
 		return new win.ActiveXObject(t);
+	};
+	
+	var hashToURI = function (hash) {
+		var result = [];
+		Hash.each(hash, function (key, value) {
+			result.push(key + "=" + value);
+		});
+		return result.join("&");
 	};
 	
 	var getActiveXParser = function (type) {
@@ -128,6 +137,13 @@ jet().add('io', function ($) {
 			return xhr.responseText;
 		}
 	};
+	
+	if (!jet.IO) {
+		jet.IO = {};
+	}
+	if (!jet.IO.jsonCallbacks) {
+		jet.IO.jsonCallbacks = [];
+	}
 
 	/**
 	 * Handles AJAX requests
@@ -164,13 +180,20 @@ jet().add('io', function ($) {
 				}
 				complete.apply($, arguments);
 			};
+			var url = settings.url;
 		
 			if (xhr) {
 				/* Esto corrije el problema de ausencia de tipos mime solo si existe el metodo overrideMimeType (no existe en IE) */
 				if (dataType && (dataType === XML || dataType === XSL) && xhr.overrideMimeType) {
 					xhr.overrideMimeType('text/xml');
 				}
-				if (settings.url) {
+				if (url) {
+					if (url.substr(url.length - 1) != "?") {
+						url += "?";
+					}
+					if (settings.data) {
+						url += hashToURI(settings.data);
+					}
 					if (async === true) {
 						xhr.onreadystatechange = function () {
 							if (xhr.readyState === 4) {
@@ -191,7 +214,7 @@ jet().add('io', function ($) {
 					/* Cuando la transaccion se hace en un filesystem local y el archivo de destino no existe,
 					   no se llega a pasar por el evento onreadystatechange sino que puede lanzar una excepcion en algunos navegadores */
 					try {
-						xhr.open(method, settings.url, async);
+						xhr.open(method, url, async);
 						xhr.send(null);
 					} catch (e) {
 						onError(noStatusError, 404, xhr); 
@@ -210,8 +233,54 @@ jet().add('io', function ($) {
 			}
 			return result || $;
 		},
-		utils: {
-			parseXML: parseXML
+		jsonp: function (settings) {
+			settings = settings || {};
+			var jsonCallbackParam = settings.jsonCallbackParam || "p";
+			var success = function (result) {
+				if (settings.success) {
+					settings.success(result);
+				}
+				if (settings.complete) {
+					settings.complete(result);
+				}
+			};
+			var error = function (result) {
+				if (settings.error) {
+					settings.error(result);
+				}
+				if (settings.complete) {
+					settings.complete(result);
+				}
+			};
+			var callbacks = jet.IO.jsonpCallbacks;
+			var index = callbacks.length;
+			var loaded = false;
+			var url = settings.url;
+			if (url) {
+				callbacks[index] = function (data) {
+					loaded = true;
+					success(data);
+				};
+				if (url.substr(url.length - 1) != "?") {
+					url += "?";
+				}
+				if (settings.data) {
+					url += hashToURI(settings.data);
+				}
+				$.Get.script(url + jsonCallbackParam + "=jet.IO.jsonpCallbacks[" + index + "]");
+				setTimeout(function () {
+					if (!loaded) {
+						error({
+							message: "Request failed",
+							reason: "Timeout"
+						});
+					}
+				}, settings.timeout || 10000);
+			}
 		}
+	};
+	$.add($.IO);
+	$.IO.utils = {
+		parseXML: parseXML
 	};
 });

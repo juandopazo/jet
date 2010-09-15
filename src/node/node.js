@@ -929,7 +929,11 @@ jet().add("node", function ($) {
 		 */
 		blur: function () {
 			return this.each(function (node) {
-				node.blur();
+				try {
+					node.blur();
+				} catch (e) {
+					$.error(e);
+				}
 			});
 		},
 		/**
@@ -939,7 +943,11 @@ jet().add("node", function ($) {
 		 */
 		focus: function () {
 			return this.each(function (node) {
-				node.focus();
+				try {
+					node.focus();
+				} catch (e) {
+					$.error(e);
+				}
 			});
 		},
 		/**
