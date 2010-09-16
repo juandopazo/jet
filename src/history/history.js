@@ -583,7 +583,7 @@ jet().add('history', function ($) {
 		};
 		
 		/**
-		 * @method add
+		 * @method go
 		 * @description Add a history point
 		 * @param {String} newLocation required - This will be the #hash value in the URL. Users can bookmark it. It will persist across sessions, so
 		 * your application should be able to restore itself to a specific state based on just this value. It
@@ -596,9 +596,15 @@ jet().add('history', function ($) {
 		 * If you have set a baseTitle using the options bundle, the value will be plugged into the baseTitle by swapping out the @@@ replacement param.
 		 * @chainable
 		 */
-		this.add = function (newLocation, historyData) {
+		this.go = function (newLocation, historyData) {
 			
-			var that = myself;
+			var that = myself, newData = [];
+			if (Lang.isHash(newLocation)) {
+				Hash.each(newLocation, function (key, val) {
+					newData.push(key + "=" + val);
+				});
+				newLocation = newData.join("&");
+			}
 			/*Escape the location and remove any leading hash symbols*/
 			var encodedLocation = encode(removeHash(newLocation));
 			
