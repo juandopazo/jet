@@ -396,7 +396,7 @@ jet().add('history', function ($) {
 	
 		/*Private: Notify the listener of new history changes.*/
 		var fireHistoryEvent = function (newHash) {
-			var decodedHash = decode(newHash);
+			var decodedHash = removeHash(decode(newHash));
 			/*extract the value from our history storage for this hash*/
 			var historyData = historyStorage.get(decodedHash);
 			var hashData = {};
@@ -604,7 +604,6 @@ jet().add('history', function ($) {
 			
 			if (safari) {
 	
-				console.log(historyData);
 				/*Store the history data into history storage - pass in unencoded newLocation since
 				historyStorage does its own encoding*/
 				historyStorage.put(newLocation, historyData);
@@ -703,40 +702,40 @@ jet().add('history', function ($) {
 			if (UA.ie) {
 				createIE(initialHash);
 			}
-		}
-		/*Add an unload listener for the page; this is needed for FF 1.5+ because this browser caches all dynamic updates to the
-		page, which can break some of our logic related to testing whether this is the first instance a page has loaded or whether
-		it is being pulled from the cache*/
-
-		$($.win).on("unload", function () {
-			firstLoad = null;
-		});
-
-		/*Determine if this is our first page load; for IE, we do this in this.iframeLoaded(), which is fired on pageload. We do it
-		there because we have no historyStorage at this point, which only exists after the page is finished loading in IE*/
-		if (UA.ie) {
-			/*The iframe will get loaded on page load, and we want to ignore this fact*/
-			ignoreLocationChange = true;
-		} else {
-			if (!historyStorage.hasKey(PAGELOADEDSTRING)) {
-				/*This is our first page load, so ignore the location change and add our special history entry*/
+			/*Add an unload listener for the page; this is needed for FF 1.5+ because this browser caches all dynamic updates to the
+			page, which can break some of our logic related to testing whether this is the first instance a page has loaded or whether
+			it is being pulled from the cache*/
+	
+			$($.win).on("unload", function () {
+				firstLoad = null;
+			});
+	
+			/*Determine if this is our first page load; for IE, we do this in this.iframeLoaded(), which is fired on pageload. We do it
+			there because we have no historyStorage at this point, which only exists after the page is finished loading in IE*/
+			if (UA.ie) {
+				/*The iframe will get loaded on page load, and we want to ignore this fact*/
 				ignoreLocationChange = true;
-				firstLoad = true;
-				historyStorage.put(PAGELOADEDSTRING, true);
 			} else {
-				/*This isn't our first page load, so indicate that we want to pay attention to this location change*/
-				ignoreLocationChange = false;
-				firstLoad = false;
-				/*For browsers other than IE, fire a history change event; on IE, the event will be thrown automatically when its
-				hidden iframe reloads on page load. Unfortunately, we don't have any listeners yet; indicate that we want to fire
-				an event when a listener is added.*/
-				fireOnNewListener = true;
+				if (!historyStorage.hasKey(PAGELOADEDSTRING)) {
+					/*This is our first page load, so ignore the location change and add our special history entry*/
+					ignoreLocationChange = true;
+					firstLoad = true;
+					historyStorage.put(PAGELOADEDSTRING, true);
+				} else {
+					/*This isn't our first page load, so indicate that we want to pay attention to this location change*/
+					ignoreLocationChange = false;
+					firstLoad = false;
+					/*For browsers other than IE, fire a history change event; on IE, the event will be thrown automatically when its
+					hidden iframe reloads on page load. Unfortunately, we don't have any listeners yet; indicate that we want to fire
+					an event when a listener is added.*/
+					fireOnNewListener = true;
+				}
 			}
+	
+			/*Other browsers can use a location handler that checks at regular intervals as their primary mechanism; we use it for IE as
+			well to handle an important edge case; see checkLocation() for details*/
+			setInterval(checkLocation, 100);
 		}
-
-		/*Other browsers can use a location handler that checks at regular intervals as their primary mechanism; we use it for IE as
-		well to handle an important edge case; see checkLocation() for details*/
-		setInterval(checkLocation, 100);		
 	};
 	$.extend(History, $.Base);
 	
