@@ -61,7 +61,8 @@
 	
 	<span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
 		<span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span>
-		<span class="nx">A</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">;</span>
+		<span class="nx">A</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">,</span>
+		<span class="nx">SLICE</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">;</span>
 		
 	<span class="kd">var</span> <span class="nx">BOUNDING_BOX</span> <span class="o">=</span> <span class="s2">&quot;boundingBox&quot;</span><span class="p">,</span>
 		<span class="nx">NODE</span> <span class="o">=</span> <span class="s2">&quot;node&quot;</span><span class="p">,</span>
@@ -180,10 +181,10 @@
 	<span class="c1">// Vector class attribute definitions</span>
 	<span class="kd">var</span> <span class="nx">Vector_ATTRS</span> <span class="o">=</span> <span class="p">{};</span>
 	
-	<span class="c1">// This attributes should map to styles in VML instead of DOM attributes</span>
+	<span class="c1">// These attributes should map to styles in VML instead of DOM attributes</span>
 	<span class="kd">var</span> <span class="nx">VML_STYLE_ATTRIBUTES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">,</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;top&#39;</span><span class="p">];</span>
 	
-	<span class="c1">// This attributes should always map to DOM attributes in both SVG and VML</span>
+	<span class="c1">// These attributes should always map to DOM attributes in both SVG and VML</span>
 	<span class="kd">var</span> <span class="nx">ATTR_ATTRIBUTES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;rx&#39;</span><span class="p">,</span> <span class="s1">&#39;ry&#39;</span><span class="p">,</span> <span class="s1">&#39;xmlns&#39;</span><span class="p">,</span> <span class="s1">&#39;version&#39;</span><span class="p">,</span> <span class="s1">&#39;fill&#39;</span><span class="p">,</span> <span class="s1">&#39;opacity&#39;</span><span class="p">].</span><span class="nx">concat</span><span class="p">(</span><span class="nx">VML_STYLE_ATTRIBUTES</span><span class="p">);</span>
 	
 	<span class="c1">// Each key in this object is a SVG attribute and its value is its VML equivalent</span>
@@ -199,19 +200,19 @@
 	<span class="k">if</span> <span class="p">(</span><span class="nx">UA_SUPPORTS_SVG</span><span class="p">)</span> <span class="p">{</span>
 		<span class="c1">// In SVG everything works as an attribute modifiable with get/setAttribute()</span>
 		<span class="nx">ATTR_ATTRIBUTES</span> <span class="o">=</span> <span class="nx">ATTR_ATTRIBUTES</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">VML_STYLE_ATTRIBUTES</span><span class="p">);</span>
-
 	<span class="p">}</span>
+	
 	<span class="cm">/*</span>
 <span class="cm">	 * Create a default getter function</span>
 <span class="cm">	 * @param {String} attrName</span>
 <span class="cm">	 */</span>
 	<span class="kd">var</span> <span class="nx">getDefaultGetter</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">attrName</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">return</span> <span class="nx">UA_SUPPORTS_SVG</span> <span class="o">?</span>  <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">parseDec</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="nx">attrName</span><span class="p">));</span>
+		<span class="k">return</span> <span class="nx">UA_SUPPORTS_SVG</span> <span class="o">?</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">parseDec</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">getAttribute</span><span class="p">(</span><span class="nx">attrName</span><span class="p">));</span>
 		<span class="p">}</span> <span class="o">:</span> <span class="nx">A</span><span class="p">.</span><span class="nx">inArray</span><span class="p">(</span><span class="nx">attrName</span><span class="p">,</span> <span class="nx">VML_STYLE_ATTRIBUTES</span><span class="p">)</span> <span class="o">?</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">parseDec</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]);</span>
+			<span class="k">return</span> <span class="nx">parseDec</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">style</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]);</span>
 		<span class="p">}</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">parseDec</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]);</span>
+			<span class="k">return</span> <span class="nx">parseDec</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">)[</span><span class="nx">attrName</span><span class="p">]);</span>
 		<span class="p">};</span>
 	<span class="p">};</span>
 	<span class="cm">/*</span>
@@ -220,13 +221,13 @@
 <span class="cm">	 */</span>
 	<span class="kd">var</span> <span class="nx">getDefaultSetter</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">attrName</span><span class="p">)</span> <span class="p">{</span>
 		<span class="k">return</span> <span class="nx">UA_SUPPORTS_SVG</span> <span class="o">?</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="nx">attrName</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">setAttribute</span><span class="p">(</span><span class="nx">attrName</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
 			<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 		<span class="p">}</span> <span class="o">:</span> <span class="nx">A</span><span class="p">.</span><span class="nx">inArray</span><span class="p">(</span><span class="nx">attrName</span><span class="p">,</span> <span class="nx">VML_STYLE_ATTRIBUTES</span><span class="p">)</span> <span class="o">?</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">style</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
 			<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 		<span class="p">}</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">)[</span><span class="nx">attrName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
 			<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 		<span class="p">};</span>
 	<span class="p">};</span>
@@ -240,6 +241,7 @@
 	<span class="p">});</span>
 	
 	
+	<span class="c1">// Each key in this object is a SVG attribute and its value is its VML equivalent</span>
 	<span class="kd">var</span> <span class="nx">STROKE_ATTR_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
 		<span class="nx">stroke</span><span class="o">:</span> <span class="s2">&quot;color&quot;</span><span class="p">,</span>
 		<span class="s2">&quot;stroke-width&quot;</span><span class="o">:</span> <span class="s2">&quot;weight&quot;</span><span class="p">,</span>
@@ -252,7 +254,7 @@
 	<span class="kd">var</span> <span class="nx">strokeAttributesGetter</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
 		<span class="k">if</span> <span class="p">(</span><span class="nx">UA_SUPPORTS_SVG</span><span class="p">)</span> <span class="p">{</span>
 			<span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-				<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">getAttribute</span><span class="p">(</span><span class="nx">name</span><span class="p">);</span>
 			<span class="p">};</span>
 		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 			<span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
@@ -263,7 +265,7 @@
 	<span class="kd">var</span> <span class="nx">strokeAttributesSetter</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
 		<span class="k">if</span> <span class="p">(</span><span class="nx">UA_SUPPORTS_SVG</span><span class="p">)</span> <span class="p">{</span>
 			<span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-				<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">setAttribute</span><span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
 				<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 			<span class="p">};</span>
 		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
@@ -401,18 +403,176 @@
 		<span class="p">},</span>
 		<span class="nx">scale</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 			
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @method append</span>
+<span class="cm">		 * @description Append the passed vector to this vector</span>
+<span class="cm">		 * @param {Vector} vector</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">append</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">vector</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">vector</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">));</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @method appendTo</span>
+<span class="cm">		 * @description Append this vector&#39;s node to the target node</span>
+<span class="cm">		 * @param {NodeList | Vector | DOMNode} target</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">appendTo</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">target</span> <span class="o">=</span> <span class="nx">target</span> <span class="k">instanceof</span> <span class="nx">$</span><span class="p">.</span><span class="nx">NodeList</span> <span class="o">?</span> <span class="nx">target</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">:</span> <span class="nx">target</span> <span class="k">instanceof</span> <span class="nx">Vector</span> <span class="o">?</span> <span class="nx">target</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">)</span> <span class="o">:</span> <span class="nx">target</span><span class="p">;</span>
+			<span class="nx">target</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">));</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @method remove</span>
+<span class="cm">		 * @description Detach this vector from the DOM and remove all event listeners</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">remove</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">node</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">node</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">node</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="nx">$</span><span class="p">(</span><span class="nx">node</span><span class="p">).</span><span class="nx">unbindAll</span><span class="p">();</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @method detach</span>
+<span class="cm">		 * @description Detach this vector from the DOM but keep all event listeners</span>
+<span class="cm">		 */</span>
+		<span class="nx">detach</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">node</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">node</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">node</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Gets or sets CSS styles</span>
+<span class="cm">		 * @method css</span>
+<span class="cm">		 * @param {String|Hash} key</span>
+<span class="cm">		 * @param {String} [value]</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">css</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">css</span> <span class="o">=</span> <span class="p">{};</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isHash</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">css</span> <span class="o">=</span> <span class="nx">key</span><span class="p">;</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isValue</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">css</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">node</span><span class="p">).</span><span class="nx">currentStyle</span><span class="p">()[</span><span class="nx">key</span><span class="p">];</span>
+			<span class="p">}</span>
+			<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">css</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">val</span><span class="p">;</span>
+			<span class="p">});</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Hides all nodes</span>
+<span class="cm">		 * @method hide</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">hide</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">display</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">node</span><span class="p">.</span><span class="nx">JET_oDisplay</span> <span class="o">&amp;&amp;</span> <span class="nx">display</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">node</span><span class="p">.</span><span class="nx">JET_oDisplay</span> <span class="o">=</span> <span class="nx">display</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span><span class="p">;</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Shows all nodes</span>
+<span class="cm">		 * @method show</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">show</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">);</span>
+			<span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">display</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">JET_oDisplay</span> <span class="o">||</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Returns true if the first node in the collection has the className CSS class</span>
+<span class="cm">		 * @method hasClass</span>
+<span class="cm">		 * @param {String} className</span>
+<span class="cm">		 * @return Boolean</span>
+<span class="cm">		 */</span>
+		<span class="nx">hasClass</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">className</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">className</span> <span class="o">=</span> <span class="nx">UA_SUPPORTS_SVG</span> <span class="o">?</span> <span class="nx">node</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span> <span class="o">:</span> <span class="nx">node</span><span class="p">.</span><span class="nx">className</span><span class="p">;</span>
+			<span class="k">return</span> <span class="nx">A</span><span class="p">.</span><span class="nx">inArray</span><span class="p">(</span><span class="nx">className</span><span class="p">,</span> <span class="nx">className</span> <span class="o">?</span> <span class="nx">className</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="o">:</span> <span class="p">[]);</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Removes a number of classes from all nodes in the collection.</span>
+<span class="cm">		 * Takes multiple string parameters</span>
+<span class="cm">		 * @method removeClass</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">removeClass</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">SLICE</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">className</span> <span class="o">=</span> <span class="nx">UA_SUPPORTS_SVG</span> <span class="o">?</span> <span class="nx">node</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span> <span class="o">:</span> <span class="nx">node</span><span class="p">.</span><span class="nx">className</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">classes</span> <span class="o">=</span> <span class="nx">className</span> <span class="o">?</span> <span class="nx">className</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="o">:</span> <span class="p">[];</span>
+			<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">args</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">sClass</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">A</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">sClass</span><span class="p">,</span> <span class="nx">classes</span><span class="p">);</span>
+			<span class="p">});</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">UA_SUPPORTS_SVG</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">node</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="nx">classes</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">));</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">node</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="nx">classes</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Adds a number of classes to all nodes in the collection</span>
+<span class="cm">		 * Takes multiple string parameters</span>
+<span class="cm">		 * @method addClass</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">addClass</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">SLICE</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">className</span> <span class="o">=</span> <span class="nx">UA_SUPPORTS_SVG</span> <span class="o">?</span> <span class="nx">node</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span> <span class="o">:</span> <span class="nx">node</span><span class="p">.</span><span class="nx">className</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">classes</span> <span class="o">=</span> <span class="nx">className</span> <span class="o">?</span> <span class="nx">className</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="o">:</span> <span class="p">[];</span>
+			<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">args</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">sClass</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">A</span><span class="p">.</span><span class="nx">inArray</span><span class="p">(</span><span class="nx">sClass</span><span class="p">,</span> <span class="nx">classes</span><span class="p">))</span> <span class="p">{</span>
+					<span class="nx">classes</span><span class="p">[</span><span class="nx">classes</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">sClass</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">});</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">UA_SUPPORTS_SVG</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">node</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="nx">classes</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">));</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">node</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="nx">classes</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Adds/removes a certain class from all nodes in the collection</span>
+<span class="cm">		 * @method toggleClass</span>
+<span class="cm">		 * @param {String} sClass</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">toggleClass</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">sClass</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">args</span> <span class="o">=</span> <span class="nx">SLICE</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">className</span> <span class="o">=</span> <span class="nx">UA_SUPPORTS_SVG</span> <span class="o">?</span> <span class="nx">node</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">)</span> <span class="o">:</span> <span class="nx">node</span><span class="p">.</span><span class="nx">className</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">classes</span> <span class="o">=</span> <span class="nx">className</span> <span class="o">?</span> <span class="nx">className</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="o">:</span> <span class="p">[];</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">A</span><span class="p">.</span><span class="nx">inArray</span><span class="p">(</span><span class="nx">sClass</span><span class="p">,</span> <span class="nx">classes</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">classes</span><span class="p">[</span><span class="nx">classes</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">sClass</span><span class="p">;</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">A</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">sClass</span><span class="p">,</span> <span class="nx">classes</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">UA_SUPPORTS_SVG</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">node</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">,</span> <span class="nx">classes</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">));</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">node</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="nx">classes</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
 		<span class="p">}</span>
-	<span class="p">});</span>
-	<span class="cm">/*</span>
-<span class="cm">	 * Copy methods from NodeList</span>
-<span class="cm">	 * After all, SVG and VML elements are DOM nodes and we don&#39;t want them to have custom events,</span>
-<span class="cm">	 * but we don&#39;t need every method from Node either</span>
-<span class="cm">	 */</span>
-	<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">([</span><span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="s1">&#39;appendTo&#39;</span><span class="p">,</span> <span class="s1">&#39;remove&#39;</span><span class="p">,</span> <span class="s1">&#39;css&#39;</span><span class="p">,</span> <span class="s1">&#39;hide&#39;</span><span class="p">,</span> <span class="s1">&#39;show&#39;</span><span class="p">,</span> <span class="s1">&#39;children&#39;</span><span class="p">],</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">method</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">Vector</span><span class="p">.</span><span class="nx">prototype</span><span class="p">[</span><span class="nx">method</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">NP</span><span class="p">[</span><span class="nx">method</span><span class="p">].</span><span class="nx">apply</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">)),</span> <span class="nx">arguments</span><span class="p">);</span>
-			<span class="k">return</span> <span class="nx">$</span><span class="p">.</span><span class="nx">NodeList</span><span class="p">.</span><span class="nx">is</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="o">?</span> <span class="k">this</span> <span class="o">:</span> <span class="nx">result</span><span class="p">;</span>
-		<span class="p">};</span>
 	<span class="p">});</span>
 	
 	<span class="cm">/**</span>
@@ -476,15 +636,15 @@
 <span class="cm">			 */</span>
 			<span class="nx">rx</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">getter</span><span class="o">:</span> <span class="nx">UA_SUPPORTS_SVG</span> <span class="o">?</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;rx&quot;</span><span class="p">);</span>
+					<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;rx&quot;</span><span class="p">);</span>
 				<span class="p">}</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="nx">$</span><span class="p">.</span><span class="nx">pxToFloat</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+					<span class="k">return</span> <span class="nx">$</span><span class="p">.</span><span class="nx">pxToFloat</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
 				<span class="p">},</span>
 				<span class="nx">setter</span><span class="o">:</span> <span class="nx">UA_SUPPORTS_SVG</span> <span class="o">?</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;rx&quot;</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;rx&quot;</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
 					<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 				<span class="p">}</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">value</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">value</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>
 					<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 				<span class="p">}</span>
 			<span class="p">},</span>
@@ -494,15 +654,15 @@
 <span class="cm">			 */</span>
 			<span class="nx">ry</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">getter</span><span class="o">:</span> <span class="nx">UA_SUPPORTS_SVG</span> <span class="o">?</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;ry&quot;</span><span class="p">);</span>
+					<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;ry&quot;</span><span class="p">);</span>
 				<span class="p">}</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="nx">$</span><span class="p">.</span><span class="nx">pxToFloat</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+					<span class="k">return</span> <span class="nx">$</span><span class="p">.</span><span class="nx">pxToFloat</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
 				<span class="p">},</span>
 				<span class="nx">setter</span><span class="o">:</span> <span class="nx">UA_SUPPORTS_SVG</span> <span class="o">?</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;ry&quot;</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;ry&quot;</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
 					<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 				<span class="p">}</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nx">value</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">style</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nx">value</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>
 					<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 				<span class="p">}</span>
 			<span class="p">}</span>		
@@ -515,10 +675,10 @@
 			<span class="nx">cx</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">getter</span><span class="o">:</span> <span class="nx">getDefaultGetter</span><span class="p">(</span><span class="o">!</span><span class="nx">UA_SUPPORTS_SVG</span> <span class="o">&amp;&amp;</span> <span class="nx">VML_ATTR_MAPPING</span><span class="p">.</span><span class="nx">cx</span> <span class="o">?</span> <span class="nx">VML_ATTR_MAPPING</span><span class="p">.</span><span class="nx">cx</span> <span class="o">:</span> <span class="s2">&quot;cx&quot;</span><span class="p">),</span>
 				<span class="nx">setter</span><span class="o">:</span> <span class="nx">UA_SUPPORTS_SVG</span> <span class="o">?</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;cx&quot;</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;cx&quot;</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
 					<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 				<span class="p">}</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">left</span> <span class="o">=</span> <span class="p">(</span><span class="nx">value</span> <span class="o">-</span> <span class="nx">$</span><span class="p">.</span><span class="nx">pxToFloat</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;rx&quot;</span><span class="p">)))</span> <span class="o">+</span> <span class="s2">&quot;px&quot;</span><span class="p">;</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">style</span><span class="p">.</span><span class="nx">left</span> <span class="o">=</span> <span class="p">(</span><span class="nx">value</span> <span class="o">-</span> <span class="nx">$</span><span class="p">.</span><span class="nx">pxToFloat</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;rx&quot;</span><span class="p">)))</span> <span class="o">+</span> <span class="s2">&quot;px&quot;</span><span class="p">;</span>
 					<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 				<span class="p">}</span>
 			<span class="p">},</span>
@@ -529,10 +689,10 @@
 			<span class="nx">cy</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">getter</span><span class="o">:</span> <span class="nx">getDefaultGetter</span><span class="p">(</span><span class="o">!</span><span class="nx">UA_SUPPORTS_SVG</span> <span class="o">&amp;&amp;</span> <span class="nx">VML_ATTR_MAPPING</span><span class="p">.</span><span class="nx">cy</span> <span class="o">?</span> <span class="nx">VML_ATTR_MAPPING</span><span class="p">.</span><span class="nx">cy</span> <span class="o">:</span> <span class="s2">&quot;cy&quot;</span><span class="p">),</span>
 				<span class="nx">setter</span><span class="o">:</span> <span class="nx">UA_SUPPORTS_SVG</span> <span class="o">?</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;cy&quot;</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;cy&quot;</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
 					<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 				<span class="p">}</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">top</span> <span class="o">=</span> <span class="p">(</span><span class="nx">value</span> <span class="o">-</span> <span class="nx">$</span><span class="p">.</span><span class="nx">pxToFloat</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;ry&quot;</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;px&quot;</span><span class="p">;</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">style</span><span class="p">.</span><span class="nx">top</span> <span class="o">=</span> <span class="p">(</span><span class="nx">value</span> <span class="o">-</span> <span class="nx">$</span><span class="p">.</span><span class="nx">pxToFloat</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;ry&quot;</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;px&quot;</span><span class="p">;</span>
 					<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 				<span class="p">}</span>
 			<span class="p">}</span>
@@ -558,15 +718,15 @@
 <span class="cm">			 */</span>
 			<span class="nx">r</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">getter</span><span class="o">:</span> <span class="nx">UA_SUPPORTS_SVG</span> <span class="o">?</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">);</span>
+					<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">);</span>
 				<span class="p">}</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span><span class="p">;</span>
+					<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span><span class="p">;</span>
 				<span class="p">},</span>
 				<span class="nx">setter</span><span class="o">:</span> <span class="nx">UA_SUPPORTS_SVG</span> <span class="o">?</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
 					<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 				<span class="p">}</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="kd">var</span> <span class="nx">ns</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">;</span>
+					<span class="kd">var</span> <span class="nx">ns</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">style</span><span class="p">;</span>
 					<span class="nx">ns</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">value</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>
 					<span class="nx">ns</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nx">value</span> <span class="o">*</span> <span class="mi">2</span><span class="p">;</span>
 					<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
@@ -580,10 +740,10 @@
 			<span class="nx">cx</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">getter</span><span class="o">:</span> <span class="nx">getDefaultGetter</span><span class="p">(</span><span class="o">!</span><span class="nx">UA_SUPPORTS_SVG</span> <span class="o">&amp;&amp;</span> <span class="nx">VML_ATTR_MAPPING</span><span class="p">.</span><span class="nx">cx</span> <span class="o">?</span> <span class="nx">VML_ATTR_MAPPING</span><span class="p">.</span><span class="nx">cx</span> <span class="o">:</span> <span class="s2">&quot;cx&quot;</span><span class="p">),</span>
 				<span class="nx">setter</span><span class="o">:</span> <span class="nx">UA_SUPPORTS_SVG</span> <span class="o">?</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;cx&quot;</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;cx&quot;</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
 					<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 				<span class="p">}</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">left</span> <span class="o">=</span> <span class="p">(</span><span class="nx">value</span> <span class="o">-</span> <span class="nx">$</span><span class="p">.</span><span class="nx">pxToFloat</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;px&quot;</span><span class="p">;</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">style</span><span class="p">.</span><span class="nx">left</span> <span class="o">=</span> <span class="p">(</span><span class="nx">value</span> <span class="o">-</span> <span class="nx">$</span><span class="p">.</span><span class="nx">pxToFloat</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;px&quot;</span><span class="p">;</span>
 					<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 				<span class="p">}</span>
 			<span class="p">},</span>
@@ -594,10 +754,10 @@
 			<span class="nx">cy</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">getter</span><span class="o">:</span> <span class="nx">getDefaultGetter</span><span class="p">(</span><span class="o">!</span><span class="nx">UA_SUPPORTS_SVG</span> <span class="o">&amp;&amp;</span> <span class="nx">VML_ATTR_MAPPING</span><span class="p">.</span><span class="nx">cy</span> <span class="o">?</span> <span class="nx">VML_ATTR_MAPPING</span><span class="p">.</span><span class="nx">cy</span> <span class="o">:</span> <span class="s2">&quot;cy&quot;</span><span class="p">),</span>
 				<span class="nx">setter</span><span class="o">:</span> <span class="nx">UA_SUPPORTS_SVG</span> <span class="o">?</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;cy&quot;</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;cy&quot;</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
 					<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 				<span class="p">}</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">this</span><span class="p">.</span><span class="nx">node</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">top</span> <span class="o">=</span> <span class="p">(</span><span class="nx">value</span> <span class="o">-</span> <span class="nx">$</span><span class="p">.</span><span class="nx">pxToFloat</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;px&quot;</span><span class="p">;</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">).</span><span class="nx">style</span><span class="p">.</span><span class="nx">top</span> <span class="o">=</span> <span class="p">(</span><span class="nx">value</span> <span class="o">-</span> <span class="nx">$</span><span class="p">.</span><span class="nx">pxToFloat</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;px&quot;</span><span class="p">;</span>
 					<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 				<span class="p">}</span>
 			<span class="p">}</span>
@@ -736,10 +896,11 @@
 				<span class="nx">getter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 					<span class="k">return</span> <span class="nx">box</span><span class="p">;</span>
 				<span class="p">}</span>
+			<span class="p">},</span>
+			<span class="nx">className</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;vectorview&quot;</span>
 			<span class="p">}</span>
 		<span class="p">});</span>
-		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;srcNode&quot;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">box</span><span class="p">);</span>
 		
 	<span class="p">}</span> <span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 		<span class="nx">VectorView</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
@@ -767,14 +928,15 @@
 				<span class="nx">getter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 					<span class="k">return</span> <span class="nx">box</span><span class="p">;</span>
 				<span class="p">}</span>
+			<span class="p">},</span>
+			<span class="nx">className</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;vectorview&quot;</span>
 			<span class="p">}</span>
 		<span class="p">});</span>
 		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;srcNode&quot;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">box</span><span class="p">);</span>
-		
 	<span class="p">};</span>
-	<span class="kd">var</span> <span class="nx">appendToVectorView</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">shape</span><span class="p">,</span> <span class="nx">plasma</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">return</span> <span class="nx">shape</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">VECTOR</span><span class="p">,</span> <span class="nx">plasma</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">plasma</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">));</span>
+	<span class="kd">var</span> <span class="nx">appendToVectorView</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">shape</span><span class="p">,</span> <span class="nx">vectorview</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">shape</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">VECTOR</span><span class="p">,</span> <span class="nx">vectorview</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">vectorview</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">));</span>
 	<span class="p">};</span>
 	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">VectorView</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Widget</span><span class="p">,</span> <span class="p">{</span>
 		<span class="cm">/**</span>
@@ -853,7 +1015,7 @@
 	<span class="nx">$</span><span class="p">.</span><span class="nx">mix</span><span class="p">(</span><span class="nx">Vector</span><span class="p">,</span> <span class="p">{</span>
 		<span class="nx">Circle</span><span class="o">:</span> <span class="nx">Circle</span><span class="p">,</span>
 		<span class="nx">Rectangle</span><span class="o">:</span> <span class="nx">Rectangle</span><span class="p">,</span>
-		<span class="s2">&quot;Image&quot;</span><span class="o">:</span> <span class="nx">ImageVector</span><span class="p">,</span>
+		<span class="nx">Image</span><span class="o">:</span> <span class="nx">ImageVector</span><span class="p">,</span>
 		<span class="nx">Text</span><span class="o">:</span> <span class="nx">Text</span><span class="p">,</span>
 		<span class="nx">Path</span><span class="o">:</span> <span class="nx">Path</span><span class="p">,</span>
 		<span class="nx">decToHex</span><span class="o">:</span> <span class="nx">decToHex</span><span class="p">,</span>

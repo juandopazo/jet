@@ -291,18 +291,25 @@
 					<span class="k">return</span> <span class="o">!!</span><span class="nx">$</span><span class="p">.</span><span class="nx">Drag</span><span class="p">;</span>
 				<span class="p">},</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
+			<span class="p">},</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @config zIndex</span>
+<span class="cm">			 * @description zIndex to apply to the boundingBox</span>
+<span class="cm">			 * @default 100</span>
+<span class="cm">			 */</span>
+			<span class="nx">zIndex</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="mi">100</span>
+			<span class="p">},</span>
+			<span class="nx">modal</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
 			<span class="p">}</span>
 		<span class="p">});</span>
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">CLASS_NAME</span><span class="p">,</span> <span class="nx">Overlay</span><span class="p">.</span><span class="nx">NAME</span><span class="p">);</span>
 		
-		<span class="kd">var</span> <span class="nx">rendered</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;rendered&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="nx">rendered</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-		<span class="p">});</span>
-		
 		<span class="c1">// centers the overlay in the screen</span>
 		<span class="kd">var</span> <span class="nx">center</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">boundingBox</span><span class="p">)</span> <span class="p">{</span>
 			<span class="kd">var</span> <span class="nx">screenSize</span> <span class="o">=</span> <span class="nx">DOM</span><span class="p">.</span><span class="nx">screenSize</span><span class="p">();</span>
+			<span class="kd">var</span> <span class="nx">rendered</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;rendered&quot;</span><span class="p">);</span>
 			<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">css</span><span class="p">({</span>
 				<span class="nx">left</span><span class="o">:</span> <span class="p">(</span><span class="nx">screenSize</span><span class="p">.</span><span class="nx">width</span> <span class="o">-</span> <span class="p">(</span><span class="nx">rendered</span> <span class="o">?</span> <span class="nx">boundingBox</span><span class="p">.</span><span class="nx">width</span><span class="p">()</span> <span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">WIDTH</span><span class="p">)))</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="nx">PX</span><span class="p">,</span>
 				<span class="nx">top</span><span class="o">:</span> <span class="p">(</span><span class="nx">screenSize</span><span class="p">.</span><span class="nx">height</span> <span class="o">-</span> <span class="p">(</span><span class="nx">rendered</span> <span class="o">?</span> <span class="nx">boundingBox</span><span class="p">.</span><span class="nx">height</span><span class="p">()</span> <span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">HEIGHT</span><span class="p">)))</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="nx">PX</span>
@@ -343,25 +350,58 @@
 			<span class="kd">var</span> <span class="nx">win</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">win</span><span class="p">);</span>
 			<span class="kd">var</span> <span class="nx">boundingBox</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">);</span>
 			<span class="kd">var</span> <span class="nx">header</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">HEADER</span><span class="p">);</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">header</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">header</span><span class="p">);</span>
-			<span class="p">}</span>
 			<span class="kd">var</span> <span class="nx">body</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BODY</span><span class="p">);</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
-			<span class="p">}</span>
 			<span class="kd">var</span> <span class="nx">footer</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">FOOTER</span><span class="p">);</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">footer</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">footer</span><span class="p">);</span>
-			<span class="p">}</span>
 			<span class="kd">var</span> <span class="nx">fixed</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">FIXED</span><span class="p">);</span>
 			<span class="kd">var</span> <span class="nx">pos</span> <span class="o">=</span> <span class="nx">fixed</span> <span class="o">&amp;&amp;</span> <span class="nx">UA_SUPPORTS_FIXED</span> <span class="o">?</span> <span class="nx">FIXED</span> <span class="o">:</span> <span class="s2">&quot;absolute&quot;</span><span class="p">;</span>
 			<span class="kd">var</span> <span class="nx">height</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">HEIGHT</span><span class="p">);</span>
-			<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="nx">pos</span><span class="p">).</span><span class="nx">width</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">WIDTH</span><span class="p">));</span>
+			<span class="kd">var</span> <span class="nx">screenSize</span> <span class="o">=</span> <span class="nx">DOM</span><span class="p">.</span><span class="nx">screenSize</span><span class="p">();</span>
+			<span class="kd">var</span> <span class="nx">modal</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;div/&gt;&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">({</span>
+				<span class="nx">position</span><span class="o">:</span> <span class="s2">&quot;fixed&quot;</span><span class="p">,</span>
+				<span class="nx">top</span><span class="o">:</span> <span class="s2">&quot;0px&quot;</span><span class="p">,</span>
+				<span class="nx">left</span><span class="o">:</span> <span class="s2">&quot;0px&quot;</span><span class="p">,</span>
+				<span class="nx">background</span><span class="o">:</span> <span class="s2">&quot;#000&quot;</span><span class="p">,</span>
+				<span class="nx">visibility</span><span class="o">:</span> <span class="o">!</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;modal&quot;</span><span class="p">)</span> <span class="o">?</span> <span class="s2">&quot;hidden&quot;</span> <span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+				<span class="nx">zIndex</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;zIndex&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+				<span class="nx">opacity</span><span class="o">:</span> <span class="mf">0.4</span>
+			<span class="p">}).</span><span class="nx">width</span><span class="p">(</span><span class="nx">screenSize</span><span class="p">.</span><span class="nx">width</span><span class="p">).</span><span class="nx">height</span><span class="p">(</span><span class="nx">screenSize</span><span class="p">.</span><span class="nx">height</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
+			<span class="nx">win</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;resize&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">screenSize</span> <span class="o">=</span> <span class="nx">DOM</span><span class="p">.</span><span class="nx">screenSize</span><span class="p">();</span>
+				<span class="nx">modal</span><span class="p">.</span><span class="nx">width</span><span class="p">(</span><span class="nx">screenSize</span><span class="p">.</span><span class="nx">width</span><span class="p">).</span><span class="nx">height</span><span class="p">(</span><span class="nx">screenSize</span><span class="p">.</span><span class="nx">height</span><span class="p">);</span>
+			<span class="p">});</span>
+			<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;hide&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+				<span class="nx">modal</span><span class="p">.</span><span class="nx">hide</span><span class="p">();</span>
+			<span class="p">}).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;show&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;modal&quot;</span><span class="p">))</span> <span class="p">{</span>
+					<span class="nx">modal</span><span class="p">.</span><span class="nx">show</span><span class="p">();</span>
+				<span class="p">}</span>
+			<span class="p">});</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">header</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">header</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">body</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">footer</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">footer</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;position&quot;</span><span class="p">,</span> <span class="nx">pos</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;zIndex&quot;</span><span class="p">,</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;zIndex&quot;</span><span class="p">)).</span><span class="nx">width</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">WIDTH</span><span class="p">));</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">height</span><span class="p">)</span> <span class="p">{</span>
 				<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">height</span><span class="p">(</span><span class="nx">height</span><span class="p">);</span>
 			<span class="p">}</span>
 			<span class="nx">setPosition</span><span class="p">(</span><span class="nx">boundingBox</span><span class="p">);</span>
+		<span class="p">});</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;afterRender&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">boundingBox</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">win</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">win</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">head</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">HEADER</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">fixed</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">FIXED</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;draggable&quot;</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">dd</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Drag</span><span class="p">({</span>
+					<span class="nx">node</span><span class="o">:</span> <span class="nx">boundingBox</span><span class="p">,</span>
+					<span class="nx">handlers</span><span class="o">:</span> <span class="nx">head</span>
+				<span class="p">});</span>
+			<span class="p">}</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CENTER</span><span class="p">))</span> <span class="p">{</span>
 				<span class="nx">center</span><span class="p">(</span><span class="nx">boundingBox</span><span class="p">);</span>
 				<span class="nx">win</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">RESIZE</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
@@ -372,6 +412,9 @@
 						<span class="nx">center</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">));</span>
 					<span class="p">});</span>
 				<span class="p">}</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;afterShow&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+					<span class="nx">center</span><span class="p">(</span><span class="nx">boundingBox</span><span class="p">);</span>
+				<span class="p">});</span>
 			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">fixed</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">UA_SUPPORTS_FIXED</span><span class="p">)</span> <span class="p">{</span>
 				<span class="nx">win</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">SCROLL</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 					<span class="nx">setPosition</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">));</span>
@@ -380,17 +423,7 @@
 					<span class="nx">setPosition</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">));</span>
 				<span class="p">});</span>
 			<span class="p">}</span>
-		<span class="p">});</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;afterRender&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;draggable&quot;</span><span class="p">))</span> <span class="p">{</span>
-				<span class="kd">var</span> <span class="nx">head</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">HEADER</span><span class="p">);</span>
-				<span class="nx">myself</span><span class="p">.</span><span class="nx">dd</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Drag</span><span class="p">({</span>
-					<span class="nx">node</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">)</span>
-				<span class="p">});</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">head</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">myself</span><span class="p">.</span><span class="nx">dd</span><span class="p">.</span><span class="nx">addHandler</span><span class="p">(</span><span class="nx">head</span><span class="p">);</span>
-				<span class="p">}</span>
-			<span class="p">}</span>
+
 		<span class="p">});</span>
 	<span class="p">};</span>
 	<span class="nx">Overlay</span><span class="p">.</span><span class="nx">NAME</span> <span class="o">=</span> <span class="s2">&quot;overlay&quot;</span><span class="p">;</span>
@@ -441,11 +474,17 @@
 		<span class="cm">/*</span>
 <span class="cm">		 * Close button logic</span>
 <span class="cm">		 */</span>
-		<span class="kd">var</span> <span class="nx">closeButton</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;a/&gt;&quot;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;href&quot;</span><span class="p">,</span> <span class="s2">&quot;#&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;container-close&quot;</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="nx">CLICK</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">close</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">CLOSE</span><span class="p">))</span> <span class="p">{</span>
 				<span class="nx">myself</span><span class="p">.</span><span class="nx">hide</span><span class="p">();</span>
 			<span class="p">}</span>
 			<span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+		<span class="p">};</span>
+		<span class="kd">var</span> <span class="nx">closeButton</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;a/&gt;&quot;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;href&quot;</span><span class="p">,</span> <span class="s2">&quot;#&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;container-close&quot;</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="nx">CLICK</span><span class="p">,</span> <span class="nx">close</span><span class="p">);</span>
+		<span class="nx">$</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;keyup&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">keyCode</span> <span class="o">==</span> <span class="mi">27</span> <span class="o">&amp;&amp;</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;focused&quot;</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">close</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span>
+			<span class="p">}</span>
 		<span class="p">});</span>
 		<span class="cm">/**</span>
 <span class="cm">		 * @config close</span>
@@ -624,7 +663,7 @@
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "ComboBox.html#method_add", "access": "", "host": "ComboBox", "type": "method", "name": "add"}, {"url": "Button.html#config_buttonNode", "access": "", "host": "Button", "type": "config", "name": "buttonNode"}, {"url": "ComboBox.html#method_clear", "access": "", "host": "ComboBox", "type": "method", "name": "clear"}, {"url": "ComboBox.html#method_fill", "access": "", "host": "ComboBox", "type": "method", "name": "fill"}, {"url": "Button.html#config_type", "access": "", "host": "Button", "type": "config", "name": "type"}];
+    var ALL_YUI_PROPS = [{"url": "ComboBox.html#method_add", "access": "", "host": "ComboBox", "type": "method", "name": "add"}, {"url": "Button.html#config_buttonNode", "access": "", "host": "Button", "type": "config", "name": "buttonNode"}, {"url": "ComboBox.html#method_clear", "access": "", "host": "ComboBox", "type": "method", "name": "clear"}, {"url": "ComboBox.html#method_fill", "access": "", "host": "ComboBox", "type": "method", "name": "fill"}, {"url": "ComboBox.html#method_select", "access": "", "host": "ComboBox", "type": "method", "name": "select"}, {"url": "Button.html#config_type", "access": "", "host": "Button", "type": "config", "name": "type"}];
 </script>
 </body>
 </html>

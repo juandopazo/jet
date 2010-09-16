@@ -184,7 +184,7 @@
 <span class="cm">		 * @param {Function} callback</span>
 <span class="cm">		 * @chainable</span>
 <span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">eventType</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">on</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">eventType</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
 			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">collection</span><span class="p">[</span><span class="nx">eventType</span><span class="p">])</span> <span class="p">{</span>
 				<span class="nx">collection</span><span class="p">[</span><span class="nx">eventType</span><span class="p">]</span> <span class="o">=</span> <span class="p">[];</span>
 			<span class="p">}</span>
@@ -201,7 +201,7 @@
 <span class="cm">		 * @param {Function} callback</span>
 <span class="cm">		 * @chainable</span>
 <span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">unbind</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">eventType</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">unbind</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">eventType</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
 			<span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">callback</span><span class="p">,</span> <span class="nx">collection</span><span class="p">[</span><span class="nx">eventType</span><span class="p">]</span> <span class="o">||</span> <span class="p">[]);</span>
 			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
 		<span class="p">};</span>
@@ -212,7 +212,7 @@
 <span class="cm">		 * @param {String} eventType</span>
 <span class="cm">		 * Extra parameters will be passed to all event listeners</span>
 <span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">eventType</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">fire</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">eventType</span><span class="p">)</span> <span class="p">{</span>
 			<span class="kd">var</span> <span class="nx">handlers</span> <span class="o">=</span> <span class="nx">collection</span><span class="p">[</span><span class="nx">eventType</span><span class="p">]</span> <span class="o">||</span> <span class="p">[];</span>
 			<span class="kd">var</span> <span class="nx">returnValue</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">collection</span><span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">])</span> <span class="p">{</span>
@@ -251,7 +251,7 @@
 <span class="cm">		 * @method unbindAll</span>
 <span class="cm">		 * @chainable</span>
 <span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">unbindAll</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">unbindAll</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 			<span class="nx">collection</span> <span class="o">=</span> <span class="p">{};</span>
 			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
 		<span class="p">};</span>
@@ -405,11 +405,11 @@
 <span class="cm">	 * @constructor</span>
 <span class="cm">	 * @param {Object} config Object literal specifying widget configuration properties</span>
 <span class="cm">	 */</span>
-	<span class="cm">/*</span>
-<span class="cm">	 * Base should hold basic logic shared among a lot of classes, </span>
-<span class="cm">	 * to avoid having to extend the Attribute class which is very specific in what it does</span>
-<span class="cm">	 */</span>
 	<span class="kd">var</span> <span class="nx">Base</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="cm">/*</span>
+<span class="cm">		 * Base should hold basic logic shared among a lot of classes, </span>
+<span class="cm">		 * to avoid having to extend the Attribute class which is very specific in what it does</span>
+<span class="cm">		 */</span>
 		<span class="nx">Base</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
 		
 		<span class="cm">/**</span>
@@ -541,7 +541,7 @@
 			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;hide&quot;</span><span class="p">))</span> <span class="p">{</span>
 				<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="nx">VISIBILITY</span><span class="p">,</span> <span class="s2">&quot;hidden&quot;</span><span class="p">);</span>
 			<span class="p">}</span>
-			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;afterHide&quot;</span><span class="p">);</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
 <span class="cm">		 * Shows the widget</span>
@@ -553,7 +553,23 @@
 			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;show&quot;</span><span class="p">))</span> <span class="p">{</span>
 				<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="nx">VISIBILITY</span><span class="p">,</span> <span class="s2">&quot;visible&quot;</span><span class="p">);</span>
 			<span class="p">}</span>
-			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;afterShow&quot;</span><span class="p">);</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Focuses the widget</span>
+<span class="cm">		 * @method focus</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">focus</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;focused&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Blurrs the element</span>
+<span class="cm">		 * @method blur</span>
+<span class="cm">		 * @chainable</span>
+<span class="cm">		 */</span>
+		<span class="nx">blur</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;focused&quot;</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
 <span class="cm">		 * Starts the rendering process. The rendering process is based on custom events.</span>
@@ -561,7 +577,7 @@
 <span class="cm">		 * This way all listeners are fired in the order of the inheritance chain. ie:</span>
 <span class="cm">		 * In the Overlay class, the render process is:</span>
 <span class="cm">		 * &lt;code&gt;render() method -&gt; Module listener -&gt; Overlay listener -&gt; rest of the render() method (appends the boundingBox to the srcNode)&lt;/code&gt;</span>
-<span class="cm">		 * This helps use an easy pattern of OOP CSS: each subclass adds a CSS class name to the boundingBox,</span>
+<span class="cm">		 * This helps to use an easy pattern of OOP CSS: each subclass adds a CSS class name to the boundingBox,</span>
 <span class="cm">		 * for example resulting in &lt;div class=&quot;jet-module jet-overlay jet-panel&quot;&gt;&lt;/div&gt;. That way</span>
 <span class="cm">		 * a panel can inherit css properties from module and overlay.</span>
 <span class="cm">		 * @method render</span>
@@ -581,12 +597,11 @@
 			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;render&quot;</span><span class="p">))</span> <span class="p">{</span>
 				<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">SRC_NODE</span><span class="p">);</span>
 				<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;classPrefix&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;className&quot;</span><span class="p">)).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">node</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="nx">VISIBILITY</span><span class="p">,</span> <span class="s2">&quot;visible&quot;</span><span class="p">);</span>
-				<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;rendered&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 				<span class="cm">/**</span>
 <span class="cm">				 * Fires after the render process is finished</span>
 <span class="cm">				 * @event afterRender</span>
 <span class="cm">				 */</span>
-				<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;afterRender&quot;</span><span class="p">);</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;rendered&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">).</span><span class="nx">focus</span><span class="p">().</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;afterRender&quot;</span><span class="p">);</span>
 			<span class="p">}</span>
 			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
 		<span class="p">},</span>

@@ -160,8 +160,14 @@ to the problems they have (stop javascript execution, etc)
                                 <h4>Methods inherited from <a href="Widget.html" property="yui:name" title="Widget">Widget</a>:</h4>
                                 <div class="content" rel="yui:methods">
                                     <code>
+                                            <span rel="yui:method" resource="Widget.html#method_blur">                                        
+                                            <a class="" href="Widget.html#method_blur" property="yui:name" title="blur">blur</a><span class="">,</span>
+                                            </span>
                                             <span rel="yui:method" resource="Widget.html#method_destroy">                                        
                                             <a class="" href="Widget.html#method_destroy" property="yui:name" title="destroy">destroy</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="Widget.html#method_focus">                                        
+                                            <a class="" href="Widget.html#method_focus" property="yui:name" title="focus">focus</a><span class="">,</span>
                                             </span>
                                             <span rel="yui:method" resource="Widget.html#method_hide">                                        
                                             <a class="" href="Widget.html#method_hide" property="yui:name" title="hide">hide</a><span class="">,</span>
@@ -190,7 +196,7 @@ to the problems they have (stop javascript execution, etc)
                                         <a class="" href="Widget.html#event_afterRender" property="yui:name" title="afterRender">afterRender</a><span class="">,</span>
                                         </span>
                                                                             <span rel="yui:event" resource="Widget.html#event_destroy">
-                                        <a class="" href="Widget.html#event_destroy" property="yui:name" title="destroy">destroy</a>
+                                        <a class="" href="Widget.html#event_destroy" property="yui:name" title="destroy">destroy</a><span class="">,</span>
                                         </span>
                                                                             <span rel="yui:event" resource="Widget.html#event_render">
                                         <a class="" href="Widget.html#event_render" property="yui:name" title="render">render</a>
@@ -360,6 +366,9 @@ in order to have a more complex design (ie: shadow)
                                                                                 <span rel="yui:attribute" resource="Overlay.html#config_width">                                        
                                         <a class="" href="Overlay.html#config_width" property="yui:name" title="width">width</a>
                                         </span>
+                                                                                <span rel="yui:attribute" resource="Overlay.html#config_zIndex">                                        
+                                        <a class="" href="Overlay.html#config_zIndex" property="yui:name" title="zIndex">zIndex</a>
+                                        </span>
                                         
                                 </code>
                             </div>
@@ -441,7 +450,7 @@ in order to have a more complex design (ie: shadow)
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Module.html#config_body", "access": "", "host": "Module", "type": "config", "name": "body"}, {"url": "Overlay.html#config_bottom", "access": "", "host": "Overlay", "type": "config", "name": "bottom"}, {"url": "Overlay.html#config_center", "access": "", "host": "Overlay", "type": "config", "name": "center"}, {"url": "Panel.html#config_close", "access": "", "host": "Panel", "type": "config", "name": "close"}, {"url": "Panel.html#config_contentBox", "access": "", "host": "Panel", "type": "config", "name": "contentBox"}, {"url": "Overlay.html#config_draggable", "access": "", "host": "Overlay", "type": "config", "name": "draggable"}, {"url": "Overlay.html#config_fixed", "access": "", "host": "Overlay", "type": "config", "name": "fixed"}, {"url": "Module.html#config_footer", "access": "", "host": "Module", "type": "config", "name": "footer"}, {"url": "Module.html#config_header", "access": "", "host": "Module", "type": "config", "name": "header"}, {"url": "Overlay.html#config_height", "access": "", "host": "Overlay", "type": "config", "name": "height"}, {"url": "Overlay.html#config_left", "access": "", "host": "Overlay", "type": "config", "name": "left"}, {"url": "Overlay.html#config_right", "access": "", "host": "Overlay", "type": "config", "name": "right"}, {"url": "Panel.html#config_shadow", "access": "", "host": "Panel", "type": "config", "name": "shadow"}, {"url": "Overlay.html#config_top", "access": "", "host": "Overlay", "type": "config", "name": "top"}, {"url": "Panel.html#config_underlay", "access": "", "host": "Panel", "type": "config", "name": "underlay"}, {"url": "Overlay.html#config_width", "access": "", "host": "Overlay", "type": "config", "name": "width"}];
+    var ALL_YUI_PROPS = [{"url": "Module.html#config_body", "access": "", "host": "Module", "type": "config", "name": "body"}, {"url": "Overlay.html#config_bottom", "access": "", "host": "Overlay", "type": "config", "name": "bottom"}, {"url": "Overlay.html#config_center", "access": "", "host": "Overlay", "type": "config", "name": "center"}, {"url": "Panel.html#config_close", "access": "", "host": "Panel", "type": "config", "name": "close"}, {"url": "Panel.html#config_contentBox", "access": "", "host": "Panel", "type": "config", "name": "contentBox"}, {"url": "Overlay.html#config_draggable", "access": "", "host": "Overlay", "type": "config", "name": "draggable"}, {"url": "Overlay.html#config_fixed", "access": "", "host": "Overlay", "type": "config", "name": "fixed"}, {"url": "Module.html#config_footer", "access": "", "host": "Module", "type": "config", "name": "footer"}, {"url": "Module.html#config_header", "access": "", "host": "Module", "type": "config", "name": "header"}, {"url": "Overlay.html#config_height", "access": "", "host": "Overlay", "type": "config", "name": "height"}, {"url": "Overlay.html#config_left", "access": "", "host": "Overlay", "type": "config", "name": "left"}, {"url": "Overlay.html#config_right", "access": "", "host": "Overlay", "type": "config", "name": "right"}, {"url": "Panel.html#config_shadow", "access": "", "host": "Panel", "type": "config", "name": "shadow"}, {"url": "Overlay.html#config_top", "access": "", "host": "Overlay", "type": "config", "name": "top"}, {"url": "Panel.html#config_underlay", "access": "", "host": "Panel", "type": "config", "name": "underlay"}, {"url": "Overlay.html#config_width", "access": "", "host": "Overlay", "type": "config", "name": "width"}, {"url": "Overlay.html#config_zIndex", "access": "", "host": "Overlay", "type": "config", "name": "zIndex"}];
 </script>
 </body>
 </html>

@@ -195,6 +195,56 @@
                                     </div>
                                     <hr />
                                     </div>
+                                    <div class="" rel="yui:method" resource="#method_getColumn">
+                                    <h4>
+                                        <a name="method_getColumn">getColumn</a></h4>
+                                    <div class="detail" >
+                                        <code>
+                                        
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">getColumn</strong>
+                                           (
+                                                
+                                                        
+                                                         id
+                                                    
+                                                
+                                            )
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Returns a column based on an index or the column's key
+                                        </div>
+
+                                        <div class="description">
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">id</span>
+                                                        &lt;<span property="yui:type">Number | String</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"></span>
+                                                        </dd>
+                                                </dl>
+
+                                                <dl>
+                                                    <dt>Returns:
+                                                    <code property="yui:return">
+                                                    </code></dt>
+                                                    <dd property="yui:returnInfo">Column</dd>
+                                                </dl>
+
+
+             
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
                                     <div class="" rel="yui:method" resource="#method_getFirstTd">
                                     <h4>
                                         <a name="method_getFirstTd">getFirstTd</a></h4>
@@ -544,8 +594,14 @@
                                 <h4>Methods inherited from <a href="Widget.html" property="yui:name" title="Widget">Widget</a>:</h4>
                                 <div class="content" rel="yui:methods">
                                     <code>
+                                            <span rel="yui:method" resource="Widget.html#method_blur">                                        
+                                            <a class="" href="Widget.html#method_blur" property="yui:name" title="blur">blur</a><span class="">,</span>
+                                            </span>
                                             <span rel="yui:method" resource="Widget.html#method_destroy">                                        
                                             <a class="" href="Widget.html#method_destroy" property="yui:name" title="destroy">destroy</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="Widget.html#method_focus">                                        
+                                            <a class="" href="Widget.html#method_focus" property="yui:name" title="focus">focus</a><span class="">,</span>
                                             </span>
                                             <span rel="yui:method" resource="Widget.html#method_hide">                                        
                                             <a class="" href="Widget.html#method_hide" property="yui:name" title="hide">hide</a><span class="">,</span>
@@ -574,7 +630,7 @@
                                         <a class="" href="Widget.html#event_afterRender" property="yui:name" title="afterRender">afterRender</a><span class="">,</span>
                                         </span>
                                                                             <span rel="yui:event" resource="Widget.html#event_destroy">
-                                        <a class="" href="Widget.html#event_destroy" property="yui:name" title="destroy">destroy</a>
+                                        <a class="" href="Widget.html#event_destroy" property="yui:name" title="destroy">destroy</a><span class="">,</span>
                                         </span>
                                                                             <span rel="yui:event" resource="Widget.html#event_render">
                                         <a class="" href="Widget.html#event_render" property="yui:name" title="render">render</a>
@@ -604,13 +660,13 @@
 
                                     <hr />
                                     </div>        
-                                    <div class="" rel="yui:attribute" resource="#config_dataSource">
-                                    <h4><a name="config_dataSource">dataSource</a>
-                                        <code>- <span property="yui:type">DataSource</span></code>
+                                    <div class="" rel="yui:attribute" resource="#config_recordSet">
+                                    <h4><a name="config_recordSet">recordSet</a>
+                                        <code>- <span property="yui:type">RecordSet</span></code>
                                     </h4>
                                     <div class="detail">
                                         <div class="description" property="yui:description">
-                                            The data table's associated data source
+                                            The data table's associated recordSet
                                         </div>
                                     </div>
  
@@ -716,6 +772,7 @@
                         <ul class="content">        
                                 <li class=""><a href="#method_addRow" title="addRow">addRow</a></li>
                                 <li class=""><a href="#method_addRows" title="addRows">addRows</a></li>
+                                <li class=""><a href="#method_getColumn" title="getColumn">getColumn</a></li>
                                 <li class=""><a href="#method_getFirstTd" title="getFirstTd">getFirstTd</a></li>
                                 <li class=""><a href="#method_getFirstTr" title="getFirstTr">getFirstTr</a></li>
                                 <li class=""><a href="#method_getNextTd" title="getNextTd">getNextTd</a></li>
@@ -730,7 +787,7 @@
                         <h4>Configuration Attributes</h4>
                         <ul class="content">        
                                 <li class=""><a href="#config_columnDefinitions" title="columnDefinitions">columnDefinitions</a></li>
-                                <li class=""><a href="#config_dataSource" title="dataSource">dataSource</a></li>
+                                <li class=""><a href="#config_recordSet" title="recordSet">recordSet</a></li>
                         </ul>
                     </div>
 
@@ -744,7 +801,7 @@
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "DataTable.html#method_addRow", "access": "", "host": "DataTable", "type": "method", "name": "addRow"}, {"url": "DataTable.html#method_addRows", "access": "", "host": "DataTable", "type": "method", "name": "addRows"}, {"url": "DataTable.html#config_columnDefinitions", "access": "", "host": "DataTable", "type": "config", "name": "columnDefinitions"}, {"url": "DataTable.html#config_dataSource", "access": "", "host": "DataTable", "type": "config", "name": "dataSource"}, {"url": "DataTable.html#method_getFirstTd", "access": "", "host": "DataTable", "type": "method", "name": "getFirstTd"}, {"url": "DataTable.html#method_getFirstTr", "access": "", "host": "DataTable", "type": "method", "name": "getFirstTr"}, {"url": "DataTable.html#method_getNextTd", "access": "", "host": "DataTable", "type": "method", "name": "getNextTd"}, {"url": "DataTable.html#method_getNextTr", "access": "", "host": "DataTable", "type": "method", "name": "getNextTr"}, {"url": "DataTable.html#method_onDataReturnAddRows", "access": "", "host": "DataTable", "type": "method", "name": "onDataReturnAddRows"}, {"url": "DataTable.html#method_onDataReturnReplaceRows", "access": "", "host": "DataTable", "type": "method", "name": "onDataReturnReplaceRows"}];
+    var ALL_YUI_PROPS = [{"url": "DataTable.html#method_addRow", "access": "", "host": "DataTable", "type": "method", "name": "addRow"}, {"url": "DataTable.html#method_addRows", "access": "", "host": "DataTable", "type": "method", "name": "addRows"}, {"url": "DataTable.html#config_columnDefinitions", "access": "", "host": "DataTable", "type": "config", "name": "columnDefinitions"}, {"url": "DataTable.html#method_getColumn", "access": "", "host": "DataTable", "type": "method", "name": "getColumn"}, {"url": "DataTable.html#method_getFirstTd", "access": "", "host": "DataTable", "type": "method", "name": "getFirstTd"}, {"url": "DataTable.html#method_getFirstTr", "access": "", "host": "DataTable", "type": "method", "name": "getFirstTr"}, {"url": "DataTable.html#method_getNextTd", "access": "", "host": "DataTable", "type": "method", "name": "getNextTd"}, {"url": "DataTable.html#method_getNextTr", "access": "", "host": "DataTable", "type": "method", "name": "getNextTr"}, {"url": "DataTable.html#method_onDataReturnAddRows", "access": "", "host": "DataTable", "type": "method", "name": "onDataReturnAddRows"}, {"url": "DataTable.html#method_onDataReturnReplaceRows", "access": "", "host": "DataTable", "type": "method", "name": "onDataReturnReplaceRows"}, {"url": "DataTable.html#config_recordSet", "access": "", "host": "DataTable", "type": "config", "name": "recordSet"}];
 </script>
 </body>
 </html>

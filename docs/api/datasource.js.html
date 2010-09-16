@@ -59,17 +59,9 @@
 <span class="cm"> */</span>
 <span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;datasource&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 	
-	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">DataSource</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">jet</span><span class="p">.</span><span class="nx">DataSource</span> <span class="o">=</span> <span class="p">{};</span>
-	<span class="p">}</span>
-	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">DataSource</span><span class="p">.</span><span class="nx">jsonpCallbacks</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">jet</span><span class="p">.</span><span class="nx">DataSource</span><span class="p">.</span><span class="nx">jsonpCallbacks</span> <span class="o">=</span> <span class="p">[];</span>
-	<span class="p">}</span>
-	
 	<span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
 		<span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span>
-		<span class="nx">A</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">,</span>
-		<span class="nx">IO</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">IO</span><span class="p">;</span>
+		<span class="nx">A</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">;</span>
 
 	<span class="kd">var</span> <span class="nx">RESPONSE_TYPE_JSON</span>		<span class="o">=</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span>
 		<span class="nx">RESPONSE_TYPE_XML</span>		<span class="o">=</span> <span class="s1">&#39;xml&#39;</span><span class="p">,</span>
@@ -584,7 +576,7 @@
 		<span class="p">});</span>
 		
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">REQUEST_LOGIC</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">success</span><span class="p">,</span> <span class="nx">failure</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">IO</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+			<span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
 				<span class="nx">url</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">URL</span><span class="p">),</span>
 				<span class="nx">data</span><span class="o">:</span> <span class="nx">request</span><span class="p">,</span>
 				<span class="nx">dataType</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">RESPONSE_TYPE</span><span class="p">),</span>
@@ -635,38 +627,20 @@
 			<span class="nx">url</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
 				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="nx">val</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span> <span class="o">?</span> <span class="nx">val</span> <span class="o">:</span> <span class="nx">val</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span><span class="p">;</span>
+					<span class="k">return</span> <span class="nx">val</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="nx">val</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span> <span class="o">?</span> <span class="nx">val</span> <span class="o">:</span> <span class="nx">val</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span><span class="p">;</span>
 				<span class="p">}</span>
 			<span class="p">}</span>
 		<span class="p">});</span>
 		
-		<span class="kd">var</span> <span class="nx">prepareRequest</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">[];</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isHash</span><span class="p">(</span><span class="nx">request</span><span class="p">))</span> <span class="p">{</span>
-				<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">result</span><span class="p">[</span><span class="nx">result</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="o">+</span> <span class="nx">EQUAL_SIGN</span> <span class="o">+</span> <span class="nb">encodeURIComponent</span><span class="p">(</span><span class="nx">val</span><span class="p">);</span>
-				<span class="p">});</span>
-				<span class="nx">request</span> <span class="o">=</span> <span class="nx">result</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">AMPERSAND</span><span class="p">);</span>
-			<span class="p">}</span>
-			<span class="k">return</span> <span class="nx">request</span><span class="p">;</span>
-		<span class="p">};</span>
-		
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">REQUEST_LOGIC</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">success</span><span class="p">,</span> <span class="nx">failure</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">index</span> <span class="o">=</span> <span class="nx">jet</span><span class="p">.</span><span class="nx">DataSource</span><span class="p">.</span><span class="nx">jsonpCallbacks</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
-			<span class="kd">var</span> <span class="nx">loaded</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-			<span class="nx">jet</span><span class="p">.</span><span class="nx">DataSource</span><span class="p">.</span><span class="nx">jsonpCallbacks</span><span class="p">[</span><span class="nx">index</span><span class="p">]</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">loaded</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-				<span class="nx">success</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
-			<span class="p">};</span>
-			<span class="nx">$</span><span class="p">.</span><span class="nx">Get</span><span class="p">.</span><span class="nx">script</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">URL</span><span class="p">)</span> <span class="o">+</span> <span class="nx">prepareRequest</span><span class="p">(</span><span class="nx">request</span><span class="p">)</span> <span class="o">+</span> <span class="nx">AMPERSAND</span> <span class="o">+</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;jsonCallbackParam&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="nx">EQUAL_SIGN</span> <span class="o">+</span> <span class="s2">&quot;jet.DataSource.jsonpCallbacks[&quot;</span> <span class="o">+</span> <span class="nx">index</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span><span class="p">);</span>
-			<span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">loaded</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">ERROR</span><span class="p">,</span> <span class="p">{</span>
-						<span class="nx">message</span><span class="o">:</span> <span class="nx">REQUEST_FAILED_MSG</span><span class="p">,</span>
-						<span class="nx">reason</span><span class="o">:</span> <span class="nx">TIMEOUT</span>
-					<span class="p">});</span>
-				<span class="p">}</span>
-			<span class="p">},</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">TIMEOUT</span><span class="p">));</span>
+			<span class="nx">$</span><span class="p">.</span><span class="nx">jsonp</span><span class="p">({</span>
+				<span class="nx">url</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">URL</span><span class="p">),</span>
+				<span class="nx">data</span><span class="o">:</span> <span class="nx">request</span><span class="p">,</span>
+				<span class="nx">success</span><span class="o">:</span> <span class="nx">success</span><span class="p">,</span>
+				<span class="nx">jsonCallbackParam</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;jsonCallbackParam&quot;</span><span class="p">),</span>
+				<span class="nx">error</span><span class="o">:</span> <span class="nx">failure</span><span class="p">,</span>
+				<span class="nx">timeout</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">TIMEOUT</span><span class="p">)</span>
+			<span class="p">});</span>
 		<span class="p">});</span>
 		
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">INITIAL_REQUEST</span><span class="p">));</span>
@@ -721,6 +695,11 @@
 	<span class="kd">var</span> <span class="nx">Local</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 		<span class="nx">Local</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
 		
+		<span class="cm">/**</span>
+<span class="cm">		 * @config localData</span>
+<span class="cm">		 * @description The data to be added to the data source</span>
+<span class="cm">		 * @required</span>
+<span class="cm">		 */</span>
 		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttr</span><span class="p">(</span><span class="s2">&quot;localData&quot;</span><span class="p">,</span> <span class="p">{</span>
 			<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
 		<span class="p">});</span>

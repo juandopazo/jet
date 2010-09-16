@@ -133,7 +133,7 @@
 			<span class="p">}</span>
 		<span class="p">}],</span>
 		<span class="nx">treeview</span><span class="o">:</span> <span class="p">[</span><span class="nx">BASE</span><span class="p">],</span>
-		<span class="nx">plasma</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;anim&quot;</span><span class="p">]</span>
+		<span class="nx">vector</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;anim&quot;</span><span class="p">]</span>
 	<span class="p">};</span>
 	
 	 <span class="c1">//A couple of functions of this module are used throughout the Loader.</span>
@@ -878,7 +878,7 @@
 <span class="cm">				 */</span>
 				<span class="nx">use</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 					
-					<span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">SLICE</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">);</span>
+					<span class="kd">var</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">SLICE</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">),</span> <span class="nx">combined</span> <span class="o">=</span> <span class="p">[];</span>
 					<span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">k</span><span class="p">,</span> <span class="nx">module</span><span class="p">,</span> <span class="nx">moveForward</span><span class="p">;</span>
 					
 					<span class="c1">// if &quot;*&quot; is used, include everything</span>
@@ -933,19 +933,36 @@
 								<span class="nx">path</span><span class="o">:</span> <span class="nx">module</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="nx">module</span> <span class="o">+</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">minify</span> <span class="o">?</span> <span class="s2">&quot;.min.js&quot;</span> <span class="o">:</span> <span class="s2">&quot;.js&quot;</span><span class="p">)</span>
 							<span class="p">};</span>
 						<span class="p">}</span>
+					<span class="p">}</span>
+					
+					<span class="k">if</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">combine</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">request</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+							<span class="k">if</span> <span class="p">(</span><span class="nx">predef</span><span class="p">[</span><span class="nx">request</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">name</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">modules</span><span class="p">[</span><span class="nx">request</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">name</span><span class="p">])</span> <span class="p">{</span>
+								<span class="nx">combined</span><span class="p">[</span><span class="nx">combined</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">request</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">name</span><span class="p">;</span>
+							<span class="p">}</span>
+						<span class="p">}</span>
+						<span class="nx">combined</span> <span class="o">=</span> <span class="nx">combined</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">minify</span> <span class="o">?</span> <span class="s2">&quot;.min.js&quot;</span> <span class="o">:</span> <span class="s2">&quot;.js&quot;</span><span class="p">);</span>
+						<span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">request</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+							<span class="k">if</span> <span class="p">(</span><span class="nx">predef</span><span class="p">[</span><span class="nx">request</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">name</span><span class="p">])</span> <span class="p">{</span>
+								<span class="nx">request</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">path</span> <span class="o">=</span> <span class="nx">combined</span><span class="p">;</span>
+							<span class="p">}</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+
+					<span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">request</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">module</span> <span class="o">=</span> <span class="nx">request</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
 						<span class="k">if</span> <span class="p">(</span><span class="nx">module</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;css&quot;</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">config</span><span class="p">.</span><span class="nx">loadCss</span><span class="p">)</span> <span class="p">{</span>
 							<span class="nx">request</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
 							<span class="nx">i</span><span class="o">--</span><span class="p">;</span>
-						<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">modules</span><span class="p">[</span><span class="nx">module</span><span class="p">.</span><span class="nx">name</span><span class="p">]</span> <span class="o">||</span> <span class="nx">queuedScripts</span><span class="p">[</span><span class="nx">module</span><span class="p">.</span><span class="nx">name</span><span class="p">]))</span> <span class="p">{</span>
+						<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">modules</span><span class="p">[</span><span class="nx">module</span><span class="p">.</span><span class="nx">name</span><span class="p">]</span> <span class="o">||</span> <span class="nx">queuedScripts</span><span class="p">[</span><span class="nx">module</span><span class="p">.</span><span class="nx">fullpath</span> <span class="o">||</span> <span class="p">(</span><span class="nx">base</span> <span class="o">+</span> <span class="nx">module</span><span class="p">.</span><span class="nx">path</span><span class="p">)]))</span> <span class="p">{</span>
 							<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">module</span><span class="p">.</span><span class="nx">type</span> <span class="o">||</span> <span class="nx">module</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;js&quot;</span><span class="p">)</span> <span class="p">{</span>
 								<span class="nx">loadScript</span><span class="p">(</span><span class="nx">module</span><span class="p">.</span><span class="nx">fullpath</span> <span class="o">||</span> <span class="p">(</span><span class="nx">base</span> <span class="o">+</span> <span class="nx">module</span><span class="p">.</span><span class="nx">path</span><span class="p">));</span> 
 							<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">module</span><span class="p">.</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;css&quot;</span><span class="p">)</span> <span class="p">{</span>
 								<span class="nx">domReady</span><span class="p">(</span><span class="nx">loadCssModule</span><span class="p">,</span> <span class="nx">module</span><span class="p">);</span>
 							<span class="p">}</span>
-							<span class="nx">queuedScripts</span><span class="p">[</span><span class="nx">module</span><span class="p">.</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+							<span class="nx">queuedScripts</span><span class="p">[</span><span class="nx">module</span><span class="p">.</span><span class="nx">fullpath</span> <span class="o">||</span> <span class="p">(</span><span class="nx">base</span> <span class="o">+</span> <span class="nx">module</span><span class="p">.</span><span class="nx">path</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
 						<span class="p">}</span>
-					<span class="p">}</span>
-					
+					<span class="p">}</span>					
 					<span class="c1">// add the queue to the waiting list</span>
 					<span class="nx">queueList</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span>
 						<span class="nx">main</span><span class="o">:</span> <span class="nx">request</span><span class="p">.</span><span class="nx">pop</span><span class="p">(),</span>

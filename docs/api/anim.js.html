@@ -64,7 +64,8 @@
 		<span class="nx">A</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">;</span>
 	
 	<span class="kd">var</span> <span class="nx">PLAYING</span> <span class="o">=</span> <span class="s2">&quot;playing&quot;</span><span class="p">,</span>
-		<span class="nx">ENTER_FRAME</span> <span class="o">=</span> <span class="s2">&quot;enterFrame&quot;</span><span class="p">;</span>
+		<span class="nx">ENTER_FRAME</span> <span class="o">=</span> <span class="s2">&quot;enterFrame&quot;</span><span class="p">,</span>
+		<span class="nx">OVERFLOW</span> <span class="o">=</span> <span class="s2">&quot;overflow&quot;</span><span class="p">;</span>
 		
 	<span class="kd">var</span> <span class="nx">pxToFloat</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="p">{</span>
 		<span class="k">return</span> <span class="o">!</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">str</span><span class="p">)</span> <span class="o">?</span> <span class="nx">str</span> <span class="o">:</span>
@@ -149,7 +150,7 @@
 	
 	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">TimeFrame</span><span class="p">)</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * A time frame for queueing animations</span>
+<span class="cm">		 * A timeframe for queueing animations</span>
 <span class="cm">		 * @class TimeFrame</span>
 <span class="cm">		 * @uses EventTarget</span>
 <span class="cm">		 * @static</span>
@@ -275,21 +276,22 @@
 			<span class="cm">/**</span>
 <span class="cm">			 * @config easing</span>
 <span class="cm">			 * @description The easing used by the animation</span>
-<span class="cm">			 * @type TimeFrame.easing</span>
-<span class="cm">			 * @default TimeFrame.easing.DEFAULT</span>
+<span class="cm">			 * @type Function</span>
+<span class="cm">			 * @default Easing.linear</span>
 <span class="cm">			 */</span>
 			<span class="nx">easing</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="nx">Easing</span><span class="p">.</span><span class="nx">linear</span>
 			<span class="p">},</span>
 			<span class="cm">/**</span>
 <span class="cm">			 * @config easingStrength</span>
-<span class="cm">			 * @description The strength of the easing if applicable</span>
+<span class="cm">			 * @description The strength of the easing if applicable. Must be &gt;= 0</span>
+<span class="cm">			 * @type Number</span>
 <span class="cm">			 * @default 2</span>
 <span class="cm">			 */</span>
 			<span class="nx">easingStrength</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">value</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
-				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">abs</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+				<span class="nx">validator</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">return</span> <span class="nx">val</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span>
 				<span class="p">}</span>
 			<span class="p">},</span>
 			<span class="cm">/**</span>
@@ -505,11 +507,11 @@
 <span class="cm">		 */</span>
 		<span class="nx">slideDown</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">duration</span><span class="p">,</span> <span class="nx">easing</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
 			<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-			<span class="kd">var</span> <span class="nx">overflow</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;overflow&quot;</span><span class="p">);</span>
-			<span class="k">return</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;overflow&quot;</span><span class="p">,</span> <span class="s2">&quot;hidden&quot;</span><span class="p">).</span><span class="nx">animate</span><span class="p">({</span>
+			<span class="kd">var</span> <span class="nx">overflow</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="nx">OVERFLOW</span><span class="p">);</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="nx">OVERFLOW</span><span class="p">,</span> <span class="s2">&quot;hidden&quot;</span><span class="p">).</span><span class="nx">animate</span><span class="p">({</span>
 				<span class="nx">height</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">oHeight</span>
 			<span class="p">},</span> <span class="nx">duration</span><span class="p">,</span> <span class="nx">easing</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-				<span class="nx">myself</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;overflow&quot;</span><span class="p">,</span> <span class="nx">overflow</span><span class="p">);</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="nx">OVERFLOW</span><span class="p">,</span> <span class="nx">overflow</span><span class="p">);</span>
 				<span class="nx">callback</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">myself</span><span class="p">);</span>
 			<span class="p">});</span>
 		<span class="p">},</span>
@@ -525,11 +527,11 @@
 <span class="cm">		 */</span>
 		<span class="nx">slideUp</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">duration</span><span class="p">,</span> <span class="nx">easing</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
 			<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-			<span class="kd">var</span> <span class="nx">overflow</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;overflow&quot;</span><span class="p">);</span>
-			<span class="k">return</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;overflow&quot;</span><span class="p">,</span> <span class="s2">&quot;hidden&quot;</span><span class="p">).</span><span class="nx">animate</span><span class="p">({</span>
+			<span class="kd">var</span> <span class="nx">overflow</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="nx">OVERFLOW</span><span class="p">);</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="nx">OVERFLOW</span><span class="p">,</span> <span class="s2">&quot;hidden&quot;</span><span class="p">).</span><span class="nx">animate</span><span class="p">({</span>
 				<span class="nx">height</span><span class="o">:</span> <span class="mi">0</span>
 			<span class="p">},</span> <span class="nx">duration</span><span class="p">,</span> <span class="nx">easing</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-				<span class="nx">myself</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;overflow&quot;</span><span class="p">,</span> <span class="nx">overflow</span><span class="p">);</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="nx">OVERFLOW</span><span class="p">,</span> <span class="nx">overflow</span><span class="p">);</span>
 				<span class="nx">callback</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">myself</span><span class="p">);</span>
 			<span class="p">});</span>
 		<span class="p">},</span>
@@ -552,13 +554,6 @@
 		<span class="nx">Easing</span><span class="o">:</span> <span class="nx">Easing</span>
 	<span class="p">});</span>
 <span class="p">});</span>
-<span class="cm">/*</span>
-<span class="cm"> Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.</span>
-<span class="cm"> Code licensed under the BSD License</span>
-<span class="cm"> http://code.google.com/p/jet-js/wiki/Licence</span>
-<span class="cm">*/</span>
-
-		
 </pre></div>
 
                     </div>

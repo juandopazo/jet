@@ -86,12 +86,66 @@
 		<span class="nx">jet</span><span class="p">.</span><span class="nx">DataTable</span><span class="p">.</span><span class="nx">ids</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 	<span class="p">}</span>
 	
+	<span class="kd">var</span> <span class="nx">Cell</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="nx">Cell</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+		
+		<span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+				<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span>
+			<span class="p">},</span>
+			<span class="nx">td</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+				<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span>
+			<span class="p">},</span>
+			<span class="nx">record</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+				<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span>
+			<span class="p">}</span>
+		<span class="p">});</span>
+	<span class="p">};</span>
+	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Cell</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">);</span>
+	
 	<span class="cm">/*</span>
 <span class="cm">	 * @TODO</span>
 <span class="cm">	 */</span>
 	<span class="kd">var</span> <span class="nx">Column</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="nx">Column</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
 		
+		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
+			<span class="nx">cells</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+				<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span>
+			<span class="p">}</span>
+		<span class="p">});</span>
+		
+		<span class="k">this</span><span class="p">.</span><span class="nx">getFirstTd</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;cells&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;td&quot;</span><span class="p">);</span>
+		<span class="p">};</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">getNextTd</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">td</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">cells</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;cells&quot;</span><span class="p">),</span> <span class="nx">length</span> <span class="o">=</span> <span class="nx">cells</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="nx">i</span><span class="p">;</span>
+			<span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">cells</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;td&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="nx">td</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">break</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">length</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">?</span> <span class="nx">cells</span><span class="p">[</span><span class="o">++</span><span class="nx">i</span><span class="p">].</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;td&quot;</span><span class="p">)</span> <span class="o">:</span> <span class="kc">null</span><span class="p">;</span> 
+		<span class="p">};</span>
+		
+		<span class="k">this</span><span class="p">.</span><span class="nx">getFirstCell</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;cells&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+		<span class="p">};</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">getNextCell</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">cell</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">cells</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;cells&quot;</span><span class="p">),</span> <span class="nx">length</span> <span class="o">=</span> <span class="nx">cells</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="nx">i</span><span class="p">;</span>
+			<span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">cells</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">==</span> <span class="nx">cell</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">break</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">length</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">?</span> <span class="nx">cells</span><span class="p">[</span><span class="o">++</span><span class="nx">i</span><span class="p">]</span> <span class="o">:</span> <span class="kc">null</span><span class="p">;</span> 
+		<span class="p">};</span>
 	<span class="p">};</span>
+	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Column</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">);</span>
 	
 	<span class="cm">/**</span>
 <span class="cm">	 * A DataTable is an HTML table that can be sorted and linked to a DataSource</span>
@@ -105,13 +159,12 @@
 		
 		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
 			<span class="cm">/**</span>
-<span class="cm">			 * @config dataSource</span>
-<span class="cm">			 * @description The data table&#39;s associated data source</span>
-<span class="cm">			 * @required</span>
-<span class="cm">			 * @type DataSource</span>
+<span class="cm">			 * @config recordSet</span>
+<span class="cm">			 * @description The data table&#39;s associated recordSet</span>
+<span class="cm">			 * @type RecordSet</span>
 <span class="cm">			 */</span>
-			<span class="nx">dataSource</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
+			<span class="nx">recordSet</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">RecordSet</span><span class="p">()</span>
 			<span class="p">},</span>
 			<span class="cm">/**</span>
 <span class="cm">			 * @config columnDefinitions</span>
@@ -132,7 +185,7 @@
 		<span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">jet</span><span class="p">.</span><span class="nx">DataTable</span><span class="p">.</span><span class="nx">ids</span><span class="o">++</span><span class="p">;</span>
 		
 		<span class="kd">var</span> <span class="nx">fields</span><span class="p">;</span>
-		<span class="kd">var</span> <span class="nx">recordSet</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;dataSource&quot;</span><span class="p">).</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;recordSet&quot;</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">recordSet</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;recordSet&quot;</span><span class="p">);</span>
 		
 		<span class="kd">var</span> <span class="nx">prefix</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;classPrefix&quot;</span><span class="p">);</span>
 		<span class="kd">var</span> <span class="nx">className</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;className&quot;</span><span class="p">);</span>
@@ -141,7 +194,7 @@
 		<span class="kd">var</span> <span class="nx">thIdPrefix</span> <span class="o">=</span> <span class="nx">prefixClass</span> <span class="o">+</span> <span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot;th-&quot;</span><span class="p">;</span>
 		
 		<span class="kd">var</span> <span class="nx">table</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;table/&gt;&quot;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">prefixClass</span> <span class="o">+</span> <span class="nx">id</span><span class="p">);</span>
-		<span class="kd">var</span> <span class="nx">thead</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;thead/&gt;&quot;</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">table</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">thead</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;thead/&gt;&quot;</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">table</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;tr/&gt;&quot;</span><span class="p">));</span>
 		<span class="kd">var</span> <span class="nx">tbody</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;tbody/&gt;&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">prefixClass</span> <span class="o">+</span> <span class="nx">DATA</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">table</span><span class="p">);</span>
 		
 		<span class="kd">var</span> <span class="nx">sortedBy</span><span class="p">;</span>
@@ -200,7 +253,7 @@
 					<span class="nx">sort</span><span class="p">(</span><span class="nx">th</span><span class="p">);</span>
 				<span class="p">});</span>
 			<span class="p">}</span>
-			<span class="nx">thead</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">th</span><span class="p">);</span>
+			<span class="nx">thead</span><span class="p">.</span><span class="nx">first</span><span class="p">().</span><span class="nx">append</span><span class="p">(</span><span class="nx">th</span><span class="p">);</span>
 		<span class="p">});</span>
 		
 		<span class="kd">var</span> <span class="nx">addRow</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">row</span><span class="p">)</span> <span class="p">{</span>
@@ -215,13 +268,14 @@
 			<span class="p">});</span>
 			<span class="nx">tr</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">tbody</span><span class="p">.</span><span class="nx">children</span><span class="p">().</span><span class="nx">length</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">?</span> <span class="p">(</span><span class="nx">prefixClass</span> <span class="o">+</span> <span class="nx">EVEN</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="nx">prefixClass</span> <span class="o">+</span> <span class="nx">ODD</span><span class="p">)).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">tbody</span><span class="p">);</span>
 		<span class="p">};</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;tbody&quot;</span><span class="p">,</span> <span class="nx">tbody</span><span class="p">).</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;thead&quot;</span><span class="p">,</span> <span class="nx">thead</span><span class="p">);</span>
 		<span class="cm">/**</span>
 <span class="cm">		 * Adds a row</span>
 <span class="cm">		 * @method addRow</span>
 <span class="cm">		 * @param {Record|HTMLRowElement|Array} row</span>
 <span class="cm">		 * @chainable</span>
 <span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">addRow</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">row</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">addRow</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">row</span><span class="p">)</span> <span class="p">{</span>
 			<span class="nx">addRow</span><span class="p">(</span><span class="nx">row</span><span class="p">);</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">sortedBy</span><span class="p">)</span> <span class="p">{</span>
 				<span class="nx">sort</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="nx">NUMERAL</span> <span class="o">+</span> <span class="nx">thIdPrefix</span> <span class="o">+</span> <span class="nx">sortedBy</span><span class="p">));</span>
@@ -235,7 +289,7 @@
 <span class="cm">		 * @param {Array} rows</span>
 <span class="cm">		 * @chainable</span>
 <span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">addRows</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">rows</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">addRows</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">rows</span><span class="p">)</span> <span class="p">{</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">rows</span><span class="p">))</span> <span class="p">{</span>
 				<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">rows</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">row</span><span class="p">)</span> <span class="p">{</span>
 					<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isRecord</span><span class="p">(</span><span class="nx">row</span><span class="p">))</span> <span class="p">{</span>
@@ -258,17 +312,45 @@
 <span class="cm">		myself.deleteRows = function () {</span>
 <span class="cm">			</span>
 <span class="cm">		};</span>
-<span class="cm">		</span>
-<span class="cm">		myself.getColumn = function () {</span>
-<span class="cm">			</span>
-<span class="cm">		};*/</span>
+<span class="cm">		*/</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * Returns a column based on an index or the column&#39;s key</span>
+<span class="cm">		 * @method getColumn</span>
+<span class="cm">		 * @param {Number | String} id</span>
+<span class="cm">		 * @return Column</span>
+<span class="cm">		 */</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">getColumn</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">col</span><span class="p">,</span> <span class="nx">cells</span> <span class="o">=</span> <span class="p">[],</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">records</span> <span class="o">=</span> <span class="nx">recordSet</span><span class="p">.</span><span class="nx">getRecords</span><span class="p">(),</span> <span class="nx">length</span> <span class="o">=</span> <span class="nx">records</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">colDefs</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;columnDefinitions&quot;</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">rows</span> <span class="o">=</span> <span class="nx">tbody</span><span class="p">.</span><span class="nx">children</span><span class="p">(),</span> <span class="nx">key</span> <span class="o">=</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="o">?</span> <span class="nx">colDefs</span><span class="p">[</span><span class="nx">id</span><span class="p">].</span><span class="nx">key</span> <span class="o">:</span> <span class="nx">id</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">index</span> <span class="o">=</span> <span class="nx">id</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">id</span><span class="p">))</span> <span class="p">{</span>
+				<span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">colDefs</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">colDefs</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">key</span> <span class="o">==</span> <span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">index</span> <span class="o">=</span> <span class="nx">i</span><span class="p">;</span>
+						<span class="k">break</span><span class="p">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">cells</span><span class="p">[</span><span class="nx">cells</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Cell</span><span class="p">({</span>
+					<span class="nx">record</span><span class="o">:</span> <span class="nx">records</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span>
+					<span class="nx">td</span><span class="o">:</span> <span class="nx">rows</span><span class="p">.</span><span class="nx">eq</span><span class="p">(</span><span class="nx">i</span><span class="p">).</span><span class="nx">children</span><span class="p">().</span><span class="nx">eq</span><span class="p">(</span><span class="nx">index</span><span class="p">),</span>
+					<span class="nx">value</span><span class="o">:</span> <span class="nx">records</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">get</span><span class="p">(</span><span class="nx">key</span><span class="p">)</span>
+				<span class="p">});</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="k">new</span> <span class="nx">Column</span><span class="p">({</span>
+				<span class="nx">cells</span><span class="o">:</span> <span class="nx">cells</span>
+			<span class="p">});</span>
+		<span class="p">};</span>
 		
 		<span class="cm">/**</span>
 <span class="cm">		 * Returns the first html row element in the table</span>
 <span class="cm">		 * @method getFirstTr</span>
 <span class="cm">		 * @return NodeList</span>
 <span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">getFirstTr</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">getFirstTr</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 			<span class="k">return</span> <span class="nx">tbody</span><span class="p">.</span><span class="nx">children</span><span class="p">().</span><span class="nx">eq</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 		<span class="p">};</span>
 		
@@ -278,7 +360,7 @@
 <span class="cm">		 * @param {Record | HTMLTrElement | NodeList | Number} tr</span>
 <span class="cm">		 * @return NodeList</span>
 <span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">getNextTr</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">tr</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">getNextTr</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">tr</span><span class="p">)</span> <span class="p">{</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isRecord</span><span class="p">(</span><span class="nx">tr</span><span class="p">))</span> <span class="p">{</span>
 				<span class="nx">tr</span> <span class="o">=</span> <span class="nx">tr</span><span class="p">.</span><span class="nx">getId</span><span class="p">();</span>
 			<span class="p">}</span>
@@ -294,7 +376,7 @@
 <span class="cm">		 * @param {Record | HTMLTrElement | NodeList | Number} row</span>
 <span class="cm">		 * @return NodeList</span>
 <span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">getFirstTd</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">row</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">getFirstTd</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">row</span><span class="p">)</span> <span class="p">{</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isRecord</span><span class="p">(</span><span class="nx">row</span><span class="p">))</span> <span class="p">{</span>
 				<span class="nx">row</span> <span class="o">=</span> <span class="nx">row</span><span class="p">.</span><span class="nx">getId</span><span class="p">();</span>
 			<span class="p">}</span>
@@ -310,7 +392,7 @@
 <span class="cm">		 * @param {Record | HTMLTrElement | NodeList | Number} td</span>
 <span class="cm">		 * @return NodeList</span>
 <span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">getNextTd</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">td</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">getNextTd</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">td</span><span class="p">)</span> <span class="p">{</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isRecord</span><span class="p">(</span><span class="nx">td</span><span class="p">))</span> <span class="p">{</span>
 				<span class="nx">td</span> <span class="o">=</span> <span class="nx">td</span><span class="p">.</span><span class="nx">getId</span><span class="p">();</span>
 			<span class="p">}</span>
@@ -319,6 +401,7 @@
 			<span class="p">}</span>
 			<span class="k">return</span> <span class="nx">td</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
 		<span class="p">};</span>
+		
 		<span class="cm">/*@TODO</span>
 <span class="cm">		myself.getSelectedCell = function () {</span>
 <span class="cm">			</span>
@@ -366,7 +449,7 @@
 <span class="cm">		 * @param {EventFacade} e</span>
 <span class="cm">		 * @param {RecordSet} recordSet</span>
 <span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">onDataReturnReplaceRows</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">newRecordSet</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">onDataReturnReplaceRows</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">newRecordSet</span><span class="p">)</span> <span class="p">{</span>
 			<span class="nx">tbody</span><span class="p">.</span><span class="nx">children</span><span class="p">().</span><span class="nx">remove</span><span class="p">();</span>
 			<span class="nx">myself</span><span class="p">.</span><span class="nx">addRows</span><span class="p">(</span><span class="nx">newRecordSet</span><span class="p">);</span>
 			<span class="nx">recordSet</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">newRecordSet</span><span class="p">);</span>
@@ -378,13 +461,13 @@
 <span class="cm">		 * @param {EventFacade} e</span>
 <span class="cm">		 * @param {RecordSet} newRecordSet</span>
 <span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">onDataReturnAddRows</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">newRecordSet</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">onDataReturnAddRows</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">newRecordSet</span><span class="p">)</span> <span class="p">{</span>
 			<span class="nx">myself</span><span class="p">.</span><span class="nx">addRows</span><span class="p">(</span><span class="nx">newRecordSet</span><span class="p">);</span>
 			<span class="nx">recordSet</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">newRecordSet</span><span class="p">);</span>
 		<span class="p">};</span>
 		
 		<span class="c1">//rende lifecycle</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;render&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;render&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 			<span class="nx">myself</span><span class="p">.</span><span class="nx">onDataReturnAddRows</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">recordSet</span><span class="p">);</span>
 			<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;boundingBox&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">prefix</span> <span class="o">+</span> <span class="nx">className</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">table</span><span class="p">);</span>
 		<span class="p">});</span>
@@ -394,14 +477,21 @@
 	<span class="kd">var</span> <span class="nx">ScrollableDataTable</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 		<span class="nx">ScrollableDataTable</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
 		
-		<span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;render&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			
+		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;afterRender&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">boundingBox</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;boundingBox&quot;</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">table</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;table/&gt;&quot;</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">tbody</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;tbody&quot;</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">thead</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;thead&quot;</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">container</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;div/&gt;&quot;</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">boundingBox</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;overflowY&quot;</span><span class="p">,</span> <span class="s2">&quot;auto&quot;</span><span class="p">).</span><span class="nx">height</span><span class="p">(</span><span class="mi">300</span><span class="p">).</span><span class="nx">width</span><span class="p">(</span><span class="nx">thead</span><span class="p">.</span><span class="nx">width</span><span class="p">());;</span>
+			<span class="nx">table</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">tbody</span><span class="p">.</span><span class="nx">detach</span><span class="p">()).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">container</span><span class="p">);</span>
 		<span class="p">});</span>
 	<span class="p">};</span>
 	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">ScrollableDataTable</span><span class="p">,</span> <span class="nx">DataTable</span><span class="p">);</span>
 	
 	<span class="nx">$</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span>
-		<span class="nx">DataTable</span><span class="o">:</span> <span class="nx">DataTable</span>
+		<span class="nx">DataTable</span><span class="o">:</span> <span class="nx">DataTable</span><span class="p">,</span>
+		<span class="nx">ScrollableDataTable</span><span class="o">:</span> <span class="nx">ScrollableDataTable</span><span class="p">,</span>
+		<span class="nx">Column</span><span class="o">:</span> <span class="nx">Column</span>
 	<span class="p">});</span>
 <span class="p">});</span>
 </pre></div>
@@ -475,7 +565,7 @@
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Record.html#method_get", "access": "", "host": "Record", "type": "method", "name": "get"}, {"url": "RecordSet.html#method_getCount", "access": "", "host": "RecordSet", "type": "method", "name": "getCount"}, {"url": "Record.html#method_getData", "access": "", "host": "Record", "type": "method", "name": "getData"}, {"url": "Record.html#method_getId", "access": "", "host": "Record", "type": "method", "name": "getId"}, {"url": "RecordSet.html#method_getRecords", "access": "", "host": "RecordSet", "type": "method", "name": "getRecords"}, {"url": "DataSource.html#config_initialRequest", "access": "", "host": "DataSource", "type": "config", "name": "initialRequest"}, {"url": "DataSource.Get.html#config_jsonCallbackParam", "access": "", "host": "DataSource.Get", "type": "config", "name": "jsonCallbackParam"}, {"url": "DataSource.html#method_onBeforeParse", "access": "", "host": "DataSource", "type": "method", "name": "onBeforeParse"}, {"url": "RecordSet.html#method_push", "access": "", "host": "RecordSet", "type": "method", "name": "push"}, {"url": "DataSource.html#config_recordSet", "access": "", "host": "DataSource", "type": "config", "name": "recordSet"}, {"url": "RecordSet.html#method_replace", "access": "", "host": "RecordSet", "type": "method", "name": "replace"}, {"url": "DataSource.html#config_requestLogic", "access": "protected", "host": "DataSource", "type": "config", "name": "requestLogic"}, {"url": "DataSource.html#config_responseSchema", "access": "", "host": "DataSource", "type": "config", "name": "responseSchema"}, {"url": "DataSource.html#config_responseType", "access": "", "host": "DataSource", "type": "config", "name": "responseType"}, {"url": "DataSource.html#method_sendRequest", "access": "", "host": "DataSource", "type": "method", "name": "sendRequest"}, {"url": "RecordSet.html#method_sortBy", "access": "", "host": "RecordSet", "type": "method", "name": "sortBy"}, {"url": "DataSource.Get.html#config_timeout", "access": "", "host": "DataSource.Get", "type": "config", "name": "timeout"}, {"url": "DataSource.Ajax.html#config_url", "access": "", "host": "DataSource.Ajax", "type": "config", "name": "url"}, {"url": "DataSource.Get.html#config_url", "access": "", "host": "DataSource.Get", "type": "config", "name": "url"}, {"url": "DataSource.XDR.html#config_url", "access": "", "host": "DataSource.XDR", "type": "config", "name": "url"}];
+    var ALL_YUI_PROPS = [{"url": "Record.html#method_get", "access": "", "host": "Record", "type": "method", "name": "get"}, {"url": "RecordSet.html#method_getCount", "access": "", "host": "RecordSet", "type": "method", "name": "getCount"}, {"url": "Record.html#method_getData", "access": "", "host": "Record", "type": "method", "name": "getData"}, {"url": "Record.html#method_getId", "access": "", "host": "Record", "type": "method", "name": "getId"}, {"url": "RecordSet.html#method_getRecords", "access": "", "host": "RecordSet", "type": "method", "name": "getRecords"}, {"url": "DataSource.html#config_initialRequest", "access": "", "host": "DataSource", "type": "config", "name": "initialRequest"}, {"url": "DataSource.Get.html#config_jsonCallbackParam", "access": "", "host": "DataSource.Get", "type": "config", "name": "jsonCallbackParam"}, {"url": "DataSource.Local.html#config_localData", "access": "", "host": "DataSource.Local", "type": "config", "name": "localData"}, {"url": "DataSource.html#method_onBeforeParse", "access": "", "host": "DataSource", "type": "method", "name": "onBeforeParse"}, {"url": "RecordSet.html#method_push", "access": "", "host": "RecordSet", "type": "method", "name": "push"}, {"url": "DataSource.html#config_recordSet", "access": "", "host": "DataSource", "type": "config", "name": "recordSet"}, {"url": "RecordSet.html#method_replace", "access": "", "host": "RecordSet", "type": "method", "name": "replace"}, {"url": "DataSource.html#config_requestLogic", "access": "protected", "host": "DataSource", "type": "config", "name": "requestLogic"}, {"url": "DataSource.html#config_responseSchema", "access": "", "host": "DataSource", "type": "config", "name": "responseSchema"}, {"url": "DataSource.html#config_responseType", "access": "", "host": "DataSource", "type": "config", "name": "responseType"}, {"url": "DataSource.html#method_sendRequest", "access": "", "host": "DataSource", "type": "method", "name": "sendRequest"}, {"url": "RecordSet.html#method_sortBy", "access": "", "host": "RecordSet", "type": "method", "name": "sortBy"}, {"url": "DataSource.Get.html#config_timeout", "access": "", "host": "DataSource.Get", "type": "config", "name": "timeout"}, {"url": "DataSource.Ajax.html#config_url", "access": "", "host": "DataSource.Ajax", "type": "config", "name": "url"}, {"url": "DataSource.Get.html#config_url", "access": "", "host": "DataSource.Get", "type": "config", "name": "url"}, {"url": "DataSource.XDR.html#config_url", "access": "", "host": "DataSource.XDR", "type": "config", "name": "url"}];
 </script>
 </body>
 </html>

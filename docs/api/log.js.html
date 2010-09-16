@@ -58,10 +58,32 @@
 <span class="cm"> */</span>
 <span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 	
-	<span class="nx">$</span><span class="p">.</span><span class="nx">error</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
-	<span class="p">};</span>
-
+	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">Log</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">jet</span><span class="p">.</span><span class="nx">Log</span> <span class="o">=</span> <span class="p">{};</span>
+	<span class="p">}</span>
+	<span class="kd">var</span> <span class="nx">Log</span> <span class="o">=</span> <span class="nx">jet</span><span class="p">.</span><span class="nx">Log</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">Log</span><span class="p">.</span><span class="nx">errors</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">Log</span><span class="p">.</span><span class="nx">errors</span> <span class="o">=</span> <span class="p">[];</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">Log</span><span class="p">.</span><span class="nx">warnings</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">Log</span><span class="p">.</span><span class="nx">warnings</span> <span class="o">=</span> <span class="p">[];</span>
+	<span class="p">}</span>
+	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">Log</span><span class="p">.</span><span class="nx">logs</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">Log</span><span class="p">.</span><span class="nx">logs</span> <span class="o">=</span> <span class="p">[];</span>
+	<span class="p">}</span>
+	
+	<span class="nx">$</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span>
+		<span class="nx">error</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">Log</span><span class="p">.</span><span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
+		<span class="p">},</span>
+		<span class="nx">warning</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">Log</span><span class="p">.</span><span class="nx">warnings</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
+		<span class="p">},</span>
+		<span class="nx">log</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">Log</span><span class="p">.</span><span class="nx">logs</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">});</span>
+	
 <span class="p">});</span>
 </pre></div>
 

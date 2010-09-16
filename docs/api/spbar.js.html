@@ -70,14 +70,17 @@
 		<span class="nx">config</span> <span class="o">=</span> <span class="nx">config</span> <span class="o">||</span> <span class="p">{};</span>
 		<span class="nx">config</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">width</span> <span class="o">||</span> <span class="mi">200</span><span class="p">;</span>
 		<span class="nx">config</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">height</span> <span class="o">||</span> <span class="mi">20</span><span class="p">;</span>
+		<span class="nx">config</span><span class="p">.</span><span class="nx">complete</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">complete</span> <span class="o">||</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{};</span>
 		
-		<span class="kd">var</span> <span class="nx">boundingBox</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;div/&gt;&quot;</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">boundingBox</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;div/&gt;&quot;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;jet-spbar&quot;</span><span class="p">);</span>
 		<span class="kd">var</span> <span class="nx">container</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">NEW_SPAN</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">CLASS_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;container&quot;</span><span class="p">).</span><span class="nx">height</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">height</span><span class="p">).</span><span class="nx">width</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">width</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">boundingBox</span><span class="p">);</span>
 		<span class="kd">var</span> <span class="nx">bar</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">NEW_SPAN</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">CLASS_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;bar&quot;</span><span class="p">).</span><span class="nx">height</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">height</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">container</span><span class="p">);</span>
 		<span class="kd">var</span> <span class="nx">text</span><span class="p">;</span>
 		<span class="k">if</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
 			<span class="nx">text</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">NEW_SPAN</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">CLASS_PREFIX</span> <span class="o">+</span> <span class="s2">&quot;text&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="s2">&quot;0%&quot;</span><span class="p">).</span><span class="nx">height</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">height</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;line-height&quot;</span><span class="p">,</span> <span class="nx">config</span><span class="p">.</span><span class="nx">height</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">container</span><span class="p">);</span>
 		<span class="p">}</span>
+		
+		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
 		
 		<span class="cm">/**</span>
 <span class="cm">		 * @method update</span>
@@ -90,6 +93,12 @@
 			<span class="k">if</span> <span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
 				<span class="nx">text</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">progress</span><span class="p">);</span>
 			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">progress</span> <span class="o">==</span> <span class="s2">&quot;100%&quot;</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">config</span><span class="p">.</span><span class="nx">complete</span><span class="p">();</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">selfdestruct</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">myself</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
 		<span class="p">};</span>
 		<span class="cm">/**</span>
 <span class="cm">		 * @method render</span>
@@ -99,6 +108,14 @@
 		<span class="k">this</span><span class="p">.</span><span class="nx">render</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
 			<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">target</span><span class="p">);</span>
 		<span class="p">};</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * @method destroy</span>
+<span class="cm">		 * @description Removes the progress bar</span>
+<span class="cm">		 */</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">destroy</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">remove</span><span class="p">();</span>
+		<span class="p">}</span>
 	<span class="p">};</span>
 	
 <span class="p">});</span>
