@@ -740,12 +740,7 @@ jet().add("node", function ($) {
 			return this.each(function (node) {
 				Hash.each(css, function (prop, value) {
 					if (prop == "opacity" && $.UA.ie) {
-						var ieOpacity = Math.ceil(value * 100);
-						if ($.UA.ie < 7) {
-							node.style["-ms-filter"] = "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + ieOpacity + ")";
-						} else {
-							node.style.filter = "alpha(opacity=" + ieOpacity + ")";
-						}
+						node.style.filter = "alpha(opacity=" + Math.ceil(value * 100) + ")";
 					} else {
 						if (Lang.isNumber(value) && prop != "zIndex" && prop != "zoom" && prop != "opacity") {
 							value += "px";

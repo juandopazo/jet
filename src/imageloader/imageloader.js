@@ -193,15 +193,16 @@ jet().add('imageloader', function ($) {
 				validator: Lang.isArray
 			}
 		});
-		
-		var completed = 0;
-		
+	};
+	$.extend(ImageLoader, $.Base, {
 		/**
 		 * Loads all images whose srcs where specified
 		 * @method load
 		 * @chainable
 		 */
-		myself.load = function () {
+		load: function () {
+			var myself = this;
+			var completed = 0;
 			var srcs = myself.get("srcs");
 			var length = srcs.length;
 			ArrayHelper.each(srcs, function (src) {
@@ -259,10 +260,8 @@ jet().add('imageloader', function ($) {
 				img.load();
 			});
 			return myself;
-		};
-		
-	};
-	$.extend(ImageLoader, $.Base);
+		}
+	});
 	
 	/*
 	 * @TODO: fixPNG method for Node and NodeList
