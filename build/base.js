@@ -349,6 +349,13 @@ jet().add('base', function ($) {
 	};
 	extend(Attribute, EventTarget);
 	
+	var walkTheProtoChain = function (instance, topConstructor, fn) {
+		var parent = instance.constructor;
+		while (parent != topConstructor) {
+			fn(parent);
+			parent = parent.superclass.constructor;
+		}
+	};
 	/**
 	 * Base class for all widgets and utilities.
 	 * @class Base
@@ -375,6 +382,14 @@ jet().add('base', function ($) {
 		Hash.each(myself.get("on"), function (type, fn) {
 			myself.on(type, fn);
 		});
+		
+		walkTheProtoChain(this, Attribute, function (parent) {
+			if (parent.ATTRS) {
+				console.log(parent.ATTRS);
+				myself.addAttrs(parent.ATTRS);
+			}
+		});
+		
 	};
 	extend(Base, Attribute);
 	
@@ -423,52 +438,7 @@ jet().add('base', function ($) {
 	 */
 	var Widget = function () {
 		Widget.superclass.constructor.apply(this, arguments);
-		var myself = this.addAttrs({
-			/**
-			 * @config srcNode
-			 * @description The node to which the widget will be appended to. May be set as a 
-			 * configuration attribute, with a setter or as the first parameter of the render() method
-			 * @type DOMNode | NodeList
-			 */
-			srcNode: {
-				setter: $
-			},
-			/**
-			 * @config classPrefix
-			 * @description Prefix for all CSS clases. Useful for renaming the project
-			 * @default "yui-"
-			 */
-			classPrefix: {
-				value: Widget.CSS_PREFIX + "-"
-			},
-			/**
-			 * @config className
-			 * @description The class name applied along with the prefix to the boundingBox
-			 * @default "widget"
-			 */
-			className: {
-				value: "widget"
-			},
-			/**
-			 * @config rendered
-			 * @description Rendered status. Shouldn't be changed by anything appart from the Widget.render() method
-			 * @writeOnce
-			 * @default false
-			 */
-			rendered: {
-				value: false
-			}
-			/**
-			 * The bounding box contains all the parts of the widget
-			 * @config boundingBox
-			 * @writeOnce
-			 * @type NodeList
-			 * @default <div/>
-			 */
-		}).addAttr(BOUNDING_BOX, {
-			readOnly: true,
-			value: $("<div/>")
-		});
+		var myself = this;
 		
 		/*
 		 * Call the destroy method when the window unloads.
@@ -480,6 +450,53 @@ jet().add('base', function ($) {
 				myself.destroy();
 			}
 		}); 
+	};
+	Widget.ATTRS = {
+		/**
+		 * @config srcNode
+		 * @description The node to which the widget will be appended to. May be set as a 
+		 * configuration attribute, with a setter or as the first parameter of the render() method
+		 * @type DOMNode | NodeList
+		 */
+		srcNode: {
+			setter: $
+		},
+		/**
+		 * @config classPrefix
+		 * @description Prefix for all CSS clases. Useful for renaming the project
+		 * @default "yui-"
+		 */
+		classPrefix: {
+			value: Widget.CSS_PREFIX + "-"
+		},
+		/**
+		 * @config className
+		 * @description The class name applied along with the prefix to the boundingBox
+		 * @default "widget"
+		 */
+		className: {
+			value: "widget"
+		},
+		/**
+		 * @config rendered
+		 * @description Rendered status. Shouldn't be changed by anything appart from the Widget.render() method
+		 * @writeOnce
+		 * @default false
+		 */
+		rendered: {
+			value: false
+		},
+		/**
+		 * The bounding box contains all the parts of the widget
+		 * @config boundingBox
+		 * @writeOnce
+		 * @type NodeList
+		 * @default <div/>
+		 */
+		boundingBox: {
+			readOnly: true,
+			value: $("<div/>")
+		}
 	};
 	extend(Widget, Base, {
 		/**
@@ -623,15 +640,17 @@ jet().add('base', function ($) {
 		}).on(TRACKING + "Change", function (e, value) {
 			if (value) {
 				if (myself.get("shim")) {
-					shim.splice(0, shim.length);
+					var list = [];
 					iframes = $("iframe").each(function (iframe) {
+						iframe = $(iframe);
 						var offset = iframe.offset();
-						shim.push($("<div/>").height(offset.height).width(offset.width).css({
+						list.push($("<div/>").height(offset.height).width(offset.width).css({
 							position: "absolute",
 							left: offset.left,
 							top: offset.top
 						}).hide().appendTo(iframe.parent())[0]);
 					});	
+					shim = $(list);
 				}
 				if (!capturing) {
 					shim.show();
@@ -664,6 +683,7 @@ jet().add('base', function ($) {
 			clientY = e.clientY;
 			if (myself.get(TRACKING) && myself.get("shim")) {
 				iframes.each(function (iframe, i) {
+					iframe = $(iframe);
 					var offset = iframe.offset();
 					shim[i].height(offset.height).width(offset.width).css({
 						left: offset.left + "px",
