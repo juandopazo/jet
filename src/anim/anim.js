@@ -15,8 +15,7 @@ jet().add('anim', function ($) {
 		A = $.Array;
 	
 	var PLAYING = "playing",
-		ENTER_FRAME = "enterFrame",
-		OVERFLOW = "overflow";
+		ENTER_FRAME = "enterFrame";
 		
 	var pxToFloat = function (str) {
 		return !Lang.isString(str) ? str :
@@ -331,7 +330,7 @@ jet().add('anim', function ($) {
 						from[name] = offset.height;
 						break;
 					default:
-						from[name] = pxToFloat(startStyle[name]);
+						from[name] = Lang.isNumber(pxToFloat(startStyle[name])) ? pxToFloat(startStyle[name]) : 0;
 					}
 				} 
 			});
@@ -458,11 +457,11 @@ jet().add('anim', function ($) {
 		 */
 		slideDown: function (duration, easing, callback) {
 			var myself = this;
-			var overflow = myself.css(OVERFLOW);
-			return myself.css(OVERFLOW, "hidden").animate({
+			var overflow = myself.css("overflow");
+			return myself.css("overflow", "hidden").animate({
 				height: myself.oHeight
 			}, duration, easing, function () {
-				myself.css(OVERFLOW, overflow);
+				myself.css("overflow", overflow);
 				callback.call(myself);
 			});
 		},
@@ -478,11 +477,11 @@ jet().add('anim', function ($) {
 		 */
 		slideUp: function (duration, easing, callback) {
 			var myself = this;
-			var overflow = myself.css(OVERFLOW);
-			return myself.css(OVERFLOW, "hidden").animate({
+			var overflow = myself.css("overflow");
+			return myself.css("overflow", "hidden").animate({
 				height: 0
 			}, duration, easing, function () {
-				myself.css(OVERFLOW, overflow);
+				myself.css("overflow", overflow);
 				callback.call(myself);
 			});
 		},
@@ -505,3 +504,10 @@ jet().add('anim', function ($) {
 		Easing: Easing
 	});
 });
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
+
+		
