@@ -431,7 +431,7 @@ jet().add('base', function ($) {
 	 */
 	var Widget = function () {
 		Widget.superclass.constructor.apply(this, arguments);
-		var myself = this;
+		var myself = this.addAttrs(Widget.ATTRS);
 		
 		/*
 		 * Call the destroy method when the window unloads.
