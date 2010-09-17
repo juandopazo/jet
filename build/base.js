@@ -648,7 +648,7 @@ jet().add('base', function ($) {
 							position: "absolute",
 							left: offset.left,
 							top: offset.top
-						}).hide().appendTo(iframe.parent())[0]);
+						}).hide().appendTo($.context.body));
 					});	
 					shim = $(list);
 				}
