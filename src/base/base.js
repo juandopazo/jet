@@ -444,6 +444,7 @@ jet().add('base', function ($) {
 			}
 		}); 
 	};
+	Widget.CSS_PREFIX = "yui";
 	Widget.ATTRS = {
 		/**
 		 * @config srcNode
@@ -590,7 +591,6 @@ jet().add('base', function ($) {
 			}
 		}
 	});
-	Widget.CSS_PREFIX = "yui";
 	
 	/**
 	 * A utility for tracking the mouse movement without crashing the browser rendering engine.
