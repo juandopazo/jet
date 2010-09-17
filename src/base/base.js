@@ -382,14 +382,7 @@ jet().add('base', function ($) {
 		Hash.each(myself.get("on"), function (type, fn) {
 			myself.on(type, fn);
 		});
-		
-		walkTheProtoChain(this, Attribute, function (parent) {
-			if (parent.ATTRS) {
-				console.log(parent.ATTRS);
-				myself.addAttrs(parent.ATTRS);
-			}
-		});
-		
+				
 	};
 	extend(Base, Attribute);
 	
