@@ -648,7 +648,7 @@ jet().add('base', function ($) {
 							position: "absolute",
 							left: offset.left,
 							top: offset.top
-						}).hide().appendTo($.context.body));
+						}).hide().appendTo($.context.body)[0]);
 					});	
 					shim = $(list);
 				}
