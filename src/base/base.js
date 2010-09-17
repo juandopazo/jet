@@ -431,7 +431,17 @@ jet().add('base', function ($) {
 	 */
 	var Widget = function () {
 		Widget.superclass.constructor.apply(this, arguments);
-		var myself = this.addAttrs(Widget.ATTRS);
+ 		/**
+ 		 * The bounding box contains all the parts of the widget
+		 * @config boundingBox
+		 * @writeOnce
+		 * @type NodeList
+		 * @default <div/>
+		 */
+		var myself = this.addAttrs(Widget.ATTRS).addAttr(BOUNDING_BOX, {
+			readOnly: true,
+			value: $("<div/>")
+		});
 		
 		/*
 		 * Call the destroy method when the window unloads.
@@ -479,17 +489,6 @@ jet().add('base', function ($) {
 		 */
 		rendered: {
 			value: false
-		},
-		/**
-		 * The bounding box contains all the parts of the widget
-		 * @config boundingBox
-		 * @writeOnce
-		 * @type NodeList
-		 * @default <div/>
-		 */
-		boundingBox: {
-			readOnly: true,
-			value: $("<div/>")
 		}
 	};
 	extend(Widget, Base, {
