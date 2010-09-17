@@ -685,7 +685,7 @@ jet().add('base', function ($) {
 				iframes.each(function (iframe, i) {
 					iframe = $(iframe);
 					var offset = iframe.offset();
-					shim[i].height(offset.height).width(offset.width).css({
+					$(shim[i]).height(offset.height).width(offset.width).css({
 						left: offset.left + "px",
 						top: offset.top + "px"
 					});
