@@ -522,7 +522,10 @@ jet().add('base', function ($) {
 		 * @chainable
 		 */
 		focus: function () {
-			return this.set("focused", true);
+			if (this.fire("focus")) {
+				this.set("focused", true);
+			}
+			return this;
 		},
 		/**
 		 * Blurrs the element
@@ -530,7 +533,10 @@ jet().add('base', function ($) {
 		 * @chainable
 		 */
 		blur: function () {
-			return this.set("focused", false);
+			if (this.fire("blur")) {
+				this.set("focused", false);
+			}
+			return this;
 		},
 		/**
 		 * Starts the rendering process. The rendering process is based on custom events.
@@ -562,7 +568,10 @@ jet().add('base', function ($) {
 				 * Fires after the render process is finished
 				 * @event afterRender
 				 */
-				myself.set("rendered", true).focus().fire("afterRender");
+				myself.set("rendered", true).focus();
+				setTimeout(function () {
+					myself.fire("afterRender");
+				}, 0);
 			}
 			return myself;
 		},

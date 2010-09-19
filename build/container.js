@@ -135,6 +135,13 @@ jet().add("container", function ($) {
 	Module.NAME = "module";
 	$.extend(Module, $.Widget);
 	
+	
+	if (!jet.overlays) {
+		jet.overlays = [];
+	}
+	if (!Lang.isNumber(jet.ovZindex)) {
+		jet.ovZindex = 10;
+	}
 	/**
 	 * @class Overlay
 	 * @description An Overlay is a Module that floats in the page (doesn't have position static)
@@ -243,19 +250,13 @@ jet().add("container", function ($) {
 				},
 				value: false
 			},
-			/**
-			 * @config zIndex
-			 * @description zIndex to apply to the boundingBox
-			 * @default 100
-			 */
-			zIndex: {
-				value: 100
-			},
 			modal: {
 				value: false
 			}
 		});
 		myself.set(CLASS_NAME, Overlay.NAME);
+		jet.overlays.push(this);
+		var startZindex = jet.overlays.length - 1;
 		
 		// centers the overlay in the screen
 		var center = function (boundingBox) {
@@ -313,7 +314,7 @@ jet().add("container", function ($) {
 				left: "0px",
 				background: "#000",
 				visibility: !myself.get("modal") ? "hidden" : "",
-				zIndex: myself.get("zIndex") - 1,
+				zIndex: jet.ovZindex + startZindex - 1,
 				opacity: 0.4
 			}).width(screenSize.width).height(screenSize.height).appendTo($.context.body);
 			win.on("resize", function () {
@@ -336,7 +337,9 @@ jet().add("container", function ($) {
 			if (footer) {
 				boundingBox.append(footer);
 			}
-			boundingBox.css("position", pos).css("zIndex", myself.get("zIndex")).width(myself.get(WIDTH));
+			boundingBox.css("position", pos).css("zIndex", jet.ovZindex + startZindex).width(myself.get(WIDTH)).on("mousedown", function () {
+				myself.focus();
+			});
 			if (height) {
 				boundingBox.height(height);
 			}
@@ -375,6 +378,14 @@ jet().add("container", function ($) {
 				});
 			}
 
+		});
+		this.on("focus", function () {
+			A.remove(myself, jet.overlays);
+			jet.overlays.push(myself);
+			var olays = jet.overlays, i, length = olays.length;
+			for (i = 0; i < length; i++) {
+				olays[i].get(BOUNDING_BOX).css("zIndex", jet.ovZindex + i);
+			}
 		});
 	};
 	Overlay.NAME = "overlay";

@@ -70,6 +70,9 @@ jet().add("tabs", function ($) {
 					return value;
 				}
 			},
+			triggerEvent: {
+				value: "click"
+			},
 			panelContent: {
 				setter: function (value) {
 					var panel = myself.get(PANEL);
@@ -78,10 +81,15 @@ jet().add("tabs", function ($) {
 					return value;
 				}
 			}
-		}).get(LABEL).first().on("click", function (e) {
+		});
+		var selectHandler = function (e) {
 			e.preventDefault();
 			e.stopPropagation();
 			myself.select();
+		};
+		this.get(LABEL).first().on(myself.get("triggerEvent"), selectHandler);
+		this.on("triggerEventChange", function (e, oldVal, newVal) {
+			this.get(LABEL).first().unbind(oldVal, selectHandler).on(newVal, selectHandler);
 		});
 	};
 	$.extend(Tab, $.Base, {
