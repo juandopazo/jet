@@ -17,17 +17,12 @@
 			height: 15px;
 		}
 	</style>
-	<link rel="stylesheet" type="text/css" href="/jet/build/container.css"/>
-	<link rel="stylesheet" type="text/css" href="/jet/build/button.css"/>
 </head>
 
 <body class="yui-skin-sam">
-	<script type="text/javascript" src="/jet/src/jet/jet.js"></script>
+	<script type="text/javascript" src="http://jet-js.googlecode.com/svn/trunk/build/jet.min.js"></script>
 	<script type="text/javascript">
-		jet({
-			base: "/jet/src",
-			loadCss: false
-		}).use('button', 'dragdrop', 'container', function ($) {
+		jet().use('button', 'dragdrop', 'container', function ($) {
 			
 			for (var i = 0; i < 10; i++) {
 				(new $.Panel({

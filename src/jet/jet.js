@@ -46,7 +46,7 @@
 		resize: [BASE, {
 			name: "resize-css",
 			type: "css",
-			fileName: "resize",
+			path: "resize/resize.css",
 			beacon: {
 				name: "borderLeftStyle",
 				value: "solid"
@@ -55,7 +55,7 @@
 		button: [BASE, {
 			name: "button-css",
 			type: "css",
-			fileName: "button",
+			path: "button/button.css",
 			beacon: {
 				name: "borderBottomStyle",
 				value: "solid"
@@ -64,7 +64,7 @@
 		container: [BASE, {
 			name: "container-css",
 			type: "css",
-			fileName: "container",
+			path: "container/container.css",
 			beacon: {
 				name: "borderRightStyle",
 				value: "solid"
@@ -77,7 +77,7 @@
 		datatable: ["datasource", {
 			name: "datatable-css",
 			type: "css",
-			fileName: "datatable",
+			path: "datatable/datatable.css",
 			beacon: {
 				name: "borderTopStyle",
 				value: "solid"

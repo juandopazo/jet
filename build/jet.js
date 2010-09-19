@@ -46,7 +46,7 @@
 		resize: [BASE, {
 			name: "resize-css",
 			type: "css",
-			fileName: "resize",
+			path: "resize.css",
 			beacon: {
 				name: "borderLeftStyle",
 				value: "solid"
@@ -55,7 +55,7 @@
 		button: [BASE, {
 			name: "button-css",
 			type: "css",
-			fileName: "button",
+			path: "button.css",
 			beacon: {
 				name: "borderBottomStyle",
 				value: "solid"
@@ -64,7 +64,7 @@
 		container: [BASE, {
 			name: "container-css",
 			type: "css",
-			fileName: "container",
+			path: "container.css",
 			beacon: {
 				name: "borderRightStyle",
 				value: "solid"
@@ -77,7 +77,7 @@
 		datatable: ["datasource", {
 			name: "datatable-css",
 			type: "css",
-			fileName: "datatable",
+			path: "datatable.css",
 			beacon: {
 				name: "borderTopStyle",
 				value: "solid"
@@ -1221,13 +1221,31 @@ jet().add('io', function ($) {
 jet().add("log", function ($) {
 	
 	if (!jet.Log) {
-		jet.Log = [];
+		jet.Log = {};
+	}
+	var Log = jet.Log;
+	if (!Log.errors) {
+		Log.errors = [];
+	}
+	if (!Log.warnings) {
+		Log.warnings = [];
+	}
+	if (!Log.logs) {
+		Log.logs = [];
 	}
 	
-	$.error = function (msg) {
-		jet.Log.push(msg);
-	};
-
+	$.add({
+		error: function (msg) {
+			Log.errors.push(msg);
+		},
+		warning: function (msg) {
+			Log.warnings.push(msg);
+		},
+		log: function (msg) {
+			Log.logs.push(msg);
+		}
+	});
+	
 });/*
  Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
  Code licensed under the BSD License
@@ -1970,12 +1988,7 @@ jet().add("node", function ($) {
 			return this.each(function (node) {
 				Hash.each(css, function (prop, value) {
 					if (prop == "opacity" && $.UA.ie) {
-						var ieOpacity = Math.ceil(value * 100);
-						if ($.UA.ie < 7) {
-							node.style["-ms-filter"] = "progid:DXImageTransform.Microsoft.Alpha(Opacity=" + ieOpacity + ")";
-						} else {
-							node.style.filter = "alpha(opacity=" + ieOpacity + ")";
-						}
+						node.style.filter = "alpha(opacity=" + Math.ceil(value * 100) + ")";
 					} else {
 						if (Lang.isNumber(value) && prop != "zIndex" && prop != "zoom" && prop != "opacity") {
 							value += "px";
