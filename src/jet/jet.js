@@ -70,6 +70,15 @@
 				value: "solid"
 			}
 		}],
+		progressbar: [BASE, {
+			name: "progressbar-css",
+			type: "css",
+			path: "progressbar/progressbar.css",
+			beacon: {
+				name: "cursor",
+				value: "pointer"
+			}
+		}],
 		dragdrop: [BASE],
 		imageloader: [BASE],
 		anim: [BASE],

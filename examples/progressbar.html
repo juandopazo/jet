@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+	<title>jet Test</title>
+	<style type="text/css">
+		body {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+
+<body>
+	<script type="text/javascript" src="../src/jet/jet.js"></script>
+	<script type="text/javascript">
+		jet({
+			base: "../src"
+		}).use('anim', 'progressbar', function ($) {
+			
+			var pbar = new $.ProgressBar({
+				animate: true,
+				easing: "easein",
+				duratioN: 1000
+			});
+			pbar.render(document.body).on("progress:end", function () {
+				setTimeout(function () {
+					pbar.set("value", $.Lang.random(100));
+				}, 0);
+			}).set("value", $.Lang.random(100));
+			
+		});
+	</script>
+</body>
+</html>
