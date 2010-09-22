@@ -8,13 +8,14 @@
 	<title>jet Test</title>
 	<style type="text/css">
 		body {
-			margin: 0;
+			margin: 10;
 			padding: 0;
 		}
 	</style>
 </head>
 
 <body>
+	<div id="test"></div>
 	<script type="text/javascript" src="../src/jet/jet.js"></script>
 	<script type="text/javascript">
 		jet({
@@ -24,9 +25,11 @@
 			var pbar = new $.ProgressBar({
 				animate: true,
 				easing: "easein",
-				duratioN: 1000
+				duration: 1000
 			});
-			pbar.render(document.body).on("progress:end", function () {
+			pbar.on("progress", function (e, value) {
+				$("#test").html(Math.ceil(value / 2) + "%");
+			}).render(document.body).on("end", function () {
 				setTimeout(function () {
 					pbar.set("value", $.Lang.random(100));
 				}, 0);

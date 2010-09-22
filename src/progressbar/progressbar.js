@@ -16,7 +16,8 @@ jet().add('progressbar', function ($) {
 		WIDTH = "width",
 		HEIGHT = "height",
 		BAR = "bar",
-		PROGRESS = "progress";
+		PROGRESS = "progress",
+		END = "end";
 		
 	var A = $.Array;
 	
@@ -39,32 +40,47 @@ jet().add('progressbar', function ($) {
 			var easing = myself.get("easing");
 			var duration = myself.get("duration");
 			if (myself.get("animate")) {
+				var tween = new $.Tween({
+					node: bar,
+					duration: duration,
+					easing: easing,
+					on: {
+						tween: function (e, value) {
+							if (!myself.fire(PROGRESS, value)) {
+								e.preventDefault();
+							}
+						},
+						end: function () {
+							myself.fire(END);
+						}
+					}
+				});
 				switch (direction) {
 					case "ttb":
 					case "btt":
-						bar.animate({
+						tween.set("to", {
 							height: height * newSize
-						}, duration, easing, function () {
-							myself.fire(PROGRESS + ":end");
 						});
 						break;
 					default:
-						bar.animate({
+						tween.set("to", {
 							width: width * newSize
-						}, duration, easing, function () {
-							myself.fire(PROGRESS + ":end");
 						});
 				}
+				tween.play();
 			} else {
 				switch (direction) {
 					case "ttb":
 					case "btt":
-						bar.height(height * newSize);
+						newSize *= height;
+						bar.height(newSize);
 						break;
 					default:
-						bar.width(width * newSize);
+						newSize *= width;
+						bar.width(newSize);
 				}
-				myself.fire(PROGRESS + ":end");
+				myself.fire(PROGRESS, newSize);
+				myself.fire(END);
 			}
 		};
 		
