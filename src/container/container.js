@@ -391,6 +391,44 @@ jet().add("container", function ($) {
 	Overlay.NAME = "overlay";
 	$.extend(Overlay, Module);
 	
+	var Tooltip = function () {
+		Tooltip.superclass.constructor.apply(this, arguments);
+		
+		this.addAttrs({
+			position: {
+				value: "r"
+			}
+		}).on("render", function () {
+			
+			var title = this.get("srcNode").attr("title");
+			if (this.get("body")[0].childNodes.length == 0 && title) {
+				this.set("body", title);
+			}
+			
+		}).on("afterRender", function () {
+			var x, y;
+			var boundingBox = this.get("boundingBox");
+			var srcNode = this.get("srcNode"), offset = srcNode.offset();
+			var position = this.get("position");
+			if (position.indexOf("r") > -1) {
+				x = offset.left + offset.width;
+			} else if (position.indexOf("l") > -1){
+				x = offset.left - this.get("width");
+			}
+			if (position.indexOf("t") > -1) {
+				y = offset.top - boundingBox[0].offsetHeight;
+			} else if (position.indexOf("b") > -1{
+				y = offset.top + srcNode[0].offsetHeight;
+			}
+			this.set("left", x).set("top", y);
+			boundingBox.css({
+				left: x,
+				top: y
+			});
+		});
+	};
+	$.extend(Tooltip, Overlay);
+	
 	/**
 	 * A panel is an overlay that resembles an OS window without actually being one,
 	 * to the problems they have (stop javascript execution, etc)

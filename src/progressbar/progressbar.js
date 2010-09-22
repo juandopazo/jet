@@ -157,6 +157,7 @@ jet().add('progressbar', function ($) {
 			 * @default 500 ms
 			 */
 			duration: {
+				value: 500
 			},
 			/**
 			 * @config bar
