@@ -105,7 +105,7 @@ jet().add('anim', function ($) {
 		 * @uses EventTarget
 		 * @static
 		 */
-		jet.TimeFrame = (function () {
+		var TimeFrame = (function () {
 			var tweens = [];
 			var interval;
 			var frameLength;
@@ -173,7 +173,7 @@ jet().add('anim', function ($) {
 				}
 			};
 		}());
-		$.mix(jet.TimeFrame, new $.EventTarget());
+		jet.TimeFrame = $.mix(new $.EventTarget(), TimeFrame);
 	}
 	
 	/**
@@ -286,13 +286,17 @@ jet().add('anim', function ($) {
 					if ((val > from[name] && go > val) || (val < from[name] && go < val)) {
 						go = val;
 					}
-					node.css(name, go);
+					if (myself.fire("tween", go)) {
+						node.css(name, go);
+					} else {
+						elapsed = duration;
+					}
 				});
 				if (elapsed >= duration) {
 					myself.stop();
-					// @TODO: investigate if this should be wrapped in a setTimeout or something similar
-					// to allow chaining of animations without hanging the browser 
-					myself.fire("complete");
+					setTimeout(function () {
+						myself.fire("end");
+					}, 0); 
 				}
 			}
 		};
@@ -338,8 +342,10 @@ jet().add('anim', function ($) {
 			easing = Lang.isFunction(easing) ? easing : Easing[easing];
 			duration = myself.get("duration");
 			strength = myself.get("easingStrength");
-			timeframe.on(ENTER_FRAME, enterFrame);
-			timeframe.addTween(myself).play();
+			if (myself.fire("start")) {
+				timeframe.on(ENTER_FRAME, enterFrame);
+				timeframe.addTween(myself).play();
+			}
 			return myself;
 		};
 		/**
@@ -395,7 +401,7 @@ jet().add('anim', function ($) {
 				duration: duration,
 				easing: easing
 			});
-			this.tw = tw.on("complete", callback).play();
+			this.tw = tw.on("end", callback).play();
 			return this;
 		},
 		/**
@@ -504,10 +510,3 @@ jet().add('anim', function ($) {
 		Easing: Easing
 	});
 });
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
-
-		

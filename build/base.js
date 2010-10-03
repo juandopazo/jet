@@ -103,7 +103,7 @@ jet().add('base', function ($) {
 	/**
 	 * <p>A class designed to be inherited or augmented into other classes and provide custom events.</p>
 	 * <p>Custom events work by attaching event listeners to a class that augments or extends EventTarget.
-	 * An event listener can be a function or an object with a method called "eventHandler".
+	 * An event listener can be a function or an object with a method called "handleEvent".
 	 * If it is a function, when fired the context will be the firing object. In the case of an object, the 
 	 * context will be the object itself.</p>
 	 * <p>Attaching an object to the "*" event type allows for a different approach:</p>

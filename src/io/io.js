@@ -141,16 +141,16 @@ jet().add('io', function ($) {
 	if (!jet.IO) {
 		jet.IO = {};
 	}
-	if (!jet.IO.jsonCallbacks) {
-		jet.IO.jsonCallbacks = [];
+	if (!jet.IO.jsonpCallbacks) {
+		jet.IO.jsonpCallbacks = [];
 	}
 
 	/**
-	 * Handles AJAX requests
+	 * Handles AJAX and JSONP requests
 	 * @class IO
 	 * @static
 	 */
-	$.IO = {
+	$.add({
 		/**
 		 * Makes an ajax request
 		 * @method ajax
@@ -278,9 +278,10 @@ jet().add('io', function ($) {
 				}, settings.timeout || 10000);
 			}
 		}
-	};
-	$.add($.IO);
-	$.IO.utils = {
-		parseXML: parseXML
+	});
+	$.IO = {
+		utils: {
+			parseXML: parseXML
+		}
 	};
 });

@@ -391,6 +391,35 @@ jet().add("container", function ($) {
 	Overlay.NAME = "overlay";
 	$.extend(Overlay, Module);
 	
+	var Tooltip = function () {
+		Tooltip.superclass.constructor.apply(this, arguments);
+		
+		this.addAttrs({
+			position: {
+				value: "r"
+			},
+			fadeIn: {
+				value: false,
+				validator: function () {
+					return !!$.Tween;
+				}
+			}
+		});
+		
+		this.on(RENDER, function () {
+			this.hide().set("body", this.get("body") || this.get("srcNode").attr("title"));
+			this.get("srcNode").on("mouseover", this.show).on("mouseout", this.hide);
+		});
+		this.on("show", function () {
+			var offset = this.get("srcNode").offset();
+			this.set("left", offset.left).set("top", offset.top + offset.height);
+			if (this.get("fadeIn")) {
+				this.get(BOUNDING_BOX).css("opacity", 0).fadeIn(this.get("fadeIn"));
+			}
+		});
+	};
+	$.extend(Tooltip, Overlay);
+	
 	/**
 	 * A panel is an overlay that resembles an OS window without actually being one,
 	 * to the problems they have (stop javascript execution, etc)
@@ -553,6 +582,7 @@ jet().add("container", function ($) {
 	$.add({
 		Module: Module,
 		Overlay: Overlay,
+		Tooltip: Tooltip,
 		Panel: Panel,
 		SimpleDialog: SimpleDialog
 	});

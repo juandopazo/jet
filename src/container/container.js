@@ -397,34 +397,25 @@ jet().add("container", function ($) {
 		this.addAttrs({
 			position: {
 				value: "r"
+			},
+			fadeIn: {
+				value: false,
+				validator: function () {
+					return !!$.Tween;
+				}
 			}
-		}).on("render", function () {
-			
-			var title = this.get("srcNode").attr("title");
-			if (this.get("body")[0].childNodes.length == 0 && title) {
-				this.set("body", title);
+		});
+		
+		this.on(RENDER, function () {
+			this.hide().set("body", this.get("body") || this.get("srcNode").attr("title"));
+			this.get("srcNode").on("mouseover", this.show).on("mouseout", this.hide);
+		});
+		this.on("show", function () {
+			var offset = this.get("srcNode").offset();
+			this.set("left", offset.left).set("top", offset.top + offset.height);
+			if (this.get("fadeIn")) {
+				this.get(BOUNDING_BOX).css("opacity", 0).fadeIn(this.get("fadeIn"));
 			}
-			
-		}).on("afterRender", function () {
-			var x, y;
-			var boundingBox = this.get("boundingBox");
-			var srcNode = this.get("srcNode"), offset = srcNode.offset();
-			var position = this.get("position");
-			if (position.indexOf("r") > -1) {
-				x = offset.left + offset.width;
-			} else if (position.indexOf("l") > -1){
-				x = offset.left - this.get("width");
-			}
-			if (position.indexOf("t") > -1) {
-				y = offset.top - boundingBox[0].offsetHeight;
-			} else if (position.indexOf("b") > -1{
-				y = offset.top + srcNode[0].offsetHeight;
-			}
-			this.set("left", x).set("top", y);
-			boundingBox.css({
-				left: x,
-				top: y
-			});
 		});
 	};
 	$.extend(Tooltip, Overlay);
@@ -591,6 +582,7 @@ jet().add("container", function ($) {
 	$.add({
 		Module: Module,
 		Overlay: Overlay,
+		Tooltip: Tooltip,
 		Panel: Panel,
 		SimpleDialog: SimpleDialog
 	});

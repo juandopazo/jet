@@ -105,7 +105,7 @@ jet().add('anim', function ($) {
 		 * @uses EventTarget
 		 * @static
 		 */
-		jet.TimeFrame = (function () {
+		var TimeFrame = (function () {
 			var tweens = [];
 			var interval;
 			var frameLength;
@@ -173,7 +173,7 @@ jet().add('anim', function ($) {
 				}
 			};
 		}());
-		$.mix(jet.TimeFrame, new $.EventTarget());
+		jet.TimeFrame = $.mix(new $.EventTarget(), TimeFrame);
 	}
 	
 	/**
@@ -510,10 +510,3 @@ jet().add('anim', function ($) {
 		Easing: Easing
 	});
 });
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
-
-		

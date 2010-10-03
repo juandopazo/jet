@@ -1,0 +1,6 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
+.jet-pbar-container{overflow:hidden;border:1px solid #333;background:url(http://yui.yahooapis.com/2.8.1/build/progressbar/assets/skins/sam/back-h.png) repeat-x;}.jet-pbar-bar{display:inline-block;background:url(http://yui.yahooapis.com/2.8.1/build/progressbar/assets/skins/sam/bar-h.png) repeat-x;}#jet-tracker{cursor:pointer;}

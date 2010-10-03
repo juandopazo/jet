@@ -46,7 +46,7 @@
 		resize: [BASE, {
 			name: "resize-css",
 			type: "css",
-			path: "resize.css",
+			path: "resize/resize.css",
 			beacon: {
 				name: "borderLeftStyle",
 				value: "solid"
@@ -55,7 +55,7 @@
 		button: [BASE, {
 			name: "button-css",
 			type: "css",
-			path: "button.css",
+			path: "button/button.css",
 			beacon: {
 				name: "borderBottomStyle",
 				value: "solid"
@@ -64,10 +64,19 @@
 		container: [BASE, {
 			name: "container-css",
 			type: "css",
-			path: "container.css",
+			path: "container/container.css",
 			beacon: {
 				name: "borderRightStyle",
 				value: "solid"
+			}
+		}],
+		progressbar: [BASE, {
+			name: "progressbar-css",
+			type: "css",
+			path: "progressbar/progressbar.css",
+			beacon: {
+				name: "cursor",
+				value: "pointer"
 			}
 		}],
 		dragdrop: [BASE],
@@ -77,7 +86,7 @@
 		datatable: ["datasource", {
 			name: "datatable-css",
 			type: "css",
-			path: "datatable.css",
+			path: "datatable/datatable.css",
 			beacon: {
 				name: "borderTopStyle",
 				value: "solid"
@@ -799,7 +808,7 @@
 			 * @type Boolean
 			 * @default true
 			 */
-			config.loadCss = Lang.isBoolean(config.loadCss) ? config.loadCss : true;
+			config.loadCss = Lang.isBoolean(config.loadCss) ? config.loadCss : false;
 			/**
 			 * @config modules
 			 * @description Allows to define your own modules. Currently the same as using object literals in the use() method
@@ -1067,16 +1076,16 @@ jet().add('io', function ($) {
 	if (!jet.IO) {
 		jet.IO = {};
 	}
-	if (!jet.IO.jsonCallbacks) {
-		jet.IO.jsonCallbacks = [];
+	if (!jet.IO.jsonpCallbacks) {
+		jet.IO.jsonpCallbacks = [];
 	}
 
 	/**
-	 * Handles AJAX requests
+	 * Handles AJAX and JSONP requests
 	 * @class IO
 	 * @static
 	 */
-	$.IO = {
+	$.add({
 		/**
 		 * Makes an ajax request
 		 * @method ajax
@@ -1204,10 +1213,11 @@ jet().add('io', function ($) {
 				}, settings.timeout || 10000);
 			}
 		}
-	};
-	$.add($.IO);
-	$.IO.utils = {
-		parseXML: parseXML
+	});
+	$.IO = {
+		utils: {
+			parseXML: parseXML
+		}
 	};
 });/*
  Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
