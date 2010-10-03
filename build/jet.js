@@ -1202,7 +1202,7 @@ jet().add('io', function ($) {
 				if (!settings.data) {
 					settings.data = {};
 				}
-				settins.data[jsonCallbackParam] = "jet.IO.jsonpCallbacks[" + index + "]";
+				settings.data[jsonCallbackParam] = "jet.IO.jsonpCallbacks[" + index + "]";
 				$.Get.script(url + hashToURI(settings.data));
 				setTimeout(function () {
 					if (!loaded) {
