@@ -1199,10 +1199,11 @@ jet().add('io', function ($) {
 				if (url.substr(url.length - 1) != "?") {
 					url += "?";
 				}
-				if (settings.data) {
-					url += hashToURI(settings.data);
+				if (!settings.data) {
+					settings.data = {};
 				}
-				$.Get.script(url + jsonCallbackParam + "=jet.IO.jsonpCallbacks[" + index + "]");
+				settins.data[jsonCallbackParam] = "jet.IO.jsonpCallbacks[" + index + "]";
+				$.Get.script(url + hashToURI(settings.data));
 				setTimeout(function () {
 					if (!loaded) {
 						error({
