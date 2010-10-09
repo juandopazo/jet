@@ -46,7 +46,7 @@
 		resize: [BASE, {
 			name: "resize-css",
 			type: "css",
-			path: "resize/resize.css",
+			path: "resize.css",
 			beacon: {
 				name: "borderLeftStyle",
 				value: "solid"
@@ -55,7 +55,7 @@
 		button: [BASE, {
 			name: "button-css",
 			type: "css",
-			path: "button/button.css",
+			path: "button.css",
 			beacon: {
 				name: "borderBottomStyle",
 				value: "solid"
@@ -64,7 +64,7 @@
 		container: [BASE, {
 			name: "container-css",
 			type: "css",
-			path: "container/container.css",
+			path: "container.css",
 			beacon: {
 				name: "borderRightStyle",
 				value: "solid"
@@ -73,7 +73,7 @@
 		progressbar: [BASE, {
 			name: "progressbar-css",
 			type: "css",
-			path: "progressbar/progressbar.css",
+			path: "progressbar.css",
 			beacon: {
 				name: "cursor",
 				value: "pointer"
@@ -86,7 +86,7 @@
 		datatable: ["datasource", {
 			name: "datatable-css",
 			type: "css",
-			path: "datatable/datatable.css",
+			path: "datatable.css",
 			beacon: {
 				name: "borderTopStyle",
 				value: "solid"
@@ -1247,6 +1247,9 @@ jet().add("log", function ($) {
 	
 	$.add({
 		error: function (msg) {
+			if (console && console.log) {
+				console.log(msg);
+			}
 			Log.errors.push(msg);
 		},
 		warning: function (msg) {
