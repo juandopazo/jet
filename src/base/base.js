@@ -625,7 +625,7 @@ jet().add('base', function ($) {
 		var interval;
 		var capturing = false;
 		
-		var shim = new $.NodeList([]);
+		var shim = new $([]);
 		var iframes;
 		
 		/**

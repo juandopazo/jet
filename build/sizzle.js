@@ -174,6 +174,10 @@ Sizzle.matches = function(expr, set){
 	return Sizzle(expr, null, null, set);
 };
 
+Sizzle.matchesSelector = function(node, expr){
+	return Sizzle(expr, null, null, [node]).length > 0;
+};
+
 Sizzle.find = function(expr, context, isXML){
 	var set;
 
@@ -393,7 +397,9 @@ var Expr = Sizzle.selectors = {
 		ID: function(match, context, isXML){
 			if ( typeof context.getElementById !== "undefined" && !isXML ) {
 				var m = context.getElementById(match[1]);
-				return m ? [m] : [];
+				// Check parentNode to catch when Blackberry 4.6 returns
+				// nodes that are no longer in the document #6963
+				return m && m.parentNode ? [m] : [];
 			}
 		},
 		NAME: function(match, context){
@@ -752,57 +758,89 @@ try {
 	};
 }
 
-var sortOrder;
+var sortOrder, siblingCheck;
 
 if ( document.documentElement.compareDocumentPosition ) {
 	sortOrder = function( a, b ) {
+		if ( a === b ) {
+			hasDuplicate = true;
+			return 0;
+		}
+
 		if ( !a.compareDocumentPosition || !b.compareDocumentPosition ) {
-			if ( a == b ) {
-				hasDuplicate = true;
-			}
 			return a.compareDocumentPosition ? -1 : 1;
 		}
 
-		var ret = a.compareDocumentPosition(b) & 4 ? -1 : a === b ? 0 : 1;
-		if ( ret === 0 ) {
-			hasDuplicate = true;
-		}
-		return ret;
+		return a.compareDocumentPosition(b) & 4 ? -1 : 1;
 	};
-} else if ( "sourceIndex" in document.documentElement ) {
+} else {
 	sortOrder = function( a, b ) {
-		if ( !a.sourceIndex || !b.sourceIndex ) {
-			if ( a == b ) {
-				hasDuplicate = true;
-			}
-			return a.sourceIndex ? -1 : 1;
+		var ap = [], bp = [], aup = a.parentNode, bup = b.parentNode,
+			cur = aup, al, bl;
+
+		// The nodes are identical, we can exit early
+		if ( a === b ) {
+			hasDuplicate = true;
+			return 0;
+
+		// If the nodes are siblings (or identical) we can do a quick check
+		} else if ( aup === bup ) {
+			return siblingCheck( a, b );
+
+		// If no parents were found then the nodes are disconnected
+		} else if ( !aup ) {
+			return -1;
+
+		} else if ( !bup ) {
+			return 1;
 		}
 
-		var ret = a.sourceIndex - b.sourceIndex;
-		if ( ret === 0 ) {
-			hasDuplicate = true;
-		}
-		return ret;
-	};
-} else if ( document.createRange ) {
-	sortOrder = function( a, b ) {
-		if ( !a.ownerDocument || !b.ownerDocument ) {
-			if ( a == b ) {
-				hasDuplicate = true;
-			}
-			return a.ownerDocument ? -1 : 1;
+		// Otherwise they're somewhere else in the tree so we need
+		// to build up a full list of the parentNodes for comparison
+		while ( cur ) {
+			ap.unshift( cur );
+			cur = cur.parentNode;
 		}
 
-		var aRange = a.ownerDocument.createRange(), bRange = b.ownerDocument.createRange();
-		aRange.setStart(a, 0);
-		aRange.setEnd(a, 0);
-		bRange.setStart(b, 0);
-		bRange.setEnd(b, 0);
-		var ret = aRange.compareBoundaryPoints(Range.START_TO_END, bRange);
-		if ( ret === 0 ) {
-			hasDuplicate = true;
+		cur = bup;
+
+		while ( cur ) {
+			bp.unshift( cur );
+			cur = cur.parentNode;
 		}
-		return ret;
+
+		al = ap.length;
+		bl = bp.length;
+
+		// Start walking down the tree looking for a discrepancy
+		for ( var i = 0; i < al && i < bl; i++ ) {
+			if ( ap[i] !== bp[i] ) {
+				return siblingCheck( ap[i], bp[i] );
+			}
+		}
+
+		// We ended someplace up the tree so do a sibling check
+		return i === al ?
+			siblingCheck( a, bp[i], -1 ) :
+			siblingCheck( ap[i], b, 1 );
+	};
+
+	siblingCheck = function( a, b, ret ) {
+		if ( a === b ) {
+			return ret;
+		}
+
+		var cur = a.nextSibling;
+
+		while ( cur ) {
+			if ( cur === b ) {
+				return -1;
+			}
+
+			cur = cur.nextSibling;
+		}
+
+		return 1;
 	};
 }
 
@@ -916,10 +954,32 @@ if ( document.querySelectorAll ) {
 
 			// Only use querySelectorAll on non-XML documents
 			// (ID selectors don't work in non-HTML documents)
-			if ( !seed && context.nodeType === 9 && !Sizzle.isXML(context) ) {
-				try {
-					return makeArray( context.querySelectorAll(query), extra );
-				} catch(e){}
+			if ( !seed && !Sizzle.isXML(context) ) {
+				if ( context.nodeType === 9 ) {
+					try {
+						return makeArray( context.querySelectorAll(query), extra );
+					} catch(qsaError) {}
+
+				// qSA works strangely on Element-rooted queries
+				// We can work around this by specifying an extra ID on the root
+				// and working up from there (Thanks to Andrew Dupont for the technique)
+				// IE 8 doesn't work on object elements
+				} else if ( context.nodeType === 1 && context.nodeName.toLowerCase() !== "object" ) {
+					var old = context.getAttribute( "id" ), id = context.id = "__sizzle__";
+
+					try {
+						return makeArray( context.querySelectorAll( "#" + id + " " + query ), extra );
+
+					} catch(pseudoError) {
+					} finally {
+						if ( old ) {
+							context.id = old;
+
+						} else {
+							context.removeAttribute( "id" );
+						}
+					}
+				}
 			}
 		
 			return oldSizzle(query, context, extra, seed);
@@ -932,6 +992,35 @@ if ( document.querySelectorAll ) {
 		div = null; // release memory in IE
 	})();
 }
+
+(function(){
+	var html = document.documentElement,
+		matches = html.matchesSelector || html.mozMatchesSelector || html.webkitMatchesSelector || html.msMatchesSelector,
+		pseudoWorks = false;
+
+	try {
+		// This should fail with an exception
+		// Gecko does not error, returns false instead
+		matches.call( document.documentElement, "[test!='']:sizzle" );
+	
+	} catch( pseudoError ) {
+		pseudoWorks = true;
+	}
+
+	if ( matches ) {
+		Sizzle.matchesSelector = function( node, expr ) {
+			if ( !Sizzle.isXML( node ) ) {
+				try { 
+					if ( pseudoWorks || !Expr.match.PSEUDO.test( expr ) && !/!=/.test( expr ) ) {
+						return matches.call( node, expr );
+					}
+				} catch(e) {}
+			}
+
+			return Sizzle(expr, null, null, [node]).length > 0;
+		};
+	}
+})();
 
 (function(){
 	var div = document.createElement("div");
@@ -1030,11 +1119,21 @@ function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
 	}
 }
 
-Sizzle.contains = document.compareDocumentPosition ? function(a, b){
-	return !!(a.compareDocumentPosition(b) & 16);
-} : function(a, b){
-	return a !== b && (a.contains ? a.contains(b) : true);
-};
+if ( document.documentElement.contains ) {
+	Sizzle.contains = function(a, b){
+		return a !== b && (a.contains ? a.contains(b) : true);
+	};
+
+} else if ( document.documentElement.compareDocumentPosition ) {
+	Sizzle.contains = function(a, b){
+		return !!(a.compareDocumentPosition(b) & 16);
+	};
+
+} else {
+	Sizzle.contains = function(){
+		return false;
+	};
+}
 
 Sizzle.isXML = function(elem){
 	// documentElement is verified for cases where it doesn't yet exist
@@ -1064,31 +1163,7 @@ var posProcess = function(selector, context){
 };
 
 // EXPOSE
-jet().add('sizzle', function ($) {
-    $.parseQuery = function (query, root) {
-		root = root || $.context;
-		var c = query.substr(0, 1);
-		if (c == "<") {
-			if (query.match(/</g).length == 1) {
-				return root.createElement(query.substr(1, query.length - 3));
-			} else {
-				var baseNode = "div";
-				Hash.each(nodeCreation, function (replacement, list) {
-					ArrayHelper.each(list, function (c) {
-						if (query.search(c + "/") == 1) {
-							baseNode = replacement;
-						}
-					});
-				});
-				var tmpDiv = new Node(baseNode, root);
-				tmpDiv.html(query);
-				return tmpDiv.children(0)._node;
-			}
-		} else {
-			var result = Sizzle(query, root);
-			return result.length == 1 ? result[0] : result;
-		}
-	};
-});
+
+window.Sizzle = Sizzle;
 
 })();

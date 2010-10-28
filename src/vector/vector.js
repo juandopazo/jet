@@ -235,7 +235,7 @@ jet().add('vector', function ($) {
 		};
 	});
 	
-	var Vector = UA_SUPPORTS_SVG ? function () {
+	var Vector = UA_SUPPORTS_SVG ? function (config) {
 		Vector.superclass.constructor.apply(this, arguments);
 		var myself = this;
 		
@@ -774,7 +774,8 @@ jet().add('vector', function ($) {
 	 * @param {Object} config
 	 */
 	var ImageVector = function (config) {
-		ImageVector.superclass.constructor.call(this, "Image");
+		config.node = "image";
+		ImageVector.superclass.constructor.apply(this, arguments);
 	};
 	$.extend(ImageVector, Vector);
 	
@@ -787,9 +788,8 @@ jet().add('vector', function ($) {
 	 * @param {Object} config
 	 */
 	var Text = function (config) {
-		Text.superclass.constructor.call(this, "text");
-		
-		this.attr(config);
+		config.node = "text";
+		Text.superclass.constructor.apply(this, arguments);
 	};
 	$.extend(Text, Vector);
 	
@@ -802,7 +802,19 @@ jet().add('vector', function ($) {
 	 * @param {Object} config
 	 */
 	var Path = function (config) {
-		Path.superclass.constructor.call(this, "path");
+		config.node = "path";
+		Path.superclass.constructor.apply(this, arguments);
+		
+		this.addAttrs({
+			/**
+			 * @config y2
+			 * @description Y coordinate of the line's ending point
+			 */
+			d: {
+				getter: getDefaultGetter("d"),
+				setter: getDefaultSetter("d")
+			}
+		})
 	};
 	$.extend(Path, Vector);
 	
