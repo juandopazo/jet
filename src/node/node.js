@@ -172,6 +172,9 @@ jet().add("node", function ($) {
 	var GET_COMPUTED_STYLE = "getComputedStyle";
 	var CURRENT_STYLE = "currentStyle";
 	
+	function classRE(name) {
+		return new RegExp("(^|\\s)"+name+"(\\s|$)");
+	}
 	/**
 	 * Bla
 	 * @class DOM
@@ -376,8 +379,7 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		hasClass: function (className) {
-			var node = this[0];
-			return A.inArray(className, node.className ? node.className.split(" ") : []);
+			return classRE(name).test(this[0].className);
 		},
 		/**
 		 * Removes a number of classes from all nodes in the collection.
@@ -385,12 +387,9 @@ jet().add("node", function ($) {
 		 * @method removeClass
 		 * @chainable
 		 */
-		removeClass: function () {
-			var args = SLICE.call(arguments);
-			return this.each(function (node) {
-				A.each(args, function (sClass) {
-					node.className = A.remove(sClass, node.className ? node.className.split(" ") : []).join(" ");
-				});
+		removeClass: function (name) {
+			return this.each(function (el) {
+				el.className = Lang.trim(el.className.replace(classRE(name), ' '));
 			});
 		},
 		/**
@@ -399,16 +398,9 @@ jet().add("node", function ($) {
 		 * @method addClass
 		 * @chainable
 		 */
-		addClass: function () {
-			var args = SLICE.call(arguments);
-			return this.each(function (node) {
-				A.each(args, function (sClass) {
-					var classes = node.className ? node.className.split(" ") : [];
-					if (!A.inArray(sClass, classes)) {
-						classes[classes.length] = sClass;
-						node.className = classes.join(" ");
-					}
-				});
+		addClass: function (name) {
+			return this.each(function (el) {
+				!$(el).hasClass(name) && (el.className += (el.className ? ' ' : '') + name);
 			});
 		},
 		/**
@@ -417,15 +409,14 @@ jet().add("node", function ($) {
 		 * @param {String} sClass
 		 * @chainable
 		 */
-		toggleClass: function (sClass) {
+		toggleClass: function (name) {
 			return this.each(function (node) {
-				var classes = node.className ? node.className.split(" ") : [];
-				if (!A.inArray(sClass, classes)) {
-					classes[classes.length] = sClass;
+				node = $(node);
+				if (!node.hasClass(name)) {
+					node.addClass(name);
 				} else {
-					A.remove(sClass, classes);
+					node.removeClass(name);
 				}
-				node.className = classes.join(" ");
 			});
 		},
 		/**
@@ -434,9 +425,9 @@ jet().add("node", function ($) {
 		 * @param {String} sClass
 		 * @chainable
 		 */
-		setClass: function (sClass) {
+		setClass: function (name) {
 			return this.each(function (node) {
-				node.className = sClass;
+				node.className = name;
 			});
 		},
 		/**

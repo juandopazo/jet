@@ -83,7 +83,7 @@
 			<fileset dir="${build}" includes="log.js,ua.js,node.js,io.js"/>
 		</concat>
 		<concat destfile="${build}/jet.min.js" append="yes">
-			<fileset dir="${build}" includes="log.min.js,ua.min.js,node.min.js,io.min.js"/>
+			<fileset dir="${build}" includes="log.min.js,ua.min.js,node.min.js"/>
 		</concat>
 		<delete>
 			<fileset dir="${build}" includes="log.*,ua.*,node.*,io.*"/>
