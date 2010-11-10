@@ -68,27 +68,6 @@ jet().add('base', function ($) {
         }
 
     };
-	/**
-	 * Augments a class with the functionality of another, without chaining prototypes
-	 * @method augment
-	 * @param {Function} subclass
-	 * @param {Function|Object} augmenter
-	 * @param {Boolean} overwrite
-	 */
-	var augment = function (A, B, overwrite) {
-		if (Lang.isFunction(B)) {
-			B = new B();
-		}
-		var copy = function (name, method) {
-			if ((!A.prototype[name] || overwrite) && name != "constructor") {
-				A.prototype[name] = method;
-			}
-		};
-		Hash.each(B, copy);
-		if (B.constructor != Object) {
-			Hash.each(B.prototype, copy);
-		}
-	};
 	
 	var BOUNDING_BOX = "boundingBox",
 		SRC_NODE = "srcNode",
@@ -101,8 +80,8 @@ jet().add('base', function ($) {
 
 	
 	/**
-	 * <p>A class designed to be inherited or augmented into other classes and provide custom events.</p>
-	 * <p>Custom events work by attaching event listeners to a class that augments or extends EventTarget.
+	 * <p>A class designed to be inherited or extended by other classes and provide custom events.</p>
+	 * <p>Custom events work by attaching event listeners to a class that extends EventTarget.
 	 * An event listener can be a function or an object with a method called "handleEvent".
 	 * If it is a function, when fired the context will be the firing object. In the case of an object, the 
 	 * context will be the object itself.</p>
@@ -127,6 +106,7 @@ jet().add('base', function ($) {
 		var collection = {};
 		
 		var myself = this;
+		var onceList = [];
 		
 		/**
 		 * Adds an event listener 
@@ -145,6 +125,11 @@ jet().add('base', function ($) {
 			return myself;
 		};
 		
+		this.once = function (eventType, callback) {
+			onceList.push(callback);
+			return myself.on(eventType, callback);
+		};
+		
 		/**
 		 * Removes and event listener
 		 * @method unbind
@@ -153,7 +138,11 @@ jet().add('base', function ($) {
 		 * @chainable
 		 */
 		this.unbind = function (eventType, callback) {
-			$.Array.remove(callback, collection[eventType] || []);
+			if (eventType) {
+				$.Array.remove(callback, collection[eventType] || []);
+			} else {
+				collection = {};
+			}
 			return myself;
 		};
 		
@@ -190,6 +179,11 @@ jet().add('base', function ($) {
 				} else if (Lang.isObject(handlers[i]) && handlers[i].handleEvent) {
 					handlers[i].handleEvent.apply(handlers[i], args);
 				}
+				if (onceList.indexOf(handlers[i]) > -1) {
+					A.remove(onceList, handlers[i]);
+					A.remove(handlers, handlers[i]);
+					i--;
+				}
 				if (stop) {
 					break;
 				}
@@ -197,15 +191,6 @@ jet().add('base', function ($) {
 			return returnValue;
 		};
 		
-		/**
-		 * Removes all event listeners of all types
-		 * @method unbindAll
-		 * @chainable
-		 */
-		this.unbindAll = function () {
-			collection = {};
-			return myself;
-		};
 	};
 	
 	/**
@@ -733,7 +718,6 @@ jet().add('base', function ($) {
 		Utility: Utility,
 		Widget: Widget,
 		EventTarget: EventTarget,
-		augment: augment,
 		extend: extend
 	});
 });
