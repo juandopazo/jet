@@ -446,6 +446,10 @@
 		head.appendChild(script);
 		if (!keep) {
 			setTimeout(function () {
+				
+				//Added src = null as suggested by Google in 
+				//http://googlecode.blogspot.com/2010/11/instant-previews-under-hood.html
+				script.src = null;
 				head.removeChild(script);
 			}, 10000);
 		}

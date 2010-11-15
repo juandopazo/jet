@@ -268,7 +268,12 @@ jet().add('io', function ($) {
 					settings.data = {};
 				}
 				settins.data[jsonCallbackParam] = "jet.IO.jsonpCallbacks[" + index + "]";
-				$.Get.script(url + hashToURI(settings.data));
+				
+				//Added a timeout of 0 as suggested by Google in 
+				//http://googlecode.blogspot.com/2010/11/instant-previews-under-hood.html
+				setTimeout(function () {
+					$.Get.script(url + hashToURI(settings.data));
+				}, 0);
 				setTimeout(function () {
 					if (!loaded) {
 						error({
