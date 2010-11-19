@@ -23,7 +23,7 @@
 jet().add('json', function ($) {
 /*
     http://www.JSON.org/json2.js
-    2010-03-20
+    2010-11-17
 
     Public Domain.
 
@@ -169,7 +169,7 @@ jet().add('json', function ($) {
     redistribute.
 */
 
-/*jslint evil: true, strict: false */
+/*jslint evil: true, strict: false, regexp: false */
 
 /*members "", "\b", "\t", "\n", "\f", "\r", "\"", JSON, "\\", apply,
     call, charCodeAt, getUTCDate, getUTCFullYear, getUTCHours,
@@ -182,11 +182,12 @@ jet().add('json', function ($) {
 // Create a JSON object only if one does not already exist. We create the
 // methods in a closure to avoid creating global variables.
 
-if (!$.JSON) {
-    $.JSON = {};
+if (!this.JSON) {
+    this.JSON = {};
 }
 
 (function () {
+    "use strict";
 
     function f(n) {
         // Format integers to have at least two digits.
@@ -375,8 +376,8 @@ if (!$.JSON) {
 
 // If the JSON object does not yet have a stringify method, give it one.
 
-    if (typeof $.JSON.stringify !== 'function') {
-        $.JSON.stringify = function (value, replacer, space) {
+    if (typeof JSON.stringify !== 'function') {
+        JSON.stringify = function (value, replacer, space) {
 
 // The stringify method takes a value and an optional replacer, and an optional
 // space parameter, and returns a JSON text. The replacer can be a function
@@ -422,8 +423,8 @@ if (!$.JSON) {
 
 // If the JSON object does not yet have a parse method, give it one.
 
-    if (typeof $.JSON.parse !== 'function') {
-        $.JSON.parse = function (text, reviver) {
+    if (typeof JSON.parse !== 'function') {
+        JSON.parse = function (text, reviver) {
 
 // The parse method takes a text and an optional reviver function, and returns
 // a JavaScript value if the text is a valid JSON text.
@@ -478,10 +479,10 @@ if (!$.JSON) {
 // we look to see that the remaining characters are only whitespace or ']' or
 // ',' or ':' or '{' or '}'. If that is so, then the text is safe for eval.
 
-            if (/^[\],:{}\s]*$/.
-test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@').
-replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']').
-replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
+            if (/^[\],:{}\s]*$/
+.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@')
+.replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']')
+.replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
 
 // In the third stage we use the eval function to compile the text into a
 // JavaScript structure. The '{' operator is subject to a syntactic ambiguity
