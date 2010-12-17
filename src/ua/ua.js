@@ -21,6 +21,8 @@ jet().add("ua", function ($) {
 		var webkit = /KHTML/.test(ua) || /webkit/i.test(ua),
 			opera = /opera/i.test(ua),
 			ie = /(msie) ([\w.]+)/.exec(ua);
+			
+		ie = ie && ie[1] && ie[2] ? parseFloat(ie[2]) : false;
 		
         return {
 			/**
@@ -32,7 +34,7 @@ jet().add("ua", function ($) {
 			 * If the browser is Internet Explorer, this property is equal to the IE version. If not, it is false
 			 * @property ie
 			 */
-			ie: ie && ie[1] && ie[2] ? parseFloat(ie[2]) : false, // ie is false, 6, 7 or 8
+			ie: ie, // ie is false, 6, 7 or 8
 			/**
 			 * true if the browser is Opera
 			 * @property opera
@@ -52,7 +54,11 @@ jet().add("ua", function ($) {
 			 * true if the operating system is Apple OSX
 			 * @property mac
 			 */
-			mac: p ? /mac/.test(p) : /mac/.test(ua)
+			mac: p ? /mac/.test(p) : /mac/.test(ua),
+			
+			support: {
+				fixed: !ie || (ie > 7 && document.documentMode > 6)
+			}
 		};
     }());
 });

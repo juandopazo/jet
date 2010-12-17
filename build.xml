@@ -46,7 +46,7 @@
 	<target name="minifyjs" depends="copyunmin" description="Generate minified javascript files">
 		<apply executable="java">
 			<arg value="-jar"/>
-			<arg value="compiler.jar"/>
+			<arg value="c:/yuicompressor/build/compiler.jar"/>
 			<arg value="--js"/>
 			<srcfile/>
 			<arg value="--js_output_file"/>
@@ -64,7 +64,7 @@
 	<target name="minifycss" depends="minifyjs" description="Generate minified CSS files">
 		<apply executable="java">
 			<arg value="-jar"/>
-			<arg value="yuicompressor.jar"/>
+			<arg value="c:/yuicompressor/build/yuicompressor.jar"/>
 			<srcfile/>
 			<arg value="-o"/>
 			<targetfile/>
@@ -83,7 +83,7 @@
 			<fileset dir="${build}" includes="log.js,ua.js,node.js,io.js"/>
 		</concat>
 		<concat destfile="${build}/jet.min.js" append="yes">
-			<fileset dir="${build}" includes="log.min.js,ua.min.js,node.min.js"/>
+			<fileset dir="${build}" includes="log.min.js,ua.min.js,node.min.js,io.min.js"/>
 		</concat>
 		<delete>
 			<fileset dir="${build}" includes="log.*,ua.*,node.*,io.*"/>

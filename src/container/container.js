@@ -56,7 +56,7 @@ jet().add("container", function ($) {
 		COMBO = "combo";
 	
 	// true if the UA supports the value 'fixed' for the css 'position' attribute
-	var UA_SUPPORTS_FIXED = (!$.UA.ie || $.UA.ie < 8);
+	var UA_SUPPORTS_FIXED = $.UA.support.fixed;
 	
 	/**
 	 * @class Module
@@ -151,7 +151,9 @@ jet().add("container", function ($) {
 	 */
 	var Overlay = function () {
 		Overlay.superclass.constructor.apply(this, arguments);
-		var myself = this.addAttrs({
+		var myself = this;
+		
+		this.addAttrs({
 			/**
 			 * @config center
 			 * @description If true, the overlay is positioned in the center of the page
@@ -277,7 +279,8 @@ jet().add("container", function ($) {
 			});
 		});
 		
-		var setPosition = function (boundingBox) {
+		var setPosition = function () {
+			var boundingBox = myself.get(BOUNDING_BOX);
 			var bodyStyle = $($.context.body).currentStyle();
 			A.each([LEFT, TOP, BOTTOM, RIGHT], function (position) {
 				var orientation = position.substr(0, 1).toUpperCase() + position.substr(1);
@@ -286,12 +289,19 @@ jet().add("container", function ($) {
 					boundingBox.css(position, myself.isSet(position) ? ((myself.get(position) - bodyMargin + PX)) : AUTO);
 				} else {
 					var screenSize = DOM.screenSize();
-					if (position == BOTTOM) {
-						boundingBox.css(TOP, myself.isSet(position) ? ((screenSize.height - myself.get(HEIGHT) - bodyMargin + boundingBox.scrollTop()) + PX) : AUTO);
-					} else if (position == RIGHT) {
-						boundingBox.css(LEFT, myself.isSet(position) ? ((screenSize.width - myself.get(WIDTH) - bodyMargin + boundingBox.scrollLeft()) + PX) : AUTO);
-					} else {
-						boundingBox.css(position, myself.isSet(position) ? ((myself.get(position) - bodyMargin + PX)) : AUTO);
+					switch (position) {
+						case BOTTOM:
+							boundingBox.css(myself.isSet(position) ? TOP : BOTTOM, myself.isSet(position) ? ((screenSize.height - myself.get(HEIGHT) - bodyMargin + boundingBox.scrollTop()) + PX) : AUTO);
+							break;
+						case RIGHT:
+							boundingBox.css(myself.isSet(position) ? LEFT : RIGHT, myself.isSet(position) ? ((screenSize.width - myself.get(WIDTH) - bodyMargin + boundingBox.scrollLeft()) + PX) : AUTO);
+							break;
+						case LEFT:
+							boundingBox.css(position, myself.isSet(position) ? ((myself.get(position) + DOM.scrollLeft() - bodyMargin + PX)) : AUTO);
+							break;
+						case TOP:
+							boundingBox.css(position, myself.isSet(position) ? ((myself.get(position) + DOM.scrollTop() - bodyMargin + PX)) : AUTO);
+							break;
 					}
 				}
 			});
@@ -309,7 +319,7 @@ jet().add("container", function ($) {
 			var height = myself.get(HEIGHT);
 			var screenSize = DOM.screenSize();
 			var modal = $("<div/>").css({
-				position: "fixed",
+				position: pos,
 				top: "0px",
 				left: "0px",
 				background: "#000",
@@ -337,13 +347,16 @@ jet().add("container", function ($) {
 			if (footer) {
 				boundingBox.append(footer);
 			}
-			boundingBox.css("position", pos).css("zIndex", jet.ovZindex + startZindex).width(myself.get(WIDTH)).on("mousedown", function () {
+			boundingBox.css({
+				position: pos,
+				zIndex: jet.ovZindex + startZindex
+			}).width(myself.get(WIDTH)).on("mousedown", function () {
 				myself.focus();
 			});
 			if (height) {
 				boundingBox.height(height);
 			}
-			setPosition(boundingBox);
+			setPosition();
 		});
 		myself.on("afterRender", function () {
 			var boundingBox = myself.get(BOUNDING_BOX);
@@ -370,12 +383,7 @@ jet().add("container", function ($) {
 					center(boundingBox);
 				});
 			} else if (fixed && !UA_SUPPORTS_FIXED) {
-				win.on(SCROLL, function () {
-					setPosition(myself.get(BOUNDING_BOX));
-				});
-				win.on(RESIZE, function () {
-					setPosition(myself.get(BOUNDING_BOX));
-				});
+				win.on(SCROLL, setPosition).on(RESIZE, setPosition);
 			}
 
 		});

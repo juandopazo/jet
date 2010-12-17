@@ -11,7 +11,7 @@
  * them when they were already loaded. Its basic use looks like:</p>
  */
 (function () {
-	var baseUrl = location.protocol + "//jet-js.googlecode.com/svn/trunk/build/";
+	var baseUrl = location.protocol + "//jet-js.googlecode.com/svn/trunk/src/";
 	
 	var win = window,
 		doc = document,
@@ -46,7 +46,7 @@
 		resize: [BASE, {
 			name: "resize-css",
 			type: "css",
-			path: "resize.css",
+			path: "resize/resize.css",
 			beacon: {
 				name: "borderLeftStyle",
 				value: "solid"
@@ -55,7 +55,7 @@
 		button: [BASE, {
 			name: "button-css",
 			type: "css",
-			path: "button.css",
+			path: "button/button.css",
 			beacon: {
 				name: "borderBottomStyle",
 				value: "solid"
@@ -64,7 +64,7 @@
 		container: [BASE, {
 			name: "container-css",
 			type: "css",
-			path: "container.css",
+			path: "container/container.css",
 			beacon: {
 				name: "borderRightStyle",
 				value: "solid"
@@ -73,7 +73,7 @@
 		progressbar: [BASE, {
 			name: "progressbar-css",
 			type: "css",
-			path: "progressbar.css",
+			path: "progressbar/progressbar.css",
 			beacon: {
 				name: "cursor",
 				value: "pointer"
@@ -86,7 +86,7 @@
 		datatable: ["datasource", {
 			name: "datatable-css",
 			type: "css",
-			path: "datatable.css",
+			path: "datatable/datatable.css",
 			beacon: {
 				name: "borderTopStyle",
 				value: "solid"
@@ -446,6 +446,10 @@
 		head.appendChild(script);
 		if (!keep) {
 			setTimeout(function () {
+				
+				//Added src = null as suggested by Google in 
+				//http://googlecode.blogspot.com/2010/11/instant-previews-under-hood.html
+				script.src = null;
 				head.removeChild(script);
 			}, 10000);
 		}
@@ -808,7 +812,7 @@
 			 * @type Boolean
 			 * @default true
 			 */
-			config.loadCss = Lang.isBoolean(config.loadCss) ? config.loadCss : false;
+			config.loadCss = Lang.isBoolean(config.loadCss) ? config.loadCss : true;
 			/**
 			 * @config modules
 			 * @description Allows to define your own modules. Currently the same as using object literals in the use() method
@@ -817,7 +821,7 @@
 			var predef = mix(clone(predefinedModules), config.modules || {}, true);
 			
 			var loadCssModule = function (module) {
-				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + (config.minify ? ".min.css" : ".css")));
+				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + "/" + module.fileName + (config.minify ? ".min.css" : ".css")));
 				loadCSS(url);
 				var t = setInterval(function () {
 					if (getCurrentStyle(trackerDiv)[module.beacon.name] == module.beacon.value) {
@@ -890,7 +894,7 @@
 						if (Lang.isString(module) && predef[module]) {
 							request[i] = module = Lang.isHash(predef[module]) ? predef[module] : {
 								name: module,
-								path: module + (config.minify ? ".min.js" : ".js")
+								path: module.split("-")[0] + "/" + module + (config.minify ? ".min.js" : ".js")
 							};
 						}
 						if (module.type == "css" && !config.loadCss) {
@@ -1202,8 +1206,13 @@ jet().add('io', function ($) {
 				if (!settings.data) {
 					settings.data = {};
 				}
-				settings.data[jsonCallbackParam] = "jet.IO.jsonpCallbacks[" + index + "]";
-				$.Get.script(url + hashToURI(settings.data));
+				settins.data[jsonCallbackParam] = "jet.IO.jsonpCallbacks[" + index + "]";
+				
+				//Added a timeout of 0 as suggested by Google in 
+				//http://googlecode.blogspot.com/2010/11/instant-previews-under-hood.html
+				setTimeout(function () {
+					$.Get.script(url + hashToURI(settings.data));
+				}, 0);
 				setTimeout(function () {
 					if (!loaded) {
 						error({
@@ -1247,9 +1256,6 @@ jet().add("log", function ($) {
 	
 	$.add({
 		error: function (msg) {
-			if (console && console.log) {
-				console.log(msg);
-			}
 			Log.errors.push(msg);
 		},
 		warning: function (msg) {
@@ -1434,6 +1440,9 @@ jet().add("node", function ($) {
 	var GET_COMPUTED_STYLE = "getComputedStyle";
 	var CURRENT_STYLE = "currentStyle";
 	
+	function classRE(name) {
+		return new RegExp("(^|\\s)"+name+"(\\s|$)");
+	}
 	/**
 	 * Bla
 	 * @class DOM
@@ -1638,8 +1647,7 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		hasClass: function (className) {
-			var node = this[0];
-			return A.inArray(className, node.className ? node.className.split(" ") : []);
+			return classRE(name).test(this[0].className);
 		},
 		/**
 		 * Removes a number of classes from all nodes in the collection.
@@ -1647,12 +1655,9 @@ jet().add("node", function ($) {
 		 * @method removeClass
 		 * @chainable
 		 */
-		removeClass: function () {
-			var args = SLICE.call(arguments);
-			return this.each(function (node) {
-				A.each(args, function (sClass) {
-					node.className = A.remove(sClass, node.className ? node.className.split(" ") : []).join(" ");
-				});
+		removeClass: function (name) {
+			return this.each(function (el) {
+				el.className = Lang.trim(el.className.replace(classRE(name), ' '));
 			});
 		},
 		/**
@@ -1661,16 +1666,9 @@ jet().add("node", function ($) {
 		 * @method addClass
 		 * @chainable
 		 */
-		addClass: function () {
-			var args = SLICE.call(arguments);
-			return this.each(function (node) {
-				A.each(args, function (sClass) {
-					var classes = node.className ? node.className.split(" ") : [];
-					if (!A.inArray(sClass, classes)) {
-						classes[classes.length] = sClass;
-						node.className = classes.join(" ");
-					}
-				});
+		addClass: function (name) {
+			return this.each(function (el) {
+				!$(el).hasClass(name) && (el.className += (el.className ? ' ' : '') + name);
 			});
 		},
 		/**
@@ -1679,15 +1677,14 @@ jet().add("node", function ($) {
 		 * @param {String} sClass
 		 * @chainable
 		 */
-		toggleClass: function (sClass) {
+		toggleClass: function (name) {
 			return this.each(function (node) {
-				var classes = node.className ? node.className.split(" ") : [];
-				if (!A.inArray(sClass, classes)) {
-					classes[classes.length] = sClass;
+				node = $(node);
+				if (!node.hasClass(name)) {
+					node.addClass(name);
 				} else {
-					A.remove(sClass, classes);
+					node.removeClass(name);
 				}
-				node.className = classes.join(" ");
 			});
 		},
 		/**
@@ -1696,9 +1693,9 @@ jet().add("node", function ($) {
 		 * @param {String} sClass
 		 * @chainable
 		 */
-		setClass: function (sClass) {
+		setClass: function (name) {
 			return this.each(function (node) {
-				node.className = sClass;
+				node.className = name;
 			});
 		},
 		/**
@@ -2263,6 +2260,8 @@ jet().add("ua", function ($) {
 		var webkit = /KHTML/.test(ua) || /webkit/i.test(ua),
 			opera = /opera/i.test(ua),
 			ie = /(msie) ([\w.]+)/.exec(ua);
+			
+		ie = ie && ie[1] && ie[2] ? parseFloat(ie[2]) : false;
 		
         return {
 			/**
@@ -2274,7 +2273,7 @@ jet().add("ua", function ($) {
 			 * If the browser is Internet Explorer, this property is equal to the IE version. If not, it is false
 			 * @property ie
 			 */
-			ie: ie && ie[1] && ie[2] ? parseFloat(ie[2]) : false, // ie is false, 6, 7 or 8
+			ie: ie, // ie is false, 6, 7 or 8
 			/**
 			 * true if the browser is Opera
 			 * @property opera
@@ -2294,7 +2293,11 @@ jet().add("ua", function ($) {
 			 * true if the operating system is Apple OSX
 			 * @property mac
 			 */
-			mac: p ? /mac/.test(p) : /mac/.test(ua)
+			mac: p ? /mac/.test(p) : /mac/.test(ua),
+			
+			support: {
+				fixed: !ie || (ie > 7 && document.documentMode > 6)
+			}
 		};
     }());
 });
