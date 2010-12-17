@@ -16,7 +16,7 @@ There are many great JavaScript UI libraries out there. Most favor a long range 
 With that in mind, Jet aims at having a small and powerful core under *15 Kb minified* (5 Kb with gzip compression) that provides a good DOM interface, lots of *optional features* and a good architecture based on Yahoo!'s YUI 3 that will allow you to write good easy-to-maintain code on top of it.
 
 ## Modules
-Jet comes with a lot of optional modules that you can load dinamically. The complete documentation is available in the [[http://github.com/juandopazo/jet/raw/master/docs/api/index.html API reference].
+Jet comes with a lot of optional modules that you can load dinamically. The complete documentation is available in the API reference: http://www.juandopazo.com.ar/jet/api/
 
 ###Included in the Jet Core
 * **Get** dynamically load scripts and CSS files
