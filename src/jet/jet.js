@@ -712,7 +712,7 @@
 			}
 		}
 	};
-		
+	
 	if (!win.jet) {
 		var trackerDiv;
 		domReady(function () {
@@ -786,8 +786,8 @@
 		 * @constructor
 		 * @param {Object} config Object literal with configuration options
 		 */
-		win.jet = function (config) {
-			config = config || {};
+		win.jet = function (o) {
+			var config = Lang.isHash(o) ? o : {};
 			var base = baseUrl;
  			/**
  			 * @config base
@@ -831,6 +831,90 @@
 				}, 50);
 			};
 			
+			var use = function () {
+				
+				var request = SLICE.call(arguments);
+				var i = 0, j = 0, k, module, moveForward;
+				
+				// if "*" is used, include everything
+				if (ArrayHelper.indexOf("*", request) > -1) {
+					while (j < request.length) {
+						if (Lang.isString(request[j])) {
+							request.splice(j, 1);
+						} else {
+							j++;
+						}
+					}
+					AP.unshift.apply(request, Hash.keys(predef));
+					
+				// add ajax by default
+				} else if (ArrayHelper.indexOf("io", request) == -1) {
+					request.unshift("io");
+				}
+				
+				// handle requirements
+				while (i < request.length - 1) {
+					module = request[i];
+					moveForward = 1;
+					if (Lang.isString(module)) {
+						module = predef[module.toLowerCase()];
+						if (module && Lang.isArray(module)) {
+							for (j = module.length - 1; j >= 0; j--) {
+								if (!ArrayHelper.inArray(module[j], request)) {
+									request.splice(i, 0, module[j]);
+									moveForward = 0;
+								}
+							}
+						}
+					}
+					i += moveForward;
+				}
+				
+				// remove JSON module if there's native JSON support
+				if (win.JSON) {
+					ArrayHelper.remove("json", request);
+				}
+				
+				// transform every module request into an object and load the required css/script if not already loaded
+				for (i = 0; i < request.length - 1; i++) {
+					module = request[i];
+					/*
+					 * If a module is a string, it is considered a predefined module.
+					 * If it isn't defined, it's probably a mistake and will lead to errors
+					 */
+					if (Lang.isString(module) && predef[module]) {
+						request[i] = module = Lang.isHash(predef[module]) ? predef[module] : {
+							name: module,
+							path: module.split("-")[0] + "/" + module + (config.minify ? ".min.js" : ".js")
+						};
+					}
+					if (module.type == "css" && !config.loadCss) {
+						request.splice(i, 1);
+						i--;
+					} else if (!(modules[module.name] || queuedScripts[module.fullpath || (base + module.path)])) {
+						if (!module.type || module.type == "js") {
+							loadScript(module.fullpath || (base + module.path)); 
+						} else if (module.type == "css") {
+							domReady(loadCssModule, module);
+						}
+						queuedScripts[module.fullpath || (base + module.path)] = 1;
+					}
+				}
+				
+				// add the queue to the waiting list
+				queueList.push({
+					main: request.pop(),
+					req: request,
+					// onProgress handlers are managed by queue
+					onProgress: config.onProgress
+				});
+				update();
+			};
+		
+			if (Lang.isFunction(o)) {
+				use(o);
+			}
+			
 			return {
 				/**
 				 * Allows to load modules and obtain a unique reference to the library augmented by the requested modules 
@@ -840,85 +924,7 @@
 				 * that contains the main logic of the application.
 				 * @method use 
 				 */
-				use: function () {
-					
-					var request = SLICE.call(arguments);
-					var i = 0, j = 0, k, module, moveForward;
-					
-					// if "*" is used, include everything
-					if (ArrayHelper.indexOf("*", request) > -1) {
-						while (j < request.length) {
-							if (Lang.isString(request[j])) {
-								request.splice(j, 1);
-							} else {
-								j++;
-							}
-						}
-						AP.unshift.apply(request, Hash.keys(predef));
-						
-					// add ajax by default
-					} else if (ArrayHelper.indexOf("io", request) == -1) {
-						request.unshift("io");
-					}
-					
-					// handle requirements
-					while (i < request.length - 1) {
-						module = request[i];
-						moveForward = 1;
-						if (Lang.isString(module)) {
-							module = predef[module.toLowerCase()];
-							if (module && Lang.isArray(module)) {
-								for (j = module.length - 1; j >= 0; j--) {
-									if (!ArrayHelper.inArray(module[j], request)) {
-										request.splice(i, 0, module[j]);
-										moveForward = 0;
-									}
-								}
-							}
-						}
-						i += moveForward;
-					}
-					
-					// remove JSON module if there's native JSON support
-					if (win.JSON) {
-						ArrayHelper.remove("json", request);
-					}
-					
-					// transform every module request into an object and load the required css/script if not already loaded
-					for (i = 0; i < request.length - 1; i++) {
-						module = request[i];
-						/*
-						 * If a module is a string, it is considered a predefined module.
-						 * If it isn't defined, it's probably a mistake and will lead to errors
-						 */
-						if (Lang.isString(module) && predef[module]) {
-							request[i] = module = Lang.isHash(predef[module]) ? predef[module] : {
-								name: module,
-								path: module.split("-")[0] + "/" + module + (config.minify ? ".min.js" : ".js")
-							};
-						}
-						if (module.type == "css" && !config.loadCss) {
-							request.splice(i, 1);
-							i--;
-						} else if (!(modules[module.name] || queuedScripts[module.fullpath || (base + module.path)])) {
-							if (!module.type || module.type == "js") {
-								loadScript(module.fullpath || (base + module.path)); 
-							} else if (module.type == "css") {
-								domReady(loadCssModule, module);
-							}
-							queuedScripts[module.fullpath || (base + module.path)] = 1;
-						}
-					}
-					
-					// add the queue to the waiting list
-					queueList.push({
-						main: request.pop(),
-						req: request,
-						// onProgress handlers are managed by queue
-						onProgress: config.onProgress
-					});
-					update();
-				},
+				use: use,
 				/**
 				 * Adds a module to the loaded module list and calls update() to check if a queue is ready to fire
 				 * This method must be called from a module to register it
