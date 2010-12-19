@@ -173,7 +173,7 @@ jet().add("node", function ($) {
 	var CURRENT_STYLE = "currentStyle";
 	
 	function classRE(name) {
-		return new RegExp("(^|\\s)"+name+"(\\s|$)");
+		return new RegExp("(^|\\s)" + name + "(\\s|$)");
 	}
 	/**
 	 * Bla
@@ -379,7 +379,7 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		hasClass: function (className) {
-			return classRE(name).test(this[0].className);
+			return classRE(className).test(this[0].className);
 		},
 		/**
 		 * Removes a number of classes from all nodes in the collection.
@@ -400,7 +400,7 @@ jet().add("node", function ($) {
 		 */
 		addClass: function (name) {
 			return this.each(function (el) {
-				!$(el).hasClass(name) && (el.className += (el.className ? ' ' : '') + name);
+				!classRE(name).test(el.className) && (el.className += (el.className ? ' ' : '') + name);
 			});
 		},
 		/**
@@ -955,6 +955,11 @@ jet().add("node", function ($) {
 	};
 	NodeList.is = Lang.is;
 	
+	A.each(['Left', 'Top'], function (direction) {
+		NodeList.prototype['offset' + direction] = function () {
+			return this.offset()[direction.toLowerCase()];
+		};
+	});
 
 	$.add({
 
