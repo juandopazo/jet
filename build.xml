@@ -80,13 +80,13 @@
 	
 	<target name="concatCore" depends="minifycss" description="Generate the core jet file">
 		<concat destfile="${build}/jet.js" append="yes">
-			<fileset dir="${build}" includes="log.js,ua.js,node.js,io.js"/>
+			<fileset dir="${build}" includes="log.js,ua.js,node.js,base.js"/>
 		</concat>
 		<concat destfile="${build}/jet.min.js" append="yes">
-			<fileset dir="${build}" includes="log.min.js,ua.min.js,node.min.js,io.min.js"/>
+			<fileset dir="${build}" includes="log.min.js,ua.min.js,node.min.js,base.min.js"/>
 		</concat>
 		<delete>
-			<fileset dir="${build}" includes="log.*,ua.*,node.*,io.*"/>
+			<fileset dir="${build}" includes="log.*,ua.*,node.*,base.*"/>
 		</delete>
 		<copy todir="${build}">
 			<fileset dir="${build}" includes="*.min.*"/>

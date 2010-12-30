@@ -11,7 +11,7 @@
  * them when they were already loaded. Its basic use looks like:</p>
  */
 (function () {
-	var baseUrl = location.protocol + "//jet-js.googlecode.com/svn/trunk/src/";
+	var baseUrl = location.protocol + "//github.com/juandopazo/jet/raw/master/build/";
 	
 	var win = window,
 		doc = document,
@@ -46,7 +46,7 @@
 		resize: [BASE, {
 			name: "resize-css",
 			type: "css",
-			path: "resize/resize.css",
+			path: "resize.css",
 			beacon: {
 				name: "borderLeftStyle",
 				value: "solid"
@@ -55,7 +55,7 @@
 		button: [BASE, {
 			name: "button-css",
 			type: "css",
-			path: "button/button.css",
+			path: "button.css",
 			beacon: {
 				name: "borderBottomStyle",
 				value: "solid"
@@ -64,7 +64,7 @@
 		container: [BASE, {
 			name: "container-css",
 			type: "css",
-			path: "container/container.css",
+			path: "container.css",
 			beacon: {
 				name: "borderRightStyle",
 				value: "solid"
@@ -73,7 +73,7 @@
 		progressbar: [BASE, {
 			name: "progressbar-css",
 			type: "css",
-			path: "progressbar/progressbar.css",
+			path: "progressbar.css",
 			beacon: {
 				name: "cursor",
 				value: "pointer"
@@ -86,7 +86,7 @@
 		datatable: ["datasource", {
 			name: "datatable-css",
 			type: "css",
-			path: "datatable/datatable.css",
+			path: "datatable.css",
 			beacon: {
 				name: "borderTopStyle",
 				value: "solid"
@@ -821,7 +821,7 @@
 			var predef = mix(clone(predefinedModules), config.modules || {}, true);
 			
 			var loadCssModule = function (module) {
-				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + "/" + module.fileName + (config.minify ? ".min.css" : ".css")));
+				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + (config.minify ? ".min.css" : ".css")));
 				loadCSS(url);
 				var t = setInterval(function () {
 					if (getCurrentStyle(trackerDiv)[module.beacon.name] == module.beacon.value) {
@@ -885,7 +885,7 @@
 					if (Lang.isString(module) && predef[module]) {
 						request[i] = module = Lang.isHash(predef[module]) ? predef[module] : {
 							name: module,
-							path: module.split("-")[0] + "/" + module + (config.minify ? ".min.js" : ".js")
+							path: module + (config.minify ? ".min.js" : ".js")
 						};
 					}
 					if (module.type == "css" && !config.loadCss) {

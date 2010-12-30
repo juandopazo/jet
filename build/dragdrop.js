@@ -55,6 +55,9 @@ jet().add('dragdrop', function ($) {
 			 */
 			tracking: {
 				value: false
+			},
+			context: {
+				value: $.context
 			}
 		});
 		/**
@@ -72,7 +75,8 @@ jet().add('dragdrop', function ($) {
 		var currentX, currentY;
 		
 		var tracker = new $.utils.Mouse({
-			shim: myself.get("shim")
+			shim: myself.get("shim"),
+			context: myself.get("context")
 		});
 		
 		var setupHandler = function (list) {
@@ -139,6 +143,9 @@ jet().add('dragdrop', function ($) {
 					top: currentY + PX
 				});
 			}
+		});
+		myself.on("contextChange", function (e, newVal) {
+			tracker.set("context", newVal);
 		});
 	};
 	Drag.NAME = "drag";

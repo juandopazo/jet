@@ -76,6 +76,8 @@ jet().add('base', function ($) {
 		DESTROY = "destroy",
 		TRACKING = "tracking",
 		MOUSEMOVE = "mousemove",
+		MOUSEUP = "mouseup",
+		SELECTSTART = "selectstart",
 		FREQUENCY = "frequency";
 
 	
@@ -596,21 +598,26 @@ jet().add('base', function ($) {
 	 */
 	var Mouse = function () {
 		Mouse.superclass.constructor.apply(this, arguments);
-		/**
-		 * Frequency at which the tracker updates
-		 * @config frequency
-		 * @default 20 (ms)
-		 * @type Number
-		 */
-		var myself = this.addAttr(FREQUENCY, {
-			value: 20
+		var myself = this.addAttrs({
+			/**
+			 * Frequency at which the tracker updates
+			 * @config frequency
+			 * @default 20 (ms)
+			 * @type Number
+			 */
+			frequency: {
+				value: 20
+			},
+			context: {
+				value: $.context
+			}
 		});
 		
 		var clientX, clientY;
 		var interval;
 		var capturing = false;
 		
-		var shim = new $([]);
+		var shim = $([]);
 		var iframes;
 		
 		/**
@@ -652,19 +659,13 @@ jet().add('base', function ($) {
 			}
 		});
 		
-		$($.context).on("selectstart", function (e) {
+		function onSelectStart(e) {
 			if (capturing) {
 				e.preventDefault();
 			}
-		});
+		}
 		
-		/**
-		 * Fires not when the mouse moves, but in an interval defined by the frequency attribute
-		 * This way you can track the mouse position without breakin the browser's rendering engine
-		 * because the native mousemove event fires too quickly
-		 * @event move
-		 */
-		shim.link($($.context), true).on(MOUSEMOVE, function (e) {
+		function onMouseMove(e) {
 			clientX = e.clientX;
 			clientY = e.clientY;
 			if (myself.get(TRACKING) && myself.get("shim")) {
@@ -677,15 +678,30 @@ jet().add('base', function ($) {
 					});
 				});
 			}
-		}).on("mouseup", function () {
+		}
+		
+		function onMouseUp() {
 			/**
 			 * Fires when the mouse button is released
 			 * @event up
 			 */
 			myself.set(TRACKING, false).fire("up", clientX, clientY);
-		});
+		}
 		
-		myself.on(DESTROY, function () {
+		
+		/**
+		 * Fires not when the mouse moves, but in an interval defined by the frequency attribute
+		 * This way you can track the mouse position without breakin the browser's rendering engine
+		 * because the native mousemove event fires too quickly
+		 * @event move
+		 */
+		shim.on(MOUSEMOVE, onMouseMove).on(MOUSEUP, onMouseUp);
+		
+		$(this.get('context')).on("selectstart", onSelectStart).on(MOUSEMOVE, onMouseMove).on(MOUSEUP, onMouseUp);
+		myself.on('contextChange', function (e, newVal, prevVal) {
+			$(prevVal).unbind("selectstart", onSelectStart).unbind(MOUSEMOVE, onMouseMove).unbind(MOUSEUP, onMouseUp);
+			$(newVal).on("selectstart", onSelectStart).on(MOUSEMOVE, onMouseMove).on(MOUSEUP, onMouseUp);
+		}).on(DESTROY, function () {
 			shim.unbindAll();
 		});
 	};

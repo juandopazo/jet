@@ -11,7 +11,7 @@
  * them when they were already loaded. Its basic use looks like:</p>
  */
 (function () {
-	var baseUrl = location.protocol + "//jet-js.googlecode.com/svn/trunk/src/";
+	var baseUrl = location.protocol + "//github.com/juandopazo/jet/raw/master/build/";
 	
 	var win = window,
 		doc = document,
@@ -46,7 +46,7 @@
 		resize: [BASE, {
 			name: "resize-css",
 			type: "css",
-			path: "resize/resize.css",
+			path: "resize.css",
 			beacon: {
 				name: "borderLeftStyle",
 				value: "solid"
@@ -55,7 +55,7 @@
 		button: [BASE, {
 			name: "button-css",
 			type: "css",
-			path: "button/button.css",
+			path: "button.css",
 			beacon: {
 				name: "borderBottomStyle",
 				value: "solid"
@@ -64,7 +64,7 @@
 		container: [BASE, {
 			name: "container-css",
 			type: "css",
-			path: "container/container.css",
+			path: "container.css",
 			beacon: {
 				name: "borderRightStyle",
 				value: "solid"
@@ -73,7 +73,7 @@
 		progressbar: [BASE, {
 			name: "progressbar-css",
 			type: "css",
-			path: "progressbar/progressbar.css",
+			path: "progressbar.css",
 			beacon: {
 				name: "cursor",
 				value: "pointer"
@@ -86,7 +86,7 @@
 		datatable: ["datasource", {
 			name: "datatable-css",
 			type: "css",
-			path: "datatable/datatable.css",
+			path: "datatable.css",
 			beacon: {
 				name: "borderTopStyle",
 				value: "solid"
@@ -821,7 +821,7 @@
 			var predef = mix(clone(predefinedModules), config.modules || {}, true);
 			
 			var loadCssModule = function (module) {
-				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + "/" + module.fileName + (config.minify ? ".min.css" : ".css")));
+				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + (config.minify ? ".min.css" : ".css")));
 				loadCSS(url);
 				var t = setInterval(function () {
 					if (getCurrentStyle(trackerDiv)[module.beacon.name] == module.beacon.value) {
@@ -885,7 +885,7 @@
 					if (Lang.isString(module) && predef[module]) {
 						request[i] = module = Lang.isHash(predef[module]) ? predef[module] : {
 							name: module,
-							path: module.split("-")[0] + "/" + module + (config.minify ? ".min.js" : ".js")
+							path: module + (config.minify ? ".min.js" : ".js")
 						};
 					}
 					if (module.type == "css" && !config.loadCss) {
@@ -949,292 +949,738 @@
  http://code.google.com/p/jet-js/wiki/Licence
 */
 /**
- * Handles AJAX requests
- * @module io
- * @namespace
+ * The Base module provides base classes for Utilities and Widgets.
+ * @module base
+ * @requires lang, dom
  */
-jet().add('io', function ($) {
-	var win = $.win;
-	var Lang = $.Lang,
-		Hash = $.Hash;
+jet().add('base', function ($) {
 	
-	var XML = "xml",
-	XSL = "xsl",
-	TYPE_JSON = "json",
-	GET = "GET";
-	
-	var HAS_AXO = !!win.ActiveXObject;
-	var HAS_XHR = !!win.XMLHttpRequest;
-	
-	var newAXO = function (t) {
-		return new win.ActiveXObject(t);
-	};
-	
-	var hashToURI = function (hash) {
-		var result = [];
-		Hash.each(hash, function (key, value) {
-			result.push(key + "=" + value);
-		});
-		return result.join("&");
-	};
-	
-	var getActiveXParser = function (type) {
-		var freeThreadedDOM = "Msxml2.FreeThreadedDOMDocument.",
-			domDocument = "Msxml2.DOMDocument.",
-			test,
-		/* La eleccion de versiones 6.0 y 3.0 es adrede.
-		   La version 4.0 es especifica de windows 2000 y la 5.0 viene unicamente con Microsoft Office
-		   La version 6 viene con Windows Vista y uno de los service pack de XP, por lo que el usuario quizas no la tenga
-		   Se la usa porque es considerablemente mas rapida */
-			v6 = "6.0",
-			v3 = "3.0";
-		try {
-			test = newAXO(domDocument + v6);
-			getActiveXParser = function (type) {
-				if (type == XSL) {
-					return newAXO(freeThreadedDOM + v6);
-				} else {
-					return newAXO(domDocument + v6);
-				}
-			};
-		} catch (e) {
-			try {
-				test = newAXO(domDocument + v3);
-				getActiveXParser = function (type) {
-					if (type == XSL) {
-						return newAXO(freeThreadedDOM + v3);
-					} else {
-						return newAXO(domDocument + v3);
-					}
-				};
-			} catch (ex) {
-				
-			}
-		}
-		return getActiveXParser(type);
-	},
-	
-	getAjaxObject = function () {
-		var hostname = location.host,
-			msxml = "Microsoft.XMLHTTP",
-			test;
-		if ((location.protocol == "file:" || hostname == "localhost" || hostname == "127.0.0.1") && HAS_AXO) {
-			getAjaxObject = function () {
-				return newAXO(msxml);
-			};
-		} else if (HAS_XHR) {
-			getAjaxObject = function () {
-				return new XMLHttpRequest();
-			};
-		} else if (HAS_AXO) {
-			getAjaxObject = function () {
-				return newAXO(msxml);
-			};
-		}
-		return getAjaxObject();
-	};
-	
-	var timeoutError = "timeout",
-	noObjectError = "Can't create object",
-	noStatusError = "Bad status",
-	notFoundError = "File not found";
-	
-	/* Parsea un XML
-	En Internet Explorer instancia un objeto ActiveX llamado MSXML. En el resto usa XMLHttpRequest.responseXML */
-	var parseXML = function (xmlFile, type, errorHandler) {
-		var xmlDoc = null;
-		if (xmlFile.responseXML) {
-			xmlDoc = xmlFile.responseXML;
-		} else if (win.DOMParser) {
-			xmlDoc = new win.DOMParser();
-			xmlDoc = xmlDoc.parseFromString(xmlFile.responseText || xmlFile, "text/xml");
-		} else if (HAS_AXO) {
-			xmlDoc = getActiveXParser(type);
-			xmlDoc.async = false;
-			xmlDoc.loadXML(xmlFile.responseText || xmlFile);
-			if (xmlDoc.parseError.errorCode !== 0) {
-				errorHandler(noStatusError, xmlDoc.parseError);
-			}
-		} else {
-			errorHandler(0, {
-				reason: "Can't find a suitable XML parser",
-				srcText: xmlFile
-			});
-		}
-		return xmlDoc;
-	};
-				
-	var getResultByContentType = function (xhr, dataType, onError) {
-		var contentType = dataType || xhr.getResponseHeader('Content-type');
-		switch (contentType) {
-		case 'application/xml':
-		case XML:
-		case XSL:
-			return parseXML(xhr, contentType, onError);
-		case TYPE_JSON:
-			try {
-				return $.JSON.parse(xhr.responseText);
-			} catch (e) {
-				$.error(e);
-			}
-			break;
-		default:					
-			return xhr.responseText;
-		}
-	};
-	
-	if (!jet.IO) {
-		jet.IO = {};
-	}
-	if (!jet.IO.jsonpCallbacks) {
-		jet.IO.jsonpCallbacks = [];
-	}
+	var OP = Object.prototype;
+
+	var Hash = $.Hash,
+		Lang = $.Lang,
+		ArrayHelper = $.Array;
 
 	/**
-	 * Handles AJAX and JSONP requests
-	 * @class IO
+	 * Utilities for object oriented programming in JavaScript.
+	 * JET doesn't provide a classical OOP environment like Prototype with Class methods,
+	 * but instead it helps you take advantage of JavaScript's own prototypical OOP strategy
+	 * @class OOP
 	 * @static
 	 */
-	$.add({
-		/**
-		 * Makes an ajax request
-		 * @method ajax
-		 * @param {Hash} settings
-		 */
-		ajax: function (settings) {
-			var xhr = getAjaxObject();
-		   
-			var success = settings.success,
+	/**
+	 * Object function by Douglas Crockford
+	 * <a href="https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1">link</a>
+	 * @private
+	 * @param {Object} o
+	 */
+	var toObj = function (o) {
+		var F = function () {};
+		F.prototype = o;
+		return new F();
+	};
 	
-			result = null;
-			
-			var dataType 		= settings.dataType;
-			var timeout			= settings.timeout || 10000; /* Tiempo que tarda en cancelarse la transaccion */
-			var method			= settings.method || "GET"; /* Metodo para enviar informacion al servidor */
-			var async			= settings.async || true;
-			var complete		= settings.complete || function () {};
-			var onSuccess		= function () {
-				if (success) {
-					success.apply($, arguments);
-				}
-				complete.apply($, arguments);
-			};
-			var onError			= function (a, b, c) {
-				if (settings.error) {
-					settings.error(a, b, c);
-				}
-				complete.apply($, arguments);
-			};
-			var url = settings.url;
+	/**
+	 * Allows for an inheritance strategy based on prototype chaining.
+	 * When exteiding a class with extend, you keep all prototypic methods from all superclasses
+	 * @method extend
+	 * @param {Function} subclass
+	 * @param {Function} superclass
+	 * @param {Hash} optional - An object literal with methods to overwrite in the subclass' prototype
+	 */
+    var extend = function (r, s, px) {
+		// From the guys at YUI. This function is GENIUS!
 		
-			if (xhr) {
-				/* Esto corrije el problema de ausencia de tipos mime solo si existe el metodo overrideMimeType (no existe en IE) */
-				if (dataType && (dataType === XML || dataType === XSL) && xhr.overrideMimeType) {
-					xhr.overrideMimeType('text/xml');
+        if (!s || !r) {
+            // @TODO error symbols
+            $.error("extend failed, verify dependencies");
+        }
+
+        var sp = s.prototype, rp = toObj(sp);
+        r.prototype = rp;
+
+        rp.constructor = r;
+        r.superclass = sp;
+
+        // assign constructor property
+        if (s != Object && sp.constructor == OP.constructor) {
+            sp.constructor = s;
+        }
+    
+        // add prototype overrides
+        if (px) {
+            $.mix(rp, px, true);
+        }
+
+    };
+	
+	var BOUNDING_BOX = "boundingBox",
+		SRC_NODE = "srcNode",
+		UNLOAD = "unload",
+		VISIBILITY = "visibility",
+		DESTROY = "destroy",
+		TRACKING = "tracking",
+		MOUSEMOVE = "mousemove",
+		MOUSEUP = "mouseup",
+		SELECTSTART = "selectstart",
+		FREQUENCY = "frequency";
+
+	
+	/**
+	 * <p>A class designed to be inherited or extended by other classes and provide custom events.</p>
+	 * <p>Custom events work by attaching event listeners to a class that extends EventTarget.
+	 * An event listener can be a function or an object with a method called "handleEvent".
+	 * If it is a function, when fired the context will be the firing object. In the case of an object, the 
+	 * context will be the object itself.</p>
+	 * <p>Attaching an object to the "*" event type allows for a different approach:</p>
+	 * <code>
+	 * someObj.handleEvent = function (e) {<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;switch (e.type) {<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case "someEvent":<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//do something<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case "otherEvent":<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//do something else<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+	 * };<br/>
+	 * eventProvider.on("*", someObj);
+	 * </code>
+	 * @class EventTarget
+	 * @constructor
+	 */
+	var EventTarget = function () {
+		var collection = {};
+		
+		var myself = this;
+		var onceList = [];
+		
+		/**
+		 * Adds an event listener 
+		 * @method on
+		 * @param {String} eventType
+		 * @param {Function} callback
+		 * @chainable
+		 */
+		this.on = function (eventType, callback) {
+			if (!collection[eventType]) {
+				collection[eventType] = [];
+			}
+			if (Lang.isObject(callback)) {
+				collection[eventType].push(callback);
+			}
+			return myself;
+		};
+		
+		this.once = function (eventType, callback) {
+			onceList.push(callback);
+			return myself.on(eventType, callback);
+		};
+		
+		/**
+		 * Removes and event listener
+		 * @method unbind
+		 * @param {String} eventType
+		 * @param {Function} callback
+		 * @chainable
+		 */
+		this.unbind = function (eventType, callback) {
+			if (eventType) {
+				$.Array.remove(callback, collection[eventType] || []);
+			} else {
+				collection = {};
+			}
+			return myself;
+		};
+		
+		/**
+		 * Fires an event, executing all its listeners
+		 * @method fire
+		 * @param {String} eventType
+		 * Extra parameters will be passed to all event listeners
+		 */
+		this.fire = function (eventType) {
+			var handlers = collection[eventType] || [];
+			var returnValue = true;
+			if (collection["*"]) {
+				handlers = handlers.concat(collection["*"]);
+			}
+			var i, collecLength = handlers.length;
+			var stop = false;
+			var args = Array.prototype.slice.call(arguments, 1);
+			args.unshift({
+				stopPropagation: function () {
+					stop = true;
+				},
+				preventDefault: function () {
+					returnValue = false;
+				},
+				type: eventType,
+				target: myself
+			});
+			for (i = 0; i < collecLength; i++) {
+				if (Lang.isFunction(handlers[i])) {
+					handlers[i].apply(myself, args);
+				// if the event handler is an object with a handleEvent method,
+				// that method is used but the context is the object itself
+				} else if (Lang.isObject(handlers[i]) && handlers[i].handleEvent) {
+					handlers[i].handleEvent.apply(handlers[i], args);
 				}
-				if (url) {
-					if (url.substr(url.length - 1) != "?") {
-						url += "?";
-					}
-					if (settings.data) {
-						url += hashToURI(settings.data);
-					}
-					if (async === true) {
-						xhr.onreadystatechange = function () {
-							if (xhr.readyState === 4) {
-								/* Normalmente deberia chequearse unicamente el status == 200, pero cuando se hace una transaccion local el status en IE termina siendo 0
-								 por lo que con revisar que exista la respuesta alcanza */
-								if (xhr.status === 404) {
-									onError(notFoundError, xhr.status, xhr);
-								} else if (xhr.status === 408) {
-									onError(timeoutError, xhr.status, xhr);
-								} else if (xhr.status === 200 || xhr.responseText || xhr.responseXML) { 
-									onSuccess(getResultByContentType(xhr, dataType, onError), xhr);
-								} else {
-									onError(noStatusError, xhr.status, xhr); 
-								}
-							}
-						};
-					}
-					/* Cuando la transaccion se hace en un filesystem local y el archivo de destino no existe,
-					   no se llega a pasar por el evento onreadystatechange sino que puede lanzar una excepcion en algunos navegadores */
-					try {
-						xhr.open(method, url, async);
-						xhr.send(null);
-					} catch (e) {
-						onError(noStatusError, 404, xhr); 
-					}
-					if (async === false) {
-						result = getResultByContentType(xhr, dataType, onError);
-					} else {
-						setTimeout(function () {
-							if (xhr.readyState !== 4) {
-								xhr.abort();
-								onError(timeoutError, 408, xhr);
-							}
-						}, timeout);
-					}
+				if (onceList.indexOf(handlers[i]) > -1) {
+					A.remove(onceList, handlers[i]);
+					A.remove(handlers, handlers[i]);
+					i--;
+				}
+				if (stop) {
+					break;
 				}
 			}
-			return result || $;
-		},
-		jsonp: function (settings) {
-			settings = settings || {};
-			var jsonCallbackParam = settings.jsonCallbackParam || "p";
-			var success = function (result) {
-				if (settings.success) {
-					settings.success(result);
-				}
-				if (settings.complete) {
-					settings.complete(result);
-				}
-			};
-			var error = function (result) {
-				if (settings.error) {
-					settings.error(result);
-				}
-				if (settings.complete) {
-					settings.complete(result);
-				}
-			};
-			var callbacks = jet.IO.jsonpCallbacks;
-			var index = callbacks.length;
-			var loaded = false;
-			var url = settings.url;
-			if (url) {
-				callbacks[index] = function (data) {
-					loaded = true;
-					success(data);
-				};
-				if (url.substr(url.length - 1) != "?") {
-					url += "?";
-				}
-				if (!settings.data) {
-					settings.data = {};
-				}
-				settins.data[jsonCallbackParam] = "jet.IO.jsonpCallbacks[" + index + "]";
-				
-				//Added a timeout of 0 as suggested by Google in 
-				//http://googlecode.blogspot.com/2010/11/instant-previews-under-hood.html
-				setTimeout(function () {
-					$.Get.script(url + hashToURI(settings.data));
-				}, 0);
-				setTimeout(function () {
-					if (!loaded) {
-						error({
-							message: "Request failed",
-							reason: "Timeout"
-						});
+			return returnValue;
+		};
+		
+	};
+	
+	/**
+	 * Provides get() and set() methods, along with getters, setters and options for configuration attributres
+	 * @class Attribute
+	 * @extends EventTarget
+	 * @constructor
+	 */
+	var Attribute = function (classConfig) {
+		Attribute.superclass.constructor.apply(this);
+		classConfig = classConfig || {};
+		var myself = this;
+		
+		var attrConfig = {};
+		
+		var addAttr = function (attrName, config) {
+			attrConfig[attrName] = config;
+			var isValue = Lang.isValue(classConfig[attrName]);
+			if (config.required && config.readOnly) {
+				$.error("You can't have both 'required' and 'readOnly'");
+			}
+			if (config.readOnly && isValue) {
+				delete classConfig[attrName];
+			}
+			if (config.required && !isValue) {
+				$.error("Missing required attribute: " + attrName);
+			}
+			if (isValue && config.setter) {
+				classConfig[attrName] = config.setter.call(myself, classConfig[attrName]);
+			}
+			return myself;
+		};
+		
+		var set = function (attrName, attrValue) {
+			attrConfig[attrName] = attrConfig[attrName] || {};
+			var config = attrConfig[attrName];
+			if (!config.readOnly) {
+				if (!config.validator || config.validator(attrValue)) {
+					attrValue = config.setter ? config.setter.call(myself, attrValue) : attrValue;
+					if (!Lang.isValue(classConfig[attrName]) && config.value) {
+						classConfig[attrName] = config.value;
 					}
-				}, settings.timeout || 10000);
+					classConfig[attrName] = classConfig[attrName] == attrValue ? attrValue :
+											myself.fire(attrName + "Change", attrValue, classConfig[attrName]) ? attrValue :
+											classConfig[attrName];
+				}
+				if (config.writeOnce && !config.readOnly) {
+					attrConfig[attrName].readOnly = true;
+				}
+			} else {
+				$.error(attrName + " is a " + (config.writeOnce ? "write-once" : "read-only") + " attribute");
+			}
+		};
+		
+		/**
+		 * Returns a configuration attribute
+		 * @method get
+		 * @param {String} attrName
+		 */	
+		myself.get = function (attrName) {
+			attrConfig[attrName] = attrConfig[attrName] || {};
+			var config = attrConfig[attrName];
+			/*
+			 * If it is write-once and it wasn't set before, use the default value and mark it as written (readOnly works as written)
+			 */
+			if (config.writeOnce && !config.readOnly) {
+				attrConfig[attrName].readOnly = true;
+			}
+			if (!Lang.isValue(classConfig[attrName])) {
+				classConfig[attrName] = config.value;
+			}
+			return	config.getter ? config.getter.call(myself, classConfig[attrName], attrName) :
+					classConfig[attrName];
+		};
+		/**
+		 * Sets a configuration attribute
+		 * @method set
+		 * @param {String} attrName
+		 * @param {Object} attrValue
+		 * @chainable
+		 */
+		myself.set = function (attrName, attrValue) {
+			if (Lang.isHash(attrName)) {
+				Hash.each(attrName, function (name, value) {
+					set(name, value);
+				});
+			} else {
+				set(attrName, attrValue);
+			}
+			return myself;
+		};
+		/**
+		 * Unsets a configuration attribute
+		 * @method unset
+		 * @param {String} attrName
+		 * @chainable
+		 */
+		myself.unset = function (attrName) {
+			delete classConfig[attrName];
+			return myself;
+		};
+		/**
+		 * Adds a configuration attribute, along with its options
+		 * @method addAttr
+		 * @param {String} attrName
+		 * @param {Hash} config
+		 * @chainable
+		 */
+		myself.addAttr = addAttr;
+		/**
+		 * Adds several configuration attributes
+		 * @method addAttrs
+		 * @param {Hash} config - key/value pairs of attribute names and configs
+		 * @chainable
+		 */
+		myself.addAttrs = function (config) {
+			Hash.each(config, addAttr);
+			return myself;
+		};
+		/**
+		 * Returns a key/value paired object with all attributes
+		 * @method getAttrs
+		 * @return {Hash}
+		 */
+		myself.getAttrs = function () {
+			var result = {};
+			Hash.each(classConfig, function (key) {
+				result[key] = myself.get(key);
+			});
+			return result;
+		};
+		/**
+		 * Returns whether an attribute is set or not
+		 * @method isSet
+		 * @param {String} attrName
+		 * @return {Boolean}
+		 */
+		myself.isSet = function (attrName) {
+			return Lang.isValue(classConfig[attrName]);
+		};
+	};
+	extend(Attribute, EventTarget);
+	
+	var walkTheProtoChain = function (instance, topConstructor, fn) {
+		var parent = instance.constructor;
+		while (parent != topConstructor) {
+			fn(parent);
+			parent = parent.superclass.constructor;
+		}
+	};
+	/**
+	 * Base class for all widgets and utilities.
+	 * @class Base
+	 * @extends Attribute
+	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
+	var Base = function () {
+		/*
+		 * Base should hold basic logic shared among a lot of classes, 
+		 * to avoid having to extend the Attribute class which is very specific in what it does
+		 */
+		Base.superclass.constructor.apply(this, arguments);
+		
+		/**
+		 * Allows quick setting of custom events in the constructor
+		 * @config on
+		 */
+		var myself = this.addAttr("on", {
+			writeOnce: true,
+			value: {}
+		});
+		
+		Hash.each(myself.get("on"), function (type, fn) {
+			myself.on(type, fn);
+		});
+				
+	};
+	extend(Base, Attribute);
+	
+	/**
+	 * Basic class for all utilities
+	 * @class Utility
+	 * @extends Base
+	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
+	var Utility = function () {
+		Utility.superclass.constructor.apply(this, arguments);
+		var myself = this;
+		
+		$($.win).on(UNLOAD, function () {
+			// destroy only if it wasn't destroyed earlier
+			if (myself.destroy) {
+				myself.destroy();
+			}
+		}); 
+	};
+	extend(Utility, Base, {
+		/**
+		 * Calls itself when the window unloads. Allows for easier memory cleanup
+		 * @method destroy
+		 */
+		destroy: function () {
+			var myself = this;
+			if (myself.fire(DESTROY)) {
+				// Helping gargage collection
+				Hash.each(myself, function (name) {
+					delete myself[name];
+				});
 			}
 		}
 	});
-	$.IO = {
-		utils: {
-			parseXML: parseXML
+	
+	/**
+	 * Base class for all widgets. 
+	 * Provides show, hide, render and destroy methods, the rendering process logic
+	 * and basic attributes shared by all widgets 
+	 * @class Widget
+	 * @extends Base
+	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
+	var Widget = function () {
+		Widget.superclass.constructor.apply(this, arguments);
+ 		/**
+ 		 * The bounding box contains all the parts of the widget
+		 * @config boundingBox
+		 * @writeOnce
+		 * @type NodeList
+		 * @default <div/>
+		 */
+		var myself = this.addAttrs(Widget.ATTRS).addAttr(BOUNDING_BOX, {
+			readOnly: true,
+			value: $("<div/>")
+		});
+		
+		/*
+		 * Call the destroy method when the window unloads.
+		 * This allows for the removal of all event listeners from the widget's nodes,
+		 * avoiding memory leaks and helping garbage collection 
+		 */ 
+		$($.win).on(UNLOAD, function () {
+			if (myself.destroy) {
+				myself.destroy();
+			}
+		}); 
+	};
+	Widget.CSS_PREFIX = "yui";
+	Widget.ATTRS = {
+		/**
+		 * @config srcNode
+		 * @description The node to which the widget will be appended to. May be set as a 
+		 * configuration attribute, with a setter or as the first parameter of the render() method
+		 * @type DOMNode | NodeList
+		 */
+		srcNode: {
+			setter: $
+		},
+		/**
+		 * @config classPrefix
+		 * @description Prefix for all CSS clases. Useful for renaming the project
+		 * @default "yui-"
+		 */
+		classPrefix: {
+			value: Widget.CSS_PREFIX + "-"
+		},
+		/**
+		 * @config className
+		 * @description The class name applied along with the prefix to the boundingBox
+		 * @default "widget"
+		 */
+		className: {
+			value: "widget"
+		},
+		/**
+		 * @config rendered
+		 * @description Rendered status. Shouldn't be changed by anything appart from the Widget.render() method
+		 * @writeOnce
+		 * @default false
+		 */
+		rendered: {
+			value: false
 		}
 	};
+	extend(Widget, Base, {
+		/**
+		 * Hides the widget
+		 * @method hide
+		 * @chainable
+		 */
+		hide: function () {
+			var myself = this;
+			if (myself.fire("hide")) {
+				myself.get(BOUNDING_BOX).css(VISIBILITY, "hidden");
+			}
+			return myself.fire("afterHide");
+		},
+		/**
+		 * Shows the widget
+		 * @method show
+		 * @chainable
+		 */
+		show: function () {
+			var myself = this;
+			if (myself.fire("show")) {
+				myself.get(BOUNDING_BOX).css(VISIBILITY, "visible");
+			}
+			return myself.fire("afterShow");
+		},
+		/**
+		 * Focuses the widget
+		 * @method focus
+		 * @chainable
+		 */
+		focus: function () {
+			if (this.fire("focus")) {
+				this.set("focused", true);
+			}
+			return this;
+		},
+		/**
+		 * Blurrs the element
+		 * @method blur
+		 * @chainable
+		 */
+		blur: function () {
+			if (this.fire("blur")) {
+				this.set("focused", false);
+			}
+			return this;
+		},
+		/**
+		 * Starts the rendering process. The rendering process is based on custom events.
+		 * The widget class fires a "render" event to which all subclasses must subscribe.
+		 * This way all listeners are fired in the order of the inheritance chain. ie:
+		 * In the Overlay class, the render process is:
+		 * <code>render() method -> Module listener -> Overlay listener -> rest of the render() method (appends the boundingBox to the srcNode)</code>
+		 * This helps to use an easy pattern of OOP CSS: each subclass adds a CSS class name to the boundingBox,
+		 * for example resulting in <div class="jet-module jet-overlay jet-panel"></div>. That way
+		 * a panel can inherit css properties from module and overlay.
+		 * @method render
+		 * @param {NodeList|HTMLElement} target
+		 * @chainable
+		 */
+		render: function (target) {
+			var myself = this;
+			if (target) {
+				myself.set(SRC_NODE, target);
+			}
+			/**
+			 * Render event. Preventing the default behavior will stop the rendering process
+			 * @event render
+			 * @see Widget.render()
+			 */
+			if (myself.fire("render")) {
+				var node = myself.get(SRC_NODE);
+				myself.get(BOUNDING_BOX).addClass(myself.get("classPrefix") + myself.get("className")).appendTo(node).css(VISIBILITY, "visible");
+				/**
+				 * Fires after the render process is finished
+				 * @event afterRender
+				 */
+				myself.set("rendered", true).focus();
+				setTimeout(function () {
+					myself.fire("afterRender");
+				}, 0);
+			}
+			return myself;
+		},
+		/**
+		 * Destroys the widget by removing the elements from the dom and cleaning all event listeners
+		 * @method destroy
+		 */
+		destroy: function () {
+			var myself = this;
+			/**
+			 * Preventing the default behavior will stop the destroy process
+			 * @event destroy
+			 */
+			if (myself.fire(DESTROY)) {
+				/*
+				 * Avoiding memory leaks, specially in IE
+				 */
+				myself.get(BOUNDING_BOX).unbindAll(true).remove();
+				/*
+				 * Helping gargage collection
+				 */
+				Hash.each(myself, function (name) {
+					delete myself[name];
+				});
+			}
+		}
+	});
+	
+	/**
+	 * A utility for tracking the mouse movement without crashing the browser rendering engine.
+	 * Also allows for moving the mouse over iframes and other pesky elements
+	 * @namespace utils
+	 * @class Mouse
+	 * @constructor
+	 * @extends Utility
+	 * @param {Object} config Object literal specifying configuration properties
+	 */
+	var Mouse = function () {
+		Mouse.superclass.constructor.apply(this, arguments);
+		var myself = this.addAttrs({
+			/**
+			 * Frequency at which the tracker updates
+			 * @config frequency
+			 * @default 20 (ms)
+			 * @type Number
+			 */
+			frequency: {
+				value: 20
+			},
+			context: {
+				value: $.context
+			}
+		});
+		
+		var clientX, clientY;
+		var interval;
+		var capturing = false;
+		
+		var shim = $([]);
+		var iframes;
+		
+		/**
+		 * Tracking status. Set it to true to start tracking
+		 * @config tracking
+		 * @type Boolean
+		 * @default false
+		 */
+		myself.addAttr(TRACKING, {
+			value: false,
+			validator: Lang.isBoolean
+			
+		}).on(TRACKING + "Change", function (e, value) {
+			if (value) {
+				if (myself.get("shim")) {
+					var list = [];
+					iframes = $("iframe").each(function (iframe) {
+						iframe = $(iframe);
+						var offset = iframe.offset();
+						list.push($("<div/>").height(offset.height).width(offset.width).css({
+							position: "absolute",
+							left: offset.left,
+							top: offset.top
+						}).hide().appendTo($.context.body)[0]);
+					});	
+					shim = $(list);
+				}
+				if (!capturing) {
+					shim.show();
+					interval = setInterval(function () {
+						myself.fire(MOUSEMOVE, clientX, clientY);
+					}, myself.get(FREQUENCY));
+					capturing = true;
+				}
+			} else {
+				shim.hide();
+				clearInterval(interval);
+				capturing = false;
+			}
+		});
+		
+		function onSelectStart(e) {
+			if (capturing) {
+				e.preventDefault();
+			}
+		}
+		
+		function onMouseMove(e) {
+			clientX = e.clientX;
+			clientY = e.clientY;
+			if (myself.get(TRACKING) && myself.get("shim")) {
+				iframes.each(function (iframe, i) {
+					iframe = $(iframe);
+					var offset = iframe.offset();
+					$(shim[i]).height(offset.height).width(offset.width).css({
+						left: offset.left + "px",
+						top: offset.top + "px"
+					});
+				});
+			}
+		}
+		
+		function onMouseUp() {
+			/**
+			 * Fires when the mouse button is released
+			 * @event up
+			 */
+			myself.set(TRACKING, false).fire("up", clientX, clientY);
+		}
+		
+		
+		/**
+		 * Fires not when the mouse moves, but in an interval defined by the frequency attribute
+		 * This way you can track the mouse position without breakin the browser's rendering engine
+		 * because the native mousemove event fires too quickly
+		 * @event move
+		 */
+		shim.on(MOUSEMOVE, onMouseMove).on(MOUSEUP, onMouseUp);
+		
+		$(this.get('context')).on("selectstart", onSelectStart).on(MOUSEMOVE, onMouseMove).on(MOUSEUP, onMouseUp);
+		myself.on('contextChange', function (e, newVal, prevVal) {
+			$(prevVal).unbind("selectstart", onSelectStart).unbind(MOUSEMOVE, onMouseMove).unbind(MOUSEUP, onMouseUp);
+			$(newVal).on("selectstart", onSelectStart).on(MOUSEMOVE, onMouseMove).on(MOUSEUP, onMouseUp);
+		}).on(DESTROY, function () {
+			shim.unbindAll();
+		});
+	};
+	extend(Mouse, Utility, {
+		/**
+		 * Start tracking. Equivalent to setting the tracking attribute to true.
+		 * Simulates the mousedown event
+		 * @method down
+		 * @chainable
+		 */
+		down: function () {
+			return this.set(TRACKING, true);
+		},
+		/**
+		 * Stop tracking. Equivalent to setting the tracking attribute to false
+		 * Simulates the mouseup event
+		 * @method up
+		 * @chainable
+		 */
+		up: function () {
+			return this.set(TRACKING, false);
+		}
+	});
+	
+	$.utils.Mouse = Mouse;
+	
+	$.add({
+		Attribute: Attribute,
+		Base: Base,
+		Utility: Utility,
+		Widget: Widget,
+		EventTarget: EventTarget,
+		extend: extend
+	});
 });/*
  Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
  Code licensed under the BSD License
