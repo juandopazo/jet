@@ -239,9 +239,9 @@ jet().add("node", function ($) {
 		 * Returns the complete size of the page
 		 * @method pageSize
 		 */
-		pageSize: function () {
-			var win = $.win,
-				doc = $.context,
+		pageSize: function (win) {
+			var win = win || $.win,
+				doc = win.document,
 				compatMode = doc.compatMode != "CSS1Compat",
 				innerWidth = win.innerWidth,
 				innerHeight = win.innerHeight,
@@ -853,17 +853,27 @@ jet().add("node", function ($) {
 				}
 			});
 		},
+		ownerDoc: function () {
+			var result = [];
+			this.each(function (node) {
+				var doc = node.ownerDocument;
+				if (A.indexOf(doc, result) == -1) {
+					result[result.length] = doc;
+				}
+			});
+			return $(result);
+		},
 		/**
 		 * Returns a new NodeList with all the documents of all the nodes in the collection that are Iframes
-		 * @method getDocument
+		 * @method contentDoc
 		 * @return {NodeList}
 		 */
-		getDocument: function () {
+		contentDoc: function () {
 			var result = [];
 			this.each(function (node) {
 				if (node.nodeName == "IFRAME") {
-					var doc = node.contentDocument || node.contentWindow.document || node.document || null;
-					if (doc) {
+					var doc = node.contentDocument || node.contentWindow.document || node.document;
+					if (A.indexOf(doc, result) == -1) {
 						result[result.length] = doc;
 					}
 				}
