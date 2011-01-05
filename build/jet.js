@@ -848,8 +848,8 @@
 					AP.unshift.apply(request, Hash.keys(predef));
 					
 				// add ajax by default
-				} else if (ArrayHelper.indexOf("io", request) == -1) {
-					request.unshift("io");
+				} else if (ArrayHelper.indexOf("base", request) == -1) {
+					request.unshift("base");
 				}
 				
 				// handle requirements
@@ -959,7 +959,7 @@ jet().add('base', function ($) {
 
 	var Hash = $.Hash,
 		Lang = $.Lang,
-		ArrayHelper = $.Array;
+		A = $.Array;
 
 	/**
 	 * Utilities for object oriented programming in JavaScript.
@@ -1126,7 +1126,7 @@ jet().add('base', function ($) {
 				} else if (Lang.isObject(handlers[i]) && handlers[i].handleEvent) {
 					handlers[i].handleEvent.apply(handlers[i], args);
 				}
-				if (onceList.indexOf(handlers[i]) > -1) {
+				if (A.indexOf(onceList, handlers[i]) > -1) {
 					A.remove(onceList, handlers[i]);
 					A.remove(handlers, handlers[i]);
 					i--;
@@ -1559,6 +1559,7 @@ jet().add('base', function ($) {
 		});
 		
 		var clientX, clientY;
+		var prevX, prevY;
 		var interval;
 		var capturing = false;
 		
@@ -1593,7 +1594,11 @@ jet().add('base', function ($) {
 				if (!capturing) {
 					shim.show();
 					interval = setInterval(function () {
-						myself.fire(MOUSEMOVE, clientX, clientY);
+						if (prevX != clientX || prevY != clientY) {
+							myself.fire(MOUSEMOVE, clientX, clientY);
+							prevX = clientX;
+							prevY = clientY;
+						}
 					}, myself.get(FREQUENCY));
 					capturing = true;
 				}
@@ -1862,7 +1867,7 @@ jet().add("node", function ($) {
 					ev.stopPropagation = function () {
 						ev.cancelBubble = true;
 					};
-					callback.call(event.srcElement, ev);
+					callback.call(obj, ev);
 				});
 				EventCache.add(obj, type, callback);
 			};
@@ -1959,9 +1964,9 @@ jet().add("node", function ($) {
 		 * Returns the complete size of the page
 		 * @method pageSize
 		 */
-		pageSize: function () {
-			var win = $.win,
-				doc = $.context,
+		pageSize: function (win) {
+			var win = win || $.win,
+				doc = win.document,
 				compatMode = doc.compatMode != "CSS1Compat",
 				innerWidth = win.innerWidth,
 				innerHeight = win.innerHeight,
@@ -2573,17 +2578,27 @@ jet().add("node", function ($) {
 				}
 			});
 		},
+		ownerDoc: function () {
+			var result = [];
+			this.each(function (node) {
+				var doc = node.ownerDocument;
+				if (A.indexOf(doc, result) == -1) {
+					result[result.length] = doc;
+				}
+			});
+			return $(result);
+		},
 		/**
 		 * Returns a new NodeList with all the documents of all the nodes in the collection that are Iframes
-		 * @method getDocument
+		 * @method contentDoc
 		 * @return {NodeList}
 		 */
-		getDocument: function () {
+		contentDoc: function () {
 			var result = [];
 			this.each(function (node) {
 				if (node.nodeName == "IFRAME") {
-					var doc = node.contentDocument || node.contentWindow.document || node.document || null;
-					if (doc) {
+					var doc = node.contentDocument || node.contentWindow.document || node.document;
+					if (A.indexOf(doc, result) == -1) {
 						result[result.length] = doc;
 					}
 				}
