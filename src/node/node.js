@@ -142,7 +142,7 @@ jet().add("node", function ($) {
 					ev.stopPropagation = function () {
 						ev.cancelBubble = true;
 					};
-					callback.call(event.srcElement, ev);
+					callback.call(obj, ev);
 				});
 				EventCache.add(obj, type, callback);
 			};

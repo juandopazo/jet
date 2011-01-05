@@ -248,6 +248,11 @@ jet().add('button', function ($) {
 		ComboBox.superclass.constructor.apply(this, arguments);
 		
 		var myself = this.addAttrs({
+			/**
+			 * @config options
+			 * @description List of options to prepopulate the combobox
+			 * @type Array
+			 */
 			options: {
 				value: []
 			},
@@ -258,6 +263,11 @@ jet().add('button', function ($) {
 			className: {
 				value: "combobox"
 			},
+			/**
+			 * @config selected
+			 * @description The selected option index
+			 * @type Number
+			 */
 			selected: {
 				validator: Lang.isNumber,
 				getter: function () {
@@ -272,6 +282,11 @@ jet().add('button', function ($) {
 					return val;
 				}
 			},
+			/**
+			 * @config count
+			 * @description returns the nombre of options in the combobox
+			 * @readOnly
+			 */
 			count: {
 				readOnly: true,
 				getter: function () {
