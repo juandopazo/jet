@@ -543,6 +543,118 @@ jet().add("container", function ($) {
 	$.extend(Panel, Overlay);
 	
 	/**
+	 * Un contenedor fijo con look de panel y boton de cerrar
+	 * @class StaticPanel
+	 * @extends Module
+	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
+	var StaticPanel = function () {
+		StaticPanel.superclass.constructor.apply(this, arguments);
+		var myself = this.set(CLASS_NAME, StaticPanel.NAME).addAttrs({
+			/**
+			 * @config contentBox
+			 * @description A panel uses another container inside the boundingBox 
+			 * in order to have a more complex design (ie: shadow)
+			 * @readOnly
+			 */
+			contentBox: {
+				readOnly: true,
+				value: $(NEW_DIV)
+			},
+			/**
+			 * @config underlay
+			 * @description The underlay is inserted after the contentBox to allow for a more complex design
+			 * @readOnly
+			 */
+			underlay: {
+				readOnly: true,
+				value: $(NEW_DIV).addClass(UNDERLAY)
+			},
+			/**
+			 * @config shadow
+			 * @description If true, the panel shows a shadow
+			 * @default true
+			 */
+			shadow: {
+				value: true
+			}
+		}).on(HEIGHT + "Change", function (e, height) {
+			myself.get(CONTENT_BOX).height(height);
+		});
+		
+		/*
+		 * Close button logic
+		 */
+		var close = function (e) {
+			if (myself.fire(CLOSE)) {
+				myself.hide();
+			}
+			e.preventDefault();
+		};
+		var closeButton = $("<a/>").attr("href", "#").addClass("container-close").on(CLICK, close);
+		$($.context).on("keyup", function (e) {
+			if (e.keyCode == 27 && myself.get("focused")) {
+				close(e);
+			}
+		});
+		/**
+		 * @config close
+		 * @description If true, a close button is added to the panel that hides it when clicked
+		 * @type Boolean
+		 * @default true
+		 */
+		myself.addAttr(CLOSE, {
+			value: true,
+			validator: Lang.isBoolean,
+			setter: function (value) {
+				if (value) {
+					closeButton.show();
+				} else {
+					closeButton.hide();
+				}
+				return value;
+			}
+			
+		// rendering process
+		}).on(RENDER, function (e) {
+			var height = myself.get(HEIGHT);
+			var contentBox = myself.get(CONTENT_BOX);
+			if (height) {
+				contentBox.height(height);
+			}
+			var prefix = myself.get(CLASS_PREFIX);
+			var boundingBox = myself.get(BOUNDING_BOX).addClass(prefix + Panel.NAME + "-container");
+			var head = myself.get(HEADER);
+			var body = myself.get(BODY);
+			var footer = myself.get(FOOTER);
+			var sp = StaticPanel;
+			while (sp.NAME) {
+				contentBox.addClass(prefix + sp.NAME);
+				sp = sp.superclass.constructor;
+			}
+			if (head) {
+				contentBox.append(head.remove(true));
+			}
+			if (body) {
+				contentBox.append(body.remove(true));
+			}
+			if (footer) {
+				contentBox.append(footer.remove(true));
+			}
+			if (myself.get(CLOSE)) {
+				closeButton.appendTo(contentBox);
+			}
+			contentBox.appendTo(boundingBox).css(VISIBILITY, "inherit");
+			boundingBox.append(myself.get(UNDERLAY));
+			if (myself.get(SHADOW)) {
+				boundingBox.addClass(SHADOW);
+			}
+		});
+	};
+	StaticPanel.NAME = "panel";
+	$.extend(StaticPanel, Module);
+	/**
 	 * A SimpleDialog is a Panel with simple form options and a button row instead of the footer
 	 * @class SimpleDialog
 	 * @extends Panel
@@ -592,6 +704,7 @@ jet().add("container", function ($) {
 		Overlay: Overlay,
 		Tooltip: Tooltip,
 		Panel: Panel,
+		StaticPanel: StaticPanel,
 		SimpleDialog: SimpleDialog
 	});
 	

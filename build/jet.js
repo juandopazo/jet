@@ -1543,6 +1543,15 @@ jet().add('base', function ($) {
 	 */
 	var Mouse = function () {
 		Mouse.superclass.constructor.apply(this, arguments);
+
+		var clientX, clientY;
+		var prevX, prevY;
+		var interval;
+		var capturing = false;
+		
+		var shim = $([]);
+		var iframes;
+		
 		var myself = this.addAttrs({
 			/**
 			 * Frequency at which the tracker updates
@@ -1555,16 +1564,14 @@ jet().add('base', function ($) {
 			},
 			context: {
 				value: $.context
+			},
+			shields: {
+				readOnly: true,
+				getter: function () {
+					return shim;
+				}
 			}
 		});
-		
-		var clientX, clientY;
-		var prevX, prevY;
-		var interval;
-		var capturing = false;
-		
-		var shim = $([]);
-		var iframes;
 		
 		/**
 		 * Tracking status. Set it to true to start tracking
