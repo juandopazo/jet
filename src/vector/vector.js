@@ -203,30 +203,22 @@ jet().add('vector', function ($) {
 		"stroke-dasharray": "dashstyle"
 	};
 	var strokeAttributesGetter = function (name) {
-		if (UA_SUPPORTS_SVG) {
-			return function (value) {
-				this.get(NODE).getAttribute(name);
-			};
-		} else {
-			return function (value) {
-				return this.get("stroke")[STROKE_ATTR_MAPPING[name]];
-			};
-		}
+		return UA_SUPPORTS_SVG ? function (value) {
+			this.get(NODE).getAttribute(name);
+		} : function (value) {
+			return this.get("stroke")[STROKE_ATTR_MAPPING[name]];
+		};
 	};
 	var strokeAttributesSetter = function (name) {
-		if (UA_SUPPORTS_SVG) {
-			return function (value) {
-				this.get(NODE).setAttribute(name, value);
-				return value;
-			};
-		} else {
-			return function (value) {
-				var strkNode = this.get("stroke-node");
-				strkNode.on = true;
-				strkNode[STROKE_ATTR_MAPPING[name]] = value;
-				return value;
-			};
-		}
+		return UA_SUPPORTS_SVG ? function (value) {
+			this.get(NODE).setAttribute(name, value);
+			return value;
+		} : function (value) {
+			var strkNode = this.get("stroke-node");
+			strkNode.on = true;
+			strkNode[STROKE_ATTR_MAPPING[name]] = value;
+			return value;
+		};
 	};
 	Hash.each(STROKE_ATTR_MAPPING, function (asvg) {
 		Vector_ATTRS[asvg] = {
