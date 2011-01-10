@@ -848,8 +848,8 @@
 					AP.unshift.apply(request, Hash.keys(predef));
 					
 				// add ajax by default
-				} else if (ArrayHelper.indexOf("io", request) == -1) {
-					request.unshift("io");
+				} else if (ArrayHelper.indexOf("base", request) == -1) {
+					request.unshift("base");
 				}
 				
 				// handle requirements

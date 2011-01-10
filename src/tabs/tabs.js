@@ -13,7 +13,7 @@ jet().add("tabs", function ($) {
 	var Lang = $.Lang;
 	var ArrayHelper = $.Array;
 	
-	var LI = "li",
+	var LI = "<li/>",
 		LABEL = "label",
 		PANEL = "panel";
 	
@@ -25,7 +25,7 @@ jet().add("tabs", function ($) {
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
 	var Tab = function () {
-		Tab.superclass.constructor.apply(this);
+		Tab.superclass.constructor.apply(this, arguments);
 		
 		var myself = this.addAttrs({
 			/**
@@ -37,7 +37,7 @@ jet().add("tabs", function ($) {
 			label: {
 				required: true,
 				setter: function (value) {
-					return Lang.isString(value) ? $.create(LI).append($.create("a").html(value)) : $(value);
+					return Lang.isString(value) ? $(LI).append($("<a/>").html(value)) : $(value);
 				}
 			},
 			/**
@@ -49,7 +49,7 @@ jet().add("tabs", function ($) {
 			panel: {
 				required: true,
 				setter: function (value) {
-					return Lang.isString(value) ? $.create("div").html(value) : $(value);
+					return Lang.isString(value) ? $("<div/>").html(value) : $(value);
 				} 
 			},
 			/**
@@ -152,7 +152,8 @@ jet().add("tabs", function ($) {
 		var container = myself.get("srcNode");
 		myself.set("boundingBox", container);
 		
-        var nav, pages;
+		var nav = container.children("ul").eq(0), 
+			pages;
 		
 		var tabs = [];
 		
@@ -180,19 +181,22 @@ jet().add("tabs", function ($) {
 				tabs[i].index = i;
 			}
 		};
+		
+		if (nav.length == 0) {
+			nav = $('<ul/>').prependTo(container);
+		}
         
 		myself.on("render", function (e, node) {
 			if (node) {
 				myself.set("boundingBox", $(node));
 			}
-			nav = container.children("ul").eq(0);
 	        pages = container.children("div");
 			
-	        if (pages.getNodes().length > 0) {
+	        if (pages.length > 0) {
 	            pages.notEq(0).hide();
 	        }
 			
-			if (nav.getNodes().length > 0) {
+			if (nav.length > 0) {
 				nav.children().each(function (node, i) {
 					var newTab = new Tab({
 						label: node,

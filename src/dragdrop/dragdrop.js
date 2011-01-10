@@ -115,9 +115,6 @@ jet().add('dragdrop', function ($) {
 			setupHandler(myself.get(NODE));
 		}
 		
-		$($.context).on("mouseup", function () {
-			tracker.set(TRACKING, false);
-		});
 		var firstTime = true;
 		tracker.on("trackingChange", function (e, value) {
 			if (!firstTime && value === false) {

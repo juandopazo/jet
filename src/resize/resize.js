@@ -11,7 +11,8 @@
 jet().add('resize', function ($) {
 	
 	var Lang = $.Lang,
-		Hash = $.Hash;
+		Hash = $.Hash,
+		DOM = $.DOM;
 	
 	var TOP = "t",
 		BOTTOM = "b",
@@ -216,7 +217,7 @@ jet().add('resize', function ($) {
 			start.X = x;
 			start.Y = y;
 			
-			screenSize = $.screenSize();
+			screenSize = DOM.screenSize();
 			
 			currentWidth = originalWidth = node.width();
 			currentHeight = originalHeight = node.height();
@@ -252,14 +253,14 @@ jet().add('resize', function ($) {
 				   size;
 		};
 		
-		var tracker = new $.utils.MouseTracker({
+		var tracker = new $.utils.Mouse({
 			shim: myself.get("shim")
 		});
 				
 		var stopResize = function (e, x, y) {
 			if (!myself.get(LOCKED)) {
 				if (capturing) {
-					screenSize = $.screenSize();
+					screenSize = DOM.screenSize();
 					currentWidth = getNew(WIDTH, x, y);
 					currentHeight = getNew(HEIGHT, x, y);
 					if (!myself.get("animate")) {
@@ -315,7 +316,7 @@ jet().add('resize', function ($) {
 				 * @param {Number} offsetTop 
 				 */
 				if (myself.fire("beforeResize", currentWidth, currentHeight, offset.left, offset.top)) {
-					screenSize = $.screenSize();
+					screenSize = DOM.screenSize();
 					if (resizeVertical) {
 						currentHeight = getNew(HEIGHT, x, y);
 					}
@@ -353,7 +354,7 @@ jet().add('resize', function ($) {
 				if (!myself.get(LOCKED)) {
 					var offset = proxy.offset();
 					capturing = type;
-					tracker.get("shim").css("cursor", handle.currentStyle().cursor);
+					tracker.get("shields").css("cursor", handle.currentStyle().cursor);
 					tracker.set("tracking", true);
 					startResize(e.clientX, e.clientY, offset.left, offset.top, type);
 					myself.fire("startResize", currentWidth, currentHeight, offset.left, offset.top, type);

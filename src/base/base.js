@@ -14,7 +14,7 @@ jet().add('base', function ($) {
 
 	var Hash = $.Hash,
 		Lang = $.Lang,
-		ArrayHelper = $.Array;
+		A = $.Array;
 
 	/**
 	 * Utilities for object oriented programming in JavaScript.
@@ -181,7 +181,7 @@ jet().add('base', function ($) {
 				} else if (Lang.isObject(handlers[i]) && handlers[i].handleEvent) {
 					handlers[i].handleEvent.apply(handlers[i], args);
 				}
-				if (onceList.indexOf(handlers[i]) > -1) {
+				if (A.indexOf(onceList, handlers[i]) > -1) {
 					A.remove(onceList, handlers[i]);
 					A.remove(handlers, handlers[i]);
 					i--;
@@ -598,6 +598,15 @@ jet().add('base', function ($) {
 	 */
 	var Mouse = function () {
 		Mouse.superclass.constructor.apply(this, arguments);
+
+		var clientX, clientY;
+		var prevX, prevY;
+		var interval;
+		var capturing = false;
+		
+		var shim = $([]);
+		var iframes;
+		
 		var myself = this.addAttrs({
 			/**
 			 * Frequency at which the tracker updates
@@ -610,15 +619,14 @@ jet().add('base', function ($) {
 			},
 			context: {
 				value: $.context
+			},
+			shields: {
+				readOnly: true,
+				getter: function () {
+					return shim;
+				}
 			}
 		});
-		
-		var clientX, clientY;
-		var interval;
-		var capturing = false;
-		
-		var shim = $([]);
-		var iframes;
 		
 		/**
 		 * Tracking status. Set it to true to start tracking
@@ -648,7 +656,11 @@ jet().add('base', function ($) {
 				if (!capturing) {
 					shim.show();
 					interval = setInterval(function () {
-						myself.fire(MOUSEMOVE, clientX, clientY);
+						if (prevX != clientX || prevY != clientY) {
+							myself.fire(MOUSEMOVE, clientX, clientY);
+							prevX = clientX;
+							prevY = clientY;
+						}
 					}, myself.get(FREQUENCY));
 					capturing = true;
 				}
