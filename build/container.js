@@ -654,6 +654,48 @@ jet().add("container", function ($) {
 	};
 	StaticPanel.NAME = "panel";
 	$.extend(StaticPanel, Module);
+	
+	
+	/**
+	 * Un contenedor fijo con look de panel y boton de cerrar
+	 * @class StaticPanel
+	 * @extends Module
+	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
+	var StaticPanel = function () {
+		StaticPanel.superclass.constructor.apply(this, arguments);
+		
+		var _this = this.set("className", "tag");
+		
+		// Close button
+		var closeButton = $("<a/>").attr("href", "#").addClass("container-close").on("click", function (e) {
+			if (_this.fire("close")) {
+				_this.destroy();
+			}
+			e.preventDefault();
+		});
+		/**
+		 * @config close
+		 * @description If true, a close button is added to the panel that hides it when clicked
+		 * @type Boolean
+		 * @default true
+		 */
+		this.addAttr("close", {
+			value: true,
+			validator: Lang.isBoolean
+		}).on("closeChange", function (e, value) {
+			if (value) {
+				closeButton.show();
+			} else {
+				closeButton.hide();
+			}
+		}).on("render", function () {
+			var boundingBox = _this.get("boundingBox")
+			boundingBox.addClass(_this.get("classPrefix") + _this.get("className")).append(closeButton);
+		});
+	};
+	$.extend(StaticPanel, $.Module);
 	/**
 	 * A SimpleDialog is a Panel with simple form options and a button row instead of the footer
 	 * @class SimpleDialog
