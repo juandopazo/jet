@@ -490,7 +490,7 @@
 	};
 
 
-	var Core = function () {
+	var Core = function (config) {
 		/**
 		 * Core methods
 		 * @class Core
@@ -573,12 +573,12 @@
 			 * A pointer to the last Windo that was referenced by the $() function
 			 * @property win
 			 */
-			win: win,
+			win: config.win,
 			/**
 			 * A pointer to the last Document that was referenced by the $() function.
 			 * @property context
 			 */
-			context: doc,
+			context: config.doc,
 			
 			/**
 			 * Does all the work behind the $() function
@@ -681,7 +681,7 @@
 	 * Checks the state of each queue. If a queue has finished loading it executes it
 	 * @private
 	 */
-	var update = function () {
+	var update = function (win, doc) {
 		var core, i = 0, j, required, requiredLength, ready;
 		while (i < queueList.length) {
 			required = queueList[i].req;
@@ -702,7 +702,7 @@
 				/*
 				 * Create a new instance of the core, call each module and the queue's callback 
 				 */
-				core = new Core();
+				core = new Core(win, doc);
 				for (j = 0; j < requiredLength; j++) {
 					modules[required[j].name](core);
 				}
@@ -820,6 +820,17 @@
 			 */
 			var predef = mix(clone(predefinedModules), config.modules || {}, true);
 			
+			/**
+			 * @config win
+			 * @description A reference to the global object that is accesible later with $.win
+			 */
+			config.win = config.win || window;
+			/**
+			 * @config doc
+			 * @description A reference to the document that is accesible later with $.doc
+			 */
+			config.doc = config.doc || document;
+			
 			var loadCssModule = function (module) {
 				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + (config.minify ? ".min.css" : ".css")));
 				loadCSS(url);
@@ -908,7 +919,7 @@
 					// onProgress handlers are managed by queue
 					onProgress: config.onProgress
 				});
-				update();
+				update(config);
 			};
 		
 			if (Lang.isFunction(o)) {
@@ -938,7 +949,7 @@
 					 * Maybe it would be a good idea to add an option not to overwrite if present?
 					 */ 
 					modules[moduleName] = expose;
-					update();
+					update(config);
 				}
 			};
 		};
