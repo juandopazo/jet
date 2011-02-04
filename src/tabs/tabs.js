@@ -91,6 +91,10 @@ jet().add("tabs", function ($) {
 		this.on("triggerEventChange", function (e, oldVal, newVal) {
 			this.get(LABEL).first().unbind(oldVal, selectHandler).on(newVal, selectHandler);
 		});
+		
+		this.on("destroy", function () {
+			myself.get(LABEL).first().unbind(myself.get("triggerEvent"), selectHandler);
+		});
 	};
 	$.extend(Tab, $.Base, {
 		/**
