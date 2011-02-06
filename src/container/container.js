@@ -1,7 +1,7 @@
 /*
  Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
  Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
+ http://code.google.com/p/Global-js/wiki/Licence
 */
 /**
  * Contains widgets that act as containers, windows, dialogs 
@@ -14,7 +14,10 @@ jet().add("container", function ($) {
 	var Lang = $.Lang,
 		Hash = $.Hash,
 		A = $.Array,
-		DOM = $.DOM;
+		DOM = $.DOM,
+		Widget = $.Widget;
+		
+	var Global = jet;
 	
 	// definitions for better minification
 	var BOUNDING_BOX = "boundingBox",
@@ -65,82 +68,67 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	var Module = function () {
-		Module.superclass.constructor.apply(this, arguments);
-		var myself = this;
-		
-		var containers = {};
-		var containerSetter = function (type) {
-			return function (value) {
-				var container = containers[type];
-				if (!container) {
-					container = $(NEW_DIV);
-				}
-				container.children().remove();
-				if (Lang.isString(value)) {
-					container.html(value);
-				} else {
-					container.append(value);
-				}
-				containers[type] = container;
-				return container;
-			};
-		};
-		myself.addAttrs({
-			/**
-			 * @config header
-			 * @description The header of the module.
-			 * If set to a string a node is creating and the string is set to its innerHTML
-			 * @type DOM Node | String | NodeList
-			 */
-			header: {
-				setter: containerSetter(HEADER),
-				validator: Lang.isValue
-			},
-			/**
-			 * @config body
-			 * @description The body of the module.
-			 * If set to a string a node is creating and the string is set to its innerHTML
-			 * A body is always present in a Module
-			 * @type DOM Node | String | NodeList
-			 * @default ""
-			 */
-			body: {
-				value: "",
-				setter: containerSetter(BODY),
-				validator: Lang.isValue
-			},
-			/**
-			 * @config footer
-			 * @description The footer of the module.
-			 * If set to a string a node is creating and the string is set to its innerHTML
-			 * @type DOM Node | String | NodeList
-			 */
-			footer: {
-				setter: containerSetter(FOOTER),
-				validator: Lang.isValue
-			}
-		});
-		myself.set(CLASS_NAME, Module.NAME);
-					
-		// rendering process	
-		myself.on(RENDER, function () {
-			var boundingBox = myself.get(BOUNDING_BOX);
+	$.Module = $.Widget.create('module', {
+		/**
+		 * @config header
+		 * @description The header of the module.
+		 * If set to a string a node is creating and the string is set to its innerHTML
+		 * @type DOM Node | String | NodeList
+		 */
+		header: {
+			validator: Lang.isValue
+		},
+		/**
+		 * @config body
+		 * @description The body of the module.
+		 * If set to a string a node is creating and the string is set to its innerHTML
+		 * A body is always present in a Module
+		 * @type DOM Node | String | NodeList
+		 * @default ""
+		 */
+		body: {
+			value: "",
+			validator: Lang.isValue
+		},
+		/**
+		 * @config footer
+		 * @description The footer of the module.
+		 * If set to a string a node is creating and the string is set to its innerHTML
+		 * @type DOM Node | String | NodeList
+		 */
+		footer: {
+			validator: Lang.isValue
+		}
+	}, {
+	
+		render: function () {
+			var self = this;
+			var boundingBox = this.get(BOUNDING_BOX);
 			// append the header, body and footer to the bounding box if present
-			Hash.each(containers, function (name, container) {
-				container.addClass(name).appendTo(boundingBox);
+			A.each(['header', 'body', 'footer'], function (name) {
+				var value = self.get(name);
+				if (value.nodeName && value.nodeName == 1) {
+					value = $(value);
+				} else if (value instanceof $.NodeList) {
+					value = $(value[0]);
+				} else {
+					value = $('<div/>').html(value);
+				}
+				value.addClass(name.appendTo(boundingBox));
+				self.set(name, value);
 			});
-		});
-	};
-	Module.NAME = "module";
-	$.extend(Module, $.Widget);
+		}
+		
+	}, {
+		CONTENT_TEMPLATE: null
+	});
 	
 	
-	if (!jet.overlays) {
-		jet.overlays = [];
+	if (!Global.overlays) {
+		Global.overlays = [];
 	}
-	if (!Lang.isNumber(jet.ovZindex)) {
-		jet.ovZindex = 10;
+	if (!Lang.isNumber(Global.ovZindex)) {
+		Global.ovZindex = 10;
 	}
 	/**
 	 * @class Overlay
@@ -149,284 +137,258 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	var Overlay = function () {
-		Overlay.superclass.constructor.apply(this, arguments);
-		var myself = this;
-		
-		this.addAttrs({
-			/**
-			 * @config center
-			 * @description If true, the overlay is positioned in the center of the page
-			 * @type Boolean
-			 * @default true
-			 */
-			center: {
-				value: true
-			},
-			/**
-			 * @config fixed
-			 * @description If true, the overlay is position is set to fixed
-			 * @type Boolean
-			 * @default false
-			 */
-			fixed: {
-				value: false
-			},
-			/**
-			 * @config width
-			 * @description The width of the overlay
-			 * @type Number
-			 * @default 300
-			 */
-			width: {
-				value: 300,
-				validator: Lang.isNumber
-			},
-			/**
-			 * @config height
-			 * @description The height of the overlay.
-			 * If set to 0 (zero) the height changes with the content
-			 * @type Number
-			 * @default 0
-			 */
-			height: {
-				value: 0,
-				validator: Lang.isNumber
-			},
-			/**
-			 * @config top
-			 * @description The top position in pixels
-			 * @type Number
-			 */
-			top: {
-				validator: Lang.isNumber,
-				setter: function (value) {
-					myself.unset(BOTTOM);
-					return value;
-				}
-			},
-			/**
-			 * @config left
-			 * @description The left position in pixels
-			 * @type Number
-			 */
-			left: {
-				validator: Lang.isNumber,
-				setter: function (value) {
-					myself.unset(RIGHT);
-					return value;
-				}
-			},
-			/**
-			 * @config bottom
-			 * @description The bottom position in pixels
-			 * @type Number
-			 */
-			bottom: {
-				validator: Lang.isNumber,
-				setter: function (value) {
-					myself.unset(TOP);
-					return value;
-				}
-			},
-			/**
-			 * @config right
-			 * @description The right position in pixels
-			 * @type Number
-			 */
-			right: {
-				validator: Lang.isNumber,
-				setter: function (value) {
-					myself.unset(LEFT);
-					return value;
-				}
-			},
-			/**
-			 * @config draggable
-			 * @description If true, the overlay can be dragged
-			 * @default false
-			 */
-			draggable: {
-				validator: function () {
-					return !!$.Drag;
-				},
-				value: false
-			},
-			modal: {
-				value: false
+	$.Overlay = Widget.create('overlay', {
+		/**
+		 * @config center
+		 * @description If true, the overlay is positioned in the center of the page
+		 * @type Boolean
+		 * @default true
+		 */
+		center: {
+			value: true
+		},
+		/**
+		 * @config fixed
+		 * @description If true, the overlay is position is set to fixed
+		 * @type Boolean
+		 * @default false
+		 */
+		fixed: {
+			value: false
+		},
+		/**
+		 * @config top
+		 * @description The top position in pixels
+		 * @type Number
+		 */
+		top: {
+			validator: Lang.isNumber,
+			setter: function (value) {
+				this.unset(BOTTOM);
+				return value;
 			}
-		});
-		myself.set(CLASS_NAME, Overlay.NAME);
-		jet.overlays.push(this);
-		var startZindex = jet.overlays.length - 1;
+		},
+		/**
+		 * @config left
+		 * @description The left position in pixels
+		 * @type Number
+		 */
+		left: {
+			validator: Lang.isNumber,
+			setter: function (value) {
+				this.unset(RIGHT);
+				return value;
+			}
+		},
+		/**
+		 * @config bottom
+		 * @description The bottom position in pixels
+		 * @type Number
+		 */
+		bottom: {
+			validator: Lang.isNumber,
+			setter: function (value) {
+				this.unset(TOP);
+				return value;
+			}
+		},
+		/**
+		 * @config right
+		 * @description The right position in pixels
+		 * @type Number
+		 */
+		right: {
+			validator: Lang.isNumber,
+			setter: function (value) {
+				this.unset(LEFT);
+				return value;
+			}
+		},
+		/**
+		 * @config draggable
+		 * @description If true, the overlay can be dragged
+		 * @default false
+		 */
+		draggable: {
+			validator: function () {
+				return !!$.Drag;
+			},
+			value: false
+		},
+		modal: {
+			value: false
+		},
 		
-		// centers the overlay in the screen
-		var center = function (boundingBox) {
-			var screenSize = DOM.screenSize();
-			var rendered = myself.get("rendered");
-			boundingBox.css({
-				left: (screenSize.width - (rendered ? boundingBox.width() : myself.get(WIDTH))) / 2 + PX,
-				top: (screenSize.height - (rendered ? boundingBox.height() : myself.get(HEIGHT))) / 2 + PX
-			});
-		};
+		startZIndex: {
+			value: Global.overlays.length - 1,
+			readOnly: true
+		},
 		
-		A.each([HEIGHT, WIDTH], function (size) {
-			myself.on(size + "Change", function (e, value) {
-				var boundingBox = myself.get(BOUNDING_BOX)[size](value);
-				if (myself.get(CENTER)) {
-					center(boundingBox);
-				}
-			});
-		});
+		modalBox: {
+			value: $('<div/>'),
+			readOnly: true
+		}
+	}, {
 		
-		var setPosition = function () {
-			var boundingBox = myself.get(BOUNDING_BOX);
-			var bodyStyle = $($.context.body).currentStyle();
-			A.each([LEFT, TOP, BOTTOM, RIGHT], function (position) {
-				var orientation = position.substr(0, 1).toUpperCase() + position.substr(1);
-				var bodyMargin = $.pxToFloat(bodyStyle["padding" + orientation]) + $.pxToFloat(bodyStyle["margin" + orientation]);
-				if (UA_SUPPORTS_FIXED) {
-					boundingBox.css(position, myself.isSet(position) ? ((myself.get(position) - bodyMargin + PX)) : AUTO);
-				} else {
-					var screenSize = DOM.screenSize();
-					switch (position) {
-						case BOTTOM:
-							boundingBox.css(myself.isSet(position) ? TOP : BOTTOM, myself.isSet(position) ? ((screenSize.height - myself.get(HEIGHT) - bodyMargin + boundingBox.scrollTop()) + PX) : AUTO);
-							break;
-						case RIGHT:
-							boundingBox.css(myself.isSet(position) ? LEFT : RIGHT, myself.isSet(position) ? ((screenSize.width - myself.get(WIDTH) - bodyMargin + boundingBox.scrollLeft()) + PX) : AUTO);
-							break;
-						case LEFT:
-							boundingBox.css(position, myself.isSet(position) ? ((myself.get(position) + DOM.scrollLeft() - bodyMargin + PX)) : AUTO);
-							break;
-						case TOP:
-							boundingBox.css(position, myself.isSet(position) ? ((myself.get(position) + DOM.scrollTop() - bodyMargin + PX)) : AUTO);
-							break;
-					}
-				}
-			});
-		};
-		
-		// rendering process
-		myself.on(RENDER, function (e) {
-			var win = $($.win);
-			var boundingBox = myself.get(BOUNDING_BOX);
-			var header = myself.get(HEADER);
-			var body = myself.get(BODY);
-			var footer = myself.get(FOOTER);
-			var fixed = myself.get(FIXED);
+		render: function (e) {
+			var win = $(this.get('win'));
+			var self = this;
+			var boundingBox = this.get(BOUNDING_BOX);
+			var fixed = this.get(FIXED);
 			var pos = fixed && UA_SUPPORTS_FIXED ? FIXED : "absolute";
-			var height = myself.get(HEIGHT);
+			var height = this.get(HEIGHT);
 			var screenSize = DOM.screenSize();
-			var modal = $("<div/>").css({
+			var modal = this.get('modalBox').css({
 				position: pos,
 				top: "0px",
 				left: "0px",
 				background: "#000",
-				visibility: !myself.get("modal") ? "hidden" : "",
-				zIndex: jet.ovZindex + startZindex - 1,
+				visibility: !self.get("modal") ? "hidden" : "",
+				zIndex: Global.ovZindex + this.get('startZindex') - 1,
 				opacity: 0.4
-			}).width(screenSize.width).height(screenSize.height).appendTo($.context.body);
-			win.on("resize", function () {
-				var screenSize = DOM.screenSize();
-				modal.width(screenSize.width).height(screenSize.height);
-			});
-			myself.on("hide", function () {
-				modal.hide();
-			}).on("show", function () {
-				if (myself.get("modal")) {
+			}).width(screenSize.width).height(screenSize.height).appendTo(this.get('doc').body);
+			win.on(RESIZE, this._resizeModal);
+			self.on("hide", modal.hide, modal).on("show", function () {
+				if (self.get("modal")) {
 					modal.show();
 				}
 			});
-			if (header) {
-				boundingBox.append(header);
-			}
-			if (body) {
-				boundingBox.append(body);
-			}
-			if (footer) {
-				boundingBox.append(footer);
-			}
 			boundingBox.css({
 				position: pos,
-				zIndex: jet.ovZindex + startZindex
-			}).width(myself.get(WIDTH)).on("mousedown", function () {
-				myself.focus();
-			});
-			if (height) {
-				boundingBox.height(height);
-			}
-			setPosition();
-		});
-		myself.on("afterRender", function () {
-			var boundingBox = myself.get(BOUNDING_BOX);
-			var win = $($.win);
-			var head = myself.get(HEADER);
-			var fixed = myself.get(FIXED);
-			if (myself.get("draggable")) {
-				myself.dd = new $.Drag({
+				zIndex: Global.ovZindex + this.get('startZindex')
+			}).width(self.get(WIDTH)).on("mousedown", self.focus, self);
+			this._repositionUI.call(this);
+		},
+		
+		afterRender: function () {
+			var self = this;
+			var boundingBox = this.get(BOUNDING_BOX);
+			var win = $(this.get('win'));
+			var head = this.get(HEADER);
+			var fixed = this.get(FIXED);
+			var centerUI = this._centerUI;
+			if (this.get("draggable")) {
+				this.dd = new $.Drag({
 					node: boundingBox,
 					handlers: head
 				});
 			}
-			if (myself.get(CENTER)) {
-				center(boundingBox);
-				win.on(RESIZE, function () {
-					center(myself.get(BOUNDING_BOX));
-				});
+			if (this.get(CENTER)) {
+				centerUI.call(this);
+				win.on(RESIZE, centerUI, this);
 				if (fixed || !UA_SUPPORTS_FIXED) {
-					$($.win).on(SCROLL, function () {
-						center(myself.get(BOUNDING_BOX));
-					});
+					win.on(SCROLL, centerUI, this);
 				}
-				myself.on("afterShow", function () {
-					center(boundingBox);
-				});
+				this.on("afterShow", centerUI, this);
 			} else if (fixed && !UA_SUPPORTS_FIXED) {
-				win.on(SCROLL, setPosition).on(RESIZE, setPosition);
+				win.on(SCROLL, this._repositionUI, this).on(RESIZE, this._repositionUI, this);
 			}
 
-		});
-		this.on("focus", function () {
-			A.remove(myself, jet.overlays);
-			jet.overlays.push(myself);
-			var olays = jet.overlays, i, length = olays.length;
+		},
+		
+		focus: function () {
+			A.remove(this, Global.overlays);
+			Global.overlays.push(this);
+			var olays = Global.overlays, i, length = olays.length;
 			for (i = 0; i < length; i++) {
-				olays[i].get(BOUNDING_BOX).css("zIndex", jet.ovZindex + i);
+				olays[i].get(BOUNDING_BOX).css("zIndex", Global.ovZindex + i);
 			}
-		});
-	};
-	Overlay.NAME = "overlay";
-	$.extend(Overlay, Module);
+		},
+		
+		destroy: function () {
+			var win = $(this.get('win')).unbind(RESIZE, this._centerUI).unbind(SCROLL, this._centerUI);
+			win.unbind(RESIZE, this._repositionUI).unbind(SCROLL, this._repositionUI);
+			win.unbind(RESIZE, this._resizeModal);
+			if (this.dd) {
+				this.dd.destroy();
+			}
+			this.get(BOUNDING_BOX).unbind("mousedown", this.focus);
+		}
+	}, {
 	
-	var Tooltip = function () {
-		Tooltip.superclass.constructor.apply(this, arguments);
+		// centers the overlay in the screen
+		_centerUI: function () {
+			var boundingBox = this.get(BOUNDING_BOX);
+			var screenSize = DOM.screenSize();
+			var rendered = this.get("rendered");
+			boundingBox.css({
+				left: (screenSize.width - (rendered ? boundingBox.width() : this.get(WIDTH))) / 2 + PX,
+				top: (screenSize.height - (rendered ? boundingBox.height() : this.get(HEIGHT))) / 2 + PX
+			});
+		},
 		
-		this.addAttrs({
-			position: {
-				value: "r"
-			},
-			fadeIn: {
-				value: false,
-				validator: function () {
-					return !!$.Tween;
+		_repositionUI: function () {
+			var self = this;
+			var boundingBox = this.get(BOUNDING_BOX);
+			var bodyStyle = $(this.get('doc').body).currentStyle();
+			A.each([LEFT, TOP, BOTTOM, RIGHT], function (position) {
+				var orientation = position.substr(0, 1).toUpperCase() + position.substr(1);
+				var bodyMargin = $.pxToFloat(bodyStyle["padding" + orientation]) + $.pxToFloat(bodyStyle["margin" + orientation]);
+				if (UA_SUPPORTS_FIXED) {
+					boundingBox.css(position, self.isSet(position) ? ((self.get(position) - bodyMargin + PX)) : AUTO);
+				} else {
+					var screenSize = DOM.screenSize();
+					switch (position) {
+						case BOTTOM:
+							boundingBox.css(self.isSet(position) ? TOP : BOTTOM, self.isSet(position) ? ((screenSize.height - self.get(HEIGHT) - bodyMargin + boundingBox.scrollTop()) + PX) : AUTO);
+							break;
+						case RIGHT:
+							boundingBox.css(self.isSet(position) ? LEFT : RIGHT, self.isSet(position) ? ((screenSize.width - self.get(WIDTH) - bodyMargin + boundingBox.scrollLeft()) + PX) : AUTO);
+							break;
+						case LEFT:
+							boundingBox.css(position, self.isSet(position) ? ((self.get(position) + DOM.scrollLeft() - bodyMargin + PX)) : AUTO);
+							break;
+						case TOP:
+							boundingBox.css(position, self.isSet(position) ? ((self.get(position) + DOM.scrollTop() - bodyMargin + PX)) : AUTO);
+							break;
+					}
 				}
-			}
-		});
+			});
+		},
 		
-		this.on(RENDER, function () {
+		_resizeModal: function () {
+			var screenSize = DOM.screenSize();
+			this.get('modalBox').width(screenSize.width).height(screenSize.height);
+		},
+
+		initializer: function () {
+			var self = this;
+			Global.overlays.push(this);
+
+			A.each([HEIGHT, WIDTH], function (size) {
+				self.on(size + "Change", function (e, value) {
+					self.get(BOUNDING_BOX)[size](value);
+					if (self.get(CENTER)) {
+						self._centerUI();
+					}
+				});
+			});
+		}
+	}, $.Module);
+	
+	$.Tooltip = Widget.create('tooltip', {
+		position: {
+			value: "r"
+		},
+		fadeIn: {
+			value: false,
+			validator: function () {
+				return !!$.Tween;
+			}
+		}
+	}, {
+		render: function () {
 			this.hide().set("body", this.get("body") || this.get("srcNode").attr("title"));
 			this.get("srcNode").on("mouseover", this.show).on("mouseout", this.hide);
-		});
-		this.on("show", function () {
+		},
+		show: function () {
 			var offset = this.get("srcNode").offset();
 			this.set("left", offset.left).set("top", offset.top + offset.height);
 			if (this.get("fadeIn")) {
 				this.get(BOUNDING_BOX).css("opacity", 0).fadeIn(this.get("fadeIn"));
 			}
-		});
-	};
-	$.extend(Tooltip, Overlay);
+		}
+	}, {}, $.Overlay);
 	
 	/**
 	 * A panel is an overlay that resembles an OS window without actually being one,
@@ -436,65 +398,18 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	var Panel = function () {
-		Panel.superclass.constructor.apply(this, arguments);
-		var myself = this.set(CLASS_NAME, Panel.NAME).addAttrs({
-			/**
-			 * @config contentBox
-			 * @description A panel uses another container inside the boundingBox 
-			 * in order to have a more complex design (ie: shadow)
-			 * @readOnly
-			 */
-			contentBox: {
-				readOnly: true,
-				value: $(NEW_DIV)
-			},
-			/**
-			 * @config underlay
-			 * @description The underlay is inserted after the contentBox to allow for a more complex design
-			 * @readOnly
-			 */
-			underlay: {
-				readOnly: true,
-				value: $(NEW_DIV).addClass(UNDERLAY)
-			},
-			/**
-			 * @config shadow
-			 * @description If true, the panel shows a shadow
-			 * @default true
-			 */
-			shadow: {
-				value: true
-			}
-		}).on(HEIGHT + "Change", function (e, height) {
-			myself.get(CONTENT_BOX).height(height);
-		});
-		
-		/*
-		 * Close button logic
-		 */
-		var close = function (e) {
-			if (myself.fire(CLOSE)) {
-				myself.hide();
-			}
-			e.preventDefault();
-		};
-		var closeButton = $("<a/>").attr("href", "#").addClass("container-close").on(CLICK, close);
-		$($.context).on("keyup", function (e) {
-			if (e.keyCode == 27 && myself.get("focused")) {
-				close(e);
-			}
-		});
+	var panelAttrs = {
 		/**
 		 * @config close
 		 * @description If true, a close button is added to the panel that hides it when clicked
 		 * @type Boolean
 		 * @default true
 		 */
-		myself.addAttr(CLOSE, {
+		close: {
 			value: true,
 			validator: Lang.isBoolean,
 			setter: function (value) {
+				var closeButton = this.get('closeButton');
 				if (value) {
 					closeButton.show();
 				} else {
@@ -502,45 +417,87 @@ jet().add("container", function ($) {
 				}
 				return value;
 			}
-			
-		// rendering process
-		}).on(RENDER, function (e) {
-			var height = myself.get(HEIGHT);
-			var contentBox = myself.get(CONTENT_BOX);
-			if (height) {
-				contentBox.height(height);
-			}
-			var prefix = myself.get(CLASS_PREFIX);
-			var boundingBox = myself.get(BOUNDING_BOX).addClass(prefix + Panel.NAME + "-container");
-			var head = myself.get(HEADER);
-			var body = myself.get(BODY);
-			var footer = myself.get(FOOTER);
-			var sp = Panel;
-			while (sp.NAME) {
-				contentBox.addClass(prefix + sp.NAME);
-				sp = sp.superclass.constructor;
-			}
-			if (head) {
-				contentBox.append(head.remove(true));
-			}
-			if (body) {
-				contentBox.append(body.remove(true));
-			}
-			if (footer) {
-				contentBox.append(footer.remove(true));
-			}
-			if (myself.get(CLOSE)) {
-				closeButton.appendTo(contentBox);
-			}
-			contentBox.appendTo(boundingBox).css(VISIBILITY, "inherit");
-			boundingBox.append(myself.get(UNDERLAY));
-			if (myself.get(SHADOW)) {
+		},
+		/**
+		 * @config contentBox
+		 * @description A panel uses another container inside the boundingBox 
+		 * in order to have a more complex design (ie: shadow)
+		 * @readOnly
+		 */
+		contentBox: {
+			readOnly: true,
+			value: $(NEW_DIV)
+		},
+		/**
+		 * @config underlay
+		 * @description The underlay is inserted after the contentBox to allow for a more complex design
+		 * @readOnly
+		 */
+		underlay: {
+			readOnly: true,
+			value: $(NEW_DIV).addClass(UNDERLAY)
+		},
+		/**
+		 * @config shadow
+		 * @description If true, the panel shows a shadow
+		 * @default true
+		 */
+		shadow: {
+			value: true
+		},
+		
+		closeButton: {
+			value: $("<a/>"),
+			writeOnce: true
+		}
+		
+	};
+	var panelEvents = {
+		
+		render: function (e) {
+			var height = this.get(HEIGHT);
+			var contentBox = this.get(CONTENT_BOX);
+			var closeButton = this.get('closeButton').attr("href", "#").addClass("container-close").on(CLICK, this._onCloseButton);
+			var boundingBox = this.get(BOUNDING_BOX);
+			closeButton.appendTo(contentBox);
+			boundingBox.append(this.get(UNDERLAY));
+			if (this.get(SHADOW)) {
 				boundingBox.addClass(SHADOW);
 			}
-		});
+		},
+		
+		destroy: function () {
+			this.get('closeButton').unbind(CLICK, this._onCloseButton);
+			this.get('doc').unbind('keyup', this._onContextKeyUp);
+		}
+		
 	};
-	Panel.NAME = "panel";
-	$.extend(Panel, Overlay);
+	var panelMethods = {
+		
+		CONTENT_TEMPLATE: '<div/>',
+		
+		_onCloseButton: function (e) {
+			e.preventDefault();
+			if (this.fire(CLOSE)) {
+				this.hide();
+			}
+		},
+		
+		_onContextKeyUp: function (e) {
+			if (e.keyCode == 27 && this.get("focused")) {
+				this._onCloseButton.call(this, e);
+			}
+		},
+		
+		initializer: function () {
+			var self = this;
+			this.on(HEIGHT + "Change", function (e, height) {
+				self.get(CONTENT_BOX).height(height);
+			});
+		}
+		
+	};
+	$.Panel = Widget.create('panel', panelAttrs, panelEvents, panelMethods, $.Overlay);
 	
 	/**
 	 * Un contenedor fijo con look de panel y boton de cerrar
@@ -549,111 +506,30 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	var StaticPanel = function () {
-		StaticPanel.superclass.constructor.apply(this, arguments);
-		var myself = this.set(CLASS_NAME, StaticPanel.NAME).addAttrs({
-			/**
-			 * @config contentBox
-			 * @description A panel uses another container inside the boundingBox 
-			 * in order to have a more complex design (ie: shadow)
-			 * @readOnly
-			 */
-			contentBox: {
-				readOnly: true,
-				value: $(NEW_DIV)
-			},
-			/**
-			 * @config underlay
-			 * @description The underlay is inserted after the contentBox to allow for a more complex design
-			 * @readOnly
-			 */
-			underlay: {
-				readOnly: true,
-				value: $(NEW_DIV).addClass(UNDERLAY)
-			},
-			/**
-			 * @config shadow
-			 * @description If true, the panel shows a shadow
-			 * @default true
-			 */
-			shadow: {
-				value: true
-			}
-		}).on(HEIGHT + "Change", function (e, height) {
-			myself.get(CONTENT_BOX).height(height);
-		});
-		
-		/*
-		 * Close button logic
-		 */
-		var close = function (e) {
-			if (myself.fire(CLOSE)) {
-				myself.hide();
-			}
-			e.preventDefault();
-		};
-		var closeButton = $("<a/>").attr("href", "#").addClass("container-close").on(CLICK, close);
-		$($.context).on("keyup", function (e) {
-			if (e.keyCode == 27 && myself.get("focused")) {
-				close(e);
-			}
-		});
 		/**
 		 * @config close
 		 * @description If true, a close button is added to the panel that hides it when clicked
 		 * @type Boolean
 		 * @default true
 		 */
-		myself.addAttr(CLOSE, {
-			value: true,
-			validator: Lang.isBoolean,
-			setter: function (value) {
-				if (value) {
-					closeButton.show();
-				} else {
-					closeButton.hide();
-				}
-				return value;
-			}
-			
-		// rendering process
-		}).on(RENDER, function (e) {
-			var height = myself.get(HEIGHT);
-			var contentBox = myself.get(CONTENT_BOX);
-			if (height) {
-				contentBox.height(height);
-			}
-			var prefix = myself.get(CLASS_PREFIX);
-			var boundingBox = myself.get(BOUNDING_BOX).addClass(prefix + Panel.NAME + "-container");
-			var head = myself.get(HEADER);
-			var body = myself.get(BODY);
-			var footer = myself.get(FOOTER);
-			var sp = StaticPanel;
-			while (sp.NAME) {
-				contentBox.addClass(prefix + sp.NAME);
-				sp = sp.superclass.constructor;
-			}
-			if (head) {
-				contentBox.append(head.remove(true));
-			}
-			if (body) {
-				contentBox.append(body.remove(true));
-			}
-			if (footer) {
-				contentBox.append(footer.remove(true));
-			}
-			if (myself.get(CLOSE)) {
-				closeButton.appendTo(contentBox);
-			}
-			contentBox.appendTo(boundingBox).css(VISIBILITY, "inherit");
-			boundingBox.append(myself.get(UNDERLAY));
-			if (myself.get(SHADOW)) {
-				boundingBox.addClass(SHADOW);
-			}
-		});
-	};
-	StaticPanel.NAME = "panel";
-	$.extend(StaticPanel, Module);
+		/**
+		 * @config contentBox
+		 * @description A panel uses another container inside the boundingBox 
+		 * in order to have a more complex design (ie: shadow)
+		 * @readOnly
+		 */
+		/**
+		 * @config underlay
+		 * @description The underlay is inserted after the contentBox to allow for a more complex design
+		 * @readOnly
+		 */
+		/**
+		 * @config shadow
+		 * @description If true, the panel shows a shadow
+		 * @default true
+		 */
+	$.StaticPanel = Widget.create('panel', panelAttrs, panelEvents, panelMethods, $.Module);
+	
 	/**
 	 * A SimpleDialog is a Panel with simple form options and a button row instead of the footer
 	 * @class SimpleDialog
@@ -661,51 +537,33 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	var SimpleDialog = function () {
-		SimpleDialog.superclass.constructor.apply(this, arguments);
-		var myself = this;
-		myself.addAttrs({
-			footer: {
-				readOnly: true,
-				value: $(NEW_DIV).addClass(FOOTER)
-			},
-			/**
-			 * @config buttons
-			 * @description An array of configuration objects for the Button class
-			 * @type Array
-			 */
-			buttons: {
-				validator: Lang.isArray,
-				value: []
-			}
-		}).set(CLASS_NAME, SimpleDialog.NAME);
+	$.SimpleDialog = Widget.create('dialog', {
 		
-		// rendering process
-		myself.on(RENDER, function (e) {
-			myself.get(BOUNDING_BOX).addClass(myself.get(CLASS_PREFIX) + SimpleDialog.NAME);
+		/**
+		 * @config buttons
+		 * @description An array of button configuration objects
+		 * @default []
+		 * @type Array
+		 */
+		buttons: {
+			value: []
+		}
+		
+	}, {
+		render: function (e) {
+			var self = this;
 			var buttonArea = $(NEW_DIV).addClass("button-group");
-			A.each(myself.get("buttons"), function (config, i) {
+			A.each(this.get("buttons"), function (config, i) {
 				var button = new $.Button(config);
 				if (i === 0) {
 					button.get(BOUNDING_BOX).addClass("default");
 				}
 				button.on(PRESSED, function () {
-					myself.hide();
+					self.hide();
 				}).render(buttonArea);
 			});
-			myself.get(FOOTER).append(buttonArea);
-		});
-	};
-	SimpleDialog.NAME = "dialog";
-	$.extend(SimpleDialog, Panel);	
-	
-	$.add({
-		Module: Module,
-		Overlay: Overlay,
-		Tooltip: Tooltip,
-		Panel: Panel,
-		StaticPanel: StaticPanel,
-		SimpleDialog: SimpleDialog
-	});
+			this.get(FOOTER).append(buttonArea);
+		}
+	}, {}, $.Panel);
 	
 });
