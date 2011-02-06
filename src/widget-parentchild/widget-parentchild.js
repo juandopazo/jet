@@ -1,7 +1,8 @@
 jet().add('widget-parentchild', function ($) {
 
 	var Lang = $.Lang,
-		A = $.Array;
+		A = $.Array,
+		Widget = $.Widget;
 		
 	var SELECTED = 'selected',
 		SELECT = 'select',
@@ -13,20 +14,52 @@ jet().add('widget-parentchild', function ($) {
 		CLASS_PREFIX = 'classPrefix',
 		CLASS_NAME = 'className';
 	
-
-	var WidgetParent = function () {
-		WidgetParent.superclass.constructor.apply(this, arguments);
-		
-		var self = this.addAttrs(WidgetParent.ATTRS);
-		
-		this.on('render', function () {
-			self.get(CONTENT_BOX).addClass(self.get(CLASS_PREFIX) + self.get(CLASS_NAME) + '-content').appendTo(self.get(BOUNDING_BOX));
+	/**
+	 * A widget conteins child widgets
+	 * @class WidgetParent
+	 * @constructor
+	 * @extends Widget
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
+	$.WidgetParent = Widget.create(null, {}, {
 			
-			A.each(self.get(CHILDREN), self.add);
-		});
-	};
-	$.extend(WidgetParent, $.Widget, {
-	
+		/**
+		 * @config childType
+		 * @description Constructor reference to the default type of the children managed by this Widget
+		 * @default WidgetChild 
+		 */
+		childType: {
+			value: $.WidgetChild
+		},
+		
+		/**
+		 * @config children
+		 * @description An array of instances or configuration objects representing the widget's children
+		 * @default []
+		 */
+		children: {
+			value: []
+		},
+		
+		/**
+		 * @config selection
+		 * @description Returns the currently selected child Widget. If the mulitple attribte is set to true will return an Y.ArrayList instance containing the currently selected children. If no children are selected, will return null
+		 * @default null
+		 * @type Widget|Array
+		 */
+		selection: {
+			value: null
+		},
+		
+		/**
+		 * @config multiple
+		 * @description Boolean indicating if multiple children can be selected at once. Whether or not multiple selection is enabled is always delegated to the value of the multiple attribute of the root widget in the object hierarchy
+		 * @default false
+		 */
+		multiple: {
+			value: false
+		}
+	}, {
 		_onIndexChange: function () {
 			
 		},
@@ -107,75 +140,61 @@ jet().add('widget-parentchild', function ($) {
 				this.fire('afterRemoveChild', child);
 			}
 			return this;
+		},
+		
+		initializer: function () {
+			A.each(this.get(CHILDREN), this.add);
 		}
-		
-	}, {
-		
-		ATTRS: {
-			
-			/**
-			 * @config childType
-			 * @description Constructor reference to the default type of the children managed by this Widget
-			 * @default WidgetChild 
-			 */
-			childType: {
-				value: $.WidgetChild
-			},
-			
-			/**
-			 * @config children
-			 * @description An array of instances or configuration objects representing the widget's children
-			 * @default []
-			 */
-			children: {
-				value: []
-			},
-			
-			/**
-			 * @config selection
-			 * @description Returns the currently selected child Widget. If the mulitple attribte is set to true will return an Y.ArrayList instance containing the currently selected children. If no children are selected, will return null
-			 * @default null
-			 * @type Widget|Array
-			 */
-			selection: {
-				value: null
-			},
-			
-			/**
-			 * @config multiple
-			 * @description Boolean indicating if multiple children can be selected at once. Whether or not multiple selection is enabled is always delegated to the value of the multiple attribute of the root widget in the object hierarchy
-			 * @default false
-			 */
-			multiple: {
-				value: false
-			},
-			
-			contentBox: {
-				value: $('<div/>'),
-				setter: $
-			}
-		}
-		
 	});
 	
-	var WidgetChild = function () {
-		WidgetChild.superclass.constructor.apply(this, arguments);
+	/**
+	 * A widget that is a child of WidgetParent
+	 * @class WidgetChild
+	 * @constructor
+	 * @extends Widget
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
+	$.WidgetChild = Widget.create(null, {
+		/**
+		 * @config selected
+		 * @description Boolean indicating if the Widget is selected
+		 * @type Boolean
+		 * @default false
+		 */
+		selected: {
+			value: false
+		},
 		
-		var self = this.addAttrs(WidgetChild.ATTRS);
+		/**
+		 * @config index
+		 * @description Number representing the Widget's ordinal position in its parent Widget
+		 * @default 0
+		 * @type Number
+		 */
+		index: {
+			value: 0
+		},
 		
-		this.on('afterSelectedChange', function (e, newVal) {
-			var selectedClass = self.get(CLASS_PREFIX) + self.get(CLASS_NAME) + '-' + SELECTED;
-			var boundingBox = self.get(BOUNDING_BOX);
+		/**
+		 * @config parent
+		 * @description Retrieves the parent of the Widget in the object hierarchy
+		 * @default null
+		 */
+		parent: {
+			value: null
+		}
+	}, {
+		afterSelectedChange: function (e, newVal) {
+			var selectedClass = this.get(CLASS_PREFIX) + this.get(CLASS_NAME) + '-' + SELECTED;
+			var boundingBox = this.get(BOUNDING_BOX);
 			if (newVal) {
 				boundingBox.addClass(selectedClass);
-				self.fire(SELECT);
+				this.fire(SELECT);
 			} else {
 				boundingBox.removeClass(selectedClass);
 			}
-		});
-	};
-	$.extend(WidgetChild, $.Widget, {
-		
+		}
+	}, {
 		/**
 		 * @method select
 		 * @description Selects this widget
@@ -211,41 +230,6 @@ jet().add('widget-parentchild', function ($) {
 		previous: function () {
 			return this.get('parent').get(CHILDREN)[this.get(INDEX) - 1] || null;
 		}
-		
-	}, {
-		
-		ATTRS: {
-			
-			/**
-			 * @config selected
-			 * @description Boolean indicating if the Widget is selected
-			 * @type Boolean
-			 * @default false
-			 */
-			selected: {
-				value: false
-			},
-			
-			/**
-			 * @config index
-			 * @description Number representing the Widget's ordinal position in its parent Widget
-			 * @default 0
-			 * @type Number
-			 */
-			index: {
-				value: 0
-			},
-			
-			/**
-			 * @config parent
-			 * @description Retrieves the parent of the Widget in the object hierarchy
-			 * @default null
-			 */
-			parent: {
-				value: null
-			}
-		}
-		
 	});
 
 });

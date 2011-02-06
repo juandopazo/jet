@@ -583,9 +583,11 @@ jet().add('base', function ($) {
 			if (self.fire("render")) {
 				
 				while (construct != Widget) {
-					className = classPrefix + '-' + construct.NAME;
-					boundingBox.addClass(className);
-					contentBox.addClass(className + '-content');
+					if (construct.NAME) {
+						className = classPrefix + '-' + construct.NAME;
+						boundingBox.addClass(className);
+						contentBox.addClass(className + '-content');
+					}
 					construct = construct.superclass.constructor;
 				}
 				
