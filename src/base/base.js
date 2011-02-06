@@ -15,6 +15,8 @@ jet().add('base', function ($) {
 	var Hash = $.Hash,
 		Lang = $.Lang,
 		A = $.Array;
+		
+	var Base;
 
 	/**
 	 * Utilities for object oriented programming in JavaScript.
@@ -43,33 +45,38 @@ jet().add('base', function ($) {
 	 * @param {Function} superclass
 	 * @param {Hash} optional - An object literal with methods to overwrite in the subclass' prototype
 	 */
-    var extend = function (r, s, px) {
+	var extend = function (r, s, px, ax) {
 		// From the guys at YUI. This function is GENIUS!
 		
-        if (!s || !r) {
-            // @TODO error symbols
-            $.error("extend failed, verify dependencies");
-        }
+		if (!s || !r) {
+			// @TODO error symbols
+			$.error("extend failed, verify dependencies");
+		}
 
-        var sp = s.prototype, rp = toObj(sp);
-        r.prototype = rp;
+		var sp = s.prototype, rp = toObj(sp);
+		r.prototype = rp;
 
-        rp.constructor = r;
-        r.superclass = sp;
+		rp.constructor = r;
+		r.superclass = sp;
 
-        // assign constructor property
-        if (s != Object && sp.constructor == OP.constructor) {
-            sp.constructor = s;
-        }
-    
-        // add prototype overrides
-        if (px) {
-            $.mix(rp, px, true);
-        }
-
-    };
+		// assign constructor property
+		if (s != Object && sp.constructor == OP.constructor) {
+			sp.constructor = s;
+		}
+	
+		// add prototype overrides
+		if (px) {
+			$.mix(rp, px, true);
+		}
+		// add attributes
+		if (ax) {
+			$.mix(r, ax, true);
+		}
+		
+	};
 	
 	var BOUNDING_BOX = "boundingBox",
+		CONTENT_BOX = 'contentBox',
 		SRC_NODE = "srcNode",
 		UNLOAD = "unload",
 		VISIBILITY = "visibility",
@@ -78,7 +85,10 @@ jet().add('base', function ($) {
 		MOUSEMOVE = "mousemove",
 		MOUSEUP = "mouseup",
 		SELECTSTART = "selectstart",
-		FREQUENCY = "frequency";
+		FREQUENCY = "frequency",
+		HEIGHT = "height",
+		WIDTH = "width",
+		PROTO = 'prototype';
 
 	
 	/**
@@ -107,7 +117,7 @@ jet().add('base', function ($) {
 	var EventTarget = function () {
 		var collection = {};
 		
-		var myself = this;
+		var self = this;
 		var onceList = [];
 		
 		/**
@@ -124,12 +134,12 @@ jet().add('base', function ($) {
 			if (Lang.isObject(callback)) {
 				collection[eventType].push(callback);
 			}
-			return myself;
+			return self;
 		};
 		
 		this.once = function (eventType, callback) {
 			onceList.push(callback);
-			return myself.on(eventType, callback);
+			return self.on(eventType, callback);
 		};
 		
 		/**
@@ -145,7 +155,7 @@ jet().add('base', function ($) {
 			} else {
 				collection = {};
 			}
-			return myself;
+			return self;
 		};
 		
 		/**
@@ -171,11 +181,11 @@ jet().add('base', function ($) {
 					returnValue = false;
 				},
 				type: eventType,
-				target: myself
+				target: self
 			});
 			for (i = 0; i < collecLength; i++) {
 				if (Lang.isFunction(handlers[i])) {
-					handlers[i].apply(myself, args);
+					handlers[i].apply(self, args);
 				// if the event handler is an object with a handleEvent method,
 				// that method is used but the context is the object itself
 				} else if (Lang.isObject(handlers[i]) && handlers[i].handleEvent) {
@@ -204,11 +214,11 @@ jet().add('base', function ($) {
 	var Attribute = function (classConfig) {
 		Attribute.superclass.constructor.apply(this);
 		classConfig = classConfig || {};
-		var myself = this;
+		var self = this;
 		
 		var attrConfig = {};
 		
-		var addAttr = function (attrName, config) {
+		function addAttr(attrName, config) {
 			attrConfig[attrName] = config;
 			var isValue = Lang.isValue(classConfig[attrName]);
 			if (config.required && config.readOnly) {
@@ -221,22 +231,22 @@ jet().add('base', function ($) {
 				$.error("Missing required attribute: " + attrName);
 			}
 			if (isValue && config.setter) {
-				classConfig[attrName] = config.setter.call(myself, classConfig[attrName]);
+				classConfig[attrName] = config.setter.call(self, classConfig[attrName]);
 			}
-			return myself;
-		};
+			return self;
+		}
 		
-		var set = function (attrName, attrValue) {
+		function set(attrName, attrValue) {
 			attrConfig[attrName] = attrConfig[attrName] || {};
 			var config = attrConfig[attrName];
 			if (!config.readOnly) {
 				if (!config.validator || config.validator(attrValue)) {
-					attrValue = config.setter ? config.setter.call(myself, attrValue) : attrValue;
+					attrValue = config.setter ? config.setter.call(self, attrValue) : attrValue;
 					if (!Lang.isValue(classConfig[attrName]) && config.value) {
 						classConfig[attrName] = config.value;
 					}
 					classConfig[attrName] = classConfig[attrName] == attrValue ? attrValue :
-											myself.fire(attrName + "Change", attrValue, classConfig[attrName]) ? attrValue :
+											self.fire(attrName + "Change", attrValue, classConfig[attrName]) ? attrValue :
 											classConfig[attrName];
 				}
 				if (config.writeOnce && !config.readOnly) {
@@ -245,14 +255,14 @@ jet().add('base', function ($) {
 			} else {
 				$.error(attrName + " is a " + (config.writeOnce ? "write-once" : "read-only") + " attribute");
 			}
-		};
+		}
 		
 		/**
 		 * Returns a configuration attribute
 		 * @method get
 		 * @param {String} attrName
 		 */	
-		myself.get = function (attrName) {
+		this.get = function (attrName) {
 			attrConfig[attrName] = attrConfig[attrName] || {};
 			var config = attrConfig[attrName];
 			/*
@@ -264,7 +274,7 @@ jet().add('base', function ($) {
 			if (!Lang.isValue(classConfig[attrName])) {
 				classConfig[attrName] = config.value;
 			}
-			return	config.getter ? config.getter.call(myself, classConfig[attrName], attrName) :
+			return	config.getter ? config.getter.call(self, classConfig[attrName], attrName) :
 					classConfig[attrName];
 		};
 		/**
@@ -274,7 +284,7 @@ jet().add('base', function ($) {
 		 * @param {Object} attrValue
 		 * @chainable
 		 */
-		myself.set = function (attrName, attrValue) {
+		this.set = function (attrName, attrValue) {
 			if (Lang.isHash(attrName)) {
 				Hash.each(attrName, function (name, value) {
 					set(name, value);
@@ -282,7 +292,7 @@ jet().add('base', function ($) {
 			} else {
 				set(attrName, attrValue);
 			}
-			return myself;
+			return self;
 		};
 		/**
 		 * Unsets a configuration attribute
@@ -290,9 +300,9 @@ jet().add('base', function ($) {
 		 * @param {String} attrName
 		 * @chainable
 		 */
-		myself.unset = function (attrName) {
+		this.unset = function (attrName) {
 			delete classConfig[attrName];
-			return myself;
+			return self;
 		};
 		/**
 		 * Adds a configuration attribute, along with its options
@@ -301,26 +311,26 @@ jet().add('base', function ($) {
 		 * @param {Hash} config
 		 * @chainable
 		 */
-		myself.addAttr = addAttr;
+		this.addAttr = addAttr;
 		/**
 		 * Adds several configuration attributes
 		 * @method addAttrs
 		 * @param {Hash} config - key/value pairs of attribute names and configs
 		 * @chainable
 		 */
-		myself.addAttrs = function (config) {
+		this.addAttrs = function (config) {
 			Hash.each(config, addAttr);
-			return myself;
+			return self;
 		};
 		/**
 		 * Returns a key/value paired object with all attributes
 		 * @method getAttrs
 		 * @return {Hash}
 		 */
-		myself.getAttrs = function () {
+		this.getAttrs = function () {
 			var result = {};
 			Hash.each(classConfig, function (key) {
-				result[key] = myself.get(key);
+				result[key] = self.get(key);
 			});
 			return result;
 		};
@@ -330,19 +340,12 @@ jet().add('base', function ($) {
 		 * @param {String} attrName
 		 * @return {Boolean}
 		 */
-		myself.isSet = function (attrName) {
+		this.isSet = function (attrName) {
 			return Lang.isValue(classConfig[attrName]);
 		};
 	};
 	extend(Attribute, EventTarget);
 	
-	var walkTheProtoChain = function (instance, topConstructor, fn) {
-		var parent = instance.constructor;
-		while (parent != topConstructor) {
-			fn(parent);
-			parent = parent.superclass.constructor;
-		}
-	};
 	/**
 	 * Base class for all widgets and utilities.
 	 * @class Base
@@ -350,28 +353,50 @@ jet().add('base', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	var Base = function () {
+	Base = function () {
 		/*
 		 * Base should hold basic logic shared among a lot of classes, 
 		 * to avoid having to extend the Attribute class which is very specific in what it does
 		 */
 		Base.superclass.constructor.apply(this, arguments);
 		
-		/**
-		 * Allows quick setting of custom events in the constructor
-		 * @config on
-		 */
-		var myself = this.addAttr("on", {
-			writeOnce: true,
-			value: {}
-		});
-		
-		Hash.each(myself.get("on"), function (type, fn) {
-			myself.on(type, fn);
-		});
-				
+		var constructor = this.constructor;
+		var classes = this._classes = [];
+		var i;
+		while (constructor != Base.superclass.constructor) {
+			classes.unshift(constructor);
+			constructor = constructor.superclass.constructor;
+		}
+		for (i = 0; i < classes.length; i++) {
+			this.addAttrs(classes[i].ATTRS || {});
+			Hash.each(classes[i].EVENTS || {}, this.on);
+			if (classes[i].prototype.initializer) {
+				classes[i].prototype.initializer.call(this);
+			}
+		}
 	};
-	extend(Base, Attribute);
+	extend(Base, Attribute, {
+		
+		initializer: function () {
+			Hash.each(this.get("on"), this.on);
+		}
+		
+	}, {
+		
+		_classes: [],
+		
+		ATTRS: {
+			/**
+			 * Allows quick setting of custom events in the constructor
+			 * @config on
+			 */
+			on: {
+				writeOnce: true,
+				value: {}
+			}
+		}
+		
+	});
 	
 	/**
 	 * Basic class for all utilities
@@ -382,28 +407,52 @@ jet().add('base', function ($) {
 	 */
 	var Utility = function () {
 		Utility.superclass.constructor.apply(this, arguments);
-		var myself = this;
-		
-		$($.win).on(UNLOAD, function () {
-			// destroy only if it wasn't destroyed earlier
-			if (myself.destroy) {
-				myself.destroy();
-			}
-		}); 
 	};
 	extend(Utility, Base, {
+		
+		initializer: function () {
+			$(this.get('win')).on(UNLOAD, this.destroy);
+		},
+		
 		/**
 		 * Calls itself when the window unloads. Allows for easier memory cleanup
 		 * @method destroy
 		 */
 		destroy: function () {
-			var myself = this;
-			if (myself.fire(DESTROY)) {
+			var self = this;
+			if (self.fire(DESTROY)) {
 				// Helping gargage collection
-				Hash.each(myself, function (name) {
-					delete myself[name];
+				Hash.each(self, function (name) {
+					delete self[name];
 				});
+				$(self.get('win')).unbind(self.destroy);
 			}
+		}
+	}, {
+		
+		ATTRS: {
+			win: {
+				value: $.win,
+				setter: function (val) {
+					this.set('doc', val.document);
+					return val;
+				}
+			},
+			
+			doc: {
+				value: $.doc,
+				setter: function (val) {
+					this.set('win', val.parentWindow || val.defaultView);
+					return val;
+				}
+			}
+		},
+		
+		create: function (superclass, proto, attrs) {
+			var BuiltClass = function () {
+				BuiltClass.superclass.constructor.apply(this, arguments);
+			};
+			return extend(BuiltClass, superclass, proto, attrs);
 		}
 	});
 	
@@ -418,78 +467,40 @@ jet().add('base', function ($) {
 	 */
 	var Widget = function () {
 		Widget.superclass.constructor.apply(this, arguments);
- 		/**
- 		 * The bounding box contains all the parts of the widget
-		 * @config boundingBox
-		 * @writeOnce
-		 * @type NodeList
-		 * @default <div/>
-		 */
-		var myself = this.addAttrs(Widget.ATTRS).addAttr(BOUNDING_BOX, {
-			readOnly: true,
-			value: $("<div/>")
-		});
 		
 		/*
 		 * Call the destroy method when the window unloads.
 		 * This allows for the removal of all event listeners from the widget's nodes,
 		 * avoiding memory leaks and helping garbage collection 
 		 */ 
-		$($.win).on(UNLOAD, function () {
-			if (myself.destroy) {
-				myself.destroy();
-			}
-		}); 
-	};
-	Widget.CSS_PREFIX = "yui";
-	Widget.ATTRS = {
-		/**
-		 * @config srcNode
-		 * @description The node to which the widget will be appended to. May be set as a 
-		 * configuration attribute, with a setter or as the first parameter of the render() method
-		 * @type DOMNode | NodeList
-		 */
-		srcNode: {
-			setter: $
-		},
-		/**
-		 * @config classPrefix
-		 * @description Prefix for all CSS clases. Useful for renaming the project
-		 * @default "yui-"
-		 */
-		classPrefix: {
-			value: Widget.CSS_PREFIX + "-"
-		},
-		/**
-		 * @config className
-		 * @description The class name applied along with the prefix to the boundingBox
-		 * @default "widget"
-		 */
-		className: {
-			value: "widget"
-		},
-		/**
-		 * @config rendered
-		 * @description Rendered status. Shouldn't be changed by anything appart from the Widget.render() method
-		 * @writeOnce
-		 * @default false
-		 */
-		rendered: {
-			value: false
-		}
 	};
 	extend(Widget, Base, {
+		
+		BOUNDING_TEMPLATE: '<div/>',
+		CONTENT_TEMPLATE: '<div/>',
+		
+		initializer: function () {
+			var self = this;
+			$(this.get('win')).on(UNLOAD, this.destroy);
+			
+			A.each([WIDTH, HEIGHT], function (size) {
+				self.on(size + 'Change', function (e, newVal) {
+					newVal = Lang.isNumber(newVal) ? newVal : '';
+					self.get(BOUNDING_BOX)[size](newVal);
+				});
+			});
+		},
 		/**
 		 * Hides the widget
 		 * @method hide
 		 * @chainable
 		 */
 		hide: function () {
-			var myself = this;
-			if (myself.fire("hide")) {
-				myself.get(BOUNDING_BOX).css(VISIBILITY, "hidden");
+			var self = this;
+			if (self.fire("hide")) {
+				self.get(BOUNDING_BOX).css(VISIBILITY, "hidden");
 			}
-			return myself.fire("afterHide");
+			return self.fire("afterHide");
 		},
 		/**
 		 * Shows the widget
@@ -497,11 +508,11 @@ jet().add('base', function ($) {
 		 * @chainable
 		 */
 		show: function () {
-			var myself = this;
-			if (myself.fire("show")) {
-				myself.get(BOUNDING_BOX).css(VISIBILITY, "visible");
+			var self = this;
+			if (self.fire("show")) {
+				self.get(BOUNDING_BOX).css(VISIBILITY, "visible");
 			}
-			return myself.fire("afterShow");
+			return self.fire("afterShow");
 		},
 		/**
 		 * Focuses the widget
@@ -539,52 +550,190 @@ jet().add('base', function ($) {
 		 * @chainable
 		 */
 		render: function (target) {
-			var myself = this;
+			var self = this;
+			var boundingBox = this.get(BOUNDING_BOX) || $(this.BOUNDING_TEMPLATE);
+			var contentBox = this.get(CONTENT_BOX) || (this.CONTENT_TEMPLATE ? $(this.CONTENT_TEMPLATE) : boundingBox);
+			var node = this.get(SRC_NODE);
+			var first = node.first(), inner = first.first();
+			var construct = this.constructor;
+			var className, classPrefix = this.get('classPrefix');
 			if (target) {
-				myself.set(SRC_NODE, target);
+				node = target;
+				self.set(SRC_NODE, target);
 			}
+			
+			if (first[0] && first[0].attr('nodeName') == boundingBox[0].attr('nodeName')) {
+				boundingBox = first;
+			}
+			if (inner[0] && this.CONTENT_TEMPLATE !== null && inner[0].attr('nodeName') == contentBox[0].attr('nodeName')) {
+				contentBox = inner;
+			}
+			
+			A.each([WIDTH, HEIGHT], function (size) {
+				var value = self.get(size);
+				if (Lang.isNumber(value)) {
+					boundingBox[size](value);
+				}
+			});
 			/**
 			 * Render event. Preventing the default behavior will stop the rendering process
 			 * @event render
 			 * @see Widget.render()
 			 */
-			if (myself.fire("render")) {
-				var node = myself.get(SRC_NODE);
-				myself.get(BOUNDING_BOX).addClass(myself.get("classPrefix") + myself.get("className")).appendTo(node).css(VISIBILITY, "visible");
+			if (self.fire("render")) {
+				
+				while (construct != Widget) {
+					className = classPrefix + '-' + construct.NAME;
+					boundingBox.addClass(className);
+					contentBox.addClass(className + '-content');
+					construct = construct.superclass.constructor;
+				}
+				
+				boundingBox.prepend(contentBox.css(VISIBILITY, 'inherit')).prependTo(node).css(VISIBILITY, "visible");
 				/**
 				 * Fires after the render process is finished
 				 * @event afterRender
 				 */
-				myself.set("rendered", true).focus();
+				self.set("rendered", true).focus();
 				setTimeout(function () {
-					myself.fire("afterRender");
+					self.fire("afterRender");
 				}, 0);
 			}
-			return myself;
+			return this;
 		},
 		/**
 		 * Destroys the widget by removing the elements from the dom and cleaning all event listeners
 		 * @method destroy
 		 */
 		destroy: function () {
-			var myself = this;
+			var self = this;
 			/**
 			 * Preventing the default behavior will stop the destroy process
 			 * @event destroy
 			 */
-			if (myself.fire(DESTROY)) {
+			if (self.fire(DESTROY)) {
 				/*
 				 * Avoiding memory leaks, specially in IE
 				 */
-				myself.get(BOUNDING_BOX).unbindAll(true).remove();
+				self.get(BOUNDING_BOX).unbindAll(true).remove();
 				/*
 				 * Helping gargage collection
 				 */
-				Hash.each(myself, function (name) {
-					delete myself[name];
+				Hash.each(self, function (name) {
+					delete self[name];
 				});
+				$(self.get('win')).unbind(self.destroy);
 			}
 		}
+	}, {
+		
+		CSS_PREFIX: "yui",
+		
+		ATTRS: {
+			/**
+			 * @config srcNode
+			 * @description The node to which the widget will be appended to. May be set as a 
+			 * configuration attribute, with a setter or as the first parameter of the render() method
+			 * @type DOMNode | NodeList
+			 */
+			srcNode: {
+				setter: $
+			},
+			/**
+			 * @config classPrefix
+			 * @description Prefix for all CSS clases. Useful for renaming the project
+			 * @default "yui"
+			 * @writeOnce
+			 */
+			classPrefix: {
+				value: Widget.CSS_PREFIX,
+				writeOnce: true
+			},
+			/**
+			 * @config rendered
+			 * @description Rendered status. Shouldn't be changed by anything appart from the Widget.render() method
+			 * @writeOnce
+			 * @default false
+			 */
+			rendered: {
+				value: false
+			},
+			/**
+			 * The bounding box contains all the parts of the widget
+			 * @config boundingBox
+			 * @writeOnce
+			 * @type NodeList
+			 * @default uses BOUNDING_TEMPLATE instance property
+			 */
+			boundingBox: {
+				writeOnce: true
+			},
+			/**
+			 * @config contentBox
+			 * @description Another container inside the boundingBox added in order to have a more complex design
+			 * @writeOnce
+			 * @type NodeList
+			 * @default uses CONTENT_TEMPLATE instance property
+			 */
+			contentBox: {
+				writeOnce: true
+			},
+			win: {
+				value: $.win,
+				setter: function (val) {
+					this.set('doc', val.document);
+					return val;
+				}
+			},
+			doc: {
+				value: $.doc,
+				setter: function (val) {
+					this.set('win', val.parentWindow || val.defaultView);
+					return val;
+				}
+			},
+			/**
+			 * @config width
+			 * @description The width of the overlay
+			 * @type Number
+			 * @default 300
+			 */
+			width: {
+				value: 300,
+				validator: Lang.isNumber
+			},
+			/**
+			 * @config height
+			 * @description The height of the overlay.
+			 * If set to 0 (zero) the height changes with the content
+			 * @type Number
+			 * @default 0
+			 */
+			height: {
+				value: 0,
+				validator: Lang.isNumber
+			}
+		},
+		
+		/**
+		 * @method create
+		 * @description creates a new widget class
+		 * @static
+		 * @param [String] name Name of the widget class to create
+		 * @param [Hash] proto Prototype properties to add
+		 * @param [Hash] attrs Attribute definitions 
+		 * @param [Hash] events Event definitions 
+		 */
+		create: function (name, attrs, events, proto, superclass) {
+			var built = Base.create(superclass || Widget, proto, attrs);
+			$.mix(built, {
+				NAME: name,
+				EVENTS: events,
+				ATTRS: attrs
+			});
+			return built;
+		}
+		
 	});
 	
 	/**
@@ -607,7 +756,7 @@ jet().add('base', function ($) {
 		var shim = $([]);
 		var iframes;
 		
-		var myself = this.addAttrs({
+		var self = this.addAttrs({
 			/**
 			 * Frequency at which the tracker updates
 			 * @config frequency
@@ -634,13 +783,13 @@ jet().add('base', function ($) {
 		 * @type Boolean
 		 * @default false
 		 */
-		myself.addAttr(TRACKING, {
+		self.addAttr(TRACKING, {
 			value: false,
 			validator: Lang.isBoolean
 			
 		}).on(TRACKING + "Change", function (e, value) {
 			if (value) {
-				if (myself.get("shim")) {
+				if (self.get("shim")) {
 					var list = [];
 					iframes = $("iframe").each(function (iframe) {
 						iframe = $(iframe);
@@ -657,11 +806,11 @@ jet().add('base', function ($) {
 					shim.show();
 					interval = setInterval(function () {
 						if (prevX != clientX || prevY != clientY) {
-							myself.fire(MOUSEMOVE, clientX, clientY);
+							self.fire(MOUSEMOVE, clientX, clientY);
 							prevX = clientX;
 							prevY = clientY;
 						}
-					}, myself.get(FREQUENCY));
+					}, self.get(FREQUENCY));
 					capturing = true;
 				}
 			} else {
@@ -680,7 +829,7 @@ jet().add('base', function ($) {
 		function onMouseMove(e) {
 			clientX = e.clientX;
 			clientY = e.clientY;
-			if (myself.get(TRACKING) && myself.get("shim")) {
+			if (self.get(TRACKING) && self.get("shim")) {
 				iframes.each(function (iframe, i) {
 					iframe = $(iframe);
 					var offset = iframe.offset();
@@ -697,7 +846,7 @@ jet().add('base', function ($) {
 			 * Fires when the mouse button is released
 			 * @event up
 			 */
-			myself.set(TRACKING, false).fire("up", clientX, clientY);
+			self.set(TRACKING, false).fire("up", clientX, clientY);
 		}
 		
 		
@@ -710,7 +859,7 @@ jet().add('base', function ($) {
 		shim.on(MOUSEMOVE, onMouseMove).on(MOUSEUP, onMouseUp);
 		
 		$(this.get('context')).on("selectstart", onSelectStart).on(MOUSEMOVE, onMouseMove).on(MOUSEUP, onMouseUp);
-		myself.on('contextChange', function (e, newVal, prevVal) {
+		self.on('contextChange', function (e, newVal, prevVal) {
 			$(prevVal).unbind("selectstart", onSelectStart).unbind(MOUSEMOVE, onMouseMove).unbind(MOUSEUP, onMouseUp);
 			$(newVal).on("selectstart", onSelectStart).on(MOUSEMOVE, onMouseMove).on(MOUSEUP, onMouseUp);
 		}).on(DESTROY, function () {
