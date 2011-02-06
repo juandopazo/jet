@@ -114,7 +114,7 @@ jet().add("container", function ($) {
 				} else {
 					value = $('<div/>').html(value);
 				}
-				value.addClass(name.appendTo(boundingBox));
+				value.addClass(name).appendTo(boundingBox);
 				self.set(name, value);
 			});
 		}
@@ -556,7 +556,7 @@ jet().add("container", function ($) {
 			A.each(this.get("buttons"), function (config, i) {
 				var button = new $.Button(config);
 				if (i === 0) {
-					button.get(BOUNDING_BOX).addClass("default");
+					button.get(BOUNDING_BOX).addClass(self.getClassName("default"));
 				}
 				button.on(PRESSED, function () {
 					self.hide();

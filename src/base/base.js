@@ -14,7 +14,8 @@ jet().add('base', function ($) {
 
 	var Hash = $.Hash,
 		Lang = $.Lang,
-		A = $.Array;
+		A = $.Array,
+		SLICE = Array.prototype.slice;
 		
 	var Base;
 
@@ -172,7 +173,7 @@ jet().add('base', function ($) {
 			}
 			var i, collecLength = handlers.length;
 			var stop = false;
-			var args = Array.prototype.slice.call(arguments, 1);
+			var args = SLICE.call(arguments, 1);
 			args.unshift({
 				stopPropagation: function () {
 					stop = true;
@@ -383,8 +384,6 @@ jet().add('base', function ($) {
 		
 	}, {
 		
-		_classes: [],
-		
 		ATTRS: {
 			/**
 			 * Allows quick setting of custom events in the constructor
@@ -394,6 +393,13 @@ jet().add('base', function ($) {
 				writeOnce: true,
 				value: {}
 			}
+		},
+		
+		create: function (superclass, proto, attrs) {
+			var BuiltClass = function () {
+				BuiltClass.superclass.constructor.apply(this, arguments);
+			};
+			return extend(BuiltClass, superclass, proto, attrs);
 		}
 		
 	});
@@ -446,13 +452,6 @@ jet().add('base', function ($) {
 					return val;
 				}
 			}
-		},
-		
-		create: function (superclass, proto, attrs) {
-			var BuiltClass = function () {
-				BuiltClass.superclass.constructor.apply(this, arguments);
-			};
-			return extend(BuiltClass, superclass, proto, attrs);
 		}
 	});
 	
@@ -467,13 +466,6 @@ jet().add('base', function ($) {
 	 */
 	var Widget = function () {
 		Widget.superclass.constructor.apply(this, arguments);
-		
-		/*
-		 * Call the destroy method when the window unloads.
-		 * This allows for the removal of all event listeners from the widget's nodes,
-		 * avoiding memory leaks and helping garbage collection 
-		 */ 
-	};
 	extend(Widget, Base, {
 		
 		BOUNDING_TEMPLATE: '<div/>',
@@ -626,7 +618,12 @@ jet().add('base', function ($) {
 				});
 				$(self.get('win')).unbind(self.destroy);
 			}
+		},
+		
+		getClassName: function () {
+			return [this.get('classPrefix'), this.constructor.NAME].concat(SLICE.call(arguments)).join('-');
 		}
+
 	}, {
 		
 		CSS_PREFIX: "yui",
