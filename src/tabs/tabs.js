@@ -15,6 +15,7 @@ jet().add("tabs", function ($) {
 		Widget = $.Widget;
 	
 	var LI = "<li/>",
+		BOUNDING_BOX = 'boundingBox',
 		CONTENT_BOX = "contentBox",
 		PANEL = "panel";
 	
@@ -25,7 +26,7 @@ jet().add("tabs", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	$.Tab = Widget.create('tab', {
+	$.Tab = Widget.create('tab', [$.WidgetChild], {
 		/**
 		 * @config label
 		 * @description The text to use as label
@@ -48,7 +49,7 @@ jet().add("tabs", function ($) {
 			required: true,
 			setter: function (value) {
 				return Lang.isString(value) ? $("<div/>").html(value) : $(value);
-			} 
+			}
 		},
 		/**
 		 * @config selected
@@ -86,16 +87,16 @@ jet().add("tabs", function ($) {
 	}, {
 		
 		triggerEventChange: function (e, oldVal, newVal) {
-			this.get(CONTENT_BOX).unbind(oldVal, this._selectHandler).on(newVal, this._selectHandler);
+			this.unbind(oldVal, this._selectHandler).on(newVal, this._selectHandler);
 		},
 		
 		render: function () {
-			this.get(CONTENT_BOX).attr('href', this.get('href')).on(this.get("triggerEvent"), this._selectHandler);
+			this.get(CONTENT_BOX).attr('href', this.get('href'));
+			this.on(this.get("triggerEvent"), this._selectHandler);
 			this.get(PANEL).addClass(this.getClassName('panel')).appendTo(this.get('parent').get('panelContainer'));
 		},
 		
 		destroy: function () {
-			this.get(CONTENT_BOX).unbind(this.get("triggerEvent"), this._selectHandler);
 			this.get(PANEL).remove();
 		}
 		
@@ -103,12 +104,12 @@ jet().add("tabs", function ($) {
 		BOUNDING_TEMPLATE: '<li/>',
 		CONTENT_TEMPLATE: '<a/>',
 		
-		_selectHandler: function (e) {
-			e.preventDefault();
-			e.stopPropagation();
+		_selectHandler: function (e, domEvent) {
+			domEvent.preventDefault();
+			domEvent.stopPropagation();
 			this.select();
 		}
-	}, $.WidgetChild);
+	});
 	
 	/**
 	 * A view of tabs
@@ -117,7 +118,7 @@ jet().add("tabs", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	$.TabView = Widget.create('tabview', {
+	$.TabView = Widget.create('tabview', [$.WidgetParent], {
 		
 		panelContainer: {
 			value: $('<div/>'),
@@ -126,12 +127,12 @@ jet().add("tabs", function ($) {
 		
 	}, {
 		render: function () {
-			this.get('panelContainer').addClass(this.getClassName('panel', 'container')).appendTo(this.get('boundingBox'));
+			this.get('panelContainer').addClass(this.getClassName('panel', 'container')).appendTo(this.get(BOUNDING_BOX));
 		}
 	}, {
 		
 		CONTENT_TEMPLATE: '<ul/>'
 		
-	}, $.WidgetParent);
+	});
 	
 });

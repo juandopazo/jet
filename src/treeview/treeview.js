@@ -13,22 +13,26 @@ jet().add('treeview', function ($) {
 	
 	var Lang = $.Lang,
 		Hash = $.Hash,
-		A = $.Array;
+		A = $.Array,
+		Widget = $.Widget;
 	
 	var EXPAND = "expand",
 		COLLAPSE = "collapse",
 		EXPANDED = EXPAND + "ed",
 		COLLAPSED = COLLAPSE + "d",
 		CHILDREN = "children",
-		TREEVIEW = "treeview",
 		CONTROL = "control",
+		CONTENT = 'content',
 		LABEL = "label",
 		HOVER = "hover",
 		DASH = "-",
 		CLICK = "click",
-		NEW_DIV = "<div/>";
-	
-	var BOUNDING_BOX = "boundingBox";
+		NEW_DIV = "<div/>",
+		TITLE = 'title',
+		CONTROL_NODE = 'controlNode',
+		LABEL_NODE = 'labelNode',
+		BOUNDING_BOX = "boundingBox",
+		CONTENT_BOX = 'contentBox';
 	
 	/*
 	 * @TODO:
@@ -37,182 +41,120 @@ jet().add('treeview', function ($) {
 	 * - Add helper methods to navigate the tree (first, last, next, previous, children)
 	 * - Add methods to insert nodes relative to other nodes (add, or append/prepend)
 	 */
-		
+	 
 	/**
 	 * A node in a TreeView
-	 * @class Node
+	 * @class TreeNode
 	 * @extends Widget
+	 * @uses $.WidgetParent, $.WidgetChild
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	var Node = function () {
-		Node.superclass.constructor.apply(this, arguments);
-		
-		var label = $("<span/>");
-		var myself = this.addAttrs({
-			/**
-			 * @config children
-			 * @description This node's children
-			 * @type Array
-			 */
-			children: {
-				value: []
-			},
-			/**
-			 * @config parent
-			 * @description A pointer to this node's parent
-			 * @type Node
-			 */
-			parent: {},
-			/**
-			 * @config type
-			 * @description Type of the node. Available types are 'text'
-			 * @default "text"
-			 */
-			type: {
-				value: "text"
-			},
-			/**
-			 * @config title
-			 * @description Title attribute for the node
-			 * @type String
-			 */
-			/**
-			 * @config editable
-			 * @description Makes the node editable
-			 * @type Boolean
-			 * @default false
-			 */
-			/**
-			 * @config label
-			 * @description 
-			 */
-			label: {
-				required: true,
-				setter: function (value) {
-					label.html(value);
-					return value;
-				}
-			},
-			/**
-			 * @config expanded
-			 * @description The expanded status of this node
-			 * @type Boolean
-			 * @default false
-			 */
-			expanded: {
-				value: true
-			},
-			/**
-			 * @config treeview
-			 * @description A reference to this node's owner treeview
-			 * @type TreeView
-			 * @required
-			 * @writeOnce
-			 */
-			treeview: {
-				writeOnce: true,
-				required: true
-			},
-			className: {
-				value: this.get(TREEVIEW).get("className") + "-node"
-			}
-		});
-		var treeview = myself.get(TREEVIEW);
-		var content = $(NEW_DIV);
-		var nodeControl = $(NEW_DIV);
-		
-		var expandedChange = function (e, newVal, oldVal) {
-			var boundingBox = myself.get(BOUNDING_BOX);
-			var eventType = oldVal ? COLLAPSE : EXPAND;
-			var nodeClass = myself.get("classPrefix") + myself.get("className");
-			var controlClass = nodeClass + DASH + CONTROL + DASH;
-			var contentClass = nodeClass + "-content-";
-			var hasChildren = myself.get(CHILDREN).length > 0;
-			if (hasChildren) {
-				if (myself.fire(eventType) && treeview.fire("node:" + eventType, myself)) {
-					if (newVal) {
-						nodeControl.addClass(controlClass + EXPANDED).removeClass(controlClass + COLLAPSED);
-						content.addClass(contentClass + EXPANDED).removeClass(contentClass + COLLAPSED);
-					} else {
-						nodeControl.addClass(controlClass + COLLAPSED).removeClass(controlClass + EXPANDED);
-						content.addClass(contentClass + COLLAPSED).removeClass(contentClass + EXPANDED);
-					}
-				}
-			}
-		};
-		
-		this.on(EXPANDED + "Change", expandedChange).on("render", function () {
-			var prefix = myself.get("classPrefix");
-			var className = myself.get("className");
-			var nodeClass = prefix + className;
-			var boundingBox = myself.get(BOUNDING_BOX);
-			var expandedClass = [nodeClass, CONTROL, EXPANDED, HOVER].join(DASH);
-			var collapsedClass = [nodeClass, CONTROL, COLLAPSED, HOVER].join(DASH);
-			var mouseOver = function () {
-				if (myself.get(CHILDREN).length > 0) {
-					if (myself.get(EXPANDED)) {
-						nodeControl.addClass(expandedClass).removeClass(collapsedClass);
-					} else {
-						nodeControl.addClass(collapsedClass).removeClass(expandedClass);
-					}
-				}
-			};
-			nodeControl.addClass(nodeClass + DASH + CONTROL).appendTo(boundingBox);
-			label.addClass(nodeClass + DASH + LABEL).html(myself.get(LABEL)).appendTo(boundingBox);
-			label.link(nodeControl).on(CLICK, function (e) {
-				/**
-				 * @event click
-				 * @description Fires when a label or node control is clicked
-				 */
-				if (!myself.fire(CLICK)) {
-					e.preventDefault();
-				}
-				myself.toggle();
-				mouseOver();
-			}).on("mouseover", mouseOver).on("mouseout", function () {
-				nodeControl.removeClass(expandedClass).removeClass(collapsedClass);
-			});
-			content.addClass(nodeClass + "-content").appendTo(boundingBox);
-			A.each(myself.get(CHILDREN), function (child) {
-				$.mix(child, {
-					parent: myself,
-					treeview: treeview,
-					classPrefix: prefix,
-					className: className
-				});
-				var childNode = new Node(child);
-				childNode.render(content);
-			});
-			var expanded = myself.get(EXPANDED);
-			expandedChange(expanded, expanded);
-		});
-	};
-	$.extend(Node, $.Widget, {
+	$.TreeNode = Widget.create('treenode', [$.WidgetParent, $.WidgetChild], {
 		/**
-		 * @method expand
-		 * @description Expand this node
-		 * @chainable
+		 * @config type
+		 * @description Type of the node. Available types are 'text'
+		 * @default "text"
 		 */
-		expand: function () {
-			return this.set(EXPANDED, true);
+		type: {
+			value: "text"
 		},
 		/**
-		 * @method collapse
-		 * @description Collapse this node
-		 * @chainable
+		 * @config title
+		 * @description Title attribute for the node
+		 * @type String
 		 */
-		collapse: function () {
-			return this.set(EXPANDED, false);
+		title: {
+			value: ''
 		},
 		/**
-		 * @method toggle
-		 * @description Toggle this node
-		 * @chainable
+		 * @config editable
+		 * @description Makes the node editable
+		 * @type Boolean
+		 * @default false
 		 */
-		toggle: function () {
-			return this.set(EXPANDED, !this.get(EXPANDED));
+		/**
+		 * @config label
+		 * @description 
+		 */
+		label: {
+			setter: function (value) {
+				this.get('label').html(value);
+				return value;
+			}
+		},
+		controlNode: {
+			value: $('<b/>'),
+			setter: $,
+			writeOnce: true
+		},
+		labelNode: {
+			value: $('<span>'),
+			setter: $,
+			writeOnce: true
+		},
+		classPrefix: {
+			value: 'jet'
+		},
+		childType: {
+			value: $.TreeNode,
+			readOnly: true
 		}
+	}, {
+		
+		titleChange: function (e, newVal) {
+			this.get(CONTROL_NODE).attr('title', newVal);
+			this.get(LABEL_NODE).attr('title', newVal);
+		},
+		
+		selectedChange: function (e, newVal, oldVal) {
+			this._expandedChange.call(this, newVal, oldVal);
+		},
+		
+		click: function (e, domEvent) {
+			if (domEvent.target == this.get('labelNode')) {
+				this.set('selected', !this.get('selected'));
+			}
+		},
+		
+		render: function () {
+			var boundingBox = this.get(BOUNDING_BOX);
+			var contentBox = this.get(CONTENT_BOX);
+			var title = this.get(TITLE);
+			var labelNode = this.get(LABEL_NODE).addClass(this.getClassName(LABEL)).appendTo(contentBox);
+			var controlNode = this.get(CONTROL_NODE).addClass(this.getClassName(CONTROL)).attr(TITLE, title).prependTo(boundingBox);
+			var expanded = this.get(EXPANDED);
+			labelNode.link(controlNode).on(CLICK, this.toggle);
+			this._selectedChange(expanded, expanded);
+		},
+		
+		destroy: function () {
+			this.get(LABEL_NODE).unbind(CLICK, this.toggle);
+			this.get(CONTROL_NODE).unbind(CLICK, this.toggle);
+		}
+		
+	}, {
+		
+		_expandedChange: function (newVal, oldVal) {
+			var boundingBox = this.get(BOUNDING_BOX);
+			var eventType = oldVal ? COLLAPSE : EXPAND;
+			var controlNode = this.get(CONTROL_NODE);
+			var contentBox = this.get(CONTENT_BOX);
+			var expandedControlClass = this.getClassName(CONTROL, EXPANDED); 
+			var collapsedControlClass = this.getClassName(CONTROL, COLLAPSED); 
+			var expandedContentlClass = this.getClassName(CONTENT, EXPANDED); 
+			var collapsedContentClass = this.getClassName(CONTENT, COLLAPSED); 
+			if (this.get(CHILDREN).length > 0 && this.fire(eventType) && this.get('root').fire("node:" + eventType, this)) {
+				if (newVal) {
+					controlNode.addClass(expandedControlClass).removeClass(collapsedControlClass);
+					contentBox.addClass(expandedContentlClass).removeClass(collapsedContentClass);
+				} else {
+					controlNode.addClass(collapsedControlClass).removeClass(expandedControlClass);
+					contentBox.addClass(collapsedContentClass).removeClass(expandedContentlClass);
+				}
+			}
+		}
+		
 	});
 		
 	/**
@@ -222,27 +164,15 @@ jet().add('treeview', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	var TreeView = function () {
-		TreeView.superclass.constructor.apply(this, arguments);
-		
-		var myself = this.addAttrs({
-			/**
-			 * @config branches
-			 * @description An array containing the data to populate the tree
-			 * @type Array
-			 * @required
-			 */
-			branches: {
-				required: true
-			},
-			className: {
-				value: TREEVIEW
-			},
-			classPrefix: {
-				value: "jet-"
-			}
-		});
-		
+	$.TreeView = Widget.create('treeview', [$.WidgetParent], {
+		classPrefix: {
+			value: 'jet'
+		},
+		childType: {
+			value: $.TreeNode,
+			readOnly: true
+		}
+	}, {
 		/**
 		 * @event node:expand
 		 * @description Fires when a node is expanded. Preventing the default behavior will
@@ -255,22 +185,8 @@ jet().add('treeview', function ($) {
 		 * stop the node from collapsing
 		 * @param {Node} The node that initiated the action
 		 */
-		
-		this.on("render", function () {
-			var boundingBox = myself.get(BOUNDING_BOX);
-			A.each(myself.get("branches"), function (branch) {
-				$.mix(branch, {
-					treeview: myself,
-					classPrefix: myself.get("classPrefix")
-				});
-				var branchNode = new Node(branch);
-				branchNode.render(boundingBox);
-			});
-		});
-	};
-	$.extend(TreeView, $.Widget);
-	
-	$.add({
-		TreeView: TreeView
+	}, {
+		CONTENT_TEMPLATE: null
 	});
+	
 });

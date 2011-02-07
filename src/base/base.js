@@ -466,13 +466,19 @@ jet().add('base', function ($) {
 	 */
 	var Widget = function () {
 		Widget.superclass.constructor.apply(this, arguments);
+	};
 	extend(Widget, Base, {
 		
 		BOUNDING_TEMPLATE: '<div/>',
 		CONTENT_TEMPLATE: '<div/>',
 		
+		_domEventProxy: function (e) {
+			this.fire(e.type, e.target);
+		},
+		
 		initializer: function () {
 			var self = this;
+			var boundingBox = this.get(BOUNDING_BOX);
 			$(this.get('win')).on(UNLOAD, this.destroy);
 			
 			A.each([WIDTH, HEIGHT], function (size) {
@@ -480,6 +486,11 @@ jet().add('base', function ($) {
 					newVal = Lang.isNumber(newVal) ? newVal : '';
 					self.get(BOUNDING_BOX)[size](newVal);
 				});
+			});
+			Hash.each(Widget.DOM_EVENTS, function (name, activated) {
+				if (activated) {
+					boundingBox.on(name, self._domEventProxy, self);
+				}
 			});
 		},
 		/**
@@ -554,10 +565,10 @@ jet().add('base', function ($) {
 				self.set(SRC_NODE, target);
 			}
 			
-			if (first[0] && first[0].attr('nodeName') == boundingBox[0].attr('nodeName')) {
+			if (first[0] && first.attr('nodeName') == boundingBox.attr('nodeName')) {
 				boundingBox = first;
 			}
-			if (inner[0] && this.CONTENT_TEMPLATE !== null && inner[0].attr('nodeName') == contentBox[0].attr('nodeName')) {
+			if (inner[0] && this.CONTENT_TEMPLATE !== null && inner.attr('nodeName') == contentBox.attr('nodeName')) {
 				contentBox = inner;
 			}
 			
@@ -574,7 +585,7 @@ jet().add('base', function ($) {
 			 */
 			if (self.fire("render")) {
 				
-				while (construct != Widget) {
+				while (construct != Widget.superclass.constructor) {
 					if (construct.NAME) {
 						className = classPrefix + '-' + construct.NAME;
 						boundingBox.addClass(className);
@@ -628,6 +639,13 @@ jet().add('base', function ($) {
 		
 		CSS_PREFIX: "yui",
 		
+		NAME: 'widget',
+		
+		DOM_EVENTS: {
+			click: 1,
+			keypress: 1
+		},
+		
 		ATTRS: {
 			/**
 			 * @config srcNode
@@ -636,6 +654,7 @@ jet().add('base', function ($) {
 			 * @type DOMNode | NodeList
 			 */
 			srcNode: {
+				value: $($.context.body),
 				setter: $
 			},
 			/**
@@ -645,8 +664,10 @@ jet().add('base', function ($) {
 			 * @writeOnce
 			 */
 			classPrefix: {
-				value: Widget.CSS_PREFIX,
-				writeOnce: true
+				writeOnce: true,
+				getter: function (val) {
+					return val || Widget.CSS_PREFIX;
+				}
 			},
 			/**
 			 * @config rendered
@@ -719,18 +740,34 @@ jet().add('base', function ($) {
 		 * @description creates a new widget class
 		 * @static
 		 * @param [String] name Name of the widget class to create
-		 * @param [Hash] proto Prototype properties to add
-		 * @param [Hash] attrs Attribute definitions 
-		 * @param [Hash] events Event definitions 
+		 * @param [Array] [Optional] extensions A list of extensions to apply to the created class
+		 * @param [Hash] events [Optional] Event definitions 
+		 * @param [Hash] attrs [Optional] Attribute definitions 
+		 * @param [Hash] proto [Optional] Prototype properties to add
+		 * @param [Function] superclass [Optional] Superclass to use. Default: Widget
 		 */
-		create: function (name, attrs, events, proto, superclass) {
-			var built = Base.create(superclass || Widget, proto, attrs);
-			$.mix(built, {
+		create: function (name, extensions, attrs, events, proto, superclass) {
+			extensions = extensions || [];
+			function BuiltClass() {
+				var args = arguments;
+				BuiltWidget.superclass.constructor.apply(this, args);
+				var self = this;
+				A.each(extensions, function (extension) {
+					extension.apply(self, args);
+					Hash.each(extension.EVENTS || {}, self.on);
+				});
+			}
+			extend(BuiltWidget, superclass || Widget);
+			$.mix(BuiltWidget, {
 				NAME: name,
 				EVENTS: events,
 				ATTRS: attrs
 			});
-			return built;
+			A.each(extensions, function (extension) {
+				$.mix(BuiltWidget.prototype, extension.prototype);
+				$.mix(BuiltWidget.ATTRS, extension.ATTRS || {});
+			});
+			return BuiltWidget;
 		}
 		
 	});
