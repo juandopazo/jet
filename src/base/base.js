@@ -76,9 +76,32 @@ jet().add('base', function ($) {
 		
 	};
 	
+	var bind = function(fn, obj) {
+		if (Function.prototype.bind) {
+			bind = function (fn) {
+				return Function.prototype.bind.apply(fn, SLICE.call(arguments, 1));
+			};
+		} else {
+			bind = function(fn, obj) {
+				var slice = [].slice,
+					args = slice.call(arguments, 1), 
+					nop = function () {}, 
+					bound = function () {
+					  return fn.apply( this instanceof nop ? this : ( obj || {} ), 
+										  args.concat( slice.call(arguments) ) );	
+					};
+				nop.prototype = fn.prototype;
+				bound.prototype = new nop();
+				return bound;
+			};
+		}
+		return bind(fn, obj);
+	};
+	
 	var BOUNDING_BOX = "boundingBox",
 		CONTENT_BOX = 'contentBox',
 		SRC_NODE = "srcNode",
+		CLASS_PREFIX = 'classPrefix',
 		UNLOAD = "unload",
 		VISIBILITY = "visibility",
 		DESTROY = "destroy",
@@ -433,10 +456,20 @@ jet().add('base', function ($) {
 				});
 				$(self.get('win')).unbind(self.destroy);
 			}
+		},
+		
+		getClassName: function () {
+			return [this.get(CLASS_PREFIX), this.constructor.NAME].concat(SLICE.call(arguments)).join('-');
 		}
 	}, {
 		
+		CSS_PREFIX: 'jet',
+		
 		ATTRS: {
+			cssPrefix: {
+				value: Utility.CSS_PREFIX,
+				writeOnce: true
+			},
 			win: {
 				value: $.win,
 				setter: function (val) {
@@ -452,7 +485,14 @@ jet().add('base', function ($) {
 					return val;
 				}
 			}
+		},
+		
+		create: function (name, attrs, proto) {
+			var built = Base.create(Utility, proto, attrs);
+			built.NAME = name;
+			return built;
 		}
+		
 	});
 	
 	/**
@@ -559,7 +599,7 @@ jet().add('base', function ($) {
 			var node = this.get(SRC_NODE);
 			var first = node.first(), inner = first.first();
 			var construct = this.constructor;
-			var className, classPrefix = this.get('classPrefix');
+			var className, classPrefix = this.get(CLASS_PREFIX);
 			if (target) {
 				node = target;
 				self.set(SRC_NODE, target);
@@ -632,7 +672,7 @@ jet().add('base', function ($) {
 		},
 		
 		getClassName: function () {
-			return [this.get('classPrefix'), this.constructor.NAME].concat(SLICE.call(arguments)).join('-');
+			return [this.get(CLASS_PREFIX), this.constructor.NAME].concat(SLICE.call(arguments)).join('-');
 		}
 
 	}, {
@@ -775,7 +815,6 @@ jet().add('base', function ($) {
 	/**
 	 * A utility for tracking the mouse movement without crashing the browser rendering engine.
 	 * Also allows for moving the mouse over iframes and other pesky elements
-	 * @namespace utils
 	 * @class Mouse
 	 * @constructor
 	 * @extends Utility
@@ -803,7 +842,9 @@ jet().add('base', function ($) {
 				value: 20
 			},
 			context: {
-				value: $.context
+				getter: function () {
+					return this.get('doc');
+				}
 			},
 			shields: {
 				readOnly: true,
@@ -923,14 +964,14 @@ jet().add('base', function ($) {
 		}
 	});
 	
-	$.utils.Mouse = Mouse;
-	
 	$.add({
+		Mouse: Mouse,
 		Attribute: Attribute,
 		Base: Base,
 		Utility: Utility,
 		Widget: Widget,
 		EventTarget: EventTarget,
-		extend: extend
+		extend: extend,
+		bind: bind
 	});
 });
