@@ -387,9 +387,11 @@ jet().add("node", function ($) {
 		 * @method removeClass
 		 * @chainable
 		 */
-		removeClass: function (name) {
+		removeClass: function () {
 			return this.each(function (el) {
-				el.className = Lang.trim(el.className.replace(classRE(name), ' '));
+				A.each(SLICE.call(arguments), function (name) {
+					el.className = Lang.trim(el.className.replace(classRE(name), ' '));
+				});
 			});
 		},
 		/**
@@ -398,9 +400,11 @@ jet().add("node", function ($) {
 		 * @method addClass
 		 * @chainable
 		 */
-		addClass: function (name) {
+		addClass: function () {
 			return this.each(function (el) {
-				!classRE(name).test(el.className) && (el.className += (el.className ? ' ' : '') + name);
+				A.each(SLICE.call(arguments), function (name) {
+					!classRE(name).test(el.className) && (el.className += (el.className ? ' ' : '') + name);
+				});
 			});
 		},
 		/**
