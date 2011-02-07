@@ -11,8 +11,8 @@
  */
 jet().add('progressbar', function ($) {
 	
-	var CLASS_PREFIX = "jet-pbar-",
-		BOUNDING_BOX = "boundingBox",
+	var CONTENT_BOX = 'contentBox',
+		BOUNDING_BOX = 'boundingBox',
 		WIDTH = "width",
 		HEIGHT = "height",
 		BAR = "bar",
@@ -27,31 +27,141 @@ jet().add('progressbar', function ($) {
 	 * @class ProgressBar 
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	var ProgressBar = function () {
-		ProgressBar.superclass.constructor.apply(this, arguments);
+	$.ProgressBar = $.Widget.create('progressbar', [], {
+		classPrefix: {
+			value: 'jet'
+		},
+		/**
+		 * @config minMvalue
+		 * @description Minimum value that the progressbar data will take
+		 * @default 0
+		 */
+		minValue: {
+			value: 0
+		},
+		/**
+		 * @config maxMvalue
+		 * @description Maximum value that the progressbar data will take
+		 * @default 100
+		 */
+		maxValue: {
+			value: 100
+		},
+		/**
+		 * @config value
+		 * @description Current value the progressbar is taking
+		 * @default 0
+		 */
+		value: {
+			value: 0
+		},
+		/**
+		 * @config width
+		 * @description Width of the progressbar
+		 * @default 200
+		 */
+		width: {
+			value: 200
+		},
+		/**
+		 * @config height
+		 * @description Height of the progressbar
+		 * @default 20
+		 */
+		height: {
+			value: 20
+		},
+		/**
+		 * @config direction
+		 * @description Direction in which the progressbar increases its size. May be "ltr", "ttb" or "btt"
+		 * @default "ltr"
+		 */
+		direction: {
+			value: "ltr"
+		},
+		/**
+		 * @config animate
+		 * @description Whether to animate the progressbar progress. The Anim module must be present
+		 * @default false
+		 */
+		animate: {
+			value: false,
+			validator: function () {
+				return !!$.Tween;
+			}
+		},
+		/**
+		 * @config easing
+		 * @description Easing to use when animating
+		 * @default linear
+		 */
+		easing: {
+		},
+		/**
+		 * @config duration
+		 * @description Duration of the animation in case it is being used
+		 * @default 500 ms
+		 */
+		duration: {
+			value: 500
+		},
+		/**
+		 * @config bar
+		 * @description The DOM element that represents the bar in the progressbar
+		 * @readOnly
+		 */
+		bar: {
+			readOnly: true,
+			value: $("<span/>")
+		}
+	}, {
+		valueChange: function (e, newVal, oldVal) {
+			if (this.fire(PROGRESS, newVal)) {
+				this._update(newVal);
+			} else {
+				e.preventDefault();
+			}
+			
+		},
 		
-		var myself = this;
-		var update = function (value) {
-			var min = myself.get("minValue");
-			var newSize = (value - min) / (myself.get("maxValue") - min);
-			var bar = myself.get(BAR);
-			var width = myself.get(WIDTH), height = myself.get(HEIGHT);
-			var direction = myself.get("direction");
-			var easing = myself.get("easing");
-			var duration = myself.get("duration");
-			if (myself.get("animate")) {
+		directionChange: function (e, newVal, oldVal) {
+			this.get(BOUNDING_BOX).removeClass(this.getClassName(oldVal)).addClass(this.getClassName(newVal));
+		},
+		
+		render: function () {
+			var direction = this.get('direction');
+			var bar = this.get(BAR).appendTo(this.get(CONTENT_BOX)).addClass(this.getClassName(BAR));
+			this.get(BOUNDING_BOX).addClass(this.getClassName(direction));
+			if (direction == "ltr") {
+				bar.height(this.get(HEIGHT));
+			} else {
+				bar.width(this.get(WIDTH));
+			}
+			
+		}
+	}, {
+		_update: function (value) {
+			var self = this;
+			var min = this.get("minValue");
+			var newSize = (value - min) / (this.get("maxValue") - min);
+			var bar = this.get(BAR);
+			var width = this.get(WIDTH), height = this.get(HEIGHT);
+			var direction = this.get("direction");
+			var easing = this.get("easing");
+			var duration = this.get("duration");
+			if (this.get("animate")) {
 				var tween = new $.Tween({
 					node: bar,
 					duration: duration,
 					easing: easing,
 					on: {
 						tween: function (e, value) {
-							if (!myself.fire(PROGRESS, value)) {
+							if (!this.fire(PROGRESS, value)) {
 								e.preventDefault();
 							}
 						},
 						end: function () {
-							myself.fire(END);
+							this.fire(END);
 						}
 					}
 				});
@@ -79,124 +189,10 @@ jet().add('progressbar', function ($) {
 						newSize *= width;
 						bar.width(newSize);
 				}
-				myself.fire(PROGRESS, newSize);
-				myself.fire(END);
+				this.fire(PROGRESS, newSize);
+				this.fire(END);
 			}
-		};
-		
-		this.addAttrs({
-			/**
-			 * @config minMvalue
-			 * @description Minimum value that the progressbar data will take
-			 * @default 0
-			 */
-			minValue: {
-				value: 0
-			},
-			/**
-			 * @config maxMvalue
-			 * @description Maximum value that the progressbar data will take
-			 * @default 100
-			 */
-			maxValue: {
-				value: 100
-			},
-			/**
-			 * @config value
-			 * @description Current value the progressbar is taking
-			 * @default 0
-			 */
-			value: {
-				value: 0
-			},
-			/**
-			 * @config width
-			 * @description Width of the progressbar
-			 * @default 200
-			 */
-			width: {
-				value: 200
-			},
-			/**
-			 * @config height
-			 * @description Height of the progressbar
-			 * @default 20
-			 */
-			height: {
-				value: 20
-			},
-			/**
-			 * @config direction
-			 * @description Direction in which the progressbar increases its size. May be "ltr", "ttb" or "btt"
-			 * @default "ltr"
-			 */
-			direction: {
-				value: "ltr"
-			},
-			/**
-			 * @config animate
-			 * @description Whether to animate the progressbar progress. The Anim module must be present
-			 * @default false
-			 */
-			animate: {
-				value: false,
-				validator: function () {
-					return !!$.Tween;
-				}
-			},
-			/**
-			 * @config easing
-			 * @description Easing to use when animating
-			 * @default linear
-			 */
-			easing: {
-			},
-			/**
-			 * @config duration
-			 * @description Duration of the animation in case it is being used
-			 * @default 500 ms
-			 */
-			duration: {
-				value: 500
-			},
-			/**
-			 * @config bar
-			 * @description The DOM element that represents the bar in the progressbar
-			 * @readOnly
-			 */
-			bar: {
-				readOnly: true,
-				value: $("<span/>")
-			}
-		}).on("valueChange", function (e, newVal, oldVal) {
-			if (myself.fire(PROGRESS, newVal)) {
-				update(newVal);
-			} else {
-				e.preventDefault();
-			}
-			
-		}).on("directionChange", function (e, newVal, oldVal) {
-			myself.get(BOUNDING_BOX).removeClass(CLASS_PREFOX + oldVal).addClass(CLASS_PREFIX + newVal);
-			
-		}).on("render", function () {
-			
-			var boundingBox = this.get(BOUNDING_BOX).addClass(CLASS_PREFIX + "container").width(this.get("width")).height(this.get("height"));
-			var bar = this.get(BAR).appendTo(boundingBox).addClass(CLASS_PREFIX + BAR);
-			if (this.get("direction") == "ltr") {
-				bar.height(this.get(HEIGHT));
-			} else {
-				bar.width(this.get(WIDTH));
-			}
-			
-		});
-		A.each([WIDTH, HEIGHT], function (attr) {
-			myself.on(attr + "Change", function (e, newVal, oldVal) {
-				myself.get(BOUNDING_BOX)[attr](newVal);
-			});
-		});
-	};
-	$.extend(ProgressBar, $.Widget);
-	
-	$.ProgressBar = ProgressBar;
+		}
+	});
 	
 });
