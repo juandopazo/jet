@@ -22,7 +22,8 @@ jet().add('widget-parentchild', function ($) {
 	 * @extends Widget
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.WidgetParent = Base.create($.Attribute, {
+	var WidgetParent = function () {};
+	WidgetParent.prototype = {
 		_onIndexChange: function () {
 			
 		},
@@ -69,7 +70,7 @@ jet().add('widget-parentchild', function ($) {
 				child.on(INDEX + CHANGE, this._onIndexChange);
 				child.on(SELECT, this._onSelect);
 				child.on('destroy', function (e) {
-					self._unHook(e.target);
+					self._unHook.call(self, e.target);
 				});
 				
 				index = Lang.isNumber(index) ? index : children.length;
@@ -98,7 +99,7 @@ jet().add('widget-parentchild', function ($) {
 				if (Lang.isNumber(child)) {
 					child = children[child];
 				}
-				this._unHook(child);
+				this._unHook.call(this, child);
 				child.destroy();
 				this.fire('afterRemoveChild', child);
 			}
@@ -111,7 +112,8 @@ jet().add('widget-parentchild', function ($) {
 			});
 		}
 		
-	}, {
+	};
+	$.mix(WidgetParent, {
 		
 		EVENTS: {
 			init: function () {
@@ -166,13 +168,14 @@ jet().add('widget-parentchild', function ($) {
 	});
 	
 	/**
-	 * A widget that is a child of WidgetParent
+	 * An extension that turns a widget into a child widget
 	 * @class WidgetChild
 	 * @constructor
 	 * @extends Widget
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.WidgetChild = Base.create($.Attribute, {
+	var WidgetChild = function () {};
+	WidgetChild.prototype = {
 		/**
 		 * @method select
 		 * @description Selects this widget
@@ -217,7 +220,8 @@ jet().add('widget-parentchild', function ($) {
 		previous: function () {
 			return this.get('parent').get(CHILDREN)[this.get(INDEX) - 1] || null;
 		}
-	}, {
+	};
+	$.mix(WidgetChild, {
 		
 		EVENTS: {
 			
@@ -272,6 +276,11 @@ jet().add('widget-parentchild', function ($) {
 			}
 		}
 		
+	});
+	
+	$.add({
+		WidgetParent: WidgetParent,
+		WidgetChild: WidgetChild
 	});
 
 });
