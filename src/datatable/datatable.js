@@ -425,23 +425,19 @@ jet().add('datatable', function ($) {
 	};
 	$.extend(DataTable, $.Widget);
 	
-	var ScrollableDataTable = function () {
-		ScrollableDataTable.superclass.constructor.apply(this, arguments);
-		
-		var myself = this.on("afterRender", function () {
-			var boundingBox = myself.get("boundingBox");
+	$.ScrollableDataTable = $.Widget.create('scrollableDT', [], {}, {
+		afterRender: function () {
+			var boundingBox = this.get("boundingBox");
 			var table = $("<table/>");
-			var tbody = myself.get("tbody");
-			var thead = myself.get("thead");
-			var container = $("<div/>").appendTo(boundingBox).css("overflowY", "auto").height(300).width(thead.width());;
+			var tbody = this.get("tbody");
+			var thead = this.get("thead");
+			var container = $("<div/>").appendTo(boundingBox).css("overflowY", "auto").height(300).width(thead.width());
 			table.append(tbody.detach()).appendTo(container);
-		});
-	};
-	$.extend(ScrollableDataTable, DataTable);
+		}
+	}, {}, DataTable);
 	
 	$.add({
 		DataTable: DataTable,
-		ScrollableDataTable: ScrollableDataTable,
 		Column: Column
 	});
 });
