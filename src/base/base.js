@@ -74,6 +74,7 @@ jet().add('base', function ($) {
 			$.mix(r, ax, true);
 		}
 		
+		return r;
 	};
 	
 	var bind = function(fn, obj) {
@@ -517,21 +518,7 @@ jet().add('base', function ($) {
 		},
 		
 		initializer: function () {
-			var self = this;
-			var boundingBox = this.get(BOUNDING_BOX);
-			$(this.get('win')).on(UNLOAD, this.destroy);
-			
-			A.each([WIDTH, HEIGHT], function (size) {
-				self.on(size + 'Change', function (e, newVal) {
-					newVal = Lang.isNumber(newVal) ? newVal : '';
-					self.get(BOUNDING_BOX)[size](newVal);
-				});
-			});
-			Hash.each(Widget.DOM_EVENTS, function (name, activated) {
-				if (activated) {
-					boundingBox.on(name, self._domEventProxy, self);
-				}
-			});
+			$(this.get('win')).on(UNLOAD, bind(this.destroy, this));
 		},
 		/**
 		 * Hides the widget
@@ -600,6 +587,11 @@ jet().add('base', function ($) {
 			var first = node.first(), inner = first.first();
 			var construct = this.constructor;
 			var className, classPrefix = this.get(CLASS_PREFIX);
+			var setDomEvents = function (name, activated) {
+				if (activated) {
+					boundingBox.on(name, self._domEventProxy, self);
+				}
+			};
 			if (target) {
 				node = target;
 				self.set(SRC_NODE, target);
@@ -617,13 +609,17 @@ jet().add('base', function ($) {
 				if (Lang.isNumber(value)) {
 					boundingBox[size](value);
 				}
+				self.on(size + 'Change', function (e, newVal) {
+					newVal = Lang.isNumber(newVal) ? newVal : '';
+					self.get(BOUNDING_BOX)[size](newVal);
+				});
 			});
 			/**
 			 * Render event. Preventing the default behavior will stop the rendering process
 			 * @event render
 			 * @see Widget.render()
 			 */
-			if (self.fire("render")) {
+			if (this.fire("render")) {
 				
 				while (construct != Widget.superclass.constructor) {
 					if (construct.NAME) {
@@ -631,6 +627,7 @@ jet().add('base', function ($) {
 						boundingBox.addClass(className);
 						contentBox.addClass(className + '-content');
 					}
+					Hash.each(construct.DOM_EVENTS || {}, setDomEvents);
 					construct = construct.superclass.constructor;
 				}
 				
@@ -788,7 +785,7 @@ jet().add('base', function ($) {
 		 */
 		create: function (name, extensions, attrs, events, proto, superclass) {
 			extensions = extensions || [];
-			function BuiltClass() {
+			function BuiltWidget() {
 				var args = arguments;
 				BuiltWidget.superclass.constructor.apply(this, args);
 				var self = this;
@@ -801,7 +798,8 @@ jet().add('base', function ($) {
 			$.mix(BuiltWidget, {
 				NAME: name,
 				EVENTS: events,
-				ATTRS: attrs
+				ATTRS: attrs,
+				exts: extensions
 			});
 			A.each(extensions, function (extension) {
 				$.mix(BuiltWidget.prototype, extension.prototype);
