@@ -46,7 +46,7 @@ jet().add('treeview', function ($) {
 	 * A node in a TreeView
 	 * @class TreeNode
 	 * @extends Widget
-	 * @uses $.WidgetParent, $.WidgetChild
+	 * @uses WidgetParent, WidgetChild
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
@@ -68,26 +68,28 @@ jet().add('treeview', function ($) {
 			value: ''
 		},
 		/**
-		 * @config editable
-		 * @description Makes the node editable
-		 * @type Boolean
-		 * @default false
-		 */
-		/**
 		 * @config label
-		 * @description 
+		 * @description This node's label or title
+		 * @type String|HTMLElement
 		 */
 		label: {
-			setter: function (value) {
-				this.get('label').html(value);
-				return value;
-			}
+			value: ''
 		},
+		/**
+		 * @config controlNode
+		 * @description Node that expands/collapses this TreeNode
+		 * @writeOnce
+		 */
 		controlNode: {
 			value: $('<b/>'),
 			setter: $,
 			writeOnce: true
 		},
+		/**
+		 * @config labelNode
+		 * @description Node that holds this TreeNode's title/label
+		 * @writeOnce
+		 */
 		labelNode: {
 			value: $('<span>'),
 			setter: $,
@@ -101,6 +103,15 @@ jet().add('treeview', function ($) {
 			readOnly: true
 		}
 	}, {
+		
+		labelChange: function (e, newVal) {
+			var label = this.get(LABEL_NODE);
+			if (Lang.isString(newVal)) {
+				label.html(newVal);
+			} else {
+				label.append(newVal);
+			}
+		},
 		
 		titleChange: function (e, newVal) {
 			this.get(CONTROL_NODE).attr('title', newVal);
@@ -161,6 +172,7 @@ jet().add('treeview', function ($) {
 	 * A labeled tree
 	 * @class TreeView
 	 * @extends Widget
+	 * @uses WidgetParent
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */

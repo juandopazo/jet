@@ -206,8 +206,9 @@ jet().add("container", function ($) {
 		},
 		/**
 		 * @config draggable
-		 * @description If true, the overlay can be dragged
+		 * @description If true, the overlay can be dragged. Requires $.Drag
 		 * @default false
+		 * @type Boolean
 		 */
 		draggable: {
 			validator: function () {
@@ -215,6 +216,12 @@ jet().add("container", function ($) {
 			},
 			value: false
 		},
+		/**
+		 * @config modal
+		 * @description Whether this overlay should stop the user from interacting with the rest of the page
+		 * @default faulse
+		 * @type Boolean
+		 */
 		modal: {
 			value: false
 		},
@@ -223,7 +230,12 @@ jet().add("container", function ($) {
 			value: Global.overlays.length - 1,
 			readOnly: true
 		},
-		
+		/**
+		 * @config modalBox
+		 * @config Node that prevents the user from interacting with the page if 'modal' is set to true
+		 * @type NodeList
+		 * @readOnly
+		 */
 		modalBox: {
 			value: $('<div/>'),
 			readOnly: true
@@ -366,10 +378,22 @@ jet().add("container", function ($) {
 		}
 	}, $.Module);
 	
+	/**
+	 * A simple tooltip implementation
+	 * @class Tooltip
+	 * @extends Overlay
+	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
 	$.Tooltip = Widget.create('tooltip', {
 		position: {
 			value: "r"
 		},
+		/**
+		 * @config fadeIn
+		 * @description Whether to use a fade animation when appearing. Requires Anim module
+		 * @default false
+		 */
 		fadeIn: {
 			value: false,
 			validator: function () {
@@ -500,7 +524,7 @@ jet().add("container", function ($) {
 	$.Panel = Widget.create('panel', panelAttrs, panelEvents, panelMethods, $.Overlay);
 	
 	/**
-	 * Un contenedor fijo con look de panel y boton de cerrar
+	 * An panel with static position and a close button
 	 * @class StaticPanel
 	 * @extends Module
 	 * @constructor

@@ -4,6 +4,11 @@ jet().add('sandbox', function ($) {
 		CONTENT_WINDOW = 'contentWindow',
 		CONTENT_DOCUMENT = 'contentDocument';
 	
+	/**
+	 * An extension that sandboxes a widget by putting its contentBox inside an iframe
+	 * @class Sandbox
+	 * @constructor
+	 */
 	$.Sandbox = $.mix(function Sandbox() {}, {
 		
 		EVENTS: {
@@ -19,6 +24,11 @@ jet().add('sandbox', function ($) {
 		},
 		
 		ATTRS: {
+			/**
+			 * @config frame
+			 * @description Pointer to the iframe node
+			 * @readOnly
+			 */
 			frame: {
 				value: $('<iframe/>').attr({
 					src: 'javascript:false',
@@ -26,12 +36,22 @@ jet().add('sandbox', function ($) {
 				}),
 				readOnly: true
 			},
+			/**
+			 * @config contentWindow
+			 * @description Pointer to the window inside the iframe
+			 * @readOnly
+			 */
 			contentWindow: {
 				readOnly: true,
 				getter: function () {
 					return this.get(FRAME).attr(CONTENT_WINDOW);
 				}
 			},
+			/**
+			 * @config contentDocument
+			 * @description Pointer to the document inside the iframe
+			 * @readOnly
+			 */
 			contentDocument: {
 				readOnly: true,
 				getter: function () {

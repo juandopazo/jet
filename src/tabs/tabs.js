@@ -15,53 +15,48 @@ jet().add("tabs", function ($) {
 		Widget = $.Widget;
 	
 	var LI = "<li/>",
+		DIV = '<div/>',
 		BOUNDING_BOX = 'boundingBox',
 		CONTENT_BOX = "contentBox",
-		PANEL = "panel";
+		PANEL = 'panel',
+		HREF = 'href',
+		PANEL_CONTAINER = 'panelContainer';
 	
 	/**
 	 * A tab instance has a label and a panel
 	 * @class Tab
-	 * @extends Base
+	 * @extends Widget
+	 * @uses WidgetChild
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
 	$.Tab = Widget.create('tab', [$.WidgetChild], {
 		/**
-		 * @config label
-		 * @description The text to use as label
-		 * @type String | LI Node
-		 * @required
-		 */
-		label: {
-			required: true,
-			setter: function (value) {
-				return Lang.isString(value) ? $(LI).append($("<a/>").html(value)) : $(value);
-			}
-		},
-		/**
 		 * @config panel
 		 * @description The element or text to use as a panel
-		 * @type String | DOM Node
-		 * @required
+		 * @writeOnce
 		 */
 		panel: {
-			required: true,
-			setter: function (value) {
-				return Lang.isString(value) ? $("<div/>").html(value) : $(value);
-			}
+			value: $(DIV),
+			writeOnce: true
 		},
 		/**
-		 * @config selected
-		 * @description True if this is the currently selected tab of a TabView
-		 * @type Boolean
-		 * @default false
+		 * @config triggerEvent
+		 * @description Event that triggers the selection of this tab
+		 * @default "click"
+		 * @type String
 		 */
-		selected: {
-			value: false
+		triggerEvent: {
+			value: "click"
 		},
-		
+		/**
+		 * @config labelContent
+		 * @description Gets/sets the content of the tab's label
+		 */
 		labelContent: {
+			getter: function () {
+				return this.get(CONTENT_BOX).children();
+			},
 			setter: function (value) {
 				var label = this.get(CONTENT_BOX);
 				label.children().remove();
@@ -69,10 +64,14 @@ jet().add("tabs", function ($) {
 				return value;
 			}
 		},
-		triggerEvent: {
-			value: "click"
-		},
+		/**
+		 * @config panelContent
+		 * @description Gets/sets the content of the tab's panel
+		 */
 		panelContent: {
+			getter: function () {
+				return this.get(PANEL).children();
+			},
 			setter: function (value) {
 				var panel = this.get(PANEL);
 				panel.children().remove();
@@ -80,6 +79,12 @@ jet().add("tabs", function ($) {
 				return value;
 			}
 		},
+		/**
+		 * @config href
+		 * @description Href attribute for this tab's label. Useful for progressive enhancement
+		 * @default "#"
+		 * @writeOnce
+		 */
 		href: {
 			value: '#',
 			writeOnce: true
@@ -91,9 +96,9 @@ jet().add("tabs", function ($) {
 		},
 		
 		render: function () {
-			this.get(CONTENT_BOX).attr('href', this.get('href'));
+			this.get(CONTENT_BOX).attr(HREF, this.get(HREF));
 			this.on(this.get("triggerEvent"), this._selectHandler);
-			this.get(PANEL).addClass(this.getClassName('panel')).appendTo(this.get('parent').get('panelContainer'));
+			this.get(PANEL).addClass(this.getClassName(PANEL)).appendTo(this.get('parent').get(PANEL_CONTAINER));
 		},
 		
 		destroy: function () {
@@ -115,19 +120,26 @@ jet().add("tabs", function ($) {
 	 * A view of tabs
 	 * @class TabView
 	 * @extends Widget
+	 * @uses WidgetParent
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
 	$.TabView = Widget.create('tabview', [$.WidgetParent], {
 		
+		/**
+		 * @config panelContainer
+		 * @description Node that contains all tab panels
+		 * @writeOnce
+		 * @type NodeList
+		 */
 		panelContainer: {
-			value: $('<div/>'),
+			value: $(DIV),
 			writeOnce: true
 		}
 		
 	}, {
 		render: function () {
-			this.get('panelContainer').addClass(this.getClassName('panel', 'container')).appendTo(this.get(BOUNDING_BOX));
+			this.get(PANEL_CONTAINER).addClass(this.getClassName(PANEL, 'container')).appendTo(this.get(BOUNDING_BOX));
 		}
 	}, {
 		
