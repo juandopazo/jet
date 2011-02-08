@@ -162,6 +162,21 @@ jet().add('widget-parentchild', function ($) {
 			 */
 			multiple: {
 				value: false
+			},
+			/**
+			 * @config selectedIndex
+			 * @description The index of the currently selected item
+			 * @type Number
+			 */
+			selectedIndex: {
+				validator: Lang.isNumber,
+				setter: function (val) {
+					this.item(val).select();
+					return val;
+				},
+				getter: function () {
+					return this.get('selection').get('index');
+				}
 			}
 		}
 		
