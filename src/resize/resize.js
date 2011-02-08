@@ -12,157 +12,232 @@ jet().add('resize', function ($) {
 	
 	var Lang = $.Lang,
 		Hash = $.Hash,
-		A = $.Array,
-		DOM = $.DOM,
-		bind = $.bind;
+		DOM = $.DOM;
 	
 	var TOP = "t",
 		BOTTOM = "b",
 		LEFT = "l",
-		RIGHT = "r",
-		CLIENT = "client",
-		HEIGHT = "height",
-		WIDTH = "width",
-		VISIBILITY = "visibility",
-		CLONE_PROXY = "clone",
-		AUTO = "auto",
-		PX = "px",
-		NEW_DIV = "<div/>",
+		RIGHT = "r";
+	
+	var NEW_DIV = "<div/>",
 		LOCKED = "locked",
 		HOVER = "hover";
 		
+	var de = $.context.documentElement,
+		db = $.context.body;
+				
 	/**
 	 * Provides a utility for resizing elements
 	 * @class Resize
 	 * @extends Utility
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	$.Resize = $.Utility.create('resize', {
-		/**
-		 * @config node
-		 * @description The node to be resized
-		 * @required
-		 */
-		node: {
-			required: true,
-			setter: function (value) {
-				return $(value);
-			}
-		},
-		/**
-		 * qconfig handles
-		 * @description An array with the position of the needed handles. Posible values: "t", "b", "r", "l", "tr", "tl", etc
-		 * @type Array
-		 * @default ["b", "r", "br"]
-		 */
-		handles: {
-			value: [Resize.Bottom, Resize.Right, Resize.BottomRight],
-			validator: Lang.isArray
-		},
-		/**
-		 * @config hiddenHandles
-		 * @description If set to true, the handles are interactive but invisible
-		 * @type Boolean
-		 * @default false
-		 */
-		hiddenHandles: {
-			value: false
-		},
-		cssPrefix: {
-			value: "yui",
-			writeOnce: true
-		},
-		/**
-		 * @config minWidth
-		 * @description The minimum with the node can achieve
-		 * @type Number
-		 * @default 0
-		 */
-		minWidth: {
-			value: 0
-		},
-		/**
-		 * @config minHeight
-		 * @description The minimum height the node can achieve
-		 * @type Number
-		 * @default 0
-		 */
-		minHeight: {
-			value: 0
-		},
-		/**
-		 * @config constrain
-		 * @description If set to true, the node can't become bigger than the screen
-		 * @type Boolean
-		 * @default false
-		 */
-		constrain: {
-			value: false
-		},
-		/**
-		 * @config proxy
-		 * @description Whether to use a copy of the node while resizing or not.
-		 * Possible values: false, true, "clone"
-		 * @type Boolean | String
-		 * @default false
-		 */
-		proxy: {
-			value: false
-		},
-		/**
-		 * @config animate
-		 * @description Creates an animation when the resize handle is released. Can only be set to true
-		 * if "proxy" is set to true. <strong>Requires the Anim module.</strong>
-		 * @type Boolean
-		 * @default false
-		 */
-		animate: {
-			value: false,
-			validator: function () {
-				return self.get("proxy");
-			}
-		},
-		/**
-		 * @ocnfig reposition
-		 * @description If set to true, the resize utility will automatically change the position of the 
-		 * node so that is stays in place when resizing it in any direction
-		 * @type Boolean
-		 * @default false
-		 */
-		reposition: {
-			value: false
-		},
-		/**
-		 * @config shim
-		 * @description Uses invisible elements to be able to resize the node over iframes
-		 * @type Boolean
-		 * @default false 
-		 */
-		shim: {
-			value: false
-		},
-		/**
-		 * @config locked
-		 * @description If the resize is locked the handles are not interactive
-		 * @type Boolean
-		 * @default false
-		 */
-		locked: {
-			value: false
-		},
-		proxyNode: {
-			value: null
-		},
-		mouse: {
-			value: null,
-			writeOnce: true
-		},
-		capturing: {
-			value: false
-		}
-	}, {
+	var Resize = function () {
+		Resize.superclass.constructor.apply(this, arguments);
 		
-		_getNewSize: function (type, x, y) {
+		var myself = this;
+		myself.addAttrs({
+			/**
+			 * @config node
+			 * @description The node to be resized
+			 * @required
+			 */
+			node: {
+				required: true,
+				setter: function (value) {
+					return $(value);
+				}
+			},
+			/**
+			 * qconfig handles
+			 * @description An array with the position of the needed handles. Posible values: "t", "b", "r", "l", "tr", "tl", etc
+			 * @type Array
+			 * @default ["b", "r", "br"]
+			 */
+			handles: {
+				value: [Resize.Bottom, Resize.Right, Resize.BottomRight],
+				validator: Lang.isArray
+			},
+			/**
+			 * @config hiddenHandles
+			 * @description If set to true, the handles are interactive but invisible
+			 * @type Boolean
+			 * @default false
+			 */
+			hiddenHandles: {
+				value: false
+			},
+			prefix: {
+				value: "yui"
+			},
+			/**
+			 * @config minWidth
+			 * @description The minimum with the node can achieve
+			 * @type Number
+			 * @default 0
+			 */
+			minWidth: {
+				value: 0
+			},
+			/**
+			 * @config minHeight
+			 * @description The minimum height the node can achieve
+			 * @type Number
+			 * @default 0
+			 */
+			minHeight: {
+				value: 0
+			},
+			/**
+			 * @config constrain
+			 * @description If set to true, the node can't become bigger than the screen
+			 * @type Boolean
+			 * @default false
+			 */
+			constrain: {
+				value: false
+			},
+			/**
+			 * @config proxy
+			 * @description Whether to use a copy of the node while resizing or not.
+			 * Possible values: false, true, "clone"
+			 * @type Boolean | String
+			 * @default false
+			 */
+			proxy: {
+				value: false
+			},
+			/**
+			 * @config animate
+			 * @description Creates an animation when the resize handle is released. Can only be set to true
+			 * if "proxy" is set to true. <strong>Requires the Anim module.</strong>
+			 * @type Boolean
+			 * @default false
+			 */
+			animate: {
+				value: false,
+				validator: function () {
+					return myself.get("proxy");
+				}
+			},
+			/**
+			 * @ocnfig reposition
+			 * @description If set to true, the resize utility will automatically change the position of the 
+			 * node so that is stays in place when resizing it in any direction
+			 * @type Boolean
+			 * @default false
+			 */
+			reposition: {
+				value: false
+			},
+			/**
+			 * @config shim
+			 * @description Uses invisible elements to be able to resize the node over iframes
+			 * @type Boolean
+			 * @default false 
+			 */
+			shim: {
+				value: false
+			},
+			/**
+			 * @config locked
+			 * @description If the resize is locked the handles are not interactive
+			 * @type Boolean
+			 * @default false
+			 */
+			locked: {
+				value: false
+			}
+		});
+
+		var node = myself.get("node");
+				
+		var CLIENT = "client",
+			HEIGHT = "height",
+			WIDTH = "width",
+			VISIBILITY = "visibility",
+			CLONE_PROXY = "clone",
+			AUTO = "auto",
+			PX = "px";
+		
+		var min = {
+			height: myself.get("minHeight"),
+			width: myself.get("minWidth")
+		};
+		var max = {
+			height: myself.get("maxHeight"),
+			width: myself.get("maxWidth")
+		};
+		
+		var useProxy = myself.get("proxy");
+		var proxy = useProxy == CLONE_PROXY ? node.clone() :
+				useProxy ? $(NEW_DIV) : node;
+					
+		var originalStyle = node.currentStyle();
+		if (useProxy) {
+			if (useProxy === true) {
+				var offset = node.offset();
+				proxy.addClass("yui-resize-proxy").css({
+					left: originalStyle.left,
+					top: originalStyle.top,
+					bottom: originalStyle.bottom,
+					right: originalStyle.right,
+					width: originalStyle.width,
+					height: originalStyle.height
+				});
+			} else if (useProxy == CLONE_PROXY) {
+				proxy.css({
+					visibility: "hidden",
+					opacity: 0.5
+				});
+			}
+			proxy.appendTo(node.parent());
+		}
+		
+		var capturing = false;
+		var start = {
+			X: 0,
+			Y: 0
+		};
+		var originalWidth, originalHeight;
+		var currentWidth, currentHeight;
+		var screenSize = {
+			width: 0,
+			height: 0
+		};
+		var resizeVertical = false, resizeHorizontal = false;
+		
+		var startResize = function (x, y, left, top) {
+			resizeVertical = capturing.indexOf(TOP) > -1 ? TOP :
+							 capturing.indexOf(BOTTOM) > -1 ? BOTTOM :
+							 false;
+			resizeHorizontal = capturing.indexOf(RIGHT) > -1 ? RIGHT :
+								capturing.indexOf(LEFT) > -1 ? LEFT :
+								false;
+			start.X = x;
+			start.Y = y;
+			
+			screenSize = DOM.screenSize();
+			
+			currentWidth = originalWidth = node.width();
+			currentHeight = originalHeight = node.height();
+			node.width(originalWidth).height(originalHeight);
+			
+			if (myself.get("reposition")) {
+				node.css({
+					top:	resizeVertical == TOP ? AUTO : top + PX,
+					bottom:	resizeVertical == BOTTOM ? AUTO : (screenSize.height - top - currentHeight) + PX,
+					left:	resizeHorizontal == LEFT ? AUTO : left + PX,
+					right:	resizeHorizontal == RIGHT ? AUTO : (screenSize.width - left - currentWidth) + PX
+				});
+			}
+			
+			if (useProxy) {
+				proxy.css(VISIBILITY, "visible");
+			}
+		};
+		
+		var getNew = function (type, x, y) {
 			var vertical = (type == HEIGHT);
 			var resize = vertical ? resizeVertical : resizeHorizontal;
 			var original = vertical ? originalHeight : originalWidth;
@@ -174,100 +249,21 @@ jet().add('resize', function ($) {
 			
 			return size < min[type] ?  min[type] : 
 				   max[type] && size > max[type] ? max[type] :
-				   self.get("constrain") && size > screenSize[type] ? screenSize[type] : 
+				   myself.get("constrain") && size > screenSize[type] ? screenSize[type] : 
 				   size;
-		},
+		};
 		
-		_startResize: function (x, y, left, top) {
-			var node = this.get(NODE)
-			
-			var capturing = this.get('capturing');
-			var resizeVertical = capturing.indexOf(TOP) > -1 ? TOP : capturing.indexOf(BOTTOM) > -1 ? BOTTOM : false;
-			var resizeHorizontal = capturing.indexOf(RIGHT) > -1 ? RIGHT : capturing.indexOf(LEFT) > -1 ? LEFT : false;
-			var screenSize = DOM.screenSize();
-			var originalWidth = node.width();
-			var originalHeight = node.height();
-			
-			node.width(originalWidth).height(originalHeight);
-
-			this.set({
-				startX: x,
-				startY: y,
-				originalWidth: originalWidth,
-				originalHeight: originalHeight,
-				currentWidth: originalWidth,
-				currentHeight: originalHeight
-			});
-			
-			if (this.get("reposition")) {
-				node.css({
-					top:	resizeVertical == TOP ? AUTO : top + PX,
-					bottom:	resizeVertical == BOTTOM ? AUTO : (screenSize.height - top - currentHeight) + PX,
-					left:	resizeHorizontal == LEFT ? AUTO : left + PX,
-					right:	resizeHorizontal == RIGHT ? AUTO : (screenSize.width - left - currentWidth) + PX
-				});
-			}
-			
-			if (this.get(PROXY)) {
-				this.get(PROXY_NODE).css(VISIBILITY, "visible");
-			}
-		},
-		
-		_duringResize: function (e, x, y) {
-			lastX = x;
-			lastY = y;
-			var capturing = this.get('capturing');
-			var proxy = this.get(PROXY_NODE);
-			var currentWidth = this.get('currentWidth');
-			var currentHeight = this.get('currentHeight');
-			if (!this.get(LOCKED) && capturing) {
-				var offset = proxy.offset();
-				/**
-				 * @event beforeResize
-				 * @description Fires before the resize action starts. If prevented, the resize action doesn't start
-				 * @param {Number} currentWith
-				 * @param {Number} currentHeight
-				 * @param {Number} offsetLeft
-				 * @param {Number} offsetTop 
-				 */
-				if (this.fire("beforeResize", currentWidth, currentHeight, offset.left, offset.top)) {
-					screenSize = DOM.screenSize();
-					if (resizeVertical) {
-						currentHeight = this._getNewSize(HEIGHT, x, y);
-					}
-					if (resizeHorizontal) {
-						currentWidth = this._getNewSize(WIDTH, x, y);
-					}
-					/**
-					 * @event resize
-					 * @description Fires during the resize action
-					 * @param {Number} currentWith
-					 * @param {Number} currentHeight
-					 * @param {Number} offsetLeft
-					 * @param {Number} offsetTop 
-					 */
-					if (this.fire("resize", currentWidth, currentHeight, offset.left, offset.top)) {
-						if (Lang.isNumber(currentHeight) && Lang.isNumber(currentWidth)) {
-							proxy.height(currentHeight).width(currentWidth);
-						}
-					}
-				} else {
-					this._stopResize.call(this, null, x, y);
-				}
-			}
-		},
-		
-		_stopResize: function (e, x, y) {
-			if (!this.get(LOCKED)) {
-				var capturing = this.get('capturing');
-				var node = this.get(NODE);
-				var resizeVertical = capturing.indexOf(TOP) > -1 ? TOP : capturing.indexOf(BOTTOM) > -1 ? BOTTOM : false;
-				var resizeHorizontal = capturing.indexOf(RIGHT) > -1 ? RIGHT : capturing.indexOf(LEFT) > -1 ? LEFT : false;
+		var tracker = new $.utils.Mouse({
+			shim: myself.get("shim")
+		});
+				
+		var stopResize = function (e, x, y) {
+			if (!myself.get(LOCKED)) {
 				if (capturing) {
-					var screenSize = DOM.screenSize();
-					var currentWidth = this._getNewSize(WIDTH, x, y);
-					var currentHeight = this._getNewSize(HEIGHT, x, y);
-					if (!this.get("animate")) {
+					screenSize = DOM.screenSize();
+					currentWidth = getNew(WIDTH, x, y);
+					currentHeight = getNew(HEIGHT, x, y);
+					if (!myself.get("animate")) {
 						if (resizeVertical) {
 							node.height(currentHeight);
 						}
@@ -289,10 +285,10 @@ jet().add('resize', function ($) {
 						})).start();
 					}
 				}
-				this.set('capturing', false);
+				capturing = false;
 				var offset;
-				if (this.get(PROXY)) {
-					this.get(PROXY_NODE).css(VISIBILITY, "hidden");
+				if (useProxy) {
+					proxy.css(VISIBILITY, "hidden");
 					offset = proxy.offset();
 				} else {
 					offset = node.offset();
@@ -301,96 +297,104 @@ jet().add('resize', function ($) {
 				 * @event endResize
 				 * @description Fires when the resize action ends
 				 */
-				this.fire("endResize", currentWidth, currentHeight, offset.left, offset.top);
+				myself.fire("endResize", currentWidth, currentHeight, offset.left, offset.top);
 			}
-		},
+		};
 		
-		_onProxyChange: function (e, useProxy) {
-			var proxy = this.get(PROXY_NODE);
-			var node = this.get(NODE);
-			if (proxy) {
-				proxy.remove();
-			}
-			if (useProxy === true) {
-				proxy = $('<div/>').addClass(this.getCLassName(PROXY)).css({
-					left: originalStyle.left,
-					top: originalStyle.top,
-					bottom: originalStyle.bottom,
-					right: originalStyle.right,
-					width: originalStyle.width,
-					height: originalStyle.height
-				});
-			} else if (useProxy == CLONE_PROXY) {
-				proxy = node.clone().css({
-					visibility: "hidden",
-					opacity: 0.5
-				});
-			}
-			proxy.appendTo(node.parent());
-			this.set(PROXY_NODE, proxy);
-		},
-		
-		initializer: function () {
-			var self = this;
-			var mouse = new $.Mouse({
-				shim: this.get("shim")
-			});
-			var hoverClass = this.getClassName('hover');
-			var handleClass = this.getClassName('handle');
-			var proxy = this.get(PROXY);
-			
-			this.set(MOUSE, mouse);
-			this._onProxyChange.call(this, null, proxy);
-			this.on(PROXY + 'Change', bind(this._onProxyChange, this));
-			
-			proxy = this.get(PROXY_NODE);
-			
-			A.each(this.get("handles"), function (type) {
-				var handle = $(NEW_DIV);
-				handle.addClass(handleClass, this.getClassName('handle', type));
-				handle.on("mousedown", function (e) {
-					if (!self.get(LOCKED)) {
-						var offset = proxy.offset();
-						capturing = type;
-						tracker.get("shields").css("cursor", handle.currentStyle().cursor);
-						tracker.set("tracking", true);
-						self._startResize(e.clientX, e.clientY, offset.left, offset.top, type);
-						self.fire("startResize", currentWidth, currentHeight, offset.left, offset.top, type);
+		var lastX, lastY;
+		var duringResize = function (e, x, y) {
+			lastX = x;
+			lastY = y;
+			if (!myself.get(LOCKED) && capturing) {
+				var offset = proxy.offset();
+				/**
+				 * @event beforeResize
+				 * @description Fires before the resize action starts. If prevented, the resize action doesn't start
+				 * @param {Number} currentWith
+				 * @param {Number} currentHeight
+				 * @param {Number} offsetLeft
+				 * @param {Number} offsetTop 
+				 */
+				if (myself.fire("beforeResize", currentWidth, currentHeight, offset.left, offset.top)) {
+					screenSize = DOM.screenSize();
+					if (resizeVertical) {
+						currentHeight = getNew(HEIGHT, x, y);
 					}
-				}).on("mouseover", function (e) {
-					if (!self.get(LOCKED) && !capturing) {
-						handle.addClass(this.getClassName('handle', 'active'), this.getClassName('handle', type, 'active'));
-						if (self.get(HOVER)) {
-							node.removeClass(hoverClass);
+					if (resizeHorizontal) {
+						currentWidth = getNew(WIDTH, x, y);
+					}
+					offset = proxy.offset();
+					/**
+					 * @event resize
+					 * @description Fires during the resize action
+					 * @param {Number} currentWith
+					 * @param {Number} currentHeight
+					 * @param {Number} offsetLeft
+					 * @param {Number} offsetTop 
+					 */
+					if (myself.fire("resize", currentWidth, currentHeight, offset.left, offset.top)) {
+						if (Lang.isNumber(currentHeight) && Lang.isNumber(currentWidth)) {
+							proxy.height(currentHeight).width(currentWidth);
 						}
 					}
-				}).on("mouseout", function (e) {
-					if (!self.get(LOCKED)) {
-						handle.removeClass(handleClass + handleClassActive).removeClass(handleClass + "-" + type + handleClassActive);
-						if (self.get(HOVER)) {
-							node.addClass(hoverClass);
-						}
-					}
-				}).append($(NEW_DIV).addClass(this.getClassName('handle', 'inner', type))).appendTo(node);
-			});
-			node.addClass(this.getClassName()).css("display", "block");
-			if (this.get("hiddenHandles")) {
-				node.addClass(this.getClassName('hidden'));
-			} else if (self.get(HOVER)) {
-				node.addClass(hoverClass);
+				} else {
+					stopResize(x, y);
+				}
 			}
-			mouse.on('mouseup', bind(this._stopResize, this));
-			mouse.on('mousemove', bind(this._duringReize, this));
-		},
+		};
+		
+		var resizeClass = myself.get("prefix") + "-resize";
+		var hoverClass = resizeClass + "-hover";
+		var handleClass = resizeClass + "-handle";
+		var handleClassActive = "-active";
+		$.Array.each(myself.get("handles"), function (type) {
+			var handle = $(NEW_DIV);
+			handle.addClass([handleClass, " ", handleClass, "-", type].join(""));
+			handle.on("mousedown", function (e) {
+				if (!myself.get(LOCKED)) {
+					var offset = proxy.offset();
+					capturing = type;
+					tracker.get("shields").css("cursor", handle.currentStyle().cursor);
+					tracker.set("tracking", true);
+					startResize(e.clientX, e.clientY, offset.left, offset.top, type);
+					myself.fire("startResize", currentWidth, currentHeight, offset.left, offset.top, type);
+				}
+			}).on("mouseover", function (e) {
+				if (!myself.get(LOCKED) && !capturing) {
+					handle.addClass([handleClass, handleClassActive, " ", handleClass, "-", type, handleClassActive].join(""));
+					if (myself.get(HOVER)) {
+						node.removeClass(hoverClass);
+					}
+				}
+			}).on("mouseout", function (e) {
+				if (!myself.get(LOCKED)) {
+					handle.removeClass(handleClass + handleClassActive).removeClass(handleClass + "-" + type + handleClassActive);
+					if (myself.get(HOVER)) {
+						node.addClass(hoverClass);
+					}
+				}
+			}).append($(NEW_DIV).addClass(handleClass + "-inner-" + type)).appendTo(node);
+		});
+		node.addClass(resizeClass).css("display", "block");
+		if (myself.get("hiddenHandles")) {
+			node.addClass(resizeClass + "-hidden");
+		} else if (myself.get(HOVER)) {
+			node.addClass(hoverClass);
+		}
+		tracker.on("mouseup", stopResize);
+		tracker.on("mousemove", duringResize);
+		
 		/**
 		 * @method stop
 		 * @description Makes the resize action end prematurely
 		 * @chainable
 		 */
-		stop: function () {
-			this._stopResize.call(this);
+		this.stop = function () {
+			stopResize(lastX, lastY);
 			return this;
-		},
+		};
+	};
+	$.extend(Resize, $.Utility, {
 		/**
 		 * @method lock
 		 * @description Makes the handles non interactive
@@ -407,9 +411,9 @@ jet().add('resize', function ($) {
 		unlock: function () {
 			return this.set(LOCKED, false);
 		}
-	})
-
-	$.mix($.Resize, {
+	});
+	
+	Hash.each({
 		Top: TOP,
 		Bottom: BOTTOM,
 		Left: LEFT,
@@ -418,5 +422,8 @@ jet().add('resize', function ($) {
 		TopRight: TOP * RIGHT,
 		BottomLeft: BOTTOM + LEFT,
 		BottomRight: BOTTOM + RIGHT
+	}, function (name, value) {
+		Resize[name] = value;
 	});
+	$.Resize = Resize;
 });
