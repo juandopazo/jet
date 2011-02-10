@@ -1,4 +1,4 @@
-#jet(): JavaScript Extension Toolkit
+#Jet Javascript Library
 
 Jet is a JavaScript UI toolkit based on two premises:
 
