@@ -240,8 +240,8 @@ jet().add("node", function ($) {
 		 * @method pageSize
 		 */
 		pageSize: function (win) {
-			var win = win || $.win,
-				doc = win.document,
+			win = win || $.win;
+			var doc = win.document,
 				compatMode = doc.compatMode != "CSS1Compat",
 				innerWidth = win.innerWidth,
 				innerHeight = win.innerHeight,
@@ -277,6 +277,7 @@ jet().add("node", function ($) {
 	 * @param {DOMNode|Document} root
 	 */
 	var NodeList = function (nodes, root) {
+		var i = 0, length, tmp;
 		root = root || $.context;
 		nodes = Lang.isValue(nodes) ? nodes : [];
 		if (NodeList.is(nodes)) {
@@ -287,7 +288,6 @@ jet().add("node", function ($) {
 		} else if (nodes.nodeType || nodes.body || nodes.navigator) {
 			nodes = [nodes];
 		} else if (Lang.isArray(nodes)) {
-			var i = 0;
 			while (i < nodes.length) {
 				if (!(nodes[i].nodeType || nodes[i].body || nodes[i].navigator)) {
 					nodes.splice(i, 1);
@@ -296,7 +296,7 @@ jet().add("node", function ($) {
 				}
 			}
 		} else if (Lang.isNumber(nodes.length)) {
-			var tmp = [];
+			tmp = [];
 			for (i = 0; i < nodes.length; i++) {
 				tmp[i] = nodes[i];
 			}
@@ -305,8 +305,7 @@ jet().add("node", function ($) {
 		} else {
 			$.error("Wrong argument for NodeList");
 		}
-		var i, length = nodes.length;
-		for (var i = 0; i < length; i++) {
+		for (i = 0, length = nodes.length; i < length; i++) {
 			this[i] = nodes[i];
 		}
 		this.length = length;
@@ -405,7 +404,9 @@ jet().add("node", function ($) {
 			var args = arguments;
 			return this.each(function (el) {
 				A.each(SLICE.call(args), function (name) {
-					!classRE(name).test(el.className) && (el.className += (el.className ? ' ' : '') + name);
+					if (!classRE(name).test(el.className)) {
+						el.className += (el.className ? ' ' : '') + name;
+					}
 				});
 			});
 		},
@@ -599,6 +600,23 @@ jet().add("node", function ($) {
 			return this.each(function (node) {
 				target.parentNode.insertBefore(node, target);
 			});
+		},
+		/**
+		 * Returns whether the first node in this NodeList is inserted in the document
+		 * @method inDoc
+		 * @param [Document] doc
+		 * @return Boolean
+		 */
+		inDoc: function (de) {
+			de = (de || $.context).documentElement;
+			var parent = this.parent();
+			while (parent) {
+				if (parent[0] == de) {
+					return true;
+				}
+				parent = parent.parent();
+			}
+			return false;
 		},
 		/**
 		 * Returns a new NodeList with all the parents of the current nodes
