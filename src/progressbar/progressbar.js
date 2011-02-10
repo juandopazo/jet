@@ -28,9 +28,6 @@ jet().add('progressbar', function ($) {
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
 	$.ProgressBar = $.Widget.create('progressbar', [], {
-		classPrefix: {
-			value: 'jet'
-		},
 		/**
 		 * @config minMvalue
 		 * @description Minimum value that the progressbar data will take
@@ -55,19 +52,9 @@ jet().add('progressbar', function ($) {
 		value: {
 			value: 0
 		},
-		/**
-		 * @config width
-		 * @description Width of the progressbar
-		 * @default 200
-		 */
 		width: {
 			value: 200
 		},
-		/**
-		 * @config height
-		 * @description Height of the progressbar
-		 * @default 20
-		 */
 		height: {
 			value: 20
 		},
