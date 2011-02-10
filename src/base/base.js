@@ -581,8 +581,8 @@ jet().add('base', function ($) {
 		 */
 		render: function (target) {
 			var self = this;
-			var boundingBox = this.get(BOUNDING_BOX) || $(this.BOUNDING_TEMPLATE);
-			var contentBox = this.get(CONTENT_BOX) || (this.CONTENT_TEMPLATE ? $(this.CONTENT_TEMPLATE) : boundingBox);
+			var boundingBox = this.get(BOUNDING_BOX);
+			var contentBox = this.get(CONTENT_BOX);
 			var node = this.get(SRC_NODE);
 			var first = node.first(), inner = first.first();
 			var construct = this.constructor;
@@ -595,13 +595,6 @@ jet().add('base', function ($) {
 			if (target) {
 				node = target;
 				self.set(SRC_NODE, target);
-			}
-			
-			if (first[0] && first.attr('nodeName') == boundingBox.attr('nodeName')) {
-				boundingBox = first;
-			}
-			if (inner[0] && this.CONTENT_TEMPLATE !== null && inner.attr('nodeName') == contentBox.attr('nodeName')) {
-				contentBox = inner;
 			}
 			
 			A.each([WIDTH, HEIGHT], function (size) {
@@ -621,17 +614,23 @@ jet().add('base', function ($) {
 			 */
 			if (this.fire("render")) {
 				
-				while (construct != Widget.superclass.constructor) {
-					if (construct.NAME) {
-						className = classPrefix + '-' + construct.NAME;
-						boundingBox.addClass(className);
-						contentBox.addClass(className + '-content');
+				if (construct == Widget) {
+					className = classPrefix + '-' + Widget.NAME;
+					boundingBox.addClass(className);
+					contentBox.addClass(className + '-content');
+				} else {
+					while (construct != Widget) {
+						if (construct.NAME) {
+							className = classPrefix + '-' + construct.NAME;
+							boundingBox.addClass(className);
+							contentBox.addClass(className + '-content');
+						}
+						Hash.each(construct.DOM_EVENTS || {}, setDomEvents);
+						construct = construct.superclass.constructor;
 					}
-					Hash.each(construct.DOM_EVENTS || {}, setDomEvents);
-					construct = construct.superclass.constructor;
 				}
 				
-				boundingBox.prepend(contentBox.css(VISIBILITY, 'inherit')).prependTo(node).css(VISIBILITY, "visible");
+				boundingBox.append(contentBox.css(VISIBILITY, 'inherit')).appendTo(node).css(VISIBILITY, "visible");
 				/**
 				 * Fires after the render process is finished
 				 * @event afterRender
@@ -665,6 +664,15 @@ jet().add('base', function ($) {
 					delete self[name];
 				});
 				$(self.get('win')).unbind(self.destroy);
+			}
+		},
+		
+		initializer: function () {
+			if (!this.get(BOUNDING_BOX)) {
+				this.set(BOUNDING_BOX, $(this.BOUNDING_TEMPLATE));
+			}
+			if (!this.get(CONTENT_BOX)) {
+				this.set(CONTENT_BOX, this.CONTENT_TEMPLATE ? $(this.CONTENT_TEMPLATE) : this.get(BOUNDING_BOX));
 			}
 		},
 		
@@ -723,7 +731,6 @@ jet().add('base', function ($) {
 			 * @default uses BOUNDING_TEMPLATE instance property
 			 */
 			boundingBox: {
-				writeOnce: true
 			},
 			/**
 			 * @config contentBox
@@ -733,7 +740,6 @@ jet().add('base', function ($) {
 			 * @default uses CONTENT_TEMPLATE instance property
 			 */
 			contentBox: {
-				writeOnce: true
 			},
 			win: {
 				value: $.win,
@@ -753,10 +759,8 @@ jet().add('base', function ($) {
 			 * @config width
 			 * @description The width of the overlay
 			 * @type Number
-			 * @default 300
 			 */
 			width: {
-				value: 300,
 				validator: Lang.isNumber
 			},
 			/**
@@ -764,10 +768,8 @@ jet().add('base', function ($) {
 			 * @description The height of the overlay.
 			 * If set to 0 (zero) the height changes with the content
 			 * @type Number
-			 * @default 0
 			 */
 			height: {
-				value: 0,
 				validator: Lang.isNumber
 			}
 		},
@@ -805,6 +807,7 @@ jet().add('base', function ($) {
 				$.mix(BuiltWidget.prototype, extension.prototype);
 				$.mix(BuiltWidget.ATTRS, extension.ATTRS || {});
 			});
+			$.mix(BuiltWidget.prototype, proto);
 			return BuiltWidget;
 		}
 		

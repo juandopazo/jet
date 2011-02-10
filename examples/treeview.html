@@ -18,14 +18,14 @@
 	<link rel="stylesheet" type="text/css" href="../src/treeview/treeview.css">
 </head>
 <body>
-<script type="text/javascript" src="../src/jet/jet.js"></script>
+<script type="text/javascript" src="../build/jet.js"></script>
 <script type="text/javascript">
 	jet({
-		base: "../src"
+		base: '../build/'
 	}).use('treeview', function ($) {
 		
 		var treeview = new $.TreeView({
-			branches: [
+			children: [
 				{
 					label: "hola",
 					children: [
@@ -34,7 +34,6 @@
 							children: [
 								{
 									label: "todo bien?",
-									expanded: false,
 									children: [
 										{
 											label: "seh, vos?",
@@ -42,17 +41,15 @@
 												{
 													label: "todo tranqui"
 												}
-											],
-											expanded: false
+											]
 										},
 										{
-											label: "nah, todo mal. Se me secó el potus",
+											label: "nah, todo mal. Se me seco el potus",
 											children: [
 												{
 													label: "uh que feo"
 												}
-											],
-											expanded: false
+											]
 										}
 									]
 								}

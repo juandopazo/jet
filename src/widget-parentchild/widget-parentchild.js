@@ -13,7 +13,8 @@ jet().add('widget-parentchild', function ($) {
 		CHANGE = 'Change',
 		CHILDREN = 'children',
 		CLASS_PREFIX = 'classPrefix',
-		CLASS_NAME = 'className';
+		CLASS_NAME = 'className',
+		PARENT = 'parent';
 	
 	/**
 	 * A widget conteins child widgets
@@ -62,8 +63,14 @@ jet().add('widget-parentchild', function ($) {
 				var children = this.get(CHILDREN);
 				var childrenLength = children.length;
 				var self = this;
+				if (Lang.isString(ChildType)) {
+					ChildType = $[ChildType];
+				}
 				if (!(child instanceof ChildType)) {
+					child.parent = this;
 					child = new ChildType(child);
+				} else {
+					child.set(PARENT, this);
 				}
 				child.render(this.get(CONTENT_BOX));
 				
@@ -73,15 +80,7 @@ jet().add('widget-parentchild', function ($) {
 					self._unHook.call(self, e.target);
 				});
 				
-				index = Lang.isNumber(index) ? index : children.length;
-				children.splice(index, 0, child);
-				if (index != childrenLength) {
-					A.each(children, function (child, i) {
-						if (i > children) {
-							child.set(INDEX, i);
-						}
-					});
-				}
+				children[Lang.isNumber(index) ? index : children.length] = child;
 				this.fire('afterAddChild', child, index);
 			}
 			return this;
@@ -115,10 +114,12 @@ jet().add('widget-parentchild', function ($) {
 	};
 	$.mix(WidgetParent, {
 		
+		NAME: 'widget-parent',
+		
 		EVENTS: {
-			init: function () {
+			afterRender: function () {
 				var self = this;
-				A.each(this.get(CHILDREN), this.add);
+				A.each(this.get(CHILDREN), this.add, this);
 				Hash.each($.Widget.DOM_EVENTS, function (name) {
 					self.on(name, self._domEventChildrenProxy);
 				});
@@ -224,7 +225,7 @@ jet().add('widget-parentchild', function ($) {
 		 * @returns Widget Widget instance
 		 */
 		next: function () {
-			return this.get('parent').get(CHILDREN)[this.get(INDEX) + 1] || null;
+			return this.get(PARENT).get(CHILDREN)[this.get(INDEX) + 1] || null;
 		},
 		
 		/**
@@ -233,10 +234,12 @@ jet().add('widget-parentchild', function ($) {
 		 * @returns Widget Widget instance
 		 */
 		previous: function () {
-			return this.get('parent').get(CHILDREN)[this.get(INDEX) - 1] || null;
+			return this.get(PARENT).get(CHILDREN)[this.get(INDEX) - 1] || null;
 		}
 	};
 	$.mix(WidgetChild, {
+		
+		NAME: 'widget-child',
 		
 		EVENTS: {
 			
@@ -288,6 +291,16 @@ jet().add('widget-parentchild', function ($) {
 			 */
 			parent: {
 				value: null
+			},
+			root: {
+				readOnly: true,
+				getter: function () {
+					var parent = this.get(PARENT);
+					while (parent.get(PARENT)) {
+						parent = parent.get(PARENT);
+					}
+					return parent;
+				}
 			}
 		}
 		

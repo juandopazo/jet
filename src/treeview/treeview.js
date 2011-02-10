@@ -19,6 +19,7 @@ jet().add('treeview', function ($) {
 	var EXPAND = "expand",
 		COLLAPSE = "collapse",
 		EXPANDED = EXPAND + "ed",
+		SELECTED = 'selected',
 		COLLAPSED = COLLAPSE + "d",
 		CHILDREN = "children",
 		CONTROL = "control",
@@ -81,7 +82,7 @@ jet().add('treeview', function ($) {
 		 * @writeOnce
 		 */
 		controlNode: {
-			value: $('<b/>'),
+			value: $('<span/>'),
 			setter: $,
 			writeOnce: true
 		},
@@ -91,17 +92,15 @@ jet().add('treeview', function ($) {
 		 * @writeOnce
 		 */
 		labelNode: {
-			value: $('<span>'),
+			value: $('<span/>'),
 			setter: $,
 			writeOnce: true
 		},
-		classPrefix: {
-			value: 'jet'
-		},
 		childType: {
-			value: $.TreeNode,
+			value: 'TreeNode',
 			readOnly: true
 		}
+		
 	}, {
 		
 		labelChange: function (e, newVal) {
@@ -114,8 +113,8 @@ jet().add('treeview', function ($) {
 		},
 		
 		titleChange: function (e, newVal) {
-			this.get(CONTROL_NODE).attr('title', newVal);
-			this.get(LABEL_NODE).attr('title', newVal);
+			this.get(CONTROL_NODE).attr(TITLE, newVal);
+			this.get(LABEL_NODE).attr(TITLE, newVal);
 		},
 		
 		selectedChange: function (e, newVal, oldVal) {
@@ -123,20 +122,21 @@ jet().add('treeview', function ($) {
 		},
 		
 		click: function (e, domEvent) {
-			if (domEvent.target == this.get('labelNode')) {
-				this.set('selected', !this.get('selected'));
+			if (domEvent.target == this.get(LABEL_NODE)) {
+				this.set(SELECTED, !this.get(SELECTED));
 			}
 		},
 		
 		render: function () {
 			var boundingBox = this.get(BOUNDING_BOX);
 			var contentBox = this.get(CONTENT_BOX);
-			var title = this.get(TITLE);
-			var labelNode = this.get(LABEL_NODE).addClass(this.getClassName(LABEL)).appendTo(contentBox);
-			var controlNode = this.get(CONTROL_NODE).addClass(this.getClassName(CONTROL)).attr(TITLE, title).prependTo(boundingBox);
+			var labelNode = this.get(LABEL_NODE).html(this.get(LABEL)).addClass(this.getClassName(LABEL));
+			var controlNode = this.get(CONTROL_NODE).addClass(this.getClassName(CONTROL));
 			var expanded = this.get(EXPANDED);
+			labelNode.appendTo(contentBox);
+			controlNode.attr(TITLE, this.get(TITLE)).prependTo(boundingBox);
 			labelNode.link(controlNode).on(CLICK, this.toggle);
-			this._selectedChange(expanded, expanded);
+			this._expandedChange(expanded, expanded);
 		},
 		
 		destroy: function () {

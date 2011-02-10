@@ -21,7 +21,8 @@
 		SLICE = AP.slice,
 		TOSTRING = OP.toString,
 		BASE = "base",
-		NODE = "node";
+		NODE = "node",
+		WIDGET_PARENTCHILD = "widget-parentchild";
 	
 	/*
 	 * These modules can be called by the jet().use() method without defining a path.
@@ -33,7 +34,7 @@
 		node: ["log", "ua"],
 		xsl: [NODE],
 		swf: true,
-		spbar: [NODE],
+		progressbar: [BASE],
 		json: [NODE],
 		cookie: [NODE],
 		sizzle: [NODE],
@@ -42,7 +43,7 @@
 		"io-xdr": [NODE, "swf", "io"],
 		"io-xsl": ["io"],
 		"history": [BASE, "json"],
-		tabs: [BASE],
+		tabs: [WIDGET_PARENTCHILD],
 		resize: [BASE, {
 			name: "resize-css",
 			type: "css",
@@ -52,7 +53,7 @@
 				value: "solid"
 			}
 		}],
-		button: [BASE, {
+		button: [WIDGET_PARENTCHILD, {
 			name: "button-css",
 			type: "css",
 			path: "button.css",
@@ -92,7 +93,8 @@
 				value: "solid"
 			}
 		}],
-		treeview: [BASE],
+		treeview: [WIDGET_PARENTCHILD],
+		'widget-parentchild': [BASE],
 		vector: ["anim"]
 	};
 	
@@ -858,9 +860,9 @@
 					}
 					AP.unshift.apply(request, Hash.keys(predef));
 					
-				// add ajax by default
-				} else if (ArrayHelper.indexOf("base", request) == -1) {
-					request.unshift("base");
+				// add widget-parentchild by default
+				} else if (ArrayHelper.indexOf(WIDGET_PARENTCHILD, request) == -1) {
+					request.unshift(WIDGET_PARENTCHILD);
 				}
 				
 				// handle requirements

@@ -388,8 +388,9 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		removeClass: function () {
+			var args = arguments;
 			return this.each(function (el) {
-				A.each(SLICE.call(arguments), function (name) {
+				A.each(SLICE.call(args), function (name) {
 					el.className = Lang.trim(el.className.replace(classRE(name), ' '));
 				});
 			});
@@ -401,8 +402,9 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		addClass: function () {
+			var args = arguments;
 			return this.each(function (el) {
-				A.each(SLICE.call(arguments), function (name) {
+				A.each(SLICE.call(args), function (name) {
 					!classRE(name).test(el.className) && (el.className += (el.className ? ' ' : '') + name);
 				});
 			});
