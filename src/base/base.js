@@ -517,9 +517,6 @@ jet().add('base', function ($) {
 			this.fire(e.type, e.target);
 		},
 		
-		initializer: function () {
-			$(this.get('win')).on(UNLOAD, bind(this.destroy, this));
-		},
 		/**
 		 * Hides the widget
 		 * @method hide
@@ -668,6 +665,8 @@ jet().add('base', function ($) {
 		},
 		
 		initializer: function () {
+			$(this.get('win')).on(UNLOAD, bind(this.destroy, this));
+			
 			if (!this.get(BOUNDING_BOX)) {
 				this.set(BOUNDING_BOX, $(this.BOUNDING_TEMPLATE));
 			}
