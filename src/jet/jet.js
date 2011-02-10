@@ -34,7 +34,6 @@
 		node: ["log", "ua"],
 		xsl: [NODE],
 		swf: true,
-		progressbar: [BASE],
 		json: [NODE],
 		cookie: [NODE],
 		sizzle: [NODE],
@@ -140,7 +139,7 @@
 		 * http://stackoverflow.com/questions/574584/javascript-check-if-method-prototype-has-been-changed/574741#574741
 		 */
 		var isNative = function (func) {
-		    return (new RegExp('^\s*function[^\{]+{\s*\[native code\]\s*\}\s*$"')).test(func);
+		    return (new RegExp('^\s*function[^\{]+{\s*\[native code\]\s*\}\s*$')).test(func);
 		};
 
 		return {
@@ -252,8 +251,10 @@
 			} : function (str) {
 				str = str.replace(/^\s\s*/, "");
 				var ws = /\s/,
-				i = str.length;
-				while (ws.test(str.charAt(--i))) {}
+				i = str.length - 1;
+				while (ws.test(str.charAt(i))) {
+					i--;
+				}
 				return str.slice(0, i + 1);
 			},
 			/**
@@ -791,22 +792,22 @@
 		win.jet = function (o) {
 			var config = Lang.isHash(o) ? o : {};
 			var base = baseUrl;
- 			/**
- 			 * @config base
- 			 * @description prefix for all script and css urls
- 			 * @type String
- 			 * @default "//jet-js.googlecode.com/svn/trunk/src/"
- 			 */
+			/**
+			 * @config base
+			 * @description prefix for all script and css urls
+			 * @type String
+			 * @default "//jet-js.googlecode.com/svn/trunk/src/"
+			 */
 			if (config.base) {
 				base = config.base;
 				base = base.substr(base.length - 1, 1) == "/" ? base : base + "/";
 			}
- 			/**
- 			 * @config base
- 			 * @description defines whether predefined modules should be minified or not
- 			 * @type Boolean
- 			 * @default true
- 			 */
+			/**
+			 * @config base
+			 * @description defines whether predefined modules should be minified or not
+			 * @type Boolean
+			 * @default true
+			 */
 			config.minify = Lang.isBoolean(config.minify) ? config.minify : false;
 			/**
 			 * @config loadCss
