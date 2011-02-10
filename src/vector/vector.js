@@ -111,15 +111,15 @@ jet().add('vector', function ($) {
 		if (!document.namespaces.vml) {
 			document.namespaces.add("vml", "urn:schemas-microsoft-com:vml");
 		}
-    	createIENode = function (tagName) {
+		createIENode = function (tagName) {
 			var node = $.context.createElement('<vml:' + tagName + ' class="vml">');
-    		return node;
-    	};
+			return node;
+		};
     } 
     catch (e) {
-    	createIENode = function (tagName) {
-    		return $.context.createElement('<' + tagName + ' xmlns="urn:schemas-microsoft.com:vml" class="vml">');
-    	};
+		createIENode = function (tagName) {
+			return $.context.createElement('<' + tagName + ' xmlns="urn:schemas-microsoft.com:vml" class="vml">');
+		};
     }
 	
 	// Setup VML behaviour
@@ -446,7 +446,7 @@ jet().add('vector', function ($) {
 		 */
 		hasClass: function (className) {
 			var node = this.get(NODE);
-			var className = UA_SUPPORTS_SVG ? node.getAttribute("class") : node.className;
+			className = UA_SUPPORTS_SVG ? node.getAttribute("class") : node.className;
 			return A.inArray(className, className ? className.split(" ") : []);
 		},
 		/**
@@ -806,7 +806,7 @@ jet().add('vector', function ($) {
 				getter: getDefaultGetter("d"),
 				setter: getDefaultSetter("d")
 			}
-		})
+		});
 	};
 	$.extend(Path, Vector);
 	

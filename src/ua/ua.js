@@ -16,7 +16,7 @@ jet().add("ua", function ($) {
 	$.UA = (function () {
 		var nav = $.win.navigator,
 			ua = nav.userAgent.toLowerCase(),
-        	p = nav.platform.toLowerCase();
+			p = nav.platform.toLowerCase();
 
 		var webkit = /KHTML/.test(ua) || /webkit/i.test(ua),
 			opera = /opera/i.test(ua),
