@@ -623,7 +623,7 @@ jet().add('datasource', function ($) {
 		
 		myself.set(REQUEST_LOGIC, function (request, success, failure) {
 			var type = myself.get(RESPONSE_TYPE);
-			IO.flajax({
+			$.flajax({
 				url: myself.get(URL),
 				data: request,
 				dataType: myself.get(RESPONSE_TYPE),
