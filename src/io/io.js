@@ -163,7 +163,7 @@ jet().add('io', function ($) {
 	
 			result = null;
 			
-			var dataType 		= settings.dataType;
+			var dataType		= settings.dataType;
 			var timeout			= settings.timeout || 10000; /* Tiempo que tarda en cancelarse la transaccion */
 			var method			= settings.method || "GET"; /* Metodo para enviar informacion al servidor */
 			var async			= settings.async || true;
@@ -267,7 +267,7 @@ jet().add('io', function ($) {
 				if (!settings.data) {
 					settings.data = {};
 				}
-				settins.data[jsonCallbackParam] = "jet.IO.jsonpCallbacks[" + index + "]";
+				settings.data[jsonCallbackParam] = "jet.IO.jsonpCallbacks[" + index + "]";
 				
 				//Added a timeout of 0 as suggested by Google in 
 				//http://googlecode.blogspot.com/2010/11/instant-previews-under-hood.html
