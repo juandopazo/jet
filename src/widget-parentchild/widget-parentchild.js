@@ -249,7 +249,7 @@ jet().add('widget-parentchild', function ($) {
 			},
 			
 			afterSelectedChange: function (e, newVal) {
-				var selectedClass = this.get(CLASS_PREFIX) + this.get(CLASS_NAME) + '-' + SELECTED;
+				var selectedClass = this.getClassName(SELECTED);
 				var boundingBox = this.get(BOUNDING_BOX);
 				if (newVal) {
 					boundingBox.addClass(selectedClass);

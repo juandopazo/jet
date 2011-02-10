@@ -40,8 +40,8 @@ jet().add('button', function ($) {
 	}
 	
 	/**
-	 * Base class for all buttons
-	 * @class ButtonBase
+	 * A button widget
+	 * @class Button
 	 * @extends Widget
 	 * @uses WidgetChild
 	 * @param {Object} config Object literal specifying widget configuration properties
@@ -178,6 +178,18 @@ jet().add('button', function ($) {
 	$.Button = Button;
 	
 	/**
+	 * A button widget that selects/unselects itself when clicked
+	 * @class ToggleButton
+	 * @extends Button
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
+	$.ToggleButton = Widget.create('button-toggle', [], {}, {
+		click: function () {
+			this.toggle();
+		}
+	}, {}, Button);
+	
+	/**
 	 * A group of buttons that can be styled as a pill
 	 * @class ButtonGroup
 	 * @extends Widget
@@ -187,8 +199,7 @@ jet().add('button', function ($) {
 	 */
 	$.ButtonGroup = Widget.create('button-group', [WidgetParent], {
 		childType: {
-			value: $.Button,
-			readOnly: true
+			value: $.Button
 		},
 		/**
 		 * @config pill
@@ -292,7 +303,7 @@ jet().add('button', function ($) {
 	}
 	
 	/**
-	 * A RadioButton
+	 * A radio button
 	 * @class RadioButton
 	 * @extends Button
 	 * @constructor
@@ -313,7 +324,7 @@ jet().add('button', function ($) {
 	}, Button);
 	
 	/**
-	 * A group of Radio buttons that interact together
+	 * A group of radio buttons that interact together
 	 * @class RadioGroup
 	 * @extends Widget
 	 * @uses WidgetParent
