@@ -626,7 +626,7 @@ jet().add("node", function ($) {
 		parent: function () {
 			var result = [];
 			this.each(function (node) {
-				if (A.indexOf(node.parentNode, result) == -1) {
+				if (node.parentNode && A.indexOf(node.parentNode, result) == -1) {
 					result.push(node.parentNode);
 				}
 			});
