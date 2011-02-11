@@ -3,59 +3,41 @@
  Code licensed under the BSD License
  http://code.google.com/p/jet-js/wiki/Licence
 */
-.jet-treeview-node {
+.jet-treenode {
 	padding-left: 20px;
 	position: relative;
 }
-.jet-treeview-node-control {
+.jet-treenode-control {
 	width: 9px;
 	height: 9px;
 	background-repeat: no-repeat;
 	position: absolute;
 	left: 6px;
 	top: 6px;
+	display: inline-block;
 }
-.jet-treeview-node-control-expanded, .jet-treeview-node-control-collapsed {
-	background-image: url(/jet/src/treeview/treeview-control.png);
-	-moz-transition-property: -moz-box-shadow;  
-	-moz-transition-duration: 1s;
-	-webkit-transition-property: -webkit-box-shadow; 
-	-webkit-transition-duration: 1s;
-	-o-transition-property: box-shadow; 
-	-o-transition-duration: 1s;
-	-moz-box-shadow: 0px 0px 0px #FFF;
-	-webkit-box-shadow: 0px 0px 0px #FFF;
+.jet-treenode-control-expanded, .jet-treenode-control-collapsed {
+	background-image: url(/jetdev/src/treeview/treeview-control.png);
 	box-shadow: 0px 0px 0px #FFF;
 }
-.jet-treeview-node-control-expanded {
+.jet-treenode-control-expanded {
 	background-position: 0px 0px;
 }
-.jet-treeview-node-control-collapsed {
+.jet-treenode-control-collapsed {
 	background-position: -9px 0px;
 }
-.jet-treeview-node-control-expanded-hover, .jet-treeview-node-control-collapsed-hover {
+.jet-treenode-control-expanded-hover, .jet-treenode-control-collapsed-hover {
 	-moz-box-shadow: 0px 0px 4px #666;
 	-webkit-box-shadow: 0px 0px 4px #666;
 	box-shadow: 0px 0px 4px #666;
 }
-.jet-treeview-node-control, .jet-treeview-node-label {
+.jet-treenode-control, .jet-treenode-label {
 	cursor: pointer;
 }
-.jet-treeview-node-label {
+.jet-treenode-label {
 	display: inline-block;
 }
-.jet-treeview-node-content {
-	overflow: hidden;
-	-moz-transition-property: height, opacity;  
-	-moz-transition-duration: 0.5s;
-	-webkit-transition-property: height, opacity;  
-	-webkit-transition-duration: 0.5s;
-	-o-transition-property: height, opacity;  
-	-o-transition-duration: 0.5s;
-	height: 0;
-	opacity: 0.0;
+.jet-treenode-content {
 }
-.jet-treeview-node-content-expanded {
-	height: auto; 
-	opacity: 1;
+.jet-treenode-content-expanded {
 }

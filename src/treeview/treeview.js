@@ -118,7 +118,6 @@ jet().add('treeview', function ($) {
 			
 			titleChange: function (e, newVal) {
 				this.get(CONTROL_NODE).attr(TITLE, newVal);
-				this.get(LABEL_NODE).attr(TITLE, newVal);
 			},
 			
 			selectedChange: function (e, newVal, oldVal) {
@@ -136,11 +135,18 @@ jet().add('treeview', function ($) {
 				var contentBox = this.get(CONTENT_BOX);
 				var labelNode = this.get(LABEL_NODE).html(this.get(LABEL)).addClass(this.getClassName(LABEL));
 				var controlNode = this.get(CONTROL_NODE).addClass(this.getClassName(CONTROL));
-				var expanded = this.get(EXPANDED);
+				var expanded = this.get(SELECTED);
+				var title = this.get(TITLE);
 				labelNode.appendTo(contentBox);
-				controlNode.attr(TITLE, this.get(TITLE)).prependTo(boundingBox);
+				if (title) {
+					controlNode.attr(TITLE, title);
+				}
 				labelNode.link(controlNode).on(CLICK, this.toggle);
 				this._expandedChange(expanded, expanded);
+			},
+			
+			afterRender: function () {
+				this.get(CONTROL_NODE).prependTo(this.get(BOUNDING_BOX));
 			},
 			
 			destroy: function () {
@@ -168,15 +174,15 @@ jet().add('treeview', function ($) {
 			var contentBox = this.get(CONTENT_BOX);
 			var expandedControlClass = this.getClassName(CONTROL, EXPANDED); 
 			var collapsedControlClass = this.getClassName(CONTROL, COLLAPSED); 
-			var expandedContentlClass = this.getClassName(CONTENT, EXPANDED); 
+			var expandedContentClass = this.getClassName(CONTENT, EXPANDED); 
 			var collapsedContentClass = this.getClassName(CONTENT, COLLAPSED); 
 			if (this.get(CHILDREN).length > 0 && this.fire(eventType) && this.get('root').fire("node:" + eventType, this)) {
 				if (newVal) {
 					controlNode.addClass(expandedControlClass).removeClass(collapsedControlClass);
-					contentBox.addClass(expandedContentlClass).removeClass(collapsedContentClass);
+					contentBox.addClass(expandedContentClass).removeClass(collapsedContentClass);
 				} else {
 					controlNode.addClass(collapsedControlClass).removeClass(expandedControlClass);
-					contentBox.addClass(collapsedContentClass).removeClass(expandedContentlClass);
+					contentBox.addClass(collapsedContentClass).removeClass(expandedContentClass);
 				}
 			}
 		}
@@ -192,14 +198,12 @@ jet().add('treeview', function ($) {
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
 	$.TreeView = Widget.create('treeview', [$.WidgetParent], {
-		classPrefix: {
-			value: 'jet'
-		},
-		childType: {
-			value: $.TreeNode,
-			readOnly: true
+		ATTRS: {
+			childType: {
+				value: $.TreeNode,
+				readOnly: true
+			}
 		}
-	}, {
 		/**
 		 * @event node:expand
 		 * @description Fires when a node is expanded. Preventing the default behavior will

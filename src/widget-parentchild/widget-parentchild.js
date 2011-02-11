@@ -63,9 +63,6 @@ jet().add('widget-parentchild', function ($) {
 				var children = this.get(CHILDREN);
 				var childrenLength = children.length;
 				var self = this;
-				if (Lang.isString(ChildType)) {
-					ChildType = $[ChildType];
-				}
 				if (!(child instanceof ChildType)) {
 					child.parent = this;
 					child = new ChildType(child);
@@ -134,7 +131,10 @@ jet().add('widget-parentchild', function ($) {
 			 * @default WidgetChild 
 			 */
 			childType: {
-				value: $.WidgetChild
+				value: $.WidgetChild,
+				getter: function (val) {
+					return Lang.isString(val) ? $[val] : val;
+				}
 			},
 			
 			/**
