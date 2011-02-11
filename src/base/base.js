@@ -385,17 +385,17 @@ jet().add('base', function ($) {
 		 */
 		Base.superclass.constructor.apply(this, arguments);
 		
-		var constructor = this.constructor;
+		var constrct = this.constructor;
 		var classes = this._classes = [];
 		var i;
-		while (constructor != Base) {
-			classes.unshift(constructor);
-			constructor = constructor.superclass.constructor;
+		while (constrct != Base) {
+			classes.unshift(constrct);
+			constrct = constrct.superclass.constructor;
 		}
 		for (i = 0; i < classes.length; i++) {
 			this.addAttrs(classes[i].ATTRS || {});
 			Hash.each(classes[i].EVENTS || {}, this.on);
-			if (classes[i].prototype.initializer) {
+			if (classes[i].prototype.hasOwnProperty('initializer')) {
 				classes[i].prototype.initializer.call(this);
 			}
 		}
@@ -513,14 +513,17 @@ jet().add('base', function ($) {
 		},
 		
 		_parseHTML: function (parsers, srcNode) {
-			var self = this;
-			var result;
-			Hash.each(parsers, function (attrName, parser) {
-				result = $(parser.call(self, srcNode));
-				if (result[0]) {
-					self.set(attrName, result);
-				}
-			});
+			srcNode = $(srcNode);
+			if (srcNode.inDoc()) {
+				var self = this;
+				var result;
+				Hash.each(parsers, function (attrName, parser) {
+					result = $(parser.call(self, srcNode));
+					if (result[0]) {
+						self.set(attrName, result);
+					}
+				});
+			}
 		},
 		
 		/**
@@ -587,7 +590,6 @@ jet().add('base', function ($) {
 			var boundingBox = this.get(BOUNDING_BOX);
 			var contentBox = this.get(CONTENT_BOX);
 			var node = this.get(SRC_NODE);
-			var first = node.first(), inner = first.first();
 			var className, classPrefix = this.get(CLASS_PREFIX);
 			var classes = this._classes;
 			var setDomEvents = function (name, activated) {
@@ -596,12 +598,12 @@ jet().add('base', function ($) {
 				}
 			};
 			if (target) {
-				node = target;
+				srcNode = target;
 				self.set(SRC_NODE, target);
 			}
 
 			A.each(classes, function (someClass) {
-				this._parseHTML(someClass.HTML_PARSER || {}, node);
+				self._parseHTML(someClass.HTML_PARSER || {}, srcNode);
 			});
 
 			if (this.constructor == Widget) {
@@ -630,11 +632,12 @@ jet().add('base', function ($) {
 				
 				A.each(classes, function (construct) {
 					className = classPrefix + '-' + construct.NAME;
-					boundingBox.addClass(className);
-					contentBox.addClass(className + '-content');
+					boundingBox.addClass(className).attr('id', className + '-' + self._uid);
+					contentBox.addClass(className + '-content').attr('id', className + '-content-' + self._uid);
 				});
 				
-				boundingBox.append(contentBox.css(VISIBILITY, 'inherit')).appendTo(node).css(VISIBILITY, "visible");
+				boundingBox.css(VISIBILITY, "visible").append(contentBox.css(VISIBILITY, 'inherit'));
+				boundingBox.appendTo(srcNode);
 				/**
 				 * Fires after the render process is finished
 				 * @event afterRender
@@ -674,6 +677,8 @@ jet().add('base', function ($) {
 		initializer: function () {
 			$(this.get('win')).on(UNLOAD, bind(this.destroy, this));
 			
+			this._uid = ++Widget._uid;
+			
 			if (!this.get(BOUNDING_BOX)) {
 				this.set(BOUNDING_BOX, $(this.BOUNDING_TEMPLATE));
 			}
@@ -688,7 +693,7 @@ jet().add('base', function ($) {
 
 	}, {
 		
-		CSS_PREFIX: "yui",
+		CSS_PREFIX: "jet",
 		
 		NAME: 'widget',
 		
@@ -711,7 +716,7 @@ jet().add('base', function ($) {
 			/**
 			 * @config classPrefix
 			 * @description Prefix for all CSS clases. Useful for renaming the project
-			 * @default "yui"
+			 * @default "jet"
 			 * @writeOnce
 			 */
 			classPrefix: {
@@ -786,6 +791,7 @@ jet().add('base', function ($) {
 				var reference = $(this.BOUNDING_TEMPLATE)[0].nodeName.toLowerCase();
 				var boundingBox = null;
 				srcNode.children(reference).each(function (child) {
+					child = $(child);
 					if (child.hasClass(self.getClassName())) {
 						boundingBox = child;
 						return false;
@@ -798,6 +804,7 @@ jet().add('base', function ($) {
 				var reference = $(this.CONTENT_TEMPLATE)[0].nodeName.toLowerCase();
 				var contentBox = null;
 				this.get(BOUNDING_BOX).children(reference).each(function (child) {
+					child = $(child);
 					if (child.hasClass(self.getClassName('content'))) {
 						contentBox = child;
 						return false;
@@ -814,8 +821,7 @@ jet().add('base', function ($) {
 		 * @param [String] name Name of the widget class to create
 		 * @param [Array] [Optional] extensions A list of extensions to apply to the created class
 		 * @param [Hash] attrs [Optional] Static properties of the widget (ATTRS, EVENTS, HTML_PARSER, etc) 
-		 * @param [Hash] proto [Optional] Prototype properties to add
-		 * @param [Function] superclass [Optional] Superclass to use. Default: Widget
+		 * @param [Hash] proto [Optional] Prototype properties to adsrcNode* @param [Function] superclass [Optional] Superclass to use. Default: Widget
 		 */
 		create: function (name, extensions, attrs, proto, superclass) {
 			extensions = extensions || [];
@@ -840,7 +846,9 @@ jet().add('base', function ($) {
 			});
 			$.mix(BuiltWidget.prototype, proto);
 			return BuiltWidget;
-		}
+		},
+		
+		_uid: 0
 		
 	});
 	
