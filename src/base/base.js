@@ -512,6 +512,17 @@ jet().add('base', function ($) {
 			this.fire(e.type, e.target);
 		},
 		
+		_parseHTML: function (parsers, srcNode) {
+			var self = this;
+			var result;
+			Hash.each(parsers, function (attrName, parser) {
+				result = $(parser.call(self, srcNode));
+				if (result[0]) {
+					self.set(attrName, result);
+				}
+			});
+		},
+		
 		/**
 		 * Hides the widget
 		 * @method hide
@@ -588,11 +599,17 @@ jet().add('base', function ($) {
 				node = target;
 				self.set(SRC_NODE, target);
 			}
+
+			A.each(classes, function (someClass) {
+				this._parseHTML(someClass.HTML_PARSER || {}, node);
+			});
+
 			if (this.constructor == Widget) {
 				classes = [Widget];
 			} else {
 				classes.shift();
 			}
+			
 			
 			A.each([WIDTH, HEIGHT], function (size) {
 				var value = self.get(size);
@@ -765,10 +782,28 @@ jet().add('base', function ($) {
 		
 		HTML_PARSER: {
 			boundingBox: function (srcNode) {
-				
+				var self = this;
+				var reference = $(this.BOUNDING_TEMPLATE)[0].nodeName.toLowerCase();
+				var boundingBox = null;
+				srcNode.children(reference).each(function (child) {
+					if (child.hasClass(self.getClassName())) {
+						boundingBox = child;
+						return false;
+					}
+				});
+				return boundingBox;
 			},
-			contentBox: function (srcNode) {
-				
+			contentBox: function () {
+				var self = this;
+				var reference = $(this.CONTENT_TEMPLATE)[0].nodeName.toLowerCase();
+				var contentBox = null;
+				this.get(BOUNDING_BOX).children(reference).each(function (child) {
+					if (child.hasClass(self.getClassName('content'))) {
+						contentBox = child;
+						return false;
+					}
+				});
+				return contentBox;
 			}
 		},
 		
