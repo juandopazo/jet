@@ -586,66 +586,68 @@ jet().add('base', function ($) {
 		 * @chainable
 		 */
 		render: function (target) {
-			var self = this;
-			var boundingBox = this.get(BOUNDING_BOX);
-			var contentBox = this.get(CONTENT_BOX);
-			var node = this.get(SRC_NODE);
-			var className, classPrefix = this.get(CLASS_PREFIX);
-			var classes = this._classes;
-			var setDomEvents = function (name, activated) {
-				if (activated) {
-					boundingBox.on(name, self._domEventProxy, self);
+			if (!this.get('rendered')) {
+				var self = this;
+				var boundingBox = this.get(BOUNDING_BOX);
+				var contentBox = this.get(CONTENT_BOX);
+				var srcNode = this.get(SRC_NODE);
+				var className, classPrefix = this.get(CLASS_PREFIX);
+				var classes = this._classes;
+				var setDomEvents = function (name, activated) {
+					if (activated) {
+						boundingBox.on(name, self._domEventProxy, self);
+					}
+				};
+				if (target) {
+					srcNode = target;
+					self.set(SRC_NODE, target);
 				}
-			};
-			if (target) {
-				srcNode = target;
-				self.set(SRC_NODE, target);
-			}
-
-			A.each(classes, function (someClass) {
-				self._parseHTML(someClass.HTML_PARSER || {}, srcNode);
-			});
-
-			if (this.constructor == Widget) {
-				classes = [Widget];
-			} else {
-				classes.shift();
-			}
-			
-			
-			A.each([WIDTH, HEIGHT], function (size) {
-				var value = self.get(size);
-				if (Lang.isNumber(value)) {
-					boundingBox[size](value);
+	
+				A.each(classes, function (someClass) {
+					self._parseHTML(someClass.HTML_PARSER || {}, srcNode);
+				});
+	
+				if (this.constructor == Widget) {
+					classes = [Widget];
+				} else {
+					classes.shift();
 				}
-				self.on(size + 'Change', function (e, newVal) {
-					newVal = Lang.isNumber(newVal) ? newVal : '';
-					self.get(BOUNDING_BOX)[size](newVal);
-				});
-			});
-			/**
-			 * Render event. Preventing the default behavior will stop the rendering process
-			 * @event render
-			 * @see Widget.render()
-			 */
-			if (this.fire("render")) {
 				
-				A.each(classes, function (construct) {
-					className = classPrefix + '-' + construct.NAME;
-					boundingBox.addClass(className).attr('id', className + '-' + self._uid);
-					contentBox.addClass(className + '-content').attr('id', className + '-content-' + self._uid);
-				});
 				
-				boundingBox.css(VISIBILITY, "visible").append(contentBox.css(VISIBILITY, 'inherit'));
-				boundingBox.appendTo(srcNode);
+				A.each([WIDTH, HEIGHT], function (size) {
+					var value = self.get(size);
+					if (Lang.isNumber(value)) {
+						boundingBox[size](value);
+					}
+					self.on(size + 'Change', function (e, newVal) {
+						newVal = Lang.isNumber(newVal) ? newVal : '';
+						self.get(BOUNDING_BOX)[size](newVal);
+					});
+				});
 				/**
-				 * Fires after the render process is finished
-				 * @event afterRender
+				 * Render event. Preventing the default behavior will stop the rendering process
+				 * @event render
+				 * @see Widget.render()
 				 */
-				self.set("rendered", true).focus();
-				setTimeout(function () {
-					self.fire("afterRender");
-				}, 0);
+				if (this.fire("render")) {
+					
+					A.each(classes, function (construct) {
+						className = classPrefix + '-' + construct.NAME;
+						boundingBox.addClass(className).attr('id', className + '-' + self._uid);
+						contentBox.addClass(className + '-content').attr('id', className + '-content-' + self._uid);
+					});
+					
+					boundingBox.css(VISIBILITY, "visible").append(contentBox.css(VISIBILITY, 'inherit'));
+					boundingBox.appendTo(srcNode);
+					/**
+					 * Fires after the render process is finished
+					 * @event afterRender
+					 */
+					self.set("rendered", true).focus();
+					setTimeout(function () {
+						self.fire("afterRender");
+					}, 0);
+				}
 			}
 			return this;
 		},
@@ -659,18 +661,18 @@ jet().add('base', function ($) {
 			 * Preventing the default behavior will stop the destroy process
 			 * @event destroy
 			 */
-			if (self.fire(DESTROY)) {
+			if (this.fire(DESTROY)) {
 				/*
 				 * Avoiding memory leaks, specially in IE
 				 */
-				self.get(BOUNDING_BOX).unbindAll(true).remove();
+				this.get(BOUNDING_BOX).unbindAll(true).remove();
 				/*
 				 * Helping gargage collection
 				 */
-				Hash.each(self, function (name) {
+				$(this.get('win')).unbind(this.destroy);
+				Hash.each(this, function (name) {
 					delete self[name];
 				});
-				$(self.get('win')).unbind(self.destroy);
 			}
 		},
 		
