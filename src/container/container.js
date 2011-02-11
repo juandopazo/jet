@@ -69,56 +69,60 @@ jet().add("container", function ($) {
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
 	$.Module = $.Widget.create('module', {
-		/**
-		 * @config header
-		 * @description The header of the module.
-		 * If set to a string a node is creating and the string is set to its innerHTML
-		 * @type DOM Node | String | NodeList
-		 */
-		header: {
-			validator: Lang.isValue
+		ATTRS: {
+			/**
+			 * @config header
+			 * @description The header of the module.
+			 * If set to a string a node is creating and the string is set to its innerHTML
+			 * @type DOM Node | String | NodeList
+			 */
+			header: {
+				validator: Lang.isValue
+			},
+			/**
+			 * @config body
+			 * @description The body of the module.
+			 * If set to a string a node is creating and the string is set to its innerHTML
+			 * A body is always present in a Module
+			 * @type DOM Node | String | NodeList
+			 * @default ""
+			 */
+			body: {
+				value: "",
+				validator: Lang.isValue
+			},
+			/**
+			 * @config footer
+			 * @description The footer of the module.
+			 * If set to a string a node is creating and the string is set to its innerHTML
+			 * @type DOM Node | String | NodeList
+			 */
+			footer: {
+				validator: Lang.isValue
+			}
 		},
-		/**
-		 * @config body
-		 * @description The body of the module.
-		 * If set to a string a node is creating and the string is set to its innerHTML
-		 * A body is always present in a Module
-		 * @type DOM Node | String | NodeList
-		 * @default ""
-		 */
-		body: {
-			value: "",
-			validator: Lang.isValue
-		},
-		/**
-		 * @config footer
-		 * @description The footer of the module.
-		 * If set to a string a node is creating and the string is set to its innerHTML
-		 * @type DOM Node | String | NodeList
-		 */
-		footer: {
-			validator: Lang.isValue
-		}
-	}, {
-	
-		render: function () {
-			var self = this;
-			var boundingBox = this.get(BOUNDING_BOX);
-			// append the header, body and footer to the bounding box if present
-			A.each(['header', 'body', 'footer'], function (name) {
-				var value = self.get(name);
-				if (value.nodeName && value.nodeName == 1) {
-					value = $(value);
-				} else if (value instanceof $.NodeList) {
-					value = $(value[0]);
-				} else {
-					value = $('<div/>').html(value);
-				}
-				value.addClass(name).appendTo(boundingBox);
-				self.set(name, value);
-			});
-		}
 		
+		EVENTS: {
+		
+			render: function () {
+				var self = this;
+				var boundingBox = this.get(BOUNDING_BOX);
+				// append the header, body and footer to the bounding box if present
+				A.each(['header', 'body', 'footer'], function (name) {
+					var value = self.get(name);
+					if (value.nodeName && value.nodeName == 1) {
+						value = $(value);
+					} else if (value instanceof $.NodeList) {
+						value = $(value[0]);
+					} else {
+						value = $('<div/>').html(value);
+					}
+					value.addClass(name).appendTo(boundingBox);
+					self.set(name, value);
+				});
+			}
+			
+		}
 	}, {
 		CONTENT_TEMPLATE: null
 	});
@@ -138,184 +142,190 @@ jet().add("container", function ($) {
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
 	$.Overlay = Widget.create('overlay', {
-		/**
-		 * @config center
-		 * @description If true, the overlay is positioned in the center of the page
-		 * @type Boolean
-		 * @default true
-		 */
-		center: {
-			value: true
-		},
-		/**
-		 * @config fixed
-		 * @description If true, the overlay is position is set to fixed
-		 * @type Boolean
-		 * @default false
-		 */
-		fixed: {
-			value: false
-		},
-		/**
-		 * @config top
-		 * @description The top position in pixels
-		 * @type Number
-		 */
-		top: {
-			validator: Lang.isNumber,
-			setter: function (value) {
-				this.unset(BOTTOM);
-				return value;
-			}
-		},
-		/**
-		 * @config left
-		 * @description The left position in pixels
-		 * @type Number
-		 */
-		left: {
-			validator: Lang.isNumber,
-			setter: function (value) {
-				this.unset(RIGHT);
-				return value;
-			}
-		},
-		/**
-		 * @config bottom
-		 * @description The bottom position in pixels
-		 * @type Number
-		 */
-		bottom: {
-			validator: Lang.isNumber,
-			setter: function (value) {
-				this.unset(TOP);
-				return value;
-			}
-		},
-		/**
-		 * @config right
-		 * @description The right position in pixels
-		 * @type Number
-		 */
-		right: {
-			validator: Lang.isNumber,
-			setter: function (value) {
-				this.unset(LEFT);
-				return value;
-			}
-		},
-		/**
-		 * @config draggable
-		 * @description If true, the overlay can be dragged. Requires $.Drag
-		 * @default false
-		 * @type Boolean
-		 */
-		draggable: {
-			validator: function () {
-				return !!$.Drag;
+		
+		ATTRS: {
+			/**
+			 * @config center
+			 * @description If true, the overlay is positioned in the center of the page
+			 * @type Boolean
+			 * @default true
+			 */
+			center: {
+				value: true
 			},
-			value: false
-		},
-		/**
-		 * @config modal
-		 * @description Whether this overlay should stop the user from interacting with the rest of the page
-		 * @default faulse
-		 * @type Boolean
-		 */
-		modal: {
-			value: false
-		},
-		
-		startZIndex: {
-			value: Global.overlays.length - 1,
-			readOnly: true
-		},
-		/**
-		 * @config modalBox
-		 * @config Node that prevents the user from interacting with the page if 'modal' is set to true
-		 * @type NodeList
-		 * @readOnly
-		 */
-		modalBox: {
-			value: $('<div/>'),
-			readOnly: true
-		}
-	}, {
-		
-		render: function (e) {
-			var win = $(this.get('win'));
-			var self = this;
-			var boundingBox = this.get(BOUNDING_BOX);
-			var fixed = this.get(FIXED);
-			var pos = fixed && UA_SUPPORTS_FIXED ? FIXED : "absolute";
-			var height = this.get(HEIGHT);
-			var screenSize = DOM.screenSize();
-			var modal = this.get('modalBox').css({
-				position: pos,
-				top: "0px",
-				left: "0px",
-				background: "#000",
-				visibility: !self.get("modal") ? "hidden" : "",
-				zIndex: Global.ovZindex + this.get('startZindex') - 1,
-				opacity: 0.4
-			}).width(screenSize.width).height(screenSize.height).appendTo(this.get('doc').body);
-			win.on(RESIZE, this._resizeModal);
-			self.on("hide", modal.hide, modal).on("show", function () {
-				if (self.get("modal")) {
-					modal.show();
+			/**
+			 * @config fixed
+			 * @description If true, the overlay is position is set to fixed
+			 * @type Boolean
+			 * @default false
+			 */
+			fixed: {
+				value: false
+			},
+			/**
+			 * @config top
+			 * @description The top position in pixels
+			 * @type Number
+			 */
+			top: {
+				validator: Lang.isNumber,
+				setter: function (value) {
+					this.unset(BOTTOM);
+					return value;
 				}
-			});
-			boundingBox.css({
-				position: pos,
-				zIndex: Global.ovZindex + this.get('startZindex')
-			}).width(self.get(WIDTH)).on("mousedown", self.focus, self);
-			this._repositionUI.call(this);
+			},
+			/**
+			 * @config left
+			 * @description The left position in pixels
+			 * @type Number
+			 */
+			left: {
+				validator: Lang.isNumber,
+				setter: function (value) {
+					this.unset(RIGHT);
+					return value;
+				}
+			},
+			/**
+			 * @config bottom
+			 * @description The bottom position in pixels
+			 * @type Number
+			 */
+			bottom: {
+				validator: Lang.isNumber,
+				setter: function (value) {
+					this.unset(TOP);
+					return value;
+				}
+			},
+			/**
+			 * @config right
+			 * @description The right position in pixels
+			 * @type Number
+			 */
+			right: {
+				validator: Lang.isNumber,
+				setter: function (value) {
+					this.unset(LEFT);
+					return value;
+				}
+			},
+			/**
+			 * @config draggable
+			 * @description If true, the overlay can be dragged. Requires $.Drag
+			 * @default false
+			 * @type Boolean
+			 */
+			draggable: {
+				validator: function () {
+					return !!$.Drag;
+				},
+				value: false
+			},
+			/**
+			 * @config modal
+			 * @description Whether this overlay should stop the user from interacting with the rest of the page
+			 * @default faulse
+			 * @type Boolean
+			 */
+			modal: {
+				value: false
+			},
+			
+			startZIndex: {
+				value: Global.overlays.length - 1,
+				readOnly: true
+			},
+			/**
+			 * @config modalBox
+			 * @config Node that prevents the user from interacting with the page if 'modal' is set to true
+			 * @type NodeList
+			 * @readOnly
+			 */
+			modalBox: {
+				value: $('<div/>'),
+				readOnly: true
+			}
 		},
 		
-		afterRender: function () {
-			var self = this;
-			var boundingBox = this.get(BOUNDING_BOX);
-			var win = $(this.get('win'));
-			var head = this.get(HEADER);
-			var fixed = this.get(FIXED);
-			var centerUI = this._centerUI;
-			if (this.get("draggable")) {
-				this.dd = new $.Drag({
-					node: boundingBox,
-					handlers: head
+		EVENTS: {
+			
+			render: function (e) {
+				var win = $(this.get('win'));
+				var self = this;
+				var boundingBox = this.get(BOUNDING_BOX);
+				var fixed = this.get(FIXED);
+				var pos = fixed && UA_SUPPORTS_FIXED ? FIXED : "absolute";
+				var height = this.get(HEIGHT);
+				var screenSize = DOM.screenSize();
+				var modal = this.get('modalBox').css({
+					position: pos,
+					top: "0px",
+					left: "0px",
+					background: "#000",
+					visibility: !self.get("modal") ? "hidden" : "",
+					zIndex: Global.ovZindex + this.get('startZindex') - 1,
+					opacity: 0.4
+				}).width(screenSize.width).height(screenSize.height).appendTo(this.get('doc').body);
+				win.on(RESIZE, this._resizeModal);
+				self.on("hide", modal.hide, modal).on("show", function () {
+					if (self.get("modal")) {
+						modal.show();
+					}
 				});
-			}
-			if (this.get(CENTER)) {
-				centerUI.call(this);
-				win.on(RESIZE, centerUI, this);
-				if (fixed || !UA_SUPPORTS_FIXED) {
-					win.on(SCROLL, centerUI, this);
+				boundingBox.css({
+					position: pos,
+					zIndex: Global.ovZindex + this.get('startZindex')
+				}).width(self.get(WIDTH)).on("mousedown", self.focus, self);
+				this._repositionUI.call(this);
+			},
+			
+			afterRender: function () {
+				var self = this;
+				var boundingBox = this.get(BOUNDING_BOX);
+				var win = $(this.get('win'));
+				var head = this.get(HEADER);
+				var fixed = this.get(FIXED);
+				var centerUI = this._centerUI;
+				if (this.get("draggable")) {
+					this.dd = new $.Drag({
+						node: boundingBox,
+						handlers: head
+					});
 				}
-				this.on("afterShow", centerUI, this);
-			} else if (fixed && !UA_SUPPORTS_FIXED) {
-				win.on(SCROLL, this._repositionUI, this).on(RESIZE, this._repositionUI, this);
+				if (this.get(CENTER)) {
+					centerUI.call(this);
+					win.on(RESIZE, centerUI, this);
+					if (fixed || !UA_SUPPORTS_FIXED) {
+						win.on(SCROLL, centerUI, this);
+					}
+					this.on("afterShow", centerUI, this);
+				} else if (fixed && !UA_SUPPORTS_FIXED) {
+					win.on(SCROLL, this._repositionUI, this).on(RESIZE, this._repositionUI, this);
+				}
+	
+			},
+			
+			focus: function () {
+				A.remove(this, Global.overlays);
+				Global.overlays.push(this);
+				var olays = Global.overlays, i, length = olays.length;
+				for (i = 0; i < length; i++) {
+					olays[i].get(BOUNDING_BOX).css("zIndex", Global.ovZindex + i);
+				}
+			},
+			
+			destroy: function () {
+				var win = $(this.get('win')).unbind(RESIZE, this._centerUI).unbind(SCROLL, this._centerUI);
+				win.unbind(RESIZE, this._repositionUI).unbind(SCROLL, this._repositionUI);
+				win.unbind(RESIZE, this._resizeModal);
+				if (this.dd) {
+					this.dd.destroy();
+				}
+				this.get(BOUNDING_BOX).unbind("mousedown", this.focus);
 			}
-
-		},
-		
-		focus: function () {
-			A.remove(this, Global.overlays);
-			Global.overlays.push(this);
-			var olays = Global.overlays, i, length = olays.length;
-			for (i = 0; i < length; i++) {
-				olays[i].get(BOUNDING_BOX).css("zIndex", Global.ovZindex + i);
-			}
-		},
-		
-		destroy: function () {
-			var win = $(this.get('win')).unbind(RESIZE, this._centerUI).unbind(SCROLL, this._centerUI);
-			win.unbind(RESIZE, this._repositionUI).unbind(SCROLL, this._repositionUI);
-			win.unbind(RESIZE, this._resizeModal);
-			if (this.dd) {
-				this.dd.destroy();
-			}
-			this.get(BOUNDING_BOX).unbind("mousedown", this.focus);
 		}
+		
 	}, {
 	
 		// centers the overlay in the screen
@@ -386,30 +396,34 @@ jet().add("container", function ($) {
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
 	$.Tooltip = Widget.create('tooltip', {
-		position: {
-			value: "r"
-		},
-		/**
-		 * @config fadeIn
-		 * @description Whether to use a fade animation when appearing. Requires Anim module
-		 * @default false
-		 */
-		fadeIn: {
-			value: false,
-			validator: function () {
-				return !!$.Tween;
+		ATTRS: {
+			position: {
+				value: "r"
+			},
+			/**
+			 * @config fadeIn
+			 * @description Whether to use a fade animation when appearing. Requires Anim module
+			 * @default false
+			 */
+			fadeIn: {
+				value: false,
+				validator: function () {
+					return !!$.Tween;
+				}
 			}
-		}
-	}, {
-		render: function () {
-			this.hide().set("body", this.get("body") || this.get("srcNode").attr("title"));
-			this.get("srcNode").on("mouseover", this.show).on("mouseout", this.hide);
 		},
-		show: function () {
-			var offset = this.get("srcNode").offset();
-			this.set("left", offset.left).set("top", offset.top + offset.height);
-			if (this.get("fadeIn")) {
-				this.get(BOUNDING_BOX).css("opacity", 0).fadeIn(this.get("fadeIn"));
+		
+		EVENTS: {
+			render: function () {
+				this.hide().set("body", this.get("body") || this.get("srcNode").attr("title"));
+				this.get("srcNode").on("mouseover", this.show).on("mouseout", this.hide);
+			},
+			show: function () {
+				var offset = this.get("srcNode").offset();
+				this.set("left", offset.left).set("top", offset.top + offset.height);
+				if (this.get("fadeIn")) {
+					this.get(BOUNDING_BOX).css("opacity", 0).fadeIn(this.get("fadeIn"));
+				}
 			}
 		}
 	}, {}, $.Overlay);
@@ -521,7 +535,10 @@ jet().add("container", function ($) {
 		}
 		
 	};
-	$.Panel = Widget.create('panel', panelAttrs, panelEvents, panelMethods, $.Overlay);
+	$.Panel = Widget.create('panel', {
+		ATTRS: panelAttrs,
+		EVENTS: panelEvents
+	}, panelMethods, $.Overlay);
 	
 	/**
 	 * An panel with static position and a close button
@@ -552,7 +569,10 @@ jet().add("container", function ($) {
 		 * @description If true, the panel shows a shadow
 		 * @default true
 		 */
-	$.StaticPanel = Widget.create('panel', panelAttrs, panelEvents, panelMethods, $.Module);
+	$.StaticPanel = Widget.create('panel', {
+		ATTRS: panelAttrs,
+		EVENTS: panelEvents
+	}, panelMethods, $.Module);
 	
 	/**
 	 * A SimpleDialog is a Panel with simple form options and a button row instead of the footer
@@ -562,31 +582,34 @@ jet().add("container", function ($) {
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
 	$.SimpleDialog = Widget.create('dialog', {
-		
-		/**
-		 * @config buttons
-		 * @description An array of button configuration objects
-		 * @default []
-		 * @type Array
-		 */
-		buttons: {
-			value: []
-		}
-		
-	}, {
-		render: function (e) {
-			var self = this;
-			var buttonArea = $(NEW_DIV).addClass("button-group");
-			A.each(this.get("buttons"), function (config, i) {
-				var button = new $.Button(config);
-				if (i === 0) {
-					button.get(BOUNDING_BOX).addClass(self.getClassName("default"));
-				}
-				button.on(PRESSED, function () {
-					self.hide();
-				}).render(buttonArea);
-			});
-			this.get(FOOTER).append(buttonArea);
+		ATTRS: {
+			
+			/**
+			 * @config buttons
+			 * @description An array of button configuration objects
+			 * @default []
+			 * @type Array
+			 */
+			buttons: {
+				value: []
+			}
+			
+		},
+		EVENTS: {
+			render: function (e) {
+				var self = this;
+				var buttonArea = $(NEW_DIV).addClass("button-group");
+				A.each(this.get("buttons"), function (config, i) {
+					var button = new $.Button(config);
+					if (i === 0) {
+						button.get(BOUNDING_BOX).addClass(self.getClassName("default"));
+					}
+					button.on(PRESSED, function () {
+						self.hide();
+					}).render(buttonArea);
+				});
+				this.get(FOOTER).append(buttonArea);
+			}
 		}
 	}, {}, $.Panel);
 	

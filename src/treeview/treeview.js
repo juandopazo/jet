@@ -52,96 +52,111 @@ jet().add('treeview', function ($) {
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
 	$.TreeNode = Widget.create('treenode', [$.WidgetParent, $.WidgetChild], {
-		/**
-		 * @config type
-		 * @description Type of the node. Available types are 'text'
-		 * @default "text"
-		 */
-		type: {
-			value: "text"
-		},
-		/**
-		 * @config title
-		 * @description Title attribute for the node
-		 * @type String
-		 */
-		title: {
-			value: ''
-		},
-		/**
-		 * @config label
-		 * @description This node's label or title
-		 * @type String|HTMLElement
-		 */
-		label: {
-			value: ''
-		},
-		/**
-		 * @config controlNode
-		 * @description Node that expands/collapses this TreeNode
-		 * @writeOnce
-		 */
-		controlNode: {
-			value: $('<span/>'),
-			setter: $,
-			writeOnce: true
-		},
-		/**
-		 * @config labelNode
-		 * @description Node that holds this TreeNode's title/label
-		 * @writeOnce
-		 */
-		labelNode: {
-			value: $('<span/>'),
-			setter: $,
-			writeOnce: true
-		},
-		childType: {
-			value: 'TreeNode',
-			readOnly: true
-		}
 		
-	}, {
-		
-		labelChange: function (e, newVal) {
-			var label = this.get(LABEL_NODE);
-			if (Lang.isString(newVal)) {
-				label.html(newVal);
-			} else {
-				label.append(newVal);
+		ATTRS: {
+			/**
+			 * @config type
+			 * @description Type of the node. Available types are 'text'
+			 * @default "text"
+			 */
+			type: {
+				value: "text"
+			},
+			/**
+			 * @config title
+			 * @description Title attribute for the node
+			 * @type String
+			 */
+			title: {
+				value: ''
+			},
+			/**
+			 * @config label
+			 * @description This node's label or title
+			 * @type String|HTMLElement
+			 */
+			label: {
+				value: ''
+			},
+			/**
+			 * @config controlNode
+			 * @description Node that expands/collapses this TreeNode
+			 * @writeOnce
+			 */
+			controlNode: {
+				value: $('<span/>'),
+				setter: $,
+				writeOnce: true
+			},
+			/**
+			 * @config labelNode
+			 * @description Node that holds this TreeNode's title/label
+			 * @writeOnce
+			 */
+			labelNode: {
+				value: $('<span/>'),
+				setter: $,
+				writeOnce: true
+			},
+			childType: {
+				value: 'TreeNode',
+				readOnly: true
 			}
+			
 		},
 		
-		titleChange: function (e, newVal) {
-			this.get(CONTROL_NODE).attr(TITLE, newVal);
-			this.get(LABEL_NODE).attr(TITLE, newVal);
-		},
-		
-		selectedChange: function (e, newVal, oldVal) {
-			this._expandedChange.call(this, newVal, oldVal);
-		},
-		
-		click: function (e, domEvent) {
-			if (domEvent.target == this.get(LABEL_NODE)) {
-				this.set(SELECTED, !this.get(SELECTED));
+		EVENTS: {
+			
+			labelChange: function (e, newVal) {
+				var label = this.get(LABEL_NODE);
+				if (Lang.isString(newVal)) {
+					label.html(newVal);
+				} else {
+					label.append(newVal);
+				}
+			},
+			
+			titleChange: function (e, newVal) {
+				this.get(CONTROL_NODE).attr(TITLE, newVal);
+				this.get(LABEL_NODE).attr(TITLE, newVal);
+			},
+			
+			selectedChange: function (e, newVal, oldVal) {
+				this._expandedChange.call(this, newVal, oldVal);
+			},
+			
+			click: function (e, domEvent) {
+				if (domEvent.target == this.get(LABEL_NODE)) {
+					this.set(SELECTED, !this.get(SELECTED));
+				}
+			},
+			
+			render: function () {
+				var boundingBox = this.get(BOUNDING_BOX);
+				var contentBox = this.get(CONTENT_BOX);
+				var labelNode = this.get(LABEL_NODE).html(this.get(LABEL)).addClass(this.getClassName(LABEL));
+				var controlNode = this.get(CONTROL_NODE).addClass(this.getClassName(CONTROL));
+				var expanded = this.get(EXPANDED);
+				labelNode.appendTo(contentBox);
+				controlNode.attr(TITLE, this.get(TITLE)).prependTo(boundingBox);
+				labelNode.link(controlNode).on(CLICK, this.toggle);
+				this._expandedChange(expanded, expanded);
+			},
+			
+			destroy: function () {
+				this.get(LABEL_NODE).unbind(CLICK, this.toggle);
+				this.get(CONTROL_NODE).unbind(CLICK, this.toggle);
 			}
+			
 		},
 		
-		render: function () {
-			var boundingBox = this.get(BOUNDING_BOX);
-			var contentBox = this.get(CONTENT_BOX);
-			var labelNode = this.get(LABEL_NODE).html(this.get(LABEL)).addClass(this.getClassName(LABEL));
-			var controlNode = this.get(CONTROL_NODE).addClass(this.getClassName(CONTROL));
-			var expanded = this.get(EXPANDED);
-			labelNode.appendTo(contentBox);
-			controlNode.attr(TITLE, this.get(TITLE)).prependTo(boundingBox);
-			labelNode.link(controlNode).on(CLICK, this.toggle);
-			this._expandedChange(expanded, expanded);
-		},
-		
-		destroy: function () {
-			this.get(LABEL_NODE).unbind(CLICK, this.toggle);
-			this.get(CONTROL_NODE).unbind(CLICK, this.toggle);
+		HTML_PARSER: {
+			labelNode: function () {
+				
+			},
+			controlNode: function () {
+				
+			}
 		}
 		
 	}, {

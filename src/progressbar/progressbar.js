@@ -28,104 +28,110 @@ jet().add('progressbar', function ($) {
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
 	$.ProgressBar = $.Widget.create('progressbar', [], {
-		/**
-		 * @config minMvalue
-		 * @description Minimum value that the progressbar data will take
-		 * @default 0
-		 */
-		minValue: {
-			value: 0
-		},
-		/**
-		 * @config maxMvalue
-		 * @description Maximum value that the progressbar data will take
-		 * @default 100
-		 */
-		maxValue: {
-			value: 100
-		},
-		/**
-		 * @config value
-		 * @description Current value the progressbar is taking
-		 * @default 0
-		 */
-		value: {
-			value: 0
-		},
-		width: {
-			value: 200
-		},
-		height: {
-			value: 20
-		},
-		/**
-		 * @config direction
-		 * @description Direction in which the progressbar increases its size. May be "ltr", "ttb" or "btt"
-		 * @default "ltr"
-		 */
-		direction: {
-			value: "ltr"
-		},
-		/**
-		 * @config animate
-		 * @description Whether to animate the progressbar progress. The Anim module must be present
-		 * @default false
-		 */
-		animate: {
-			value: false,
-			validator: function () {
-				return !!$.Tween;
+		
+		ATTRS: {
+			/**
+			 * @config minMvalue
+			 * @description Minimum value that the progressbar data will take
+			 * @default 0
+			 */
+			minValue: {
+				value: 0
+			},
+			/**
+			 * @config maxMvalue
+			 * @description Maximum value that the progressbar data will take
+			 * @default 100
+			 */
+			maxValue: {
+				value: 100
+			},
+			/**
+			 * @config value
+			 * @description Current value the progressbar is taking
+			 * @default 0
+			 */
+			value: {
+				value: 0
+			},
+			width: {
+				value: 200
+			},
+			height: {
+				value: 20
+			},
+			/**
+			 * @config direction
+			 * @description Direction in which the progressbar increases its size. May be "ltr", "ttb" or "btt"
+			 * @default "ltr"
+			 */
+			direction: {
+				value: "ltr"
+			},
+			/**
+			 * @config animate
+			 * @description Whether to animate the progressbar progress. The Anim module must be present
+			 * @default false
+			 */
+			animate: {
+				value: false,
+				validator: function () {
+					return !!$.Tween;
+				}
+			},
+			/**
+			 * @config easing
+			 * @description Easing to use when animating
+			 * @default linear
+			 */
+			easing: {
+			},
+			/**
+			 * @config duration
+			 * @description Duration of the animation in case it is being used
+			 * @default 500 ms
+			 */
+			duration: {
+				value: 500
+			},
+			/**
+			 * @config bar
+			 * @description The DOM element that represents the bar in the progressbar
+			 * @readOnly
+			 */
+			bar: {
+				readOnly: true,
+				value: $("<span/>")
 			}
-		},
-		/**
-		 * @config easing
-		 * @description Easing to use when animating
-		 * @default linear
-		 */
-		easing: {
-		},
-		/**
-		 * @config duration
-		 * @description Duration of the animation in case it is being used
-		 * @default 500 ms
-		 */
-		duration: {
-			value: 500
-		},
-		/**
-		 * @config bar
-		 * @description The DOM element that represents the bar in the progressbar
-		 * @readOnly
-		 */
-		bar: {
-			readOnly: true,
-			value: $("<span/>")
-		}
-	}, {
-		valueChange: function (e, newVal, oldVal) {
-			if (this.fire(PROGRESS, newVal)) {
-				this._update(newVal);
-			} else {
-				e.preventDefault();
-			}
-			
 		},
 		
-		directionChange: function (e, newVal, oldVal) {
-			this.get(BOUNDING_BOX).removeClass(this.getClassName(oldVal)).addClass(this.getClassName(newVal));
-		},
-		
-		render: function () {
-			var direction = this.get('direction');
-			var bar = this.get(BAR).appendTo(this.get(CONTENT_BOX)).addClass(this.getClassName(BAR));
-			this.get(BOUNDING_BOX).addClass(this.getClassName(direction));
-			if (direction == "ltr") {
-				bar.height(this.get(HEIGHT));
-			} else {
-				bar.width(this.get(WIDTH));
-			}
+		EVENTS: {
+			valueChange: function (e, newVal, oldVal) {
+				if (this.fire(PROGRESS, newVal)) {
+					this._update(newVal);
+				} else {
+					e.preventDefault();
+				}
+				
+			},
 			
+			directionChange: function (e, newVal, oldVal) {
+				this.get(BOUNDING_BOX).removeClass(this.getClassName(oldVal)).addClass(this.getClassName(newVal));
+			},
+			
+			render: function () {
+				var direction = this.get('direction');
+				var bar = this.get(BAR).appendTo(this.get(CONTENT_BOX)).addClass(this.getClassName(BAR));
+				this.get(BOUNDING_BOX).addClass(this.getClassName(direction));
+				if (direction == "ltr") {
+					bar.height(this.get(HEIGHT));
+				} else {
+					bar.width(this.get(WIDTH));
+				}
+				
+			}
 		}
+		
 	}, {
 		_update: function (value) {
 			var self = this;

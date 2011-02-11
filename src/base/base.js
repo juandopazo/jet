@@ -388,7 +388,7 @@ jet().add('base', function ($) {
 		var constructor = this.constructor;
 		var classes = this._classes = [];
 		var i;
-		while (constructor != Base.superclass.constructor) {
+		while (constructor != Base) {
 			classes.unshift(constructor);
 			constructor = constructor.superclass.constructor;
 		}
@@ -399,14 +399,9 @@ jet().add('base', function ($) {
 				classes[i].prototype.initializer.call(this);
 			}
 		}
+		Hash.each(this.get("on"), this.on);
 	};
-	extend(Base, Attribute, {
-		
-		initializer: function () {
-			Hash.each(this.get("on"), this.on);
-		}
-		
-	}, {
+	extend(Base, Attribute, {}, {
 		
 		ATTRS: {
 			/**
@@ -582,8 +577,8 @@ jet().add('base', function ($) {
 			var contentBox = this.get(CONTENT_BOX);
 			var node = this.get(SRC_NODE);
 			var first = node.first(), inner = first.first();
-			var construct = this.constructor;
 			var className, classPrefix = this.get(CLASS_PREFIX);
+			var classes = this._classes;
 			var setDomEvents = function (name, activated) {
 				if (activated) {
 					boundingBox.on(name, self._domEventProxy, self);
@@ -592,6 +587,11 @@ jet().add('base', function ($) {
 			if (target) {
 				node = target;
 				self.set(SRC_NODE, target);
+			}
+			if (this.constructor == Widget) {
+				classes = [Widget];
+			} else {
+				classes.shift();
 			}
 			
 			A.each([WIDTH, HEIGHT], function (size) {
@@ -611,21 +611,11 @@ jet().add('base', function ($) {
 			 */
 			if (this.fire("render")) {
 				
-				if (construct == Widget) {
-					className = classPrefix + '-' + Widget.NAME;
+				A.each(classes, function (construct) {
+					className = classPrefix + '-' + construct.NAME;
 					boundingBox.addClass(className);
 					contentBox.addClass(className + '-content');
-				} else {
-					while (construct != Widget) {
-						if (construct.NAME) {
-							className = classPrefix + '-' + construct.NAME;
-							boundingBox.addClass(className);
-							contentBox.addClass(className + '-content');
-						}
-						Hash.each(construct.DOM_EVENTS || {}, setDomEvents);
-						construct = construct.superclass.constructor;
-					}
-				}
+				});
 				
 				boundingBox.append(contentBox.css(VISIBILITY, 'inherit')).appendTo(node).css(VISIBILITY, "visible");
 				/**
@@ -773,18 +763,26 @@ jet().add('base', function ($) {
 			}
 		},
 		
+		HTML_PARSER: {
+			boundingBox: function (srcNode) {
+				
+			},
+			contentBox: function (srcNode) {
+				
+			}
+		},
+		
 		/**
 		 * @method create
 		 * @description creates a new widget class
 		 * @static
 		 * @param [String] name Name of the widget class to create
 		 * @param [Array] [Optional] extensions A list of extensions to apply to the created class
-		 * @param [Hash] events [Optional] Event definitions 
-		 * @param [Hash] attrs [Optional] Attribute definitions 
+		 * @param [Hash] attrs [Optional] Static properties of the widget (ATTRS, EVENTS, HTML_PARSER, etc) 
 		 * @param [Hash] proto [Optional] Prototype properties to add
 		 * @param [Function] superclass [Optional] Superclass to use. Default: Widget
 		 */
-		create: function (name, extensions, attrs, events, proto, superclass) {
+		create: function (name, extensions, attrs, proto, superclass) {
 			extensions = extensions || [];
 			function BuiltWidget() {
 				var args = arguments;
@@ -796,10 +794,9 @@ jet().add('base', function ($) {
 				});
 			}
 			extend(BuiltWidget, superclass || Widget);
+			$.mix(BuiltWidget, attrs || {});
 			$.mix(BuiltWidget, {
 				NAME: name,
-				EVENTS: events,
-				ATTRS: attrs,
 				exts: extensions
 			});
 			A.each(extensions, function (extension) {
