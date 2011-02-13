@@ -84,9 +84,7 @@ jet().add('treeview', function ($) {
 			 * @writeOnce
 			 */
 			controlNode: {
-				value: $('<span/>'),
-				setter: $,
-				writeOnce: true
+				setter: $
 			},
 			/**
 			 * @config labelNode
@@ -94,13 +92,13 @@ jet().add('treeview', function ($) {
 			 * @writeOnce
 			 */
 			labelNode: {
-				value: $('<span/>'),
-				setter: $,
-				writeOnce: true
+				setter: $
 			},
 			childType: {
 				value: 'TreeNode',
-				readOnly: true
+				getter: function (val) {
+					return Lang.isString(val) ? $[val] : val;
+				}
 			}
 			
 		},
@@ -131,6 +129,7 @@ jet().add('treeview', function ($) {
 			},
 			
 			render: function () {
+				this._nodeToggle = $.bind(this.toggle, this);
 				var boundingBox = this.get(BOUNDING_BOX);
 				var contentBox = this.get(CONTENT_BOX);
 				var labelNode = this.get(LABEL_NODE).html(this.get(LABEL)).addClass(this.getClassName(LABEL));
@@ -138,20 +137,17 @@ jet().add('treeview', function ($) {
 				var expanded = this.get(SELECTED);
 				var title = this.get(TITLE);
 				labelNode.appendTo(contentBox);
+				controlNode.prependTo(boundingBox);
 				if (title) {
 					controlNode.attr(TITLE, title);
 				}
-				labelNode.link(controlNode).on(CLICK, this.toggle);
+				labelNode.link(controlNode).on(CLICK, this._nodeToggle);
 				this._expandedChange(expanded, expanded);
 			},
 			
-			afterRender: function () {
-				this.get(CONTROL_NODE).prependTo(this.get(BOUNDING_BOX));
-			},
-			
 			destroy: function () {
-				this.get(LABEL_NODE).unbind(CLICK, this.toggle);
-				this.get(CONTROL_NODE).unbind(CLICK, this.toggle);
+				this.get(LABEL_NODE).unbind(CLICK, this._nodeToggle);
+				this.get(CONTROL_NODE).unbind(CLICK, this._nodeToggle);
 			}
 			
 		},
@@ -166,6 +162,14 @@ jet().add('treeview', function ($) {
 		}
 		
 	}, {
+		
+		LABEL_TEMPLATE: '<span/>',
+		CONTROL_TEMPLATE: '<span/>',
+		
+		initializer: function () {
+			this.set(LABEL_NODE, this.LABEL_TEMPLATE);
+			this.set(CONTROL_NODE, this.CONTROL_TEMPLATE);
+		},
 		
 		_expandedChange: function (newVal, oldVal) {
 			var boundingBox = this.get(BOUNDING_BOX);

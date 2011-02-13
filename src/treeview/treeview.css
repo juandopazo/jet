@@ -17,7 +17,7 @@
 	display: inline-block;
 }
 .jet-treenode-control-expanded, .jet-treenode-control-collapsed {
-	background-image: url(/jetdev/src/treeview/treeview-control.png);
+	background-image: url(/jet/src/treeview/treeview-control.png);
 	box-shadow: 0px 0px 0px #FFF;
 }
 .jet-treenode-control-expanded {
@@ -39,5 +39,7 @@
 }
 .jet-treenode-content {
 }
-.jet-treenode-content-expanded {
+.jet-treenode-content-collapsed {
+	height: 2em;
+	overflow: hidden;
 }

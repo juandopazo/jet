@@ -603,9 +603,9 @@ jet().add('base', function ($) {
 					self.set(SRC_NODE, target);
 				}
 	
-				A.each(classes, function (someClass) {
+				/*A.each(classes, function (someClass) {
 					self._parseHTML(someClass.HTML_PARSER || {}, srcNode);
-				});
+				});*/
 	
 				if (this.constructor == Widget) {
 					classes = [Widget];
@@ -637,8 +637,10 @@ jet().add('base', function ($) {
 						contentBox.addClass(className + '-content').attr('id', className + '-content-' + self._uid);
 					});
 					
-					boundingBox.css(VISIBILITY, "visible").append(contentBox.css(VISIBILITY, 'inherit'));
-					boundingBox.appendTo(srcNode);
+					if (boundingBox[0] != contentBox[0]) {
+						boundingBox.append(contentBox.css(VISIBILITY, 'inherit'));
+					}
+					boundingBox.css(VISIBILITY, "visible").appendTo(srcNode);
 					/**
 					 * Fires after the render process is finished
 					 * @event afterRender
@@ -836,7 +838,7 @@ jet().add('base', function ($) {
 					Hash.each(extension.EVENTS || {}, self.on);
 				});
 			}
-			extend(BuiltWidget, superclass || Widget);
+			extend(BuiltWidget, superclass || Widget, proto);
 			$.mix(BuiltWidget, attrs || {});
 			$.mix(BuiltWidget, {
 				NAME: name,
@@ -846,7 +848,6 @@ jet().add('base', function ($) {
 				$.mix(BuiltWidget.prototype, extension.prototype);
 				$.mix(BuiltWidget.ATTRS, extension.ATTRS || {});
 			});
-			$.mix(BuiltWidget.prototype, proto);
 			return BuiltWidget;
 		},
 		
