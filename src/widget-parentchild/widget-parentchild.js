@@ -1,3 +1,14 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
+/**
+ * A module declaring extensions for parent/child relationships between nodes
+ * @module widget-parentchild
+ * @requires jet, node, base
+ * @namespace
+ */
 jet().add('widget-parentchild', function ($) {
 
 	var Lang = $.Lang,
@@ -14,6 +25,8 @@ jet().add('widget-parentchild', function ($) {
 		CHILDREN = 'children',
 		CLASS_PREFIX = 'classPrefix',
 		CLASS_NAME = 'className',
+		MULTIPLE = 'multiple',
+		SELECTION = 'selection',
 		PARENT = 'parent';
 	
 	/**
@@ -30,12 +43,15 @@ jet().add('widget-parentchild', function ($) {
 		},
 		
 		_onSelect: function (e) {
-			if (!this.get('multiple')) {
-				A.each(this.get(CHILDREN), function (child) {
-					if (child != e.target) {
-						child.unselect();
-					}
-				});
+			var selection = this.get(SELECTION);
+			if (this.get(MULTIPLE)) {
+				if (!Lang.isArray(selection)) {
+					selection = [];
+					this.set(SELECTION, selection);
+				}
+				selection.push(e.target);
+			} else {
+				this.set(SELECTION, e.target);
 			}
 		},
 		
@@ -72,7 +88,7 @@ jet().add('widget-parentchild', function ($) {
 				child.render(this.get(CONTENT_BOX));
 				
 				child.on(INDEX + CHANGE, this._onIndexChange);
-				child.on(SELECT, this._onSelect);
+				child.on(SELECT, $.bind(this._onSelect, this));
 				child.on('destroy', function (e) {
 					self._unHook.call(self, e.target);
 				});
@@ -110,12 +126,6 @@ jet().add('widget-parentchild', function ($) {
 				this.fire('afterRemoveChild', child);
 			}
 			return this;
-		},
-		
-		_domEventChildrenProxy: function (e, target) {
-			A.each(this.get(CHILDREN), function (child) {
-				child.fire(e.type, target);
-			});
 		}
 		
 	};
@@ -126,13 +136,42 @@ jet().add('widget-parentchild', function ($) {
 		EVENTS: {
 			afterRender: function () {
 				var self = this;
+				var domEventChildrenProxy = function (e, domEvent) {
+					var target = $(domEvent.target);
+					var boundingBox = this.get(BOUNDING_BOX);
+					var children = this.get(CHILDREN);
+					var i, length = children.length, found = false;
+					while (target[0] != boundingBox[0]) {
+						for (i = 0; i < length; i++) {
+							if (target[0] == children[i].get(BOUNDING_BOX)[0]) {
+								children[i].fire(e.type, domEvent);
+								found = true;
+								break;
+							}
+						}
+						if (found) {
+							break;
+						}
+						target = target.parent();
+					}
+				};
 				A.each(this.get(CHILDREN), this.add, this);
-				if (!this.get('multiple') && !this.get('selection')) {
+				if (!this.get(MULTIPLE) && !this.get('selection')) {
 					this.item(0).select();
 				}
 				Hash.each($.Widget.DOM_EVENTS, function (name) {
-					self.on(name, self._domEventChildrenProxy);
+					self.on(name, domEventChildrenProxy);
 				});
+			},
+			
+			afterSelectionChange: function (e, newVal) {
+				if (!this.get(MULTIPLE)) {
+					A.each(this.get(CHILDREN), function (child) {
+						if (child != newVal) {
+							child.unselect();
+						}
+					});
+				}
 			}
 		},
 		

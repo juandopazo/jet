@@ -141,6 +141,10 @@ jet().add('tabview', function ($) {
 		
 		initializer: function () {
 			this.set(PANEL, this.PANEL_TEMPLATE);
+			var parent = this.get(PARENT);
+			if (parent) {
+				this.set('cssPrefix', parent.get('cssPrefix'));
+			}
 		},
 		
 		_selectHandler: function (e, domEvent) {

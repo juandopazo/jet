@@ -516,10 +516,6 @@ jet().add('base', function ($) {
 		BOUNDING_TEMPLATE: '<div/>',
 		CONTENT_TEMPLATE: '<div/>',
 		
-		_domEventProxy: function (e) {
-			this.fire(e.type, e.target);
-		},
-		
 		_parseHTML: function (parsers, srcNode) {
 			srcNode = $(srcNode);
 			if (srcNode.inDoc()) {
@@ -601,11 +597,11 @@ jet().add('base', function ($) {
 				var srcNode = this.get(SRC_NODE);
 				var className, classPrefix = this.get(CLASS_PREFIX);
 				var classes = this._classes;
-				var setDomEvents = function (name, activated) {
+				Hash.each(Widget.DOM_EVENTS, function (name, activated) {
 					if (activated) {
-						boundingBox.on(name, self._domEventProxy, self);
+						boundingBox.on(name, self._domEventProxy);
 					}
-				};
+				});
 				if (target) {
 					srcNode = target;
 					self.set(SRC_NODE, target);
@@ -697,6 +693,9 @@ jet().add('base', function ($) {
 			if (!this.get(CONTENT_BOX)) {
 				this.set(CONTENT_BOX, this.CONTENT_TEMPLATE ? $(this.CONTENT_TEMPLATE) : this.get(BOUNDING_BOX));
 			}
+			this._domEventProxy = $.bind(function (e) {
+				this.fire(e.type, e);
+			}, this);
 		},
 		
 		getClassName: function () {

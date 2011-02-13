@@ -7,35 +7,42 @@
 	<meta name="author" content="Juan Ignacio">
 	<!-- Date: 2010-08-15 -->
 	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.1.1/build/cssfonts/fonts-min.css&amp;3.1.1/build/cssreset/reset-min.css">
+	<link rel="stylesheet" type="text/css" href="../build/tabview.css">
 	<style type="text/css">
 	body {
 		margin: 0;
 		padding: 0;
 	}
+	h1 {
+		font-size: 20px;
+		font-weight: bold;
+		line-height: 40px;
+	}
 	</style>
 </head>
 <body>
-<script type="text/javascript" src="../build/jet.js"></script>
-<script type="text/javascript">
-	jet({
-		base: '../build/'
-	}).use('tabview', function ($) {
-		
-		var tabview = new $.TabView({
-			children: [
-				{
-					labelContent: 'tab1',
-					panelContent: 'hello world'
-				},
-				{
-					labelContent: 'achus',
-					panelContent: 'salud salud'
-				}
-			]
+	<h1>TabView Test</h1>
+	<script type="text/javascript" src="../build/jet.js"></script>
+	<script type="text/javascript">
+		jet({
+			base: '../build/'
+		}).use('tabview', function ($) {
+			
+			var tabview = new $.TabView({
+				children: [
+					{
+						labelContent: 'Foo',
+						panelContent: 'hello world'
+					},
+					{
+						labelContent: 'Bar',
+						panelContent: 'Bar bar'
+					}
+				]
+			});
+			tabview.render();
+			
 		});
-		tabview.render();
-		
-	});
-</script>
+	</script>
 </body>
 </html>
