@@ -264,15 +264,19 @@ jet().add('base', function ($) {
 		function set(attrName, attrValue) {
 			attrConfig[attrName] = attrConfig[attrName] || {};
 			var config = attrConfig[attrName];
+			var oldValue = classConfig[attrName];
 			if (!config.readOnly) {
 				if (!config.validator || config.validator(attrValue)) {
 					attrValue = config.setter ? config.setter.call(self, attrValue) : attrValue;
 					if (!Lang.isValue(classConfig[attrName]) && config.value) {
 						classConfig[attrName] = config.value;
 					}
-					classConfig[attrName] = classConfig[attrName] == attrValue ? attrValue :
-											self.fire(attrName + "Change", attrValue, classConfig[attrName]) ? attrValue :
-											classConfig[attrName];
+					if (attrValue !== oldValue) {
+						classConfig[attrName] = classConfig[attrName] == attrValue ? attrValue :
+												self.fire(attrName + "Change", attrValue, classConfig[attrName]) ? attrValue :
+												classConfig[attrName];
+						self.fire('after' + Lang.capitalize(attrName) + 'Change', attrValue, oldValue);
+					}
 				}
 				if (config.writeOnce && !config.readOnly) {
 					attrConfig[attrName].readOnly = true;
@@ -491,6 +495,13 @@ jet().add('base', function ($) {
 		
 	});
 	
+	if (!jet.Widget) {
+		jet.Widget = {};
+	}
+	if (!Lang.isNumber(jet.Widget._uid)) {
+		jet.Widget._uid = -1;
+	}
+	
 	/**
 	 * Base class for all widgets. 
 	 * Provides show, hide, render and destroy methods, the rendering process logic
@@ -500,10 +511,7 @@ jet().add('base', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	var Widget = function () {
-		Widget.superclass.constructor.apply(this, arguments);
-	};
-	extend(Widget, Base, {
+	var Widget = Base.create(Base, {
 		
 		BOUNDING_TEMPLATE: '<div/>',
 		CONTENT_TEMPLATE: '<div/>',
@@ -681,7 +689,7 @@ jet().add('base', function ($) {
 		initializer: function () {
 			$(this.get('win')).on(UNLOAD, bind(this.destroy, this));
 			
-			this._uid = ++Widget._uid;
+			this._uid = ++jet.Widget._uid;
 			
 			if (!this.get(BOUNDING_BOX)) {
 				this.set(BOUNDING_BOX, $(this.BOUNDING_TEMPLATE));
@@ -849,9 +857,7 @@ jet().add('base', function ($) {
 				$.mix(BuiltWidget.ATTRS, extension.ATTRS || {});
 			});
 			return BuiltWidget;
-		},
-		
-		_uid: 0
+		}
 		
 	});
 	

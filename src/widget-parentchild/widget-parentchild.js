@@ -84,6 +84,16 @@ jet().add('widget-parentchild', function ($) {
 		},
 		
 		/**
+		 * @method item
+		 * @description Returns a child based on an index
+		 * @param index [Number] Index of the child to be returned
+		 * @return WidgetChild
+		 */
+		item: function (index) {
+			return this.get(CHILDREN)[index || 0];
+		},
+		
+		/**
 		 * @method remove
 		 * @description Removes a child
 		 * @param child <WidgetChild|Number> The child widget or its index
@@ -117,6 +127,9 @@ jet().add('widget-parentchild', function ($) {
 			afterRender: function () {
 				var self = this;
 				A.each(this.get(CHILDREN), this.add, this);
+				if (!this.get('multiple') && !this.get('selection')) {
+					this.item(0).select();
+				}
 				Hash.each($.Widget.DOM_EVENTS, function (name) {
 					self.on(name, self._domEventChildrenProxy);
 				});
@@ -249,6 +262,9 @@ jet().add('widget-parentchild', function ($) {
 				Hash.each($.Widget.DOM_EVENTS, function (name) {
 					boundingBox.unbind(name, self._domEventProxy);
 				});
+				if (this.get(SELECTED)) {
+					boundingBox.addClass(this.getClassName(SELECTED));
+				}
 			},
 			
 			afterSelectedChange: function (e, newVal) {

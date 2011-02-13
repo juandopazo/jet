@@ -42,7 +42,7 @@
 		"io-xdr": [NODE, "swf", "io"],
 		"io-xsl": ["io"],
 		"history": [BASE, "json"],
-		tabs: [WIDGET_PARENTCHILD],
+		tabview: [WIDGET_PARENTCHILD],
 		resize: [BASE, {
 			name: "resize-css",
 			type: "css",
@@ -256,6 +256,9 @@
 					i--;
 				}
 				return str.slice(0, i + 1);
+			},
+			capitalize: function (str) {
+				return str.substr(0, 1).toUpperCase() + str.substr(1).toLowerCase();
 			},
 			/**
 			 * A more traditional random function. Returns a random integer between 0 and num-1

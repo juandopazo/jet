@@ -8,19 +8,20 @@
  * @module tabs
  * @requires jet, lang, node, base
  */
-jet().add("tabs", function ($) {
-	var SELECTED = "selected";
+jet().add('tabview', function ($) {
+	var SELECTED = 'selected';
 	var Lang = $.Lang;
 	var ArrayHelper = $.Array,
 		Widget = $.Widget;
 	
-	var LI = "<li/>",
+	var LI = '<li/>',
 		DIV = '<div/>',
 		BOUNDING_BOX = 'boundingBox',
-		CONTENT_BOX = "contentBox",
+		CONTENT_BOX = 'contentBox',
 		PANEL = 'panel',
 		HREF = 'href',
-		PANEL_CONTAINER = 'panelContainer';
+		PANEL_CONTAINER = 'panelContainer',
+		PARENT = 'parent';
 	
 	/**
 	 * A tab instance has a label and a panel
@@ -39,52 +40,35 @@ jet().add("tabs", function ($) {
 			 * @writeOnce
 			 */
 			panel: {
-				value: $(DIV),
-				writeOnce: true
+				setter: $
 			},
 			/**
 			 * @config triggerEvent
 			 * @description Event that triggers the selection of this tab
-			 * @default "click"
+			 * @default 'click'
 			 * @type String
 			 */
 			triggerEvent: {
-				value: "click"
+				value: 'click'
 			},
 			/**
 			 * @config labelContent
 			 * @description Gets/sets the content of the tab's label
 			 */
 			labelContent: {
-				getter: function () {
-					return this.get(CONTENT_BOX).children();
-				},
-				setter: function (value) {
-					var label = this.get(CONTENT_BOX);
-					label.children().remove();
-					label.append(value);
-					return value;
-				}
+				value: ''
 			},
 			/**
 			 * @config panelContent
 			 * @description Gets/sets the content of the tab's panel
 			 */
 			panelContent: {
-				getter: function () {
-					return this.get(PANEL).children();
-				},
-				setter: function (value) {
-					var panel = this.get(PANEL);
-					panel.children().remove();
-					panel.append(value);
-					return value;
-				}
+				value: ''
 			},
 			/**
 			 * @config href
 			 * @description Href attribute for this tab's label. Useful for progressive enhancement
-			 * @default "#"
+			 * @default '#'
 			 * @writeOnce
 			 */
 			href: {
@@ -99,10 +83,43 @@ jet().add("tabs", function ($) {
 				this.unbind(oldVal, this._selectHandler).on(newVal, this._selectHandler);
 			},
 			
+			labelContentChange: function (e, newVal) {
+				var label = this.get(CONTENT_BOX);
+				label.children().remove();
+				if (newVal instanceof $.NodeList) {
+					label.append(newVal);
+				} else {
+					label.html(newVal);
+				}
+			},
+			
+			panelContentChange: function (e, newVal) {
+				var panel = this.get(PANEL);
+				panel.children().remove();
+				if (newVal instanceof $.NodeList) {
+					panel.append(newVal);
+				} else {
+					panel.html(newVal);
+				}
+			},
+			
+			selectedChange: function (e, newVal) {
+				var selectedClass = this.getClassName(PANEL, SELECTED);
+				var panel = this.get(PANEL);
+				if (newVal) {
+					panel.addClass(selectedClass);
+				} else {
+					panel.removeClass(selectedClass);
+				}
+			},
+			
 			render: function () {
-				this.get(CONTENT_BOX).attr(HREF, this.get(HREF));
-				this.on(this.get("triggerEvent"), this._selectHandler);
-				this.get(PANEL).addClass(this.getClassName(PANEL)).appendTo(this.get('parent').get(PANEL_CONTAINER));
+				this.get(CONTENT_BOX).attr(HREF, this.get(HREF)).html(this.get('labelContent'));
+				this.on(this.get('triggerEvent'), this._selectHandler);
+				var panel = this.get(PANEL).html(this.get('panelContent')).addClass(this.getClassName(PANEL)).appendTo(this.get(PARENT).get(PANEL_CONTAINER));
+				if (this.get(SELECTED)) {
+					panel.addClass(this.getClassName(PANEL, SELECTED));
+				}
 			},
 			
 			destroy: function () {
@@ -113,13 +130,18 @@ jet().add("tabs", function ($) {
 		
 		HTML_PARSER: {
 			panel: function () {
-				return $(this.get('parent').get(BOUNDING_BOX).children('div')[0]).children()[this.get('index')];
+				return $(this.get(PARENT).get(BOUNDING_BOX).children('div')[0]).children()[this.get('index')];
 			}
 		}
 		
 	}, {
-		BOUNDING_TEMPLATE: '<li/>',
+		BOUNDING_TEMPLATE: LI,
 		CONTENT_TEMPLATE: '<a/>',
+		PANEL_TEMPLATE: DIV,
+		
+		initializer: function () {
+			this.set(PANEL, this.PANEL_TEMPLATE);
+		},
 		
 		_selectHandler: function (e, domEvent) {
 			domEvent.preventDefault();
@@ -145,14 +167,19 @@ jet().add("tabs", function ($) {
 			 * @type NodeList
 			 */
 			panelContainer: {
-				value: $(DIV),
-				writeOnce: true
+				setter: $
+			},
+			childType: {
+				value: $.Tab
+			},
+			multiple: {
+				value: false,
+				readOnly: true
 			}
-			
 		},
 		
 		EVENTS: {
-			render: function () {
+			afterRender: function () {
 				this.get(PANEL_CONTAINER).addClass(this.getClassName(PANEL, 'container')).appendTo(this.get(BOUNDING_BOX));
 			}
 		},
@@ -164,7 +191,12 @@ jet().add("tabs", function ($) {
 		}
 	}, {
 		
-		CONTENT_TEMPLATE: '<ul/>'
+		CONTENT_TEMPLATE: '<ul/>',
+		CONTAINER_TEMPLATE: DIV,
+		
+		initializer: function () {
+			this.set(PANEL_CONTAINER, this.CONTAINER_TEMPLATE);
+		}
 		
 	});
 	
