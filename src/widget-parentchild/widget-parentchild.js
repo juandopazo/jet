@@ -127,6 +127,11 @@ jet().add('widget-parentchild', function ($) {
 				this.fire('afterRemoveChild', child);
 			}
 			return this;
+		},
+		
+		each: function (fn) {
+			A.each(this.get(CHILDREN), fn);
+			return this;
 		}
 		
 	};

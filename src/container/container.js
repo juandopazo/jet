@@ -73,11 +73,38 @@ jet().add("container", function ($) {
 		ATTRS: {
 			/**
 			 * @config header
+			 * @description A pointer to the header node
+			 * @writeOnce
+			 */
+			header: {
+				setter: $,
+				wriceOnce: true
+			},
+			/**
+			 * @config body
+			 * @description A pointer to the body node
+			 * @writeOnce
+			 */
+			body: {
+				setter: $,
+				writeOnce: true
+			},
+			/**
+			 * @config footer
+			 * @description A pointer to the footer node
+			 * @writeOnce
+			 */
+			footer: {
+				setter: $,
+				writeOnce: true
+			},
+			/**
+			 * @config header
 			 * @description The header of the module.
 			 * If set to a string a node is creating and the string is set to its innerHTML
 			 * @type DOM Node | String | NodeList
 			 */
-			header: {
+			headerContent: {
 				validator: Lang.isValue
 			},
 			/**
@@ -88,7 +115,7 @@ jet().add("container", function ($) {
 			 * @type DOM Node | String | NodeList
 			 * @default ""
 			 */
-			body: {
+			bodyContent: {
 				value: "",
 				validator: Lang.isValue
 			},
@@ -98,7 +125,7 @@ jet().add("container", function ($) {
 			 * If set to a string a node is creating and the string is set to its innerHTML
 			 * @type DOM Node | String | NodeList
 			 */
-			footer: {
+			footerContent: {
 				validator: Lang.isValue
 			}
 		},
@@ -109,25 +136,44 @@ jet().add("container", function ($) {
 				var self = this;
 				var contentBox = this.get(CONTENT_BOX);
 				// append the header, body and footer to the bounding box if present
-				A.each(['header', 'body', 'footer'], function (name) {
-					var value = self.get(name);
+				A.each([HEADER, BODY, FOOTER], function (name) {
+					var value = self.get(name + 'Content');
+					var node = self.get(name).addClass(name);
 					if (Lang.isValue(value)) {
-						if (value.nodeName && value.nodeName == 1) {
-							value = $(value);
-						} else if (value instanceof $.NodeList) {
-							value = $(value[0]);
-						} else {
-							value = $('<div/>').html(value);
-						}
-						value.addClass(name).appendTo(contentBox);
-						self.set(name, value);
+						node.appendTo(contentBox);
 					}
 				});
 			}
 			
 		}
 	}, {
-		CONTENT_TEMPLATE: null
+		CONTENT_TEMPLATE: null,
+		HEADER_TEMPLATE: '<div/>',
+		BODY_TEMPLATE: '<div/>',
+		FOOTER_TEMPLATE: '<div/>',
+		
+		initializer: function () {
+			var self = this;
+			A.each([HEADER, BODY, FOOTER], function (name) {
+				self.set(name, self[name.toUpperCase() + '_TEMPLATE']);
+				var node = self.get(name);
+				var val = self.get(name + 'Content');
+				if (Lang.isValue(val)) {
+					if (val.nodeType) {
+						val = $(val);
+					}
+					if (val instanceof NodeList) {
+						node.append(val);
+					} else {
+						node.html(val);
+					}
+				}
+				self.on(name + 'ContentChange', function (e, newVal) {
+					node.children().remove();
+					node.html(newVal);
+				});
+			});
+		}
 	});
 	
 	
@@ -390,7 +436,6 @@ jet().add("container", function ($) {
 
 			A.each([HEIGHT, WIDTH], function (size) {
 				self.on(size + "Change", function (e, value) {
-					self.get(BOUNDING_BOX)[size](value);
 					if (self.get(CENTER)) {
 						self._centerUI();
 					}
@@ -426,7 +471,7 @@ jet().add("container", function ($) {
 		
 		EVENTS: {
 			render: function () {
-				this.hide().set("body", this.get("body") || this.get("srcNode").attr("title"));
+				this.hide().set("bodyContent", this.get("bodyContent") || this.get("srcNode").attr("title"));
 				this.get("srcNode").on("mouseover", this.show).on("mouseout", this.hide);
 			},
 			show: function () {
@@ -505,8 +550,13 @@ jet().add("container", function ($) {
 		},
 		
 		destroy: function () {
-			this.get('closeButton').unbind(CLICK, this._onCloseButton);
 			$(this.get('doc')).unbind('keyup', this._onContextKeyUp);
+		},
+		
+		click: function (e, domEvent) {
+			if (domEvent.target == this.get('closeButton')[0]) {
+				this._onCloseButton(domEvent);
+			}
 		}
 		
 	};
@@ -524,7 +574,7 @@ jet().add("container", function ($) {
 		
 		_onContextKeyUp: function (e) {
 			if (e.keyCode == 27 && this.get("focused")) {
-				this._onCloseButton.call(this, e);
+				this._onCloseButton(e);
 			}
 		},
 		
@@ -596,7 +646,7 @@ jet().add("container", function ($) {
 			buttons: {
 				value: []
 			},
-			footer: {
+			footerContent: {
 				value: ' ',
 				readOnly: true
 			}
@@ -604,10 +654,23 @@ jet().add("container", function ($) {
 		},
 		EVENTS: {
 			render: function (e) {
-				var buttonGroup = new $.ButtonGroup({
+				var buttonGroup = this.bg = new $.ButtonGroup({
 					children: this.get('buttons')
 				});
 				buttonGroup.render(this.get(FOOTER));
+				buttonGroup.get(BOUNDING_BOX).css(VISIBILITY, 'inherit');
+			},
+			afterHide: function () {
+				this.bg.hide();
+				this.bg.each(function (button) {
+					button.hide();
+				});
+			},
+			afterShow: function () {
+				this.bg.show();
+				this.bg.each(function (button) {
+					button.show();
+				});
 			}
 		}
 	}, {}, $.Panel);

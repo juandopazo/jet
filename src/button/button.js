@@ -77,6 +77,14 @@ jet().add('button', function ($) {
 			label: {
 				value: null,
 				validator: Lang.isString
+			},
+			/**
+			 * @config text
+			 * @description Text inside the button
+			 * @default ''
+			 */
+			text: {
+				value: ''
 			}
 		},
 		
@@ -104,6 +112,10 @@ jet().add('button', function ($) {
 				}
 			},
 			
+			textChange: function (e, val) {
+				this.get(CONTENT_BOX).html(val);
+			},
+			
 			afterFocus: function (e) {
 				this.get(BOUNDING_BOX).addClass(this.getClassName(FOCUS));
 				this.get(CONTENT_BOX).focus();
@@ -124,7 +136,7 @@ jet().add('button', function ($) {
 			
 			render: function () {
 				var id = this.getClassName('content', this._uid);
-				var contentBox = this.get(CONTENT_BOX).attr(ID, id);
+				var contentBox = this.get(CONTENT_BOX).attr(ID, id).html(this.get('text'));
 				var labelNode = this.get(LABEL_NODE);
 				var label = this.get('label');
 				labelNode[0].setAttribute('for', id);
