@@ -68,7 +68,7 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.Module = $.Widget.create('module', {
+	$.Module = Widget.create('module', [], {
 		ATTRS: {
 			/**
 			 * @config header
@@ -110,15 +110,17 @@ jet().add("container", function ($) {
 				// append the header, body and footer to the bounding box if present
 				A.each(['header', 'body', 'footer'], function (name) {
 					var value = self.get(name);
-					if (value.nodeName && value.nodeName == 1) {
-						value = $(value);
-					} else if (value instanceof $.NodeList) {
-						value = $(value[0]);
-					} else {
-						value = $('<div/>').html(value);
+					if (Lang.isValue(value)) {
+						if (value.nodeName && value.nodeName == 1) {
+							value = $(value);
+						} else if (value instanceof $.NodeList) {
+							value = $(value[0]);
+						} else {
+							value = $('<div/>').html(value);
+						}
+						value.addClass(name).appendTo(boundingBox);
+						self.set(name, value);
 					}
-					value.addClass(name).appendTo(boundingBox);
-					self.set(name, value);
 				});
 			}
 			
@@ -141,7 +143,7 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.Overlay = Widget.create('overlay', {
+	$.Overlay = Widget.create('overlay', [], {
 		
 		ATTRS: {
 			/**
@@ -395,7 +397,7 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.Tooltip = Widget.create('tooltip', {
+	$.Tooltip = Widget.create('tooltip', [], {
 		ATTRS: {
 			position: {
 				value: "r"
@@ -535,7 +537,7 @@ jet().add("container", function ($) {
 		}
 		
 	};
-	$.Panel = Widget.create('panel', {
+	$.Panel = Widget.create('panel', [], {
 		ATTRS: panelAttrs,
 		EVENTS: panelEvents
 	}, panelMethods, $.Overlay);
@@ -569,7 +571,7 @@ jet().add("container", function ($) {
 		 * @description If true, the panel shows a shadow
 		 * @default true
 		 */
-	$.StaticPanel = Widget.create('panel', {
+	$.StaticPanel = Widget.create('panel', [] ,{
 		ATTRS: panelAttrs,
 		EVENTS: panelEvents
 	}, panelMethods, $.Module);
@@ -581,7 +583,7 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.SimpleDialog = Widget.create('dialog', {
+	$.SimpleDialog = Widget.create('dialog', [], {
 		ATTRS: {
 			
 			/**
@@ -597,18 +599,10 @@ jet().add("container", function ($) {
 		},
 		EVENTS: {
 			render: function (e) {
-				var self = this;
-				var buttonArea = $(NEW_DIV).addClass("button-group");
-				A.each(this.get("buttons"), function (config, i) {
-					var button = new $.Button(config);
-					if (i === 0) {
-						button.get(BOUNDING_BOX).addClass(self.getClassName("default"));
-					}
-					button.on(PRESSED, function () {
-						self.hide();
-					}).render(buttonArea);
+				var buttonGroup = new $.ButtonGroup({
+					children: this.get('buttons')
 				});
-				this.get(FOOTER).append(buttonArea);
+				buttonGroup.render(this.get(FOOTER));
 			}
 		}
 	}, {}, $.Panel);

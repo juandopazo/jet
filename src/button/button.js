@@ -14,7 +14,6 @@ jet().add('button', function ($) {
 	var A = $.Array,
 		Hash = $.Hash,
 		Lang = $.Lang,
-		jet = jet,
 		Widget = $.Widget,
 		WidgetParent = $.WidgetParent,
 		WidgetChild = $.WidgetChild;

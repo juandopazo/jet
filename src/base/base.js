@@ -838,8 +838,8 @@ jet().add('base', function ($) {
 			extensions = extensions || [];
 			function BuiltWidget() {
 				var args = arguments;
-				BuiltWidget.superclass.constructor.apply(this, args);
 				var self = this;
+				BuiltWidget.superclass.constructor.apply(this, args);
 				A.each(extensions, function (extension) {
 					extension.apply(self, args);
 					Hash.each(extension.EVENTS || {}, self.on);
