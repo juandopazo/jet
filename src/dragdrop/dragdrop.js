@@ -74,7 +74,7 @@ jet().add('dragdrop', function ($) {
 		var startX, startY, startLeft, startTop;
 		var currentX, currentY;
 		
-		var tracker = new $.utils.Mouse({
+		var tracker = new $.Mouse({
 			shim: myself.get("shim"),
 			context: myself.get("context")
 		});

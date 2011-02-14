@@ -23,6 +23,7 @@ jet().add("container", function ($) {
 	var BOUNDING_BOX = "boundingBox",
 		CONTENT_BOX = "contentBox",
 		UNDERLAY = "underlay",
+		MODAL_BOX = 'modalBox',
 		CLASS_PREFIX = "classPrefix",
 		HEADER = "header",
 		BODY = "body",
@@ -106,7 +107,7 @@ jet().add("container", function ($) {
 		
 			render: function () {
 				var self = this;
-				var boundingBox = this.get(BOUNDING_BOX);
+				var contentBox = this.get(CONTENT_BOX);
 				// append the header, body and footer to the bounding box if present
 				A.each(['header', 'body', 'footer'], function (name) {
 					var value = self.get(name);
@@ -118,7 +119,7 @@ jet().add("container", function ($) {
 						} else {
 							value = $('<div/>').html(value);
 						}
-						value.addClass(name).appendTo(boundingBox);
+						value.addClass(name).appendTo(contentBox);
 						self.set(name, value);
 					}
 				});
@@ -245,8 +246,7 @@ jet().add("container", function ($) {
 			 * @readOnly
 			 */
 			modalBox: {
-				value: $('<div/>'),
-				readOnly: true
+				setter: $
 			}
 		},
 		
@@ -260,7 +260,7 @@ jet().add("container", function ($) {
 				var pos = fixed && UA_SUPPORTS_FIXED ? FIXED : "absolute";
 				var height = this.get(HEIGHT);
 				var screenSize = DOM.screenSize();
-				var modal = this.get('modalBox').css({
+				var modal = this.get(MODAL_BOX).css({
 					position: pos,
 					top: "0px",
 					left: "0px",
@@ -270,16 +270,12 @@ jet().add("container", function ($) {
 					opacity: 0.4
 				}).width(screenSize.width).height(screenSize.height).appendTo(this.get('doc').body);
 				win.on(RESIZE, this._resizeModal);
-				self.on("hide", modal.hide, modal).on("show", function () {
-					if (self.get("modal")) {
-						modal.show();
-					}
-				});
 				boundingBox.css({
 					position: pos,
 					zIndex: Global.ovZindex + this.get('startZindex')
-				}).width(self.get(WIDTH)).on("mousedown", self.focus, self);
-				this._repositionUI.call(this);
+				});
+				this.on("mousedown", this.focus);
+				this._repositionUI();
 			},
 			
 			afterRender: function () {
@@ -317,6 +313,16 @@ jet().add("container", function ($) {
 				}
 			},
 			
+			hide: function () {
+				this.get(MODAL_BOX).hide();
+			},
+			
+			show: function () {
+				if (this.get("modal")) {
+					this.get(MODAL_BOX).show();
+				}
+			},
+			
 			destroy: function () {
 				var win = $(this.get('win')).unbind(RESIZE, this._centerUI).unbind(SCROLL, this._centerUI);
 				win.unbind(RESIZE, this._repositionUI).unbind(SCROLL, this._repositionUI);
@@ -329,6 +335,8 @@ jet().add("container", function ($) {
 		}
 		
 	}, {
+		
+		MODAL_TEMPLATE: '<div/>',
 	
 		// centers the overlay in the screen
 		_centerUI: function () {
@@ -372,12 +380,13 @@ jet().add("container", function ($) {
 		
 		_resizeModal: function () {
 			var screenSize = DOM.screenSize();
-			this.get('modalBox').width(screenSize.width).height(screenSize.height);
+			this.get(MODAL_BOX).width(screenSize.width).height(screenSize.height);
 		},
 
 		initializer: function () {
 			var self = this;
 			Global.overlays.push(this);
+			this.set(MODAL_BOX, this.MODAL_TEMPLATE);
 
 			A.each([HEIGHT, WIDTH], function (size) {
 				self.on(size + "Change", function (e, value) {
@@ -459,23 +468,12 @@ jet().add("container", function ($) {
 			}
 		},
 		/**
-		 * @config contentBox
-		 * @description A panel uses another container inside the boundingBox 
-		 * in order to have a more complex design (ie: shadow)
-		 * @readOnly
-		 */
-		contentBox: {
-			readOnly: true,
-			value: $(NEW_DIV)
-		},
-		/**
 		 * @config underlay
 		 * @description The underlay is inserted after the contentBox to allow for a more complex design
 		 * @readOnly
 		 */
 		underlay: {
-			readOnly: true,
-			value: $(NEW_DIV).addClass(UNDERLAY)
+			setter: $
 		},
 		/**
 		 * @config shadow
@@ -487,8 +485,7 @@ jet().add("container", function ($) {
 		},
 		
 		closeButton: {
-			value: $("<a/>"),
-			writeOnce: true
+			setter: $
 		}
 		
 	};
@@ -504,17 +501,19 @@ jet().add("container", function ($) {
 			if (this.get(SHADOW)) {
 				boundingBox.addClass(SHADOW);
 			}
+			$(this.get('doc')).on('keyup', this._onContextKeyUp);
 		},
 		
 		destroy: function () {
 			this.get('closeButton').unbind(CLICK, this._onCloseButton);
-			this.get('doc').unbind('keyup', this._onContextKeyUp);
+			$(this.get('doc')).unbind('keyup', this._onContextKeyUp);
 		}
 		
 	};
 	var panelMethods = {
 		
 		CONTENT_TEMPLATE: '<div/>',
+		CLOSE_TEMPLATE: '<a/>',
 		
 		_onCloseButton: function (e) {
 			e.preventDefault();
@@ -534,6 +533,8 @@ jet().add("container", function ($) {
 			this.on(HEIGHT + "Change", function (e, height) {
 				self.get(CONTENT_BOX).height(height);
 			});
+			this.set(UNDERLAY, $(NEW_DIV).addClass(UNDERLAY));
+			this.set('closeButton', this.CLOSE_TEMPLATE);
 		}
 		
 	};
@@ -594,6 +595,10 @@ jet().add("container", function ($) {
 			 */
 			buttons: {
 				value: []
+			},
+			footer: {
+				value: ' ',
+				readOnly: true
 			}
 			
 		},

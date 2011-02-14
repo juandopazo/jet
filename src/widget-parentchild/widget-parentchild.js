@@ -14,7 +14,8 @@ jet().add('widget-parentchild', function ($) {
 	var Lang = $.Lang,
 		A = $.Array,
 		Hash = $.Hash,
-		Base = $.Base;
+		Base = $.Base,
+		Widget = $.Widget;
 		
 	var SELECTED = 'selected',
 		SELECT = 'select',
@@ -137,29 +138,16 @@ jet().add('widget-parentchild', function ($) {
 			afterRender: function () {
 				var self = this;
 				var domEventChildrenProxy = function (e, domEvent) {
-					var target = $(domEvent.target);
-					var boundingBox = this.get(BOUNDING_BOX);
-					var children = this.get(CHILDREN);
-					var i, length = children.length, found = false;
-					while (target[0] != boundingBox[0]) {
-						for (i = 0; i < length; i++) {
-							if (target[0] == children[i].get(BOUNDING_BOX)[0]) {
-								children[i].fire(e.type, domEvent);
-								found = true;
-								break;
-							}
-						}
-						if (found) {
-							break;
-						}
-						target = target.parent();
+					var targetWidget = Widget.getByNode(domEvent.target);
+					if (targetWidget && A.indexOf(targetWidget, this.get(CHILDREN)) > -1) {
+						targetWidget.fire(e.type, domEvent);
 					}
 				};
 				A.each(this.get(CHILDREN), this.add, this);
 				if (!this.get(MULTIPLE) && !this.get('selection')) {
 					this.item(0).select();
 				}
-				Hash.each($.Widget.DOM_EVENTS, function (name) {
+				Hash.each(Widget.DOM_EVENTS, function (name) {
 					self.on(name, domEventChildrenProxy);
 				});
 			},
@@ -183,7 +171,7 @@ jet().add('widget-parentchild', function ($) {
 			 * @default WidgetChild 
 			 */
 			childType: {
-				value: $.WidgetChild,
+				value: 'WidgetChild',
 				getter: function (val) {
 					return Lang.isString(val) ? $[val] : val;
 				}
@@ -298,7 +286,7 @@ jet().add('widget-parentchild', function ($) {
 			render: function () {
 				var self = this;
 				var boundingBox = this.get(BOUNDING_BOX);
-				Hash.each($.Widget.DOM_EVENTS, function (name) {
+				Hash.each(Widget.DOM_EVENTS, function (name) {
 					boundingBox.unbind(name, self._domEventProxy);
 				});
 				if (this.get(SELECTED)) {

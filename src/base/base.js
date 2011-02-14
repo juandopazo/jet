@@ -102,6 +102,7 @@ jet().add('base', function ($) {
 	var BOUNDING_BOX = "boundingBox",
 		CONTENT_BOX = 'contentBox',
 		SRC_NODE = "srcNode",
+		CONTENT = 'content',
 		CLASS_PREFIX = 'classPrefix',
 		UNLOAD = "unload",
 		VISIBILITY = "visibility",
@@ -113,7 +114,8 @@ jet().add('base', function ($) {
 		FREQUENCY = "frequency",
 		HEIGHT = "height",
 		WIDTH = "width",
-		PROTO = 'prototype';
+		PROTO = 'prototype',
+		DASH = '-';
 
 	
 	/**
@@ -399,8 +401,8 @@ jet().add('base', function ($) {
 		for (i = 0; i < classes.length; i++) {
 			this.addAttrs(classes[i].ATTRS || {});
 			Hash.each(classes[i].EVENTS || {}, this.on);
-			if (classes[i].prototype.hasOwnProperty('initializer')) {
-				classes[i].prototype.initializer.call(this);
+			if (classes[i][PROTO].hasOwnProperty('initializer')) {
+				classes[i][PROTO].initializer.call(this);
 			}
 		}
 		Hash.each(this.get("on"), this.on);
@@ -459,7 +461,7 @@ jet().add('base', function ($) {
 		},
 		
 		getClassName: function () {
-			return [this.get(CLASS_PREFIX), this.constructor.NAME].concat(SLICE.call(arguments)).join('-');
+			return [this.get(CLASS_PREFIX), this.constructor.NAME].concat(SLICE.call(arguments)).join(DASH);
 		}
 	}, {
 		
@@ -500,6 +502,9 @@ jet().add('base', function ($) {
 	}
 	if (!Lang.isNumber(jet.Widget._uid)) {
 		jet.Widget._uid = -1;
+	}
+	if (!jet.Widget._instances) {
+		jet.Widget._instances = {};
 	}
 	
 	/**
@@ -636,15 +641,15 @@ jet().add('base', function ($) {
 				if (this.fire("render")) {
 					
 					A.each(classes, function (construct) {
-						className = classPrefix + '-' + construct.NAME;
-						boundingBox.addClass(className).attr('id', className + '-' + self._uid);
-						contentBox.addClass(className + '-content').attr('id', className + '-content-' + self._uid);
+						className = [classPrefix, construct.NAME].join(DASH);
+						boundingBox.addClass(className);
+						contentBox.addClass([className, CONTENT].join(DASH));
 					});
 					
 					if (boundingBox[0] != contentBox[0]) {
 						boundingBox.append(contentBox.css(VISIBILITY, 'inherit'));
 					}
-					boundingBox.css(VISIBILITY, "visible").appendTo(srcNode);
+					boundingBox.attr('id', this.getClassName(self._uid)).css(VISIBILITY, "visible").appendTo(srcNode);
 					/**
 					 * Fires after the render process is finished
 					 * @event afterRender
@@ -686,6 +691,7 @@ jet().add('base', function ($) {
 			$(this.get('win')).on(UNLOAD, bind(this.destroy, this));
 			
 			this._uid = ++jet.Widget._uid;
+			jet.Widget._instances[this.getClassName(this._uid)] = this;
 			
 			if (!this.get(BOUNDING_BOX)) {
 				this.set(BOUNDING_BOX, $(this.BOUNDING_TEMPLATE));
@@ -710,7 +716,11 @@ jet().add('base', function ($) {
 		
 		DOM_EVENTS: {
 			click: 1,
-			keypress: 1
+			keypress: 1,
+			mousedown: 1,
+			mouseup: 1,
+			mouseover: 1,
+			mouseout: 1
 		},
 		
 		ATTRS: {
@@ -764,14 +774,12 @@ jet().add('base', function ($) {
 			contentBox: {
 			},
 			win: {
-				value: $.win,
-				setter: function (val) {
-					this.set('doc', val.document);
-					return val;
-				}
+				value: $.win
 			},
 			doc: {
-				value: $.doc,
+				getter: function () {
+					return this.get('win').document;
+				},
 				setter: function (val) {
 					this.set('win', val.parentWindow || val.defaultView);
 					return val;
@@ -852,10 +860,22 @@ jet().add('base', function ($) {
 				exts: extensions
 			});
 			A.each(extensions, function (extension) {
-				$.mix(BuiltWidget.prototype, extension.prototype);
+				$.mix(BuiltWidget[PROTO], extension[PROTO]);
 				$.mix(BuiltWidget.ATTRS, extension.ATTRS || {});
 			});
 			return BuiltWidget;
+		},
+		
+		getByNode: function (node) {
+			node = $(node)[0];
+			var de = node.ownerDocument.documentElement;
+			while (node && node != de) {
+				if (node.id && jet.Widget._instances[node.id]) {
+					return jet.Widget._instances[node.id];
+				}
+				node = node.parentNode;
+			}
+			return null;
 		}
 		
 	});

@@ -14,11 +14,11 @@
 	</style>
 </head>
 
-<body class="yui-skin-sam">
-	<script type="text/javascript" src="../src/jet/jet.js"></script>
+<body class="jet-skin-sam">
+	<script type="text/javascript" src="../build/jet.js"></script>
 	<script type="text/javascript">
 		jet({
-			base: "../src",
+			base: "../build/",
 			loadCss: true
 		}).use('dragdrop', 'button', 'container', function ($) {
 			
@@ -30,6 +30,7 @@
 				}, {
 					text: "Cancelar"
 				}],
+				width: 300,
 				center: true,
 				modal: true,
 				draggable: true
