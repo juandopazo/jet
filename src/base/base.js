@@ -77,28 +77,6 @@ jet().add('base', function ($) {
 		return r;
 	};
 	
-	var bind = function(fn, obj) {
-		if (Function.prototype.bind) {
-			bind = function (fn) {
-				return Function.prototype.bind.apply(fn, SLICE.call(arguments, 1));
-			};
-		} else {
-			bind = function(fn, obj) {
-				var slice = [].slice,
-					args = slice.call(arguments, 1), 
-					nop = function () {}, 
-					bound = function () {
-					  return fn.apply( this instanceof nop ? this : ( obj || {} ), 
-										  args.concat( slice.call(arguments) ) );	
-					};
-				nop.prototype = fn.prototype;
-				bound.prototype = new nop();
-				return bound;
-			};
-		}
-		return bind(fn, obj);
-	};
-	
 	var BOUNDING_BOX = "boundingBox",
 		CONTENT_BOX = 'contentBox',
 		SRC_NODE = "srcNode",
@@ -442,7 +420,7 @@ jet().add('base', function ($) {
 	extend(Utility, Base, {
 		
 		initializer: function () {
-			$(this.get('win')).on(UNLOAD, this.destroy);
+			this._handlers = [$(this.get('win')).on(UNLOAD, this.destroy, this)];
 		},
 		
 		/**
@@ -451,12 +429,14 @@ jet().add('base', function ($) {
 		 */
 		destroy: function () {
 			var self = this;
-			if (self.fire(DESTROY)) {
+			if (this.fire(DESTROY)) {
+				A.each(this._handlers, function (handler) {
+					handler.detach();
+				});
 				// Helping gargage collection
 				Hash.each(self, function (name) {
 					delete self[name];
 				});
-				$(self.get('win')).unbind(self.destroy);
 			}
 		},
 		
@@ -520,6 +500,10 @@ jet().add('base', function ($) {
 		
 		BOUNDING_TEMPLATE: '<div/>',
 		CONTENT_TEMPLATE: '<div/>',
+
+		_domEventProxy: function (e) {
+			this.fire(e.type, e);
+		},
 		
 		_parseHTML: function (parsers, srcNode) {
 			srcNode = $(srcNode);
@@ -604,7 +588,7 @@ jet().add('base', function ($) {
 				var classes = this._classes;
 				Hash.each(Widget.DOM_EVENTS, function (name, activated) {
 					if (activated) {
-						boundingBox.on(name, self._domEventProxy);
+						self._handlers.push(boundingBox.on(name, self._domEventProxy, self));
 					}
 				});
 				if (target) {
@@ -673,6 +657,9 @@ jet().add('base', function ($) {
 			 * @event destroy
 			 */
 			if (this.fire(DESTROY)) {
+				A.each(this._handlers, function (handler) {
+					handler.detach();
+				});
 				/*
 				 * Avoiding memory leaks, specially in IE
 				 */
@@ -680,7 +667,6 @@ jet().add('base', function ($) {
 				/*
 				 * Helping gargage collection
 				 */
-				$(this.get('win')).unbind(this.destroy);
 				Hash.each(this, function (name) {
 					delete self[name];
 				});
@@ -688,7 +674,7 @@ jet().add('base', function ($) {
 		},
 		
 		initializer: function () {
-			$(this.get('win')).on(UNLOAD, bind(this.destroy, this));
+			this._handlers = [$(this.get('win')).on(UNLOAD, this.destroy, this)];
 			
 			this._uid = ++jet.Widget._uid;
 			jet.Widget._instances[this.getClassName(this._uid)] = this;
@@ -699,9 +685,6 @@ jet().add('base', function ($) {
 			if (!this.get(CONTENT_BOX)) {
 				this.set(CONTENT_BOX, this.CONTENT_TEMPLATE ? $(this.CONTENT_TEMPLATE) : this.get(BOUNDING_BOX));
 			}
-			this._domEventProxy = $.bind(function (e) {
-				this.fire(e.type, e);
-			}, this);
 		},
 		
 		getClassName: function () {
@@ -1039,7 +1022,6 @@ jet().add('base', function ($) {
 		Utility: Utility,
 		Widget: Widget,
 		EventTarget: EventTarget,
-		extend: extend,
-		bind: bind
+		extend: extend
 	});
 });

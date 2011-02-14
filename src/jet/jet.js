@@ -296,6 +296,30 @@
 	};
 	Lang.clone = clone;
 	
+	var bind = function(fn, obj) {
+		if (Function.prototype.bind) {
+			bind = function (fn) {
+				return Function.prototype.bind.apply(fn, SLICE.call(arguments, 1));
+			};
+		} else {
+			bind = function(fn, obj) {
+				var slice = [].slice,
+					args = slice.call(arguments, 1), 
+					nop = function () {}, 
+					bound = function () {
+					  return fn.apply( this instanceof nop ? this : ( obj || {} ), 
+										  args.concat( slice.call(arguments) ) );	
+					};
+				nop.prototype = fn.prototype;
+				bound.prototype = new nop();
+				return bound;
+			};
+		}
+		return bind(fn, obj);
+	};
+	
+
+	
 	
 	/**
 	 * Utilities for working with Arrays
@@ -575,6 +599,8 @@
 		}
 		
 		add({
+			bind: bind,
+			
 			/**
 			 * A pointer to the last Windo that was referenced by the $() function
 			 * @property win

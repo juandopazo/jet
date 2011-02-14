@@ -34,7 +34,7 @@
 }
 
 .jet-skin-sam .jet-button {
-    border-width: 1px 0;
+    border-width: 1px;
     border-style: solid;
     border-color: #808080;
     background: url(http://yui.yahooapis.com/2.8.1/build/assets/skins/sam/sprite.png) repeat-x 0 0;

@@ -126,14 +126,22 @@ jet().add("node", function ($) {
 	}());
 	
 	// adds a DOM event and provides event object normalization
-	var addEvent = function (obj, type, callback) {
+	var addEvent = function (obj, type, callback, thisp) {
 		if (obj.addEventListener) {
-			addEvent = function (obj, type, callback) {
+			addEvent = function (obj, type, callback, thisp) {
+				if (thisp) {
+					callback = $.bind(callback, thisp);
+				}
 				obj.addEventListener(type, callback, false);
 				EventCache.add(obj, type, callback);
+				return {
+					obj: obj,
+					type: type,
+					fn: callback
+				};
 			};
 		} else if (obj.attachEvent) {
-			addEvent = function (obj, type, callback) {
+			addEvent = function (obj, type, callback, thisp) {
 				obj.attachEvent(ON + type, function (ev) {
 					ev.target = ev.srcElement;
 					ev.preventDefault = function () {
@@ -142,12 +150,17 @@ jet().add("node", function ($) {
 					ev.stopPropagation = function () {
 						ev.cancelBubble = true;
 					};
-					callback.call(obj, ev);
+					callback.call(thisp || obj, ev);
 				});
 				EventCache.add(obj, type, callback);
+				return {
+					obj: obj,
+					type: type,
+					fn: callback
+				};
 			};
 		}
-		addEvent(obj, type, callback);
+		return addEvent(obj, type, callback, thisp);
 	};
 	
 	// cross browser listener removal
@@ -820,9 +833,17 @@ jet().add("node", function ($) {
 		 * @chainable
 		 */
 		on: function (type, callback) {
+			var handlers = [];
 			return this.each(function (node) {
-				addEvent(node, type, callback);
+				handlers.push(addEvent(node, type, callback));
 			});
+			return {
+				detach: function () {
+					for (var i = 0, length = handlers.length; i < length; i++) {
+						removeEvent(handlers[i].obj, handlers[i].type, handlers[i].fn);
+					}
+				}
+			};
 		},
 		/**
 		 * Removes an event listener from all the nodes
