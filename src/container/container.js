@@ -162,7 +162,7 @@ jet().add("container", function ($) {
 					if (val.nodeType) {
 						val = $(val);
 					}
-					if (val instanceof NodeList) {
+					if (val instanceof $.NodeList) {
 						node.append(val);
 					} else {
 						node.html(val);

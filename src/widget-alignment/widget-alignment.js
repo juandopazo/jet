@@ -51,10 +51,7 @@ jet().add('widget-alignment', function ($) {
 					break;
 			}
 			
-			boundingBox.css({
-				left: (targetOffset.left - boundingRelative.left) + 'px',
-				top: (targetOffset.top - boundingRelative.top) + 'px'
-			});
+			boundingBox.offset(targetOffset.left - boundingRelative.left, targetOffset.top - boundingRelative.top);
 		}
 	};
 	$.mix(WidgetAlignment, {

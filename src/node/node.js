@@ -184,6 +184,7 @@ jet().add("node", function ($) {
 	var DOCUMENT_ELEMENT = "documentElement";
 	var GET_COMPUTED_STYLE = "getComputedStyle";
 	var CURRENT_STYLE = "currentStyle";
+	var rroot = /^(?:body|html)$/i;
 	
 	function classRE(name) {
 		return new RegExp("(^|\\s)" + name + "(\\s|$)");
@@ -488,35 +489,62 @@ jet().add("node", function ($) {
 		 * @method offset
 		 * @return {Hash}
 		 */
-		offset: function () {
-			var node = this[0];
-			var offset = {
-				left: 0,
-				top: 0,
-				width: node.offsetWidth,
-				height: node.offsetHeight
-			};
-			var doc = node.ownerDocument;
-			if (node && doc) {
-				if (node.getBoundingClientRect) {
-					var box  = node.getBoundingClientRect();
-					var body = doc.body;
-					var de = doc[DOCUMENT_ELEMENT];
-					offset.left = box.left + DOM.scrollLeft() - (de.clientLeft || body.clientLeft || 0);
-					offset.top = box.top + DOM.scrollTop() - (de.clientTop || body.clientTop || 0);
-				} else if (node.offsetParent) {
-					// Not interested in supporting other browsers very well
-					do {
-						offset.left += node.offsetLeft;
-						offset.top += node.offsetTop;
-						node = node.offsetParent;
-					} while (node);
-				}
+		offset: function (left, top) {
+			if (Lang.isNumber(left) || Lang.isNumber(top)) {
+				return this.each(function (node) {
+					node = $(node);
+					var parentOffset = node.offsetParent().offset();
+					if (Lang.isNumber(left)) {
+						node.css('left', left - parentOffset.left + 'px');
+					}
+					if (Lang.isNumber(top)) {
+						node.css('top', top - parentOffset.top + 'px');
+					}
+				});
 			} else {
-				offset = null;
+				var node = this[0];
+				var offset = {
+					left: 0,
+					top: 0,
+					width: node.offsetWidth,
+					height: node.offsetHeight
+				};
+				var doc = node.ownerDocument;
+				if (node && doc) {
+					if (node.getBoundingClientRect) {
+						var box  = node.getBoundingClientRect();
+						var body = doc.body;
+						var de = doc[DOCUMENT_ELEMENT];
+						offset.left = box.left + DOM.scrollLeft() - (de.clientLeft || body.clientLeft || 0);
+						offset.top = box.top + DOM.scrollTop() - (de.clientTop || body.clientTop || 0);
+					} else if (node.offsetParent) {
+						// Not interested in supporting other browsers very well
+						do {
+							offset.left += node.offsetLeft;
+							offset.top += node.offsetTop;
+							node = node.offsetParent;
+						} while (node);
+					}
+				} else {
+					offset = null;
+				}
+				
+				return offset;
 			}
-			
-			return offset;
+		},
+		/**
+		 * Returns a new NodeList with all the offset parents of this one
+		 * @method offsetParent
+		 * @return NodeList
+		 */
+		offsetParent: function () {
+			return this.map(function(node) {
+				var offsetParent = node.offsetParent || document.body;
+				while (offsetParent && (!rroot.test(offsetParent.nodeName) && $(offsetParent).css("position") === "static")) {
+					offsetParent = offsetParent.offsetParent;
+				}
+				return offsetParent;
+			});
 		},
 		/**
 		 * Gets/sets the width of all the nodes in the collection
@@ -1005,8 +1033,12 @@ jet().add("node", function ($) {
 	NodeList.is = Lang.is;
 	
 	A.each(['Left', 'Top'], function (direction) {
-		NodeList.prototype['offset' + direction] = function () {
-			return this.offset()[direction.toLowerCase()];
+		NodeList.prototype['offset' + direction] = function (val) {
+			if (Lang.isValue(val)) {
+				return direction == 'Left' ? this.offset(val) : this.offset(null, val);
+			} else {
+				return this.offset()[direction.toLowerCase()];
+			}
 		};
 	});
 
