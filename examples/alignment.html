@@ -11,7 +11,7 @@
 			background: red;
 			position: absolute;
 			top: 300px;
-			left: 300px;
+			left: 700px;
 			width: 200px;
 			height: 200px;
 		}
@@ -33,10 +33,12 @@
 			
 			var aligned = new AlignedWidget({
 				fixed: true,
+				constrain: true,
 				width: 400,
 				height: 100,
 				align: {
-					points: ['mc', 'mc']
+					node: '#test1',
+					points: ['tl', 'tr']
 				}
 			});
 			aligned.render();
