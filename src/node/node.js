@@ -864,10 +864,10 @@ jet().add("node", function ($) {
 		 * @param {Function} callback
 		 * @chainable
 		 */
-		on: function (type, callback) {
+		on: function (type, callback, thisp) {
 			var handlers = [];
 			this.each(function (node) {
-				handlers.push(addEvent(node, type, callback));
+				handlers.push(addEvent(node, type, callback, thisp));
 			});
 			return {
 				detach: function () {

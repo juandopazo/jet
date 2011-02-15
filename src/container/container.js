@@ -187,78 +187,13 @@ jet().add("container", function ($) {
 	 * @class Overlay
 	 * @description An Overlay is a Module that floats in the page (doesn't have position static)
 	 * @extends Module
+	 * @uses WidgetAlignment
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.Overlay = Widget.create('overlay', [], {
+	$.Overlay = Widget.create('overlay', [$.WidgetAlignment], {
 		
 		ATTRS: {
-			/**
-			 * @config center
-			 * @description If true, the overlay is positioned in the center of the page
-			 * @type Boolean
-			 * @default true
-			 */
-			center: {
-				value: true
-			},
-			/**
-			 * @config fixed
-			 * @description If true, the overlay is position is set to fixed
-			 * @type Boolean
-			 * @default false
-			 */
-			fixed: {
-				value: false
-			},
-			/**
-			 * @config top
-			 * @description The top position in pixels
-			 * @type Number
-			 */
-			top: {
-				validator: Lang.isNumber,
-				setter: function (value) {
-					this.unset(BOTTOM);
-					return value;
-				}
-			},
-			/**
-			 * @config left
-			 * @description The left position in pixels
-			 * @type Number
-			 */
-			left: {
-				validator: Lang.isNumber,
-				setter: function (value) {
-					this.unset(RIGHT);
-					return value;
-				}
-			},
-			/**
-			 * @config bottom
-			 * @description The bottom position in pixels
-			 * @type Number
-			 */
-			bottom: {
-				validator: Lang.isNumber,
-				setter: function (value) {
-					this.unset(TOP);
-					return value;
-				}
-			},
-			/**
-			 * @config right
-			 * @description The right position in pixels
-			 * @type Number
-			 */
-			right: {
-				validator: Lang.isNumber,
-				setter: function (value) {
-					this.unset(LEFT);
-					return value;
-				}
-			},
 			/**
 			 * @config draggable
 			 * @description If true, the overlay can be dragged. Requires $.Drag
@@ -302,9 +237,6 @@ jet().add("container", function ($) {
 				var win = $(this.get('win'));
 				var self = this;
 				var boundingBox = this.get(BOUNDING_BOX);
-				var fixed = this.get(FIXED);
-				var pos = fixed && UA_SUPPORTS_FIXED ? FIXED : "absolute";
-				var height = this.get(HEIGHT);
 				var screenSize = DOM.screenSize();
 				var modal = this.get(MODAL_BOX).css({
 					position: pos,
@@ -317,37 +249,20 @@ jet().add("container", function ($) {
 				}).width(screenSize.width).height(screenSize.height).appendTo(this.get('doc').body);
 				win.on(RESIZE, this._resizeModal);
 				boundingBox.css({
-					position: pos,
 					zIndex: Global.ovZindex + this.get('startZindex')
 				});
-				this.on("mousedown", this.focus);
-				this._repositionUI();
+				this.on("mousedown", this.focus, this);
 			},
 			
 			afterRender: function () {
-				var self = this;
 				var boundingBox = this.get(BOUNDING_BOX);
-				var win = $(this.get('win'));
 				var head = this.get(HEADER);
-				var fixed = this.get(FIXED);
-				var centerUI = this._centerUI;
 				if (this.get("draggable")) {
 					this.dd = new $.Drag({
 						node: boundingBox,
 						handlers: head
 					});
-				}
-				if (this.get(CENTER)) {
-					centerUI.call(this);
-					win.on(RESIZE, centerUI, this);
-					if (fixed || !UA_SUPPORTS_FIXED) {
-						win.on(SCROLL, centerUI, this);
-					}
-					this.on("afterShow", centerUI, this);
-				} else if (fixed && !UA_SUPPORTS_FIXED) {
-					win.on(SCROLL, this._repositionUI, this).on(RESIZE, this._repositionUI, this);
-				}
-	
+				}	
 			},
 			
 			focus: function () {
@@ -384,46 +299,6 @@ jet().add("container", function ($) {
 		
 		MODAL_TEMPLATE: '<div/>',
 	
-		// centers the overlay in the screen
-		_centerUI: function () {
-			var boundingBox = this.get(BOUNDING_BOX);
-			var screenSize = DOM.screenSize();
-			var rendered = this.get("rendered");
-			boundingBox.css({
-				left: (screenSize.width - (rendered ? boundingBox.width() : this.get(WIDTH))) / 2 + PX,
-				top: (screenSize.height - (rendered ? boundingBox.height() : this.get(HEIGHT))) / 2 + PX
-			});
-		},
-		
-		_repositionUI: function () {
-			var self = this;
-			var boundingBox = this.get(BOUNDING_BOX);
-			var bodyStyle = $(this.get('doc').body).currentStyle();
-			A.each([LEFT, TOP, BOTTOM, RIGHT], function (position) {
-				var orientation = position.substr(0, 1).toUpperCase() + position.substr(1);
-				var bodyMargin = $.pxToFloat(bodyStyle["padding" + orientation]) + $.pxToFloat(bodyStyle["margin" + orientation]);
-				if (UA_SUPPORTS_FIXED) {
-					boundingBox.css(position, self.isSet(position) ? ((self.get(position) - bodyMargin + PX)) : AUTO);
-				} else {
-					var screenSize = DOM.screenSize();
-					switch (position) {
-						case BOTTOM:
-							boundingBox.css(self.isSet(position) ? TOP : BOTTOM, self.isSet(position) ? ((screenSize.height - self.get(HEIGHT) - bodyMargin + boundingBox.scrollTop()) + PX) : AUTO);
-							break;
-						case RIGHT:
-							boundingBox.css(self.isSet(position) ? LEFT : RIGHT, self.isSet(position) ? ((screenSize.width - self.get(WIDTH) - bodyMargin + boundingBox.scrollLeft()) + PX) : AUTO);
-							break;
-						case LEFT:
-							boundingBox.css(position, self.isSet(position) ? ((self.get(position) + DOM.scrollLeft() - bodyMargin + PX)) : AUTO);
-							break;
-						case TOP:
-							boundingBox.css(position, self.isSet(position) ? ((self.get(position) + DOM.scrollTop() - bodyMargin + PX)) : AUTO);
-							break;
-					}
-				}
-			});
-		},
-		
 		_resizeModal: function () {
 			var screenSize = DOM.screenSize();
 			this.get(MODAL_BOX).width(screenSize.width).height(screenSize.height);
@@ -433,28 +308,20 @@ jet().add("container", function ($) {
 			var self = this;
 			Global.overlays.push(this);
 			this.set(MODAL_BOX, this.MODAL_TEMPLATE);
-
-			A.each([HEIGHT, WIDTH], function (size) {
-				self.on(size + "Change", function (e, value) {
-					if (self.get(CENTER)) {
-						self._centerUI();
-					}
-				});
-			});
 		}
 	}, $.Module);
 	
 	/**
 	 * A simple tooltip implementation
 	 * @class Tooltip
-	 * @extends Overlay
+	 * @extends Widget
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.Tooltip = Widget.create('tooltip', [], {
+	$.Tooltip = Widget.create('tooltip', [$.WidgetAlignment], {
 		ATTRS: {
-			position: {
-				value: "r"
+			align: {
+				points: ['tl', 'bl']
 			},
 			/**
 			 * @config fadeIn
@@ -471,18 +338,25 @@ jet().add("container", function ($) {
 		
 		EVENTS: {
 			render: function () {
-				this.hide().set("bodyContent", this.get("bodyContent") || this.get("srcNode").attr("title"));
-				this.get("srcNode").on("mouseover", this.show).on("mouseout", this.hide);
+				var srcNode = this.get('srcNode');
+				var points = this.get('align').points;
+				this.set('align', {
+					node: srcNode,
+					points: points
+				});
+				this.hide().set("bodyContent", this.get("bodyContent") || srcNode.attr("title"));
+				srcNode.on("mouseover", this.show).on("mouseout", this.hide);
 			},
 			show: function () {
 				var offset = this.get("srcNode").offset();
+				var fadeIn = this.get("fadeIn");
 				this.set("left", offset.left).set("top", offset.top + offset.height);
-				if (this.get("fadeIn")) {
-					this.get(BOUNDING_BOX).css("opacity", 0).fadeIn(this.get("fadeIn"));
+				if (fadeIn) {
+					this.get(BOUNDING_BOX).css("opacity", 0).fadeIn(fadeIn);
 				}
 			}
 		}
-	}, {}, $.Overlay);
+	});
 	
 	/**
 	 * A panel is an overlay that resembles an OS window without actually being one,

@@ -93,6 +93,7 @@
 			}
 		}],
 		treeview: [WIDGET_PARENTCHILD],
+		'widget-alignment': [BASE],
 		'widget-parentchild': [BASE],
 		vector: ["anim"]
 	};
