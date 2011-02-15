@@ -347,6 +347,33 @@ jet().add("node", function ($) {
 			return myself;
 		},
 		/**
+		 * Iterates through the nodelist, returning a new nodelist with all the elements
+		 * return by the callback function
+		 * @method map
+		 * @param {Function} fn
+		 * @return NodeList
+		 */
+		map: function (fn) {
+			var results = [];
+			this.each(function (node) {
+				var output = fn(node);
+				if (Lang.isValue(output)) {
+					if (Lang.isArray(output)) {
+						results.push.apply(results, output);
+					} else if (output instanceof NodeList) {
+						output.each(function (node) {
+							if (A.indexOf(node, results) == -1) {
+								results[results.length] = node;
+							}
+						});
+					} else if (A.indexOf(output, results) == -1){
+						results[results.length] = output;
+					}
+				}
+			});
+			return new NodeList(results);
+		},
+		/**
 		 * Hides all nodes
 		 * @method hide
 		 * @chainable
@@ -536,11 +563,9 @@ jet().add("node", function ($) {
 		 */
 		clone: function (deep) {
 			deep = Lang.isValue(deep) ? deep : true;
-			var result = [];
-			this.each(function (node) {
-				result.push(node.cloneNode(deep));
+			return this.map(function (node) {
+				return node.cloneNode(deep);
 			});
-			return new NodeList(result);
 		},
 		/**
 		 * Appends nodes to the ones in the current node list
@@ -637,13 +662,11 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		parent: function () {
-			var result = [];
-			this.each(function (node) {
-				if (node.parentNode && A.indexOf(node.parentNode, result) == -1) {
-					result.push(node.parentNode);
+			return this.map(function (node) {
+				if (node.parentNode) {
+					return node.parentNode;
 				}
 			});
-			return new NodeList(result);
 		},
 		/**
 		 * Returns a new NodeList with all the first children of the nodes in the collection
@@ -651,14 +674,12 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		first: function () {
-			var result = [];
-			this.each(function (node) {
+			return this.map(function (node) {
 				node = $(node).children(0)[0];
 				if (node) {
-					result.push(node);
+					return node;
 				}
 			});
-			return new NodeList(result);
 		},
 		/**
 		 * Returns a new NodeList with all the next siblings of the nodes in the collection
@@ -666,17 +687,13 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		next: function () {
-			var result = [];
-			this.each(function (next) {
+			return this.map(function (next) {
 				do {
 					next = next.nextSibling;
 				}
-				while (next && next.nodeType == TEXT_NODE);
-				if (next) {
-					result.push(next);
-				}
+				while (next && next.nodeType == 1);
+				return next;
 			});
-			return new NodeList(result);
 		},
 		/**
 		 * Returns a new NodeList with all the previous siblings of the nodes in the collection
@@ -684,17 +701,13 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		previous: function () {
-			var result = [];
-			this.each(function (previous) {
+			return this.map(function (previous) {
 				do {
 					previous = previous.previousSibling;
 				}
 				while (previous && previous.nodeType == TEXT_NODE);
-				if (previous) {
-					result.push(previous);
-				}
+				return previous;
 			});
-			return new NodeList(result);
 		},
 		/**
 		 * Returns a new NodeList with all the last children of the nodes in the collection
@@ -702,18 +715,13 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		last: function () {
-			// @TODO: find another solution that doesn't involve iterations
-			var result = [];
-			this.each(function (node) {
+			return this.map(function (node) {
 				var children = $(node).children(), i = -1;
 				while (children[++i]) {
 					node = children[i];
 				}
-				if (node) {
-					result.push(node);
-				}
+				return node;
 			});
-			return new NodeList(result);
 		},
 		/**
 		 * Gets or sets the innerHTML of all the nodes in the node list
@@ -785,13 +793,9 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		find: function (query) {
-			var result = [];
-			this.each(function (node) {
-				$(query, node).each(function (subnode) {
-					result.push(subnode);
-				});
+			return this.map(function (node) {
+				return $(query, node);
 			});
-			return new NodeList(result);
 		},
 		/**
 		 * Returns a new NodeList with all the children of the current nodes
@@ -834,7 +838,7 @@ jet().add("node", function ($) {
 		 */
 		on: function (type, callback) {
 			var handlers = [];
-			return this.each(function (node) {
+			this.each(function (node) {
 				handlers.push(addEvent(node, type, callback));
 			});
 			return {
@@ -899,14 +903,9 @@ jet().add("node", function ($) {
 			});
 		},
 		ownerDoc: function () {
-			var result = [];
-			this.each(function (node) {
-				var doc = node.ownerDocument;
-				if (A.indexOf(doc, result) == -1) {
-					result[result.length] = doc;
-				}
+			return this.map(function (node) {
+				return node.ownerDocument;
 			});
-			return $(result);
 		},
 		/**
 		 * Returns a new NodeList with all the documents of all the nodes in the collection that are Iframes
@@ -914,16 +913,11 @@ jet().add("node", function ($) {
 		 * @return {NodeList}
 		 */
 		contentDoc: function () {
-			var result = [];
-			this.each(function (node) {
+			return this.map(function (node) {
 				if (node.nodeName == "IFRAME") {
-					var doc = node.contentDocument || node.contentWindow.document || node.document;
-					if (A.indexOf(doc, result) == -1) {
-						result[result.length] = doc;
-					}
+					return node.contentDocument || node.contentWindow.document || node.document;
 				}
 			});
-			return $(result);
 		},
 		/**
 		 * Returns the computed style of the first node in the collection
