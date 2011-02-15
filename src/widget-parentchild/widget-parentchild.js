@@ -38,6 +38,7 @@ jet().add('widget-parentchild', function ($) {
 	 */
 	var WidgetParent = function () {};
 	WidgetParent.prototype = {
+		
 		_onIndexChange: function () {
 			
 		},
@@ -85,7 +86,7 @@ jet().add('widget-parentchild', function ($) {
 				} else {
 					child.set(PARENT, this);
 				}
-				child.render(this.get(CONTENT_BOX));
+				child.render(this.get('childrenContainer'));
 				
 				child.on(INDEX + CHANGE, this._onIndexChange);
 				child.on(SELECT, $.bind(this._onSelect, this));
@@ -221,6 +222,17 @@ jet().add('widget-parentchild', function ($) {
 				},
 				getter: function () {
 					return this.get('selection').get('index');
+				}
+			},
+			/**
+			 * @config childrenContainer
+			 * @description The node inside which to insert the children
+			 * @default the content box
+			 */
+			childrenContainer: {
+				setter: $,
+				getter: function (val) {
+					return val || this.get(CONTENT_BOX);
 				}
 			}
 		}
