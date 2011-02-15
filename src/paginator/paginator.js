@@ -181,12 +181,17 @@ jet().add('paginator', function ($) {
 			
 			return myself;
 		};
+		
+		var onPageSelectorClick = function (e) {
+			goTo(parseInt($(e.target).html(), 10));
+		};
+		
 		myself.goTo = goTo;
 		
 		myself.on("render", function () {
 			var prefix = myself.get("classPrefix");
 			var className = myself.get("className");
-			var spanFirst, spanPrev, spanNext, spanLast, pagesContainer;
+			var spanFirst, spanPrev, spanNext, spanLast, pagesContainer, pageSpan;
 			prefix += className;
 			
 			var boundingBox = myself.get("boundingBox");
@@ -209,11 +214,9 @@ jet().add('paginator', function ($) {
 			pagesContainer = $(NEW_SPAN).addClass(prefix + "-pages").appendTo(boundingBox);
 			for (var i = currentPage + 1; i < currentPage + pageCount + 1; i++) {
 				// create each "page" button
-				$(NEW_SPAN).addClass(prefix + "-page", i == currentPage + 1 ? prefix + "-current-page" : "", i == currentPage + 1 ? ACTIVE : INACTIVE).attr(ID, prefix + "-page" + i).html(i).on(CLICK, (function (index) {
-					return function () {
-						goTo(index);
-					};
-				}(i))).appendTo(pagesContainer);
+				pageSpan = $(NEW_SPAN).addClass(prefix + "-page", i == currentPage + 1 ? prefix + "-current-page" : "", i == currentPage + 1 ? ACTIVE : INACTIVE);
+				pageSpan.attr(ID, prefix + "-page" + i).html(i);
+				pageSpan.on(CLICK, onPageSelectorClick).appendTo(pagesContainer);
 			}
 			
 			// the "next" button object

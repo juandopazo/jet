@@ -1,8 +1,3 @@
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/Global-js/wiki/Licence
-*/
 /**
  * Contains widgets that act as containers, windows, dialogs 
  * @module container
@@ -239,7 +234,7 @@ jet().add("container", function ($) {
 				var boundingBox = this.get(BOUNDING_BOX);
 				var screenSize = DOM.screenSize();
 				var modal = this.get(MODAL_BOX).css({
-					position: pos,
+					position: 'absolute',
 					top: "0px",
 					left: "0px",
 					background: "#000",

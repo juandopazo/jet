@@ -10,7 +10,7 @@ jet().add('widget-alignment', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	var WidgetAlignment = function () {}
+	var WidgetAlignment = function () {};
 	$.mix(WidgetAlignment, {
 		Top: 't',
 		Middle: 'm',
@@ -31,7 +31,7 @@ jet().add('widget-alignment', function ($) {
 		BottomLeft: WidgetAlignment.Bottom + WidgetAlignment.Left,
 		BottomCenter: WidgetAlignment.Bottom + WidgetAlignment.Center,
 		BottomRight: WidgetAlignment.Bottom + WidgetAlignment.Right
-	})
+	});
 	WidgetAlignment.prototype = {
 		_repositionUI: function () {
 			var align = this.get('align');
@@ -41,7 +41,7 @@ jet().add('widget-alignment', function ($) {
 			var boundingBox = this.get('boundingBox');
 			var targetOffset, boundingOffset = boundingBox.offset();
 			var constrain = this.get('constrain');
-			var screenSize = $.DOM.screenSize()
+			var screenSize = $.DOM.screenSize();
 			var boundingAlign = points[0];
 			var targetAlign = points[1];
 			
@@ -171,7 +171,7 @@ jet().add('widget-alignment', function ($) {
 			afterFixedChange: doReposition,
 			afterConstrainChange: doReposition,
 			afterAlignChange: doReposition,
-			afterWidthChange: fdoReposition,
+			afterWidthChange: doReposition,
 			afterHeightChange: doReposition
 		}
 		

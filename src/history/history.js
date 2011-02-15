@@ -15,7 +15,8 @@ jet().add('history', function ($) {
 	
 	var UA = $.UA,
 		Lang = $.Lang,
-		A = $.Array;
+		A = $.Array,
+		Hash = $.Hash;
 		
 	var body = $.context.body;
 	
@@ -394,6 +395,27 @@ jet().add('history', function ($) {
 		    safariStack.value = historyStorage.toJSON(stack);
 		};
 	
+		/*Private: Remove any leading hash that might be on a location.*/
+		var removeHash = function (hashValue) {
+			var r;
+			if (hashValue === null || hashValue === undefined) {
+				r = null;
+			}
+			else if (hashValue === "") {
+				r = "";
+			}
+			else if (hashValue.length == 1 && hashValue.charAt(0) == "#") {
+				r = "";
+			}
+			else if (hashValue.length > 1 && hashValue.charAt(0) == "#") {
+				r = hashValue.substring(1);
+			}
+			else {
+				r = hashValue;
+			}
+			return r;
+		};
+	
 		/*Private: Notify the listener of new history changes.*/
 		var fireHistoryEvent = function (newHash) {
 			var decodedHash = removeHash(decode(newHash));
@@ -469,27 +491,6 @@ jet().add('history', function ($) {
 	
 			/*Notify listeners of the change*/
 			fireHistoryEvent(hash);
-		};
-	
-		/*Private: Remove any leading hash that might be on a location.*/
-		var removeHash = function (hashValue) {
-			var r;
-			if (hashValue === null || hashValue === undefined) {
-				r = null;
-			}
-			else if (hashValue === "") {
-				r = "";
-			}
-			else if (hashValue.length == 1 && hashValue.charAt(0) == "#") {
-				r = "";
-			}
-			else if (hashValue.length > 1 && hashValue.charAt(0) == "#") {
-				r = hashValue.substring(1);
-			}
-			else {
-				r = hashValue;
-			}
-			return r;
 		};
 	
 		var useHashEvent = function () {
@@ -575,8 +576,6 @@ jet().add('history', function ($) {
 				if (hash !== "") {
 					var encodedHash = encode(removeHash(hash));
 					document.location.hash = encodedHash;
-				} else {
-					//document.location.hash = "#";
 				}
 			}
 			return myself;

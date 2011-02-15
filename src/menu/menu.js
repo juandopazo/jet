@@ -42,7 +42,7 @@ jet().add('menu', function ($) {
 			},
 			blur: function () {
 				this.get(BOUNDING_BOX).removeClass(this.getClassName(HOVER));
-			},
+			}
 		}
 		
 	}, {

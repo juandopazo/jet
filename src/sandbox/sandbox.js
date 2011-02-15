@@ -14,7 +14,10 @@ jet().add('sandbox', function ($) {
 		EVENTS: {
 			
 			render: function () {
-				this.get(FRAME).addClass(this.getClassNAme(FRAME));
+				this.get(FRAME).addClass(this.getClassNAme(FRAME)).attr({
+					src: 'javascript:false',
+					frameborder: 0
+				}).prependTo(this.get('boundingBox'));
 			},
 			
 			afterRender: function () {
@@ -30,11 +33,9 @@ jet().add('sandbox', function ($) {
 			 * @readOnly
 			 */
 			frame: {
-				value: $('<iframe/>').attr({
-					src: 'javascript:false',
-					frameborder: 0
-				}),
-				readOnly: true
+				value: '<iframe/>',
+				getter: $,
+				writeOnce: true
 			},
 			/**
 			 * @config contentWindow
