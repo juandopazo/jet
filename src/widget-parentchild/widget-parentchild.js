@@ -31,10 +31,9 @@ jet().add('widget-parentchild', function ($) {
 		PARENT = 'parent';
 	
 	/**
-	 * A widget conteins child widgets
+	 * A widget extension that makes the current widget contein child widgets
 	 * @class WidgetParent
 	 * @constructor
-	 * @extends Widget
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
 	var WidgetParent = function () {};

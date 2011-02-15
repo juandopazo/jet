@@ -4,6 +4,12 @@ jet().add('widget-alignment', function ($) {
 	var DOM = $.DOM;
 	var FIXED = 'fixed';
 	
+	/**
+	 * A widget extension that provides alignment support
+	 * @class WidgetAlignment
+	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
 	var WidgetAlignment = function () {}
 	$.mix(WidgetAlignment, {
 		Top: 't',
@@ -30,6 +36,7 @@ jet().add('widget-alignment', function ($) {
 		_repositionUI: function () {
 			var align = this.get('align');
 			var points = align.points || [WidgetAlignment.TopLeft, WidgetAlignment.TopLeft];
+			var alignOffset = align.offset || [0, 0];
 			var target = align.node ? $(align.node) : null;
 			var boundingBox = this.get('boundingBox');
 			var targetOffset, boundingOffset = boundingBox.offset();
@@ -42,6 +49,7 @@ jet().add('widget-alignment', function ($) {
 				left: 0,
 				top: 0
 			};
+			
 			if (!target) {
 				targetOffset = {};
 				$.mix(targetOffset, screenSize);
@@ -50,6 +58,7 @@ jet().add('widget-alignment', function ($) {
 			} else {
 				targetOffset = target.offset();
 			}
+			
 			switch (boundingAlign.substr(0, 1)) {
 				case WidgetAlignment.Middle:
 					boundingRelative.top -= boundingOffset.height / 2;
@@ -87,8 +96,8 @@ jet().add('widget-alignment', function ($) {
 				targetOffset.top += DOM.scrollTop();
 			}
 			
-			targetOffset.left += boundingRelative.left;
-			targetOffset.top += boundingRelative.top;
+			targetOffset.left += boundingRelative.left + alignOffset[0];
+			targetOffset.top += boundingRelative.top + alignOffset[1];
 			
 			if (constrain) {
 				if (targetOffset.left < 0) {
@@ -106,21 +115,42 @@ jet().add('widget-alignment', function ($) {
 			boundingBox.offset(targetOffset.left, targetOffset.top);
 		}
 	};
+	function doReposition() {
+		this._repositionUI();
+	}
 	$.mix(WidgetAlignment, {
 		
 		ATTRS: {
-			
+			/**
+			 * @config fixed
+			 * @description Whether the widget should stay fixed to the viewport or no
+			 * @default false
+			 */
 			fixed: {
 				value: false
 			},
 			
+			/**
+			 * @config constrain
+			 * @description If set to true, the widget will never bleed outside the viewport
+			 * @default false
+			 */
 			constrain: {
 				value: false
 			},
-			
+
+			/**
+			 * @config align
+			 * @description Alignment configuration. An object containing three optional properties:
+			 * - node: a selector or node instance of a node to use as a reference
+			 * - points: an array of two values representing corners of nodes. The first one is this widget's corner to use. The second one is the target's corner
+			 * - offset: an array of two values that move the widget relative to the calculated position
+			 * @default { points: [WidgetAlignment.TopLeft, WidgetAlignment.TopLeft], offset: [0, 0] }
+			 */
 			align: {
 				value: {
-					points: [WidgetAlignment.TopLeft, WidgetAlignment.TopLeft]
+					points: [WidgetAlignment.TopLeft, WidgetAlignment.TopLeft],
+					offset: [0, 0]
 				}
 			}
 			
@@ -137,15 +167,12 @@ jet().add('widget-alignment', function ($) {
 				}
 				this._repositionUI();
 			},
-			afterRender: function () {
-				this._repositionUI();
-			},
-			afterWidthChange: function () {
-				this._repositionUI();
-			},
-			afterHeightChange: function () {
-				this._repositionUI();
-			}
+			afterRender: doReposition,
+			afterFixedChange: doReposition,
+			afterConstrainChange: doReposition,
+			afterAlignChange: doReposition,
+			afterWidthChange: fdoReposition,
+			afterHeightChange: doReposition
 		}
 		
 	});
