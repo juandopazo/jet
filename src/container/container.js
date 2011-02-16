@@ -405,8 +405,9 @@ jet().add("container", function ($) {
 		render: function (e) {
 			var height = this.get(HEIGHT);
 			var contentBox = this.get(CONTENT_BOX);
-			var closeButton = this.get('closeButton').attr("href", "#").addClass("container-close").on(CLICK, this._onCloseButton);
+			var closeButton = this.get('closeButton').attr("href", "#").addClass("container-close");
 			var boundingBox = this.get(BOUNDING_BOX);
+			closeButton.on(CLICK, this._onCloseButton);
 			closeButton.appendTo(contentBox);
 			boundingBox.append(this.get(UNDERLAY));
 			if (this.get(SHADOW)) {
