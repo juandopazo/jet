@@ -16,19 +16,39 @@ jet().add('menu', function ($) {
 	 */
 	$.MenuItem = Widget.create('menuitem', [$.WidgetParent, $.WidgetChild], {
 		
+		ATTRS: {
+			labelNode: {
+				setter: $
+			},
+			labelContent: {
+				value: ''
+			},
+			childType: {
+				value: 'MenuItem',
+				getter: function (val) {
+					return Lang.isString(val) ? $[val] : val;
+				}
+			}
+		},
+		
 		EVENTS: {
 			render: function () {
 				var boundingBox = this.get(BOUNDING_BOX);
-				var olay = new $.Overlay({
+				var contentBox = this.get('contentBox');
+				var olay = this._olay =  new $.Overlay({
 					align: {
 						node: boundingBox,
 						points: [$.WidgetAlignment.TopLeft, $.WidgetAlignment.TopRight]
 					}
 				});
-				olay.render(this.get('contentBox'));
+				this.get('labelNode').appendTo(contentBox);
+				olay.render(contentBox);
 				this.get('childrenContainer').appendTo(olay.get('body'));
 				if (this.get('children').length > 0) {
 					boundingBox.addClass(this.getClassName('submenu'));
+				}
+				if (!this.get('selected')) {
+					olay.hide();
 				}
 			},
 			mouseover: function () {
@@ -42,6 +62,19 @@ jet().add('menu', function ($) {
 			},
 			blur: function () {
 				this.get(BOUNDING_BOX).removeClass(this.getClassName(HOVER));
+			},
+			labelContentChange: function (e, newVal) {
+				var labelNode = this.get('labelNode');
+				labelNode.children().remove();
+				labelNode.html(newVal);
+			},
+			afterSelectedChange: function (e, newVal) {
+				var olay = this._olay;
+				if (newVal) {
+					olay.show();
+				} else {
+					olay.hide();
+				}
 			}
 		}
 		
@@ -51,6 +84,7 @@ jet().add('menu', function ($) {
 		
 		initializer: function () {
 			this.set('childrenContainer', '<ul/>');
+			this.set('labelNode', '<span/>');
 		}
 	});
 	
@@ -64,7 +98,12 @@ jet().add('menu', function ($) {
 	 */
 	$.Menu = Widget.create('menu', [$.WidgetParent], {
 		ATTRS: {
-			childType: $.MenuItem
+			childType: {
+				value: 'MenuItem',
+				getter: function (val) {
+					return Lang.isString(val) ? $[val] : val;
+				}
+			} 
 		}
 	}, {
 		CONTENT_TEMPLATE: '<ul/>'

@@ -58,7 +58,7 @@ jet().add('widget-parentchild', function ($) {
 		
 		_unHook: function (child) {
 			child = child.get(INDEX);
-			var children = this.get('children');
+			var children = this.get(CHILDREN);
 			children.splice(child, 1);
 			A.each(children, function (item, i) {
 				if (i >= child) {
@@ -86,6 +86,7 @@ jet().add('widget-parentchild', function ($) {
 				} else {
 					child.set(PARENT, this);
 				}
+				children[index] = child;
 				child.render(this.get('childrenContainer'));
 				
 				child.on(INDEX + CHANGE, this._onIndexChange);
@@ -149,7 +150,7 @@ jet().add('widget-parentchild', function ($) {
 					}
 				};
 				A.each(this.get(CHILDREN), this.add, this);
-				if (!this.get(MULTIPLE) && !this.get('selection')) {
+				if (!this.get(MULTIPLE) && !this.get(SELECTION) && this.item(0)) {
 					this.item(0).select();
 				}
 				Hash.each(Widget.DOM_EVENTS, function (name) {
@@ -160,10 +161,22 @@ jet().add('widget-parentchild', function ($) {
 			afterSelectionChange: function (e, newVal) {
 				if (!this.get(MULTIPLE)) {
 					A.each(this.get(CHILDREN), function (child) {
-						if (child != newVal) {
+						if (child != newVal && Lang.isFunction(child.unselect)) {
 							child.unselect();
 						}
 					});
+				}
+			},
+			
+			afterAddChild: function () {
+				if (!this.get(MULTIPLE) && !this.get(SELECTION)) {
+					this.item(0).select();
+				}
+			},
+			
+			afterRemoveChild: function () {
+				if (!this.get(MULTIPLE) && !this.get(SELECTION)) {
+					this.item(0).select();
 				}
 			}
 		},
@@ -221,7 +234,7 @@ jet().add('widget-parentchild', function ($) {
 					return val;
 				},
 				getter: function () {
-					return this.get('selection').get('index');
+					return this.get(SELECTION).get(INDEX);
 				}
 			},
 			/**

@@ -135,6 +135,14 @@ jet().add("container", function ($) {
 					var value = self.get(name + 'Content');
 					var node = self.get(name).addClass(name);
 					if (Lang.isValue(value)) {
+						if (value.nodeType) {
+							value = $(value);
+						}
+						if (value instanceof $.NodeList) {
+							node.append(value);
+						} else {
+							node.html(value);
+						}
 						node.appendTo(contentBox);
 					}
 				});
@@ -150,23 +158,12 @@ jet().add("container", function ($) {
 		initializer: function () {
 			var self = this;
 			A.each([HEADER, BODY, FOOTER], function (name) {
-				self.set(name, self[name.toUpperCase() + '_TEMPLATE']);
-				var node = self.get(name);
-				var val = self.get(name + 'Content');
-				if (Lang.isValue(val)) {
-					if (val.nodeType) {
-						val = $(val);
-					}
-					if (val instanceof $.NodeList) {
-						node.append(val);
-					} else {
-						node.html(val);
-					}
-				}
+				var node = $(self[name.toUpperCase() + '_TEMPLATE']);
 				self.on(name + 'ContentChange', function (e, newVal) {
 					node.children().remove();
 					node.html(newVal);
 				});
+				self.set(name, node);
 			});
 		}
 	});

@@ -61,7 +61,7 @@
 				value: "solid"
 			}
 		}],
-		container: [BASE, {
+		container: [BASE, 'widget-alignment', {
 			name: "container-css",
 			type: "css",
 			path: "container.css",
@@ -95,6 +95,7 @@
 		treeview: [WIDGET_PARENTCHILD],
 		'widget-alignment': [BASE],
 		'widget-parentchild': [BASE],
+		menu: ['container'],
 		vector: ["anim"]
 	};
 	
