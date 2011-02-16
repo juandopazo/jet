@@ -820,10 +820,10 @@ jet().add('base', function ($) {
 		 * @method create
 		 * @description creates a new widget class
 		 * @static
-		 * @param [String] name Name of the widget class to create
-		 * @param [Array] [Optional] extensions A list of extensions to apply to the created class
-		 * @param [Hash] attrs [Optional] Static properties of the widget (ATTRS, EVENTS, HTML_PARSER, etc) 
-		 * @param [Hash] proto [Optional] Prototype properties to adsrcNode* @param [Function] superclass [Optional] Superclass to use. Default: Widget
+		 * @param {String} name Name of the widget class to create
+		 * @param {Array} [Optional] extensions A list of extensions to apply to the created class
+		 * @param {Hash} attrs [Optional] Static properties of the widget (ATTRS, EVENTS, HTML_PARSER, etc) 
+		 * @param {Hash} proto [Optional] Prototype properties to adsrcNode* @param [Function] superclass [Optional] Superclass to use. Default: Widget
 		 */
 		create: function (name, extensions, attrs, proto, superclass) {
 			extensions = extensions || [];
@@ -840,7 +840,8 @@ jet().add('base', function ($) {
 			$.mix(BuiltWidget, attrs || {});
 			$.mix(BuiltWidget, {
 				NAME: name,
-				exts: extensions
+				exts: extensions,
+				ATTRS: {}
 			});
 			A.each(extensions, function (extension) {
 				$.mix(BuiltWidget[PROTO], extension[PROTO]);

@@ -171,7 +171,7 @@ jet().add('widget-alignment', function ($) {
 			afterFixedChange: doReposition,
 			afterConstrainChange: doReposition,
 			afterAlignChange: doReposition,
-			afterWidthChange: fdoReposition,
+			afterWidthChange: doReposition,
 			afterHeightChange: doReposition
 		}
 		

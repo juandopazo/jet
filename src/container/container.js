@@ -239,7 +239,7 @@ jet().add("container", function ($) {
 				var boundingBox = this.get(BOUNDING_BOX);
 				var screenSize = DOM.screenSize();
 				var modal = this.get(MODAL_BOX).css({
-					position: pos,
+					position: 'absolute',
 					top: "0px",
 					left: "0px",
 					background: "#000",
@@ -413,8 +413,9 @@ jet().add("container", function ($) {
 		render: function (e) {
 			var height = this.get(HEIGHT);
 			var contentBox = this.get(CONTENT_BOX);
-			var closeButton = this.get('closeButton').attr("href", "#").addClass("container-close").on(CLICK, this._onCloseButton);
+			var closeButton = this.get('closeButton').attr("href", "#").addClass("container-close");
 			var boundingBox = this.get(BOUNDING_BOX);
+			closeButton.on(CLICK, this._onCloseButton);
 			closeButton.appendTo(contentBox);
 			boundingBox.append(this.get(UNDERLAY));
 			if (this.get(SHADOW)) {
