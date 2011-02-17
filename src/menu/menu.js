@@ -1,3 +1,9 @@
+/**
+ * OS-like menus for navigation
+ * @module menu
+ * @requires jet, node, base, widget-parentchild, widget-alignment, container
+ * @namespace
+ */
 jet().add('menu', function ($) {
 	
 	var Lang = $.Lang,
@@ -28,6 +34,9 @@ jet().add('menu', function ($) {
 				getter: function (val) {
 					return Lang.isString(val) ? $[val] : val;
 				}
+			},
+			align: {
+				value: [$.WidgetAlignment.TopLeft, $.WidgetAlignment.TopRight]
 			}
 		},
 		
@@ -38,7 +47,7 @@ jet().add('menu', function ($) {
 				var olay = this._olay =  new $.Overlay({
 					align: {
 						node: boundingBox,
-						points: [$.WidgetAlignment.TopLeft, $.WidgetAlignment.TopRight]
+						points: this.get('align')
 					}
 				});
 				this.get('labelNode').appendTo(contentBox);
@@ -103,7 +112,18 @@ jet().add('menu', function ($) {
 				getter: function (val) {
 					return Lang.isString(val) ? $[val] : val;
 				}
-			} 
+			},
+			align: {
+				value: [$.WidgetAlignment.TopLeft, $.WidgetAlignment.BottomLeft]
+			}
+		},
+		
+		EVENTS: {
+			addChild: function (e, child) {
+				if (!(child instanceof $.MenuItem)) {
+					child.align = this.get('align');
+				}
+			}
 		}
 	}, {
 		CONTENT_TEMPLATE: '<ul/>'

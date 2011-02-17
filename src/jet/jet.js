@@ -95,6 +95,7 @@
 		treeview: [WIDGET_PARENTCHILD],
 		'widget-alignment': [BASE],
 		'widget-parentchild': [BASE],
+		'widget-sandbox': [BASE],
 		menu: ['container'],
 		vector: ["anim"]
 	};
