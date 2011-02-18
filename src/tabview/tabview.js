@@ -130,7 +130,19 @@ jet().add('tabview', function ($) {
 		
 		HTML_PARSER: {
 			panel: function () {
-				return $(this.get(PARENT).get(BOUNDING_BOX).children('div')[0]).children()[this.get('index')];
+				return this.get(PARENT).get('panelContainer').children(this.get('index'));
+			},
+			panelContent: function () {
+				var panel = this.get(PANEL)
+				if (panel) {
+					return panel.html();
+				}
+			},
+			labelContent: function () {
+				var label = this.get(CONTENT_BOX);
+				if (label) {
+					return label.html();
+				}
 			}
 		}
 		
@@ -140,7 +152,9 @@ jet().add('tabview', function ($) {
 		PANEL_TEMPLATE: DIV,
 		
 		initializer: function () {
-			this.set(PANEL, this.PANEL_TEMPLATE);
+			if (!this.get(PANEL)) {
+				this.set(PANEL, this.PANEL_TEMPLATE);
+			}
 			var parent = this.get(PARENT);
 			if (parent) {
 				this.set('cssPrefix', parent.get('cssPrefix'));
@@ -183,14 +197,14 @@ jet().add('tabview', function ($) {
 		},
 		
 		EVENTS: {
-			afterRender: function () {
+			render: function () {
 				this.get(PANEL_CONTAINER).addClass(this.getClassName(PANEL, 'container')).appendTo(this.get(BOUNDING_BOX));
 			}
 		},
 		
 		HTML_PARSER: {
 			panelContainer: function () {
-				return this.get(BOUNDING_BOX).children('div')[0];
+				return $(this.get(BOUNDING_BOX).children('div')[0]);
 			}
 		}
 	}, {
@@ -199,7 +213,9 @@ jet().add('tabview', function ($) {
 		CONTAINER_TEMPLATE: DIV,
 		
 		initializer: function () {
-			this.set(PANEL_CONTAINER, this.CONTAINER_TEMPLATE);
+			if (!this.get(PANEL_CONTAINER)) {
+				this.set(PANEL_CONTAINER, this.CONTAINER_TEMPLATE);
+			}
 		}
 		
 	});

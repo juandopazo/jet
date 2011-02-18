@@ -596,16 +596,11 @@ jet().add('base', function ($) {
 					self.set(SRC_NODE, target);
 				}
 	
-				/*A.each(classes, function (someClass) {
-					self._parseHTML(someClass.HTML_PARSER || {}, srcNode);
-				});*/
-	
 				if (this.constructor == Widget) {
 					classes = [Widget];
 				} else {
 					classes.shift();
 				}
-				
 				
 				A.each([WIDTH, HEIGHT], function (size) {
 					var value = self.get(size);
@@ -617,6 +612,17 @@ jet().add('base', function ($) {
 						self.get(BOUNDING_BOX)[size](newVal);
 					});
 				});
+				
+				A.each(classes, function (construct) {
+					className = [classPrefix, construct.NAME].join(DASH);
+					boundingBox.addClass(className);
+					contentBox.addClass([className, CONTENT].join(DASH));
+				});
+				
+				if (boundingBox[0] != contentBox[0]) {
+					boundingBox.append(contentBox.css(VISIBILITY, 'inherit'));
+				}
+				boundingBox.attr('id', this.getClassName(self._uid)).css(VISIBILITY, "visible");
 				/**
 				 * Render event. Preventing the default behavior will stop the rendering process
 				 * @event render
@@ -624,16 +630,9 @@ jet().add('base', function ($) {
 				 */
 				if (this.fire("render")) {
 					
-					A.each(classes, function (construct) {
-						className = [classPrefix, construct.NAME].join(DASH);
-						boundingBox.addClass(className);
-						contentBox.addClass([className, CONTENT].join(DASH));
-					});
-					
-					if (boundingBox[0] != contentBox[0]) {
-						boundingBox.append(contentBox.css(VISIBILITY, 'inherit'));
+					if (!boundingBox.inDoc()) {
+						boundingBox.appendTo(srcNode);
 					}
-					boundingBox.attr('id', this.getClassName(self._uid)).css(VISIBILITY, "visible").appendTo(srcNode);
 					/**
 					 * Fires after the render process is finished
 					 * @event afterRender
@@ -673,11 +672,28 @@ jet().add('base', function ($) {
 			}
 		},
 		
+		_parseHTML: function () {
+			var self = this;
+			var srcNode = this.get('srcNode');
+			if (srcNode[0] && srcNode.inDoc()) {
+				A.each(this._classes, function (someClass) {
+					Hash.each(someClass.HTML_PARSER || {}, function (attr, parser) {
+						var val = parser.call(self, srcNode);
+						if (val && (!val instanceof $.NodeList || val[0])) {
+							self.set(attr, val);
+						}
+					})
+				});
+			}
+		},
+		
 		initializer: function () {
 			this._handlers = [$(this.get('win')).on(UNLOAD, this.destroy, this)];
 			
 			this._uid = ++jet.Widget._uid;
 			jet.Widget._instances[this.getClassName(this._uid)] = this;
+			
+			this._parseHTML();
 			
 			if (!this.get(BOUNDING_BOX)) {
 				this.set(BOUNDING_BOX, $(this.BOUNDING_TEMPLATE));
@@ -784,35 +800,26 @@ jet().add('base', function ($) {
 			 */
 			height: {
 				validator: Lang.isNumber
-			}
+			},
+			/**
+			 * @config id
+			 * @description The id of the widget
+			 * @readOnly
+			 */
+			 id: {
+			 	getter: function () {
+			 		return this.getClassName(this._uid);
+			 	},
+			 	readOnly: true
+			 }
 		},
 		
 		HTML_PARSER: {
-			boundingBox: function (srcNode) {
-				var self = this;
-				var reference = $(this.BOUNDING_TEMPLATE)[0].nodeName.toLowerCase();
-				var boundingBox = null;
-				srcNode.children(reference).each(function (child) {
-					child = $(child);
-					if (child.hasClass(self.getClassName())) {
-						boundingBox = child;
-						return false;
-					}
-				});
-				return boundingBox;
-			},
 			contentBox: function () {
-				var self = this;
-				var reference = $(this.CONTENT_TEMPLATE)[0].nodeName.toLowerCase();
-				var contentBox = null;
-				this.get(BOUNDING_BOX).children(reference).each(function (child) {
-					child = $(child);
-					if (child.hasClass(self.getClassName('content'))) {
-						contentBox = child;
-						return false;
-					}
-				});
-				return contentBox;
+				var boundingBox = this.get(BOUNDING_BOX);
+				if (boundingBox) {
+					return boundingBox.first();
+				}
 			}
 		},
 		
@@ -846,6 +853,7 @@ jet().add('base', function ($) {
 			A.each(extensions, function (extension) {
 				$.mix(BuiltWidget[PROTO], extension[PROTO]);
 				$.mix(BuiltWidget.ATTRS, extension.ATTRS || {});
+				$.mix(BuiltWidget.HTML_PARSER, extension.HTML_PARSER || {});
 			});
 			return BuiltWidget;
 		},
