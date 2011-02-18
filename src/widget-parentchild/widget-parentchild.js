@@ -82,6 +82,7 @@ jet().add('widget-parentchild', function ($) {
 				var self = this;
 				if (!(child instanceof ChildType)) {
 					child.parent = this;
+					child.index = index;
 					child = new ChildType(child);
 				} else {
 					child.set(PARENT, this);
@@ -139,47 +140,6 @@ jet().add('widget-parentchild', function ($) {
 	$.mix(WidgetParent, {
 		
 		NAME: 'widget-parent',
-		
-		EVENTS: {
-			afterRender: function () {
-				var self = this;
-				var domEventChildrenProxy = function (e, domEvent) {
-					var targetWidget = Widget.getByNode(domEvent.target);
-					if (targetWidget && A.indexOf(targetWidget, this.get(CHILDREN)) > -1) {
-						targetWidget.fire(e.type, domEvent);
-					}
-				};
-				A.each(this.get(CHILDREN), this.add, this);
-				if (!this.get(MULTIPLE) && !this.get(SELECTION) && this.item(0)) {
-					this.item(0).select();
-				}
-				Hash.each(Widget.DOM_EVENTS, function (name) {
-					self.on(name, domEventChildrenProxy);
-				});
-			},
-			
-			afterSelectionChange: function (e, newVal) {
-				if (!this.get(MULTIPLE)) {
-					A.each(this.get(CHILDREN), function (child) {
-						if (child != newVal && Lang.isFunction(child.unselect)) {
-							child.unselect();
-						}
-					});
-				}
-			},
-			
-			afterAddChild: function () {
-				if (!this.get(MULTIPLE) && !this.get(SELECTION)) {
-					this.item(0).select();
-				}
-			},
-			
-			afterRemoveChild: function () {
-				if (!this.get(MULTIPLE) && !this.get(SELECTION)) {
-					this.item(0).select();
-				}
-			}
-		},
 		
 		ATTRS: {
 				
@@ -248,6 +208,63 @@ jet().add('widget-parentchild', function ($) {
 					return val || this.get(CONTENT_BOX);
 				}
 			}
+		},
+		
+		EVENTS: {
+			afterRender: function () {
+				var self = this;
+				var domEventChildrenProxy = function (e, domEvent) {
+					var targetWidget = Widget.getByNode(domEvent.target);
+					if (targetWidget && A.indexOf(targetWidget, this.get(CHILDREN)) > -1) {
+						targetWidget.fire(e.type, domEvent);
+					}
+				};
+				A.each(this.get(CHILDREN), this.add, this);
+				if (!this.get(MULTIPLE) && !this.get(SELECTION) && this.item(0)) {
+					this.item(0).select();
+				}
+				Hash.each(Widget.DOM_EVENTS, function (name) {
+					self.on(name, domEventChildrenProxy);
+				});
+			},
+			
+			afterSelectionChange: function (e, newVal) {
+				if (!this.get(MULTIPLE)) {
+					A.each(this.get(CHILDREN), function (child) {
+						if (child != newVal && Lang.isFunction(child.unselect)) {
+							child.unselect();
+						}
+					});
+				}
+			},
+			
+			afterAddChild: function () {
+				if (!this.get(MULTIPLE) && !this.get(SELECTION)) {
+					this.item(0).select();
+				}
+			},
+			
+			afterRemoveChild: function () {
+				if (!this.get(MULTIPLE) && !this.get(SELECTION)) {
+					this.item(0).select();
+				}
+			}
+		},
+		
+		HTML_PARSER: {
+			children: function () {
+				var children;
+				//@TODO: check the use of childrenContainer
+				var childrenContainer = this.get(CONTENT_BOX);
+				childrenContainer.children().each(function () {
+					children = children || [];
+					children.push({
+						srcNode: childrenContainer,
+						boundingBox: this
+					});
+				});
+				return children;
+			}
 		}
 		
 	});
@@ -310,31 +327,6 @@ jet().add('widget-parentchild', function ($) {
 		
 		NAME: 'widget-child',
 		
-		EVENTS: {
-			
-			render: function () {
-				var self = this;
-				var boundingBox = this.get(BOUNDING_BOX);
-				Hash.each(Widget.DOM_EVENTS, function (name) {
-					boundingBox.unbind(name, self._domEventProxy);
-				});
-				if (this.get(SELECTED)) {
-					boundingBox.addClass(this.getClassName(SELECTED));
-				}
-			},
-			
-			afterSelectedChange: function (e, newVal) {
-				var selectedClass = this.getClassName(SELECTED);
-				var boundingBox = this.get(BOUNDING_BOX);
-				if (newVal) {
-					boundingBox.addClass(selectedClass);
-					this.fire(SELECT);
-				} else {
-					boundingBox.removeClass(selectedClass);
-				}
-			}
-		},
-		
 		ATTRS: {
 			/**
 			 * @config selected
@@ -372,6 +364,31 @@ jet().add('widget-parentchild', function ($) {
 						parent = parent.get(PARENT);
 					}
 					return parent;
+				}
+			}
+		},
+		
+		EVENTS: {
+			
+			render: function () {
+				var self = this;
+				var boundingBox = this.get(BOUNDING_BOX);
+				Hash.each(Widget.DOM_EVENTS, function (name) {
+					boundingBox.unbind(name, self._domEventProxy);
+				});
+				if (this.get(SELECTED)) {
+					boundingBox.addClass(this.getClassName(SELECTED));
+				}
+			},
+			
+			afterSelectedChange: function (e, newVal) {
+				var selectedClass = this.getClassName(SELECTED);
+				var boundingBox = this.get(BOUNDING_BOX);
+				if (newVal) {
+					boundingBox.addClass(selectedClass);
+					this.fire(SELECT);
+				} else {
+					boundingBox.removeClass(selectedClass);
 				}
 			}
 		}

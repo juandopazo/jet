@@ -116,7 +116,11 @@ jet().add('tabview', function ($) {
 			render: function () {
 				this.get(CONTENT_BOX).attr(HREF, this.get(HREF)).html(this.get('labelContent'));
 				this.on(this.get('triggerEvent'), this._selectHandler);
-				var panel = this.get(PANEL).html(this.get('panelContent')).addClass(this.getClassName(PANEL)).appendTo(this.get(PARENT).get(PANEL_CONTAINER));
+				var panel = this.get(PANEL).html(this.get('panelContent')).addClass(this.getClassName(PANEL));
+				var panelContainer = this.get(PARENT).get(PANEL_CONTAINER);
+				if (panel.parent()[0] != panelContainer[0]) {
+					panel.appendTo(this.get(PARENT).get(PANEL_CONTAINER));					
+				}
 				if (this.get(SELECTED)) {
 					panel.addClass(this.getClassName(PANEL, SELECTED));
 				}
