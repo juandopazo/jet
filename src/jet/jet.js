@@ -42,7 +42,6 @@
 		"io-xdr": [NODE, "swf", "io"],
 		"io-xsl": ["io"],
 		"history": [BASE, "json"],
-		tabview: [WIDGET_PARENTCHILD],
 		resize: [BASE, {
 			name: "resize-css",
 			type: "css",
@@ -92,11 +91,20 @@
 				value: "solid"
 			}
 		}],
+		tabview: [WIDGET_PARENTCHILD, {
+			name: "tabview-css",
+			type: "css",
+			path: "tabview.css",
+			beacon: {
+				name: "display",
+				value: "none"
+			}
+		}],
 		treeview: [WIDGET_PARENTCHILD],
 		'widget-alignment': [BASE],
 		'widget-parentchild': [BASE],
 		'widget-sandbox': [BASE],
-		menu: ['container'],
+		menu: [WIDGET_PARENTCHILD, 'container'],
 		vector: ["anim"]
 	};
 	
@@ -917,8 +925,8 @@
 					AP.unshift.apply(request, Hash.keys(predef));
 					
 				// add widget-parentchild by default
-				} else if (ArrayHelper.indexOf(WIDGET_PARENTCHILD, request) == -1) {
-					request.unshift(WIDGET_PARENTCHILD);
+				} else if (ArrayHelper.indexOf(BASE, request) == -1) {
+					request.unshift(BASE);
 				}
 				
 				// handle requirements
