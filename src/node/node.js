@@ -343,7 +343,7 @@ jet().add("node", function ($) {
 		each: function (fn) {
 			var i, myself = this, length = myself.length;
 			for (i = 0; i < length; i++) {
-				fn.call(myself[i], myself[i], i);
+				fn.call($(myself[i]), myself[i], i);
 			}
 			return myself;
 		},
@@ -370,6 +370,21 @@ jet().add("node", function ($) {
 					} else if (A.indexOf(output, results) == -1){
 						results[results.length] = output;
 					}
+				}
+			});
+			return new NodeList(results);
+		},
+		/**
+		 * Returns a new nodelist with only the nodes for which the provided function returns true
+		 * @method filter
+		 * @param {Function} fn
+		 * @return NodeList
+		 */
+		filter: function (fn) {
+			var results = [];
+			this.each(function (node) {
+				if (fn.call(this)) {
+					results[results.length] = node;
 				}
 			});
 			return new NodeList(results);
