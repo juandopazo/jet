@@ -64,7 +64,7 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.Module = Widget.create('module', [], {
+	$.Module = Widget.create('module', Widget, [], {
 		ATTRS: {
 			/**
 			 * @config header
@@ -183,7 +183,7 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.Overlay = Widget.create('overlay', [$.WidgetAlignment], {
+	$.Overlay = Widget.create('overlay', $.Module, [$.WidgetAlignment], {
 		
 		ATTRS: {
 			/**
@@ -301,7 +301,7 @@ jet().add("container", function ($) {
 			Global.overlays.push(this);
 			this.set(MODAL_BOX, this.MODAL_TEMPLATE);
 		}
-	}, $.Module);
+	});
 	
 	/**
 	 * A simple tooltip implementation
@@ -310,7 +310,7 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.Tooltip = Widget.create('tooltip', [$.WidgetAlignment], {
+	$.Tooltip = Widget.create('tooltip', Widget, [$.WidgetAlignment], {
 		ATTRS: {
 			align: {
 				points: ['tl', 'bl']
@@ -353,81 +353,83 @@ jet().add("container", function ($) {
 	/**
 	 * A panel is an overlay that resembles an OS window without actually being one,
 	 * to the problems they have (stop javascript execution, etc)
-	 * @class Panel
-	 * @extends Overlay
+	 * @class PanelBase
 	 * @constructor
-	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	var panelAttrs = {
-		/**
-		 * @config close
-		 * @description If true, a close button is added to the panel that hides it when clicked
-		 * @type Boolean
-		 * @default true
-		 */
-		close: {
-			value: true,
-			validator: Lang.isBoolean,
-			setter: function (value) {
-				var closeButton = this.get('closeButton');
-				if (value) {
-					closeButton.show();
-				} else {
-					closeButton.hide();
+	var PanelBase = $.mix(function () {}, {
+		
+		ATTRS: {
+			/**
+			 * @config close
+			 * @description If true, a close button is added to the panel that hides it when clicked
+			 * @type Boolean
+			 * @default true
+			 */
+			close: {
+				value: true,
+				validator: Lang.isBoolean,
+				setter: function (value) {
+					var closeButton = this.get('closeButton');
+					if (value) {
+						closeButton.show();
+					} else {
+						closeButton.hide();
+					}
+					return value;
 				}
-				return value;
+			},
+			/**
+			 * @config underlay
+			 * @description The underlay is inserted after the contentBox to allow for a more complex design
+			 * @readOnly
+			 */
+			underlay: {
+				setter: $
+			},
+			/**
+			 * @config shadow
+			 * @description If true, the panel shows a shadow
+			 * @default true
+			 */
+			shadow: {
+				value: true
+			},
+			
+			closeButton: {
+				setter: $
 			}
-		},
-		/**
-		 * @config underlay
-		 * @description The underlay is inserted after the contentBox to allow for a more complex design
-		 * @readOnly
-		 */
-		underlay: {
-			setter: $
-		},
-		/**
-		 * @config shadow
-		 * @description If true, the panel shows a shadow
-		 * @default true
-		 */
-		shadow: {
-			value: true
+			
 		},
 		
-		closeButton: {
-			setter: $
+		EVENTS: {
+			
+			render: function (e) {
+				var height = this.get(HEIGHT);
+				var contentBox = this.get(CONTENT_BOX);
+				var closeButton = this.get('closeButton').attr("href", "#").addClass("container-close");
+				var boundingBox = this.get(BOUNDING_BOX);
+				closeButton.on(CLICK, this._onCloseButton);
+				closeButton.appendTo(contentBox);
+				boundingBox.append(this.get(UNDERLAY));
+				if (this.get(SHADOW)) {
+					boundingBox.addClass(SHADOW);
+				}
+				$(this.get('doc')).on('keyup', this._onContextKeyUp);
+			},
+			
+			destroy: function () {
+				$(this.get('doc')).unbind('keyup', this._onContextKeyUp);
+			},
+			
+			click: function (e, domEvent) {
+				if (domEvent.target == this.get('closeButton')[0]) {
+					this._onCloseButton(domEvent);
+				}
+			}
+			
 		}
-		
-	};
-	var panelEvents = {
-		
-		render: function (e) {
-			var height = this.get(HEIGHT);
-			var contentBox = this.get(CONTENT_BOX);
-			var closeButton = this.get('closeButton').attr("href", "#").addClass("container-close");
-			var boundingBox = this.get(BOUNDING_BOX);
-			closeButton.on(CLICK, this._onCloseButton);
-			closeButton.appendTo(contentBox);
-			boundingBox.append(this.get(UNDERLAY));
-			if (this.get(SHADOW)) {
-				boundingBox.addClass(SHADOW);
-			}
-			$(this.get('doc')).on('keyup', this._onContextKeyUp);
-		},
-		
-		destroy: function () {
-			$(this.get('doc')).unbind('keyup', this._onContextKeyUp);
-		},
-		
-		click: function (e, domEvent) {
-			if (domEvent.target == this.get('closeButton')[0]) {
-				this._onCloseButton(domEvent);
-			}
-		}
-		
-	};
-	var panelMethods = {
+	});
+	PanelBase.prototype = {
 		
 		CONTENT_TEMPLATE: '<div/>',
 		CLOSE_TEMPLATE: '<a/>',
@@ -455,15 +457,23 @@ jet().add("container", function ($) {
 		}
 		
 	};
-	$.Panel = Widget.create('panel', [], {
-		ATTRS: panelAttrs,
-		EVENTS: panelEvents
-	}, panelMethods, $.Overlay);
+	
+	/**
+	 * A panel is an overlay that resembles an OS window without actually being one,
+	 * to the problems they have (stop javascript execution, etc)
+	 * @class PanelBase
+	 * @extends Overlay
+	 * @uses PanelBase
+	 * @constructor
+	 * @param {Object} config Object literal specifying widget configuration properties
+	 */
+	$.Panel = Widget.create('panel', $.Overlay, [PanelBase]);
 	
 	/**
 	 * An panel with static position and a close button
 	 * @class StaticPanel
 	 * @extends Module
+	 * @uses PanelBase
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
@@ -489,10 +499,7 @@ jet().add("container", function ($) {
 		 * @description If true, the panel shows a shadow
 		 * @default true
 		 */
-	$.StaticPanel = Widget.create('panel', [] ,{
-		ATTRS: panelAttrs,
-		EVENTS: panelEvents
-	}, panelMethods, $.Module);
+	$.StaticPanel = Widget.create('panel', $.Module, [PanelBase]);
 	
 	/**
 	 * A SimpleDialog is a Panel with simple form options and a button row instead of the footer
@@ -501,7 +508,7 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.SimpleDialog = Widget.create('dialog', [], {
+	$.SimpleDialog = Widget.create('dialog', $.Panel, [], {
 		ATTRS: {
 			
 			/**
@@ -540,6 +547,6 @@ jet().add("container", function ($) {
 				});
 			}
 		}
-	}, {}, $.Panel);
+	});
 	
 });

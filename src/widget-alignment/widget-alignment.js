@@ -38,7 +38,7 @@ jet().add('widget-alignment', function ($) {
 			var points = align.points || [WidgetAlignment.TopLeft, WidgetAlignment.TopLeft];
 			var alignOffset = align.offset || [0, 0];
 			var target = align.node ? $(align.node) : null;
-			var boundingBox = this.get('boundingBox');
+			var boundingBox = this.get(this.get('alignedBox'));
 			var targetOffset, boundingOffset = boundingBox.offset();
 			var constrain = this.get('constrain');
 			var screenSize = $.DOM.screenSize();
@@ -152,6 +152,11 @@ jet().add('widget-alignment', function ($) {
 					points: [WidgetAlignment.TopLeft, WidgetAlignment.TopLeft],
 					offset: [0, 0]
 				}
+			},
+			
+			alignedBox: {
+				value: 'boundingBox',
+				writeOnce: true
 			}
 			
 		},

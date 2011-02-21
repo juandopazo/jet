@@ -40,7 +40,7 @@ jet().add('button', function ($) {
 	 * @uses WidgetChild
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	var Button = Widget.create('button', [WidgetChild], {
+	var Button = Widget.create('button', Widget, [WidgetChild], {
 		
 		ATTRS: {
 			/**
@@ -188,13 +188,13 @@ jet().add('button', function ($) {
 	 * @extends Button
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.ToggleButton = Widget.create('button-toggle', [], {
+	$.ToggleButton = Widget.create('button-toggle', Button, [], {
 		EVENTS: {
 			click: function () {
 				this.toggle();
 			}
 		}
-	}, {}, Button);
+	});
 	
 	/**
 	 * A group of buttons that can be styled as a pill
@@ -204,7 +204,7 @@ jet().add('button', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.ButtonGroup = Widget.create('button-group', [WidgetParent], {
+	$.ButtonGroup = Widget.create('button-group', Widget, [WidgetParent], {
 		ATTRS: {
 			childType: {
 				value: $.Button
@@ -252,7 +252,7 @@ jet().add('button', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.ComboOption = Widget.create('combo-option', [WidgetChild], {
+	$.ComboOption = Widget.create('combo-option', Widget, [WidgetChild], {
 		ATTRS: {
 			/**
 			 * @config value
@@ -294,7 +294,7 @@ jet().add('button', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.ComboBox = Widget.create('combobox', [WidgetParent], {
+	$.ComboBox = Widget.create('combobox', Button, [WidgetParent], {
 		ATTRS: {
 			childType: {
 				value: $.ComboOption,
@@ -312,7 +312,7 @@ jet().add('button', function ($) {
 		}
 	}, {
 		CONTENT_TEMPLATE: '<select/>'
-	}, Button);
+	});
 	
 	if (!Lang.isNumber(jet.Button.radio)) {
 		jet.Button.radio = 0;
@@ -325,7 +325,7 @@ jet().add('button', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.RadioButton = Widget.create('radio', [], {
+	$.RadioButton = Widget.create('radio', Button, [], {
 		EVENTS: {
 			selectedChange: function (e, val) {
 				this.get(CONTENT_BOX)[0].checked = !!val;
@@ -339,7 +339,7 @@ jet().add('button', function ($) {
 		}
 	}, {
 		CONTENT_TEMPLATE: '<input/>'
-	}, Button);
+	});
 	
 	/**
 	 * A group of radio buttons that interact together
@@ -349,7 +349,7 @@ jet().add('button', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.RadioGroup = Widget.create('radio-group', [WidgetParent], {
+	$.RadioGroup = Widget.create('radio-group', Widget, [WidgetParent], {
 		ATTRS: {
 			/**
 			 * @config multiple
@@ -387,7 +387,7 @@ jet().add('button', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.CheckBox = Widget.create('checkbox', [], {
+	$.CheckBox = Widget.create('checkbox', Button, [], {
 		EVENTS: {
 			selectedChange: function (e, val) {
 				this.get(CONTENT_BOX)[0].checked = !!val;
@@ -401,7 +401,7 @@ jet().add('button', function ($) {
 		}
 	}, {
 		CONTENT_TEMPLATE: '<input/>'
-	}, Button);
+	});
 	
 	/**
 	 * A group of checkboxes that interact together
@@ -411,7 +411,7 @@ jet().add('button', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.CheckBoxGroup = Widget.create('checkbox-group', [WidgetParent], {
+	$.CheckBoxGroup = Widget.create('checkbox-group', Widget, [WidgetParent], {
 		ATTRS: {
 			/**
 			 * @config name

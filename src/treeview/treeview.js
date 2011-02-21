@@ -51,7 +51,7 @@ jet().add('treeview', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	$.TreeNode = Widget.create('treenode', [$.WidgetParent, $.WidgetChild], {
+	$.TreeNode = Widget.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 		
 		ATTRS: {
 			/**
@@ -201,7 +201,7 @@ jet().add('treeview', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	$.TreeView = Widget.create('treeview', [$.WidgetParent], {
+	$.TreeView = Widget.create('treeview', Widget, [$.WidgetParent], {
 		ATTRS: {
 			childType: {
 				value: $.TreeNode,

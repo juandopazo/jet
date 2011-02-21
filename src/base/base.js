@@ -832,7 +832,7 @@ jet().add('base', function ($) {
 		 * @param {Hash} attrs [Optional] Static properties of the widget (ATTRS, EVENTS, HTML_PARSER, etc) 
 		 * @param {Hash} proto [Optional] Prototype properties to adsrcNode* @param [Function] superclass [Optional] Superclass to use. Default: Widget
 		 */
-		create: function (name, extensions, attrs, proto, superclass) {
+		create: function (name, superclass, extensions, attrs, proto) {
 			extensions = extensions || [];
 			function BuiltWidget() {
 				var args = arguments;

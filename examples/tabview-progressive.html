@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<title>test</title>
-		<link rel="stylesheet" type="text/css" href="../build/tabview.css"/>
+		<link rel="stylesheet" type="text/css" href="../build/tabview.min.css"/>
 		<style>
 			body {
 				margin: 0;
@@ -27,11 +27,12 @@
 				</div>
 			</div>
 		</div>
-		<script src="../build/jet.js"></script>
+		<script src="../build/jet.min.js"></script>
 		<script>
 			jet({
 				base: '../build',
-				loadCss: false
+				loadCss: false,
+				minify: true
 			}).use('tabview', function ($) {
 				
 				var widget = new $.TabView({

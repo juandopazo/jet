@@ -31,7 +31,7 @@ jet().add('tabview', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	$.Tab = Widget.create('tab', [$.WidgetChild], {
+	$.Tab = Widget.create('tab', Widget, [$.WidgetChild], {
 		
 		ATTRS: {
 			/**
@@ -180,7 +180,7 @@ jet().add('tabview', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	$.TabView = Widget.create('tabview', [$.WidgetParent], {
+	$.TabView = Widget.create('tabview', Widget, [$.WidgetParent], {
 		ATTRS: {
 			/**
 			 * @config panelContainer

@@ -20,7 +20,7 @@ jet().add('menu', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	$.MenuItem = Widget.create('menuitem', [$.WidgetParent, $.WidgetChild], {
+	$.MenuItem = Widget.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 		
 		ATTRS: {
 			labelNode: {
@@ -105,7 +105,7 @@ jet().add('menu', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	$.Menu = Widget.create('menu', [$.WidgetParent], {
+	$.Menu = Widget.create('menu', Widget, [$.WidgetParent], {
 		ATTRS: {
 			childType: {
 				value: 'MenuItem',
@@ -121,7 +121,7 @@ jet().add('menu', function ($) {
 		EVENTS: {
 			addChild: function (e, child) {
 				if (!(child instanceof $.MenuItem)) {
-					child.align = this.get('align');
+					child.align = child.align || this.get('align');
 				}
 			}
 		}
