@@ -674,11 +674,11 @@ jet().add('base', function ($) {
 		
 		_parseHTML: function () {
 			var self = this;
-			var srcNode = this.get('srcNode');
-			if (srcNode[0] && srcNode.inDoc()) {
+			var boundingBox = this.get(BOUNDING_BOX);
+			if (boundingBox[0] && boundingBox.inDoc()) {
 				A.each(this._classes, function (someClass) {
 					Hash.each(someClass.HTML_PARSER || {}, function (attr, parser) {
-						var val = parser.call(self, srcNode);
+						var val = parser.call(self, boundingBox);
 						if (val && (!val instanceof $.NodeList || val[0])) {
 							self.set(attr, val);
 						}
@@ -693,14 +693,14 @@ jet().add('base', function ($) {
 			this._uid = ++jet.Widget._uid;
 			jet.Widget._instances[this.getClassName(this._uid)] = this;
 			
-			this._parseHTML();
-			
 			if (!this.get(BOUNDING_BOX)) {
 				this.set(BOUNDING_BOX, $(this.BOUNDING_TEMPLATE));
 			}
 			if (!this.get(CONTENT_BOX)) {
 				this.set(CONTENT_BOX, this.CONTENT_TEMPLATE ? $(this.CONTENT_TEMPLATE) : this.get(BOUNDING_BOX));
 			}
+			
+			this._parseHTML();
 		},
 		
 		getClassName: function () {

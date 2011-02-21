@@ -356,7 +356,9 @@ jet().add("container", function ($) {
 	 * @class PanelBase
 	 * @constructor
 	 */
-	var PanelBase = $.mix(function () {}, {
+	var PanelBase = $.mix(function () {
+		this.set('closeButton', this.get('closeButton'));
+	}, {
 		
 		ATTRS: {
 			/**
@@ -396,6 +398,7 @@ jet().add("container", function ($) {
 			},
 			
 			closeButton: {
+				value: '<a/>',
 				setter: $
 			}
 			

@@ -207,8 +207,8 @@ jet().add('tabview', function ($) {
 		},
 		
 		HTML_PARSER: {
-			panelContainer: function () {
-				return $(this.get(BOUNDING_BOX).children('div')[0]);
+			panelContainer: function (boundingBox) {
+				return $(boundingBox.children('div')[0]);
 			}
 		}
 	}, {

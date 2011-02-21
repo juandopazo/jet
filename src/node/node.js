@@ -688,11 +688,11 @@ jet().add("node", function ($) {
 		 * @param [Document] doc
 		 * @return Boolean
 		 */
-		inDoc: function (de) {
-			de = (de || $.context).documentElement;
+		inDoc: function () {
+			var de = this[0].ownerDocument.documentElement;
 			var parent = this.parent();
-			while (parent) {
-				if (parent[0] == de) {
+			while (parent[0]) {
+				if (parent[0].nodeName.toLowerCase() == 'html') {
 					return true;
 				}
 				parent = parent.parent();
