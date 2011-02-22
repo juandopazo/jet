@@ -13,7 +13,9 @@ jet().add('datatable', function ($) {
 	
 	var Lang = $.Lang,
 		Hash = $.Hash,
-		A = $.Array;	
+		A = $.Array,
+		Base = $.Base,
+		Widget = $.Widget;	
 		
 	var DATA = "data",
 		ASC = "asc",
@@ -57,46 +59,46 @@ jet().add('datatable', function ($) {
 	};
 	$.extend(Cell, $.Base);
 	
-	/*
-	 * @TODO
-	 */
-	var Column = function () {
-		Column.superclass.constructor.apply(this, arguments);
+	
+	var Column = Base.create(Base, {
 		
-		var myself = this.addAttrs({
-			cells: {
-				required: true,
-				writeOnce: true
-			}
-		});
+		getFirstTd: function () {
+			return this.get("cells")[0].get("td");
+		},
 		
-		this.getFirstTd = function () {
-			return myself.get("cells")[0].get("td");
-		};
-		this.getNextTd = function (td) {
-			var cells = myself.get("cells"), length = cells.length, i;
+		getNextTd: function (td) {
+			var cells = this.get("cells"), length = cells.length, i;
 			for (i = 0; i < length; i++) {
 				if (cells[i].get("td") == td) {
 					break;
 				}
 			}
 			return i < length - 2 ? cells[++i].get("td") : null; 
-		};
+		},
 		
-		this.getFirstCell = function () {
-			return myself.get("cells")[0];
-		};
-		this.getNextCell = function (cell) {
-			var cells = myself.get("cells"), length = cells.length, i;
+		getFirstCell: function () {
+			return this.get("cells")[0];
+		},
+		
+		getNextCell: function (cell) {
+			var cells = this.get("cells"), length = cells.length, i;
 			for (i = 0; i < length; i++) {
 				if (cells[i] == cell) {
 					break;
 				}
 			}
 			return i < length - 2 ? cells[++i] : null; 
-		};
-	};
-	$.extend(Column, $.Base);
+		}
+	}, {
+		
+		ATTRS: {
+			cells: {
+				required: true,
+				writeOnce: true
+			}
+		}
+		
+	});
 	
 	/**
 	 * A DataTable is an HTML table that can be sorted and linked to a DataSource
@@ -105,10 +107,9 @@ jet().add('datatable', function ($) {
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 * @constructor
 	 */
-	var DataTable = function () {
-		DataTable.superclass.constructor.apply(this, arguments);
+	var DataTable = Widget.create('dt', Widget, [], {
 		
-		var myself = this.addAttrs({
+		ATTRS: {
 			/**
 			 * @config recordSet
 			 * @description The data table's associated recordSet
@@ -127,35 +128,91 @@ jet().add('datatable', function ($) {
 				required: true,
 				validator: Lang.isArray
 			},
-			className: {
-				writeOnce: true,
-				value: "dt"
+			
+			thead: {
+				value: '<thead/>',
+				setter: $
+			},
+			tbody: {
+				value: '<tbody/>',
+				setter: $
+			},
+			
+			recordIdPrefix: {
+				readOnly: true,
+				getter: function () {
+					return this.getClassName(this._uid + REC);
+				}
 			}
-		});
+		},
 		
-		var id = jet.DataTable.ids++;
+		EVENTS: {
+			render: function () {
+				var contentBox = this.get('contentBox');
+				var thead = this.get('thead');
+				var tbody = this.get('tbody');
+				
+				this._setupTableHeaders();
+				
+				this.onDataReturnAddRows(null, this.get('recordSet'));
+				
+				thead.appendTo(contentBox);
+				tbody.addClass(this.getClassName(DATA)).appendTo(contentBox);
+			}
+		}
 		
-		var fields;
-		var recordSet = myself.get("recordSet");
+	}, {
 		
-		var prefix = myself.get("classPrefix");
-		var className = myself.get("className");
-		var prefixClass = prefix + className + "-";
-		var recordIdPrefix = prefixClass + id + REC;
-		var thIdPrefix = prefixClass + id + "th-";
+		CONTENT_TEMPLATE: '<table/>',
 		
-		var table = $("<table/>").attr(ID, prefixClass + id);
-		var thead = $("<thead/>").appendTo(table).append($("<tr/>"));
-		var tbody = $("<tbody/>").addClass(prefixClass + DATA).appendTo(table);
+		initializer: function () {
+			this.set('thead', this.get('thead'));
+			this.set('tbody', this.get('tbody'));
+		},
 		
-		var sortedBy;
+		_onThClick: function (e) {
+			e.stopPropagation();
+			e.preventDefault();
+			this._sort(e.target);
+		},
 		
-		var sort = function (th, keepOrder) {
+		_setupTableHeaders: function () {
+			var colDefs = this.get(COLUMN_DEFINITIONS);
+			var getClassName = this.getClassName;
+			var linerClassName = getClassName(LINER);
+			var labelClassname = getClassName('label');
+			var sortableClassName = getClassName(SORTABLE);
+			var uid = this._uid;
+			var self = this;
+			var thead = this.get('thead');
+			A.each(colDefs, function (colDef, i) {
+				var th = $("<th/>").append($(NEW_DIV).append($("<span/>").addClass(labelClassname).html(colDef.label || colDef.key)));
+				th.attr(ID, getClassName(uid, 'th', colDef.key));
+				if (i === 0) {
+					th.addClass(getClassName('first'));
+				} else if (i == colDefs.length - 1) {
+					th.addClass(getClassName('last'));
+				}
+				if (colDef.sortable) {
+					th.addClass(sortableClassName).on("click", self._onThClick, self);
+				}
+				thead.first().append(th);
+			});
+		},
+		
+		_sort: function (th, keepOrder) {
+			var getClassName = this.getClassName;
 			var key = th.attr(ID).split("-").pop();
-			var isDesc = th.hasClass(prefixClass + DESC);
+			var classNameDESC = getClassName(DESC);
+			var isDesc = th.hasClass(classNameDESC);
 			var order = isDesc ? DESC : ASC;
 			var unorder = isDesc ? ASC : DESC;
 			var i;
+			var thead = this.get('thead');
+			var tbody = this.get('tbody');
+			var recordSet = this.get('recordSet');
+			var sortedBy = this.get('sortedBy');
+			var recordIdPrefix = this.get('recordIdPrefix');
 			if (!keepOrder) {
 				i = order;
 				order = unorder;
@@ -164,8 +221,8 @@ jet().add('datatable', function ($) {
 			/*
 			 * Add/remove respective classes
 			 */
-			thead.find("th").removeClass(prefixClass + order, prefixClass + unorder);
-			th.addClass(prefixClass + order).removeClass(prefixClass + unorder);
+			thead.find("th").removeClass(getClassName(order), getClassName(unorder));
+			th.addClass(getClassName(order)).removeClass(getClassName(unorder));
 			// Sort recordset
 			recordSet.sortBy(key, order);
 			sortedBy = key;
@@ -173,66 +230,48 @@ jet().add('datatable', function ($) {
 			var records = recordSet.getRecords();
 			var length = records.length;
 			var before, after;
-			var even = prefixClass + (length % 2 === 0 ? EVEN : ODD);
-			var odd = prefixClass + (length % 2 === 0 ? ODD : EVEN);
+			var even = getClassName(length % 2 === 0 ? EVEN : ODD);
+			var odd = getClassName(length % 2 === 0 ? ODD : EVEN);
 			$(NUMERAL + recordIdPrefix + records[length - 1].getId()).addClass(length % 2 === 0 ? odd : even).removeClass(length % 2 === 0 ? even : odd);
 			for (i = length - 2; i >= 0; i--) {
 				before = $(NUMERAL + recordIdPrefix + records[i].getId());
 				after = $(NUMERAL + recordIdPrefix + records[i + 1].getId());
 				before.addClass(i % 2 === 0 ? even : odd).removeClass(i % 2 === 0 ? odd : even).insertBefore(after);
 			}
-			tbody.find(DOT + prefixClass + DESC).removeClass(prefixClass + DESC);
-			tbody.find(DOT + prefixClass + "col-" + key).addClass(prefixClass + DESC);
-		};
+			tbody.find(DOT + classNameDESC).removeClass(classNameDESC);
+			tbody.find(DOT + getClassName('col', key)).addClass(classNameDESC);
+		},
 		
-		/*
-		 * Set up table headers
-		 */
-		var colDefs = myself.get(COLUMN_DEFINITIONS);
-		A.each(colDefs, function (colDef, i) {
-			var th = $("<th/>").append($(NEW_DIV).addClass(prefixClass + LINER).append($("<span/>").addClass(prefixClass + "label").html(colDef.label || colDef.key)));
-			th.attr(ID, thIdPrefix + colDef.key);
-			if (i === 0) {
-				th.addClass(prefixClass + "first");
-			} else if (i == colDefs.length - 1) {
-				th.addClass(prefixClass + "last");
-			}
-			if (colDef.sortable) {
-				th.addClass(prefixClass + SORTABLE).on("click", function (e) {
-					e.stopPropagation();
-					e.preventDefault();
-					sort(th);
-				});
-			}
-			thead.first().append(th);
-		});
-		
-		var addRow = function (row) {
+		_addRow: function (row) {
 			if (!Lang.isRecord(row)) {
 				row = new $.Record(row);
 			}
+			var recordIdPrefix = this.get('recordIdPrefix');
 			var tr = $("<tr/>").attr(ID, recordIdPrefix + row.getId());
-			A.each(myself.get(COLUMN_DEFINITIONS), function (colDef) {
+			var getClassName = this.getClassName;
+			var tbody = this.get('tbody');
+			A.each(this.get(COLUMN_DEFINITIONS), function (colDef) {
 				var text = row.get(colDef.key);
-				var td = $("<td/>").addClass(prefix + className + "-col-" + colDef.key);
-				td.append($(NEW_DIV).addClass(prefixClass + LINER).html(colDef.formatter ? colDef.formatter(text, row.getData(), td) : text)).appendTo(tr);
+				var td = $("<td/>").addClass(getClassName('col', colDef.key));
+				td.append($(NEW_DIV).addClass(getClassName(LINER)).html(colDef.formatter ? colDef.formatter(text, row.getData(), td) : text)).appendTo(tr);
 			});
-			tr.addClass(tbody.children().length % 2 === 0 ? (prefixClass + EVEN) : (prefixClass + ODD)).appendTo(tbody);
-		};
-		this.set("tbody", tbody).set("thead", thead);
+			tr.addClass(getClassName(tbody.children().length % 2 === 0 ? EVEN : ODD)).appendTo(tbody);
+		},
+		
 		/**
 		 * Adds a row
 		 * @method addRow
 		 * @param {Record|HTMLRowElement|Array} row
 		 * @chainable
 		 */
-		this.addRow = function (row) {
-			addRow(row);
+		addRow: function (row) {
+			this._addRow(row);
+			var sortedBy = this.get('sortedBy');
 			if (sortedBy) {
-				sort($(NUMERAL + thIdPrefix + sortedBy));
+				this._sort($(NUMERAL + this.getClassName(this._uid, 'th', sortedBy)));
 			}
-			return myself;
-		};
+			return this;
+		},
 		
 		/**
 		 * Adds several rows
@@ -240,7 +279,7 @@ jet().add('datatable', function ($) {
 		 * @param {Array} rows
 		 * @chainable
 		 */
-		this.addRows = function (rows) {
+		addRows: function (rows) {
 			if (Lang.isArray(rows)) {
 				A.each(rows, function (row) {
 					if (!Lang.isRecord(row)) {
@@ -250,19 +289,21 @@ jet().add('datatable', function ($) {
 			} else if (Lang.isRecordSet(rows)) {
 				rows = rows.getRecords();
 			}
-			A.each(rows, addRow);
+			A.each(rows, this._addRow);
+			var sortedBy = this.get('sortedBy');
 			if (sortedBy) {
-				sort($(NUMERAL + thIdPrefix + sortedBy), true);
+				this._sort($(NUMERAL + this.getClassName(this._uid, 'th', sortedBy)), true);
 			}
-		};
+			return this;
+		},
 		/*@TODO
-		myself.deleteRow = function () {
+		deleteRow: function () {
 			
-		};
+		},
 		
-		myself.deleteRows = function () {
+		deleteRows: function () {
 			
-		};
+		},
 		*/
 		
 		/**
@@ -271,10 +312,10 @@ jet().add('datatable', function ($) {
 		 * @param {Number | String} id
 		 * @return Column
 		 */
-		this.getColumn = function (id) {
-			var col, cells = [], i, records = recordSet.getRecords(), length = records.length;
-			var colDefs = myself.get("columnDefinitions");
-			var rows = tbody.children(), key = Lang.isNumber(id) ? colDefs[id].key : id;
+		getColumn: function (id) {
+			var col, cells = [], i, records = this.get('recordSet').getRecords(), length = records.length;
+			var colDefs = this.get("columnDefinitions");
+			var rows = this.get('tbody').children(), key = Lang.isNumber(id) ? colDefs[id].key : id;
 			var index = id;
 			if (!Lang.isNumber(id)) {
 				for (i = 0; i < colDefs.length; i++) {
@@ -294,16 +335,16 @@ jet().add('datatable', function ($) {
 			return new Column({
 				cells: cells
 			});
-		};
-		
+		},
+
 		/**
 		 * Returns the first html row element in the table
 		 * @method getFirstTr
 		 * @return NodeList
 		 */
-		this.getFirstTr = function () {
-			return tbody.children().eq(0);
-		};
+		getFirstTr: function () {
+			return this.get('tbody').children().eq(0);
+		},
 		
 		/**
 		 * Returns the next html row element base on the one passed as a parameter
@@ -311,15 +352,15 @@ jet().add('datatable', function ($) {
 		 * @param {Record | HTMLTrElement | NodeList | Number} tr
 		 * @return NodeList
 		 */
-		this.getNextTr = function (tr) {
+		getNextTr: function (tr) {
 			if (Lang.isRecord(tr)) {
 				tr = tr.getId();
 			}
 			if (Lang.isNumber(tr)) {
-				tr = tbody.find(NUMERAL + recordIdPrefix + tr);
+				tr = this.get('tbody').find(NUMERAL + this.get('recordIdPrefix') + tr);
 			}
 			return tr.next();
-		};
+		},
 		
 		/**
 		 * Returns the first cell element in a row
@@ -327,15 +368,15 @@ jet().add('datatable', function ($) {
 		 * @param {Record | HTMLTrElement | NodeList | Number} row
 		 * @return NodeList
 		 */
-		this.getFirstTd = function (row) {
+		getFirstTd: function (row) {
 			if (Lang.isRecord(row)) {
 				row = row.getId();
 			}
 			if (Lang.isNumber(row)) {
-				row = tbody.find(NUMERAL + recordIdPrefix + row);
+				row = this.get('tbody').find(NUMERAL + this.get('recordIdPrefix') + row);
 			}
 			return row.children().eq(0);
-		};
+		},
 		
 		/**
 		 * Returns the next cell element in a row based on the one passed as a parameter
@@ -343,56 +384,56 @@ jet().add('datatable', function ($) {
 		 * @param {Record | HTMLTrElement | NodeList | Number} td
 		 * @return NodeList
 		 */
-		this.getNextTd = function (td) {
+		getNextTd: function (td) {
 			if (Lang.isRecord(td)) {
 				td = td.getId();
 			}
 			if (Lang.isNumber(td)) {
-				td = tbody.find(NUMERAL + recordIdPrefix + td).children(td - 1);
+				td = this.get('tbody').find(NUMERAL + this.get('recordIdPrefix') + td).children(td - 1);
 			}
 			return td.next();
-		};
+		},
 		
 		/*@TODO
-		myself.getSelectedCell = function () {
+		getSelectedCell: function () {
 			
-		};
+		},
 		
 		myself.getSelectedRow = function () {
 			
 		};
 		
-		myself.getSelectedColumn = function () {
+		getSelectedColumn = function () {
 			
-		};
+		},
 		
-		myself.selectCell = function (cell) {
+		selectCell = function (cell) {
 			
-		};
+		},
 		
-		myself.selectRow = function (row) {
+		selectRow = function (row) {
 			
-		};
+		},
 		
-		myself.selectColumn = function (col) {
+		selectColumn = function (col) {
 			
-		};
+		},
 		
-		myself.unselectCell = function (cell) {
+		unselectCell = function (cell) {
 			
-		};
+		},
 		
-		myself.unselectRow = function (row) {
+		unselectRow = function (row) {
 			
-		};
+		},
 		
-		myself.unselectColumn = function (col) {
+		unselectColumn = function (col) {
 			
-		};
+		},
 		
-		myself.unselectAll = function () {
+		unselectAll = function () {
 			
-		};*/
+		},*/
 		
 		/**
 		 * Replace all rows when the DataSource updates
@@ -400,11 +441,11 @@ jet().add('datatable', function ($) {
 		 * @param {EventFacade} e
 		 * @param {RecordSet} recordSet
 		 */
-		this.onDataReturnReplaceRows = function (e, newRecordSet) {
-			tbody.children().remove();
-			myself.addRows(newRecordSet);
-			recordSet.replace(newRecordSet);
-		};
+		onDataReturnReplaceRows: function (e, newRecordSet) {
+			this.get('tbody').children().remove();
+			this.addRows(newRecordSet);
+			this.get('recordSet').replace(newRecordSet);
+		},
 		
 		/**
 		 * When the DataSource updates, treat the returned data as additions to the table's recordSet
@@ -412,29 +453,27 @@ jet().add('datatable', function ($) {
 		 * @param {EventFacade} e
 		 * @param {RecordSet} newRecordSet
 		 */
-		this.onDataReturnAddRows = function (e, newRecordSet) {
-			myself.addRows(newRecordSet);
-			recordSet.push(newRecordSet);
-		};
-		
-		//rende lifecycle
-		this.on("render", function () {
-			myself.onDataReturnAddRows(null, recordSet);
-			myself.get("boundingBox").addClass(prefix + className).append(table);
-		});
-	};
-	$.extend(DataTable, $.Widget);
-	
-	$.ScrollableDataTable = $.Widget.create('scrollableDT', [], {}, {
-		afterRender: function () {
-			var boundingBox = this.get("boundingBox");
-			var table = $("<table/>");
-			var tbody = this.get("tbody");
-			var thead = this.get("thead");
-			var container = $("<div/>").appendTo(boundingBox).css("overflowY", "auto").height(300).width(thead.width());
-			table.append(tbody.detach()).appendTo(container);
+		onDataReturnAddRows: function (e, newRecordSet) {
+			this.addRows(newRecordSet);
+			this.get('recordSet').push(newRecordSet);
 		}
-	}, {}, DataTable);
+		
+	});
+	
+	$.ScrollableDataTable = Widget.create('scrollableDT', DataTable, [], {
+		
+		EVENTS: {
+			afterRender: function () {
+				var boundingBox = this.get("boundingBox");
+				var table = $("<table/>");
+				var tbody = this.get("tbody");
+				var thead = this.get("thead");
+				var container = $("<div/>").appendTo(boundingBox).css("overflowY", "auto").height(300).width(thead.width());
+				table.append(tbody.detach()).appendTo(container);
+			}
+		}
+		
+	});
 	
 	$.add({
 		DataTable: DataTable,

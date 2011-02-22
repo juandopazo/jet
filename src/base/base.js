@@ -505,20 +505,6 @@ jet().add('base', function ($) {
 			this.fire(e.type, e);
 		},
 		
-		_parseHTML: function (parsers, srcNode) {
-			srcNode = $(srcNode);
-			if (srcNode.inDoc()) {
-				var self = this;
-				var result;
-				Hash.each(parsers, function (attrName, parser) {
-					result = $(parser.call(self, srcNode));
-					if (result[0]) {
-						self.set(attrName, result);
-					}
-				});
-			}
-		},
-		
 		/**
 		 * Hides the widget
 		 * @method hide
@@ -682,7 +668,7 @@ jet().add('base', function ($) {
 						if (val && (!val instanceof $.NodeList || val[0])) {
 							self.set(attr, val);
 						}
-					})
+					});
 				});
 			}
 		},
@@ -807,10 +793,10 @@ jet().add('base', function ($) {
 			 * @readOnly
 			 */
 			 id: {
-			 	getter: function () {
-			 		return this.getClassName(this._uid);
-			 	},
-			 	readOnly: true
+				getter: function () {
+					return this.getClassName(this._uid);
+				},
+				readOnly: true
 			 }
 		},
 		

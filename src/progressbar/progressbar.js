@@ -27,7 +27,7 @@ jet().add('progressbar', function ($) {
 	 * @class ProgressBar 
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	$.ProgressBar = $.Widget.create('progressbar', Widget, [], {
+	$.ProgressBar = $.Widget.create('progressbar', $.Widget, [], {
 		
 		ATTRS: {
 			/**
