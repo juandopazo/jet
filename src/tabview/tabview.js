@@ -137,7 +137,7 @@ jet().add('tabview', function ($) {
 				return this.get(PARENT).get('panelContainer').children(this.get('index'));
 			},
 			panelContent: function () {
-				var panel = this.get(PANEL)
+				var panel = this.get(PANEL);
 				if (panel) {
 					return panel.html();
 				}
