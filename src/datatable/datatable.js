@@ -28,21 +28,20 @@ jet().add('datatable', function ($) {
 		DOT = ".",
 		ID = "id",
 		SORTABLE = "sortable",
-		NEW_DIV = "<div/>";
+		NEW_DIV = "<div/>",
+		CELLS = 'cells',
+		THEAD = 'thead',
+		TBODY = 'tbody',
+		TD = 'td',
+		RECORDSET = 'recordSet',
+		SORTED_BY = 'sortedBy',
+		RECORD_ID_PREFIX = 'recordIdPrefix',
+		BOUNDING_BOX = 'boundingBox';
 		
 	var COLUMN_DEFINITIONS = "columnDefinitions";
 		
-	if (!jet.DataTable) {
-		jet.DataTable = {};
-	}
-	if (!Lang.isNumber(jet.DataTable.ids)) {
-		jet.DataTable.ids = 0;
-	}
-	
-	var Cell = function () {
-		Cell.superclass.constructor.apply(this, arguments);
-		
-		this.addAttrs({
+	var Cell = Base.create(Base, {
+		ATTRS: {
 			value: {
 				required: true,
 				writeOnce: true
@@ -55,33 +54,31 @@ jet().add('datatable', function ($) {
 				required: true,
 				writeOnce: true
 			}
-		});
-	};
-	$.extend(Cell, $.Base);
-	
+		}
+	});
 	
 	var Column = Base.create(Base, {
 		
 		getFirstTd: function () {
-			return this.get("cells")[0].get("td");
+			return this.get(CELLS)[0].get(TD);
 		},
 		
 		getNextTd: function (td) {
-			var cells = this.get("cells"), length = cells.length, i;
+			var cells = this.get(CELLS), length = cells.length, i;
 			for (i = 0; i < length; i++) {
-				if (cells[i].get("td") == td) {
+				if (cells[i].get(TD) == td) {
 					break;
 				}
 			}
-			return i < length - 2 ? cells[++i].get("td") : null; 
+			return i < length - 2 ? cells[++i].get(TD) : null; 
 		},
 		
 		getFirstCell: function () {
-			return this.get("cells")[0];
+			return this.get(CELLS)[0];
 		},
 		
 		getNextCell: function (cell) {
-			var cells = this.get("cells"), length = cells.length, i;
+			var cells = this.get(CELLS), length = cells.length, i;
 			for (i = 0; i < length; i++) {
 				if (cells[i] == cell) {
 					break;
@@ -149,12 +146,12 @@ jet().add('datatable', function ($) {
 		EVENTS: {
 			render: function () {
 				var contentBox = this.get('contentBox');
-				var thead = this.get('thead');
-				var tbody = this.get('tbody');
+				var thead = this.get(THEAD);
+				var tbody = this.get(TBODY);
 				
 				this._setupTableHeaders();
 				
-				this.onDataReturnAddRows(null, this.get('recordSet'));
+				this.onDataReturnAddRows(null, this.get(RECORDSET));
 				
 				thead.appendTo(contentBox);
 				tbody.addClass(this.getClassName(DATA)).appendTo(contentBox);
@@ -166,8 +163,8 @@ jet().add('datatable', function ($) {
 		CONTENT_TEMPLATE: '<table/>',
 		
 		initializer: function () {
-			this.set('thead', this.get('thead'));
-			this.set('tbody', this.get('tbody'));
+			this.set(THEAD, this.get(THEAD));
+			this.set(TBODY, this.get(TBODY));
 		},
 		
 		_onThClick: function (e) {
@@ -184,7 +181,7 @@ jet().add('datatable', function ($) {
 			var sortableClassName = getClassName(SORTABLE);
 			var uid = this._uid;
 			var self = this;
-			var thead = this.get('thead');
+			var thead = this.get(THEAD);
 			A.each(colDefs, function (colDef, i) {
 				var th = $("<th/>").append($(NEW_DIV).append($("<span/>").addClass(labelClassname).html(colDef.label || colDef.key)));
 				th.attr(ID, getClassName(uid, 'th', colDef.key));
@@ -194,7 +191,7 @@ jet().add('datatable', function ($) {
 					th.addClass(getClassName('last'));
 				}
 				if (colDef.sortable) {
-					th.addClass(sortableClassName).on("click", self._onThClick, self);
+					th.addClass(sortableClassName).on('click', self._onThClick, self);
 				}
 				thead.first().append(th);
 			});
@@ -208,11 +205,11 @@ jet().add('datatable', function ($) {
 			var order = isDesc ? DESC : ASC;
 			var unorder = isDesc ? ASC : DESC;
 			var i;
-			var thead = this.get('thead');
-			var tbody = this.get('tbody');
-			var recordSet = this.get('recordSet');
-			var sortedBy = this.get('sortedBy');
-			var recordIdPrefix = this.get('recordIdPrefix');
+			var thead = this.get(THEAD);
+			var tbody = this.get(TBODY);
+			var recordSet = this.get(RECORDSET);
+			var sortedBy = this.get(SORTED_BY);
+			var recordIdPrefix = this.get(RECORD_ID_PREFIX);
 			if (!keepOrder) {
 				i = order;
 				order = unorder;
@@ -246,10 +243,10 @@ jet().add('datatable', function ($) {
 			if (!Lang.isRecord(row)) {
 				row = new $.Record(row);
 			}
-			var recordIdPrefix = this.get('recordIdPrefix');
+			var recordIdPrefix = this.get(RECORD_ID_PREFIX);
 			var tr = $("<tr/>").attr(ID, recordIdPrefix + row.getId());
 			var getClassName = this.getClassName;
-			var tbody = this.get('tbody');
+			var tbody = this.get(TBODY);
 			A.each(this.get(COLUMN_DEFINITIONS), function (colDef) {
 				var text = row.get(colDef.key);
 				var td = $("<td/>").addClass(getClassName('col', colDef.key));
@@ -266,7 +263,7 @@ jet().add('datatable', function ($) {
 		 */
 		addRow: function (row) {
 			this._addRow(row);
-			var sortedBy = this.get('sortedBy');
+			var sortedBy = this.get(SORTED_BY);
 			if (sortedBy) {
 				this._sort($(NUMERAL + this.getClassName(this._uid, 'th', sortedBy)));
 			}
@@ -290,12 +287,13 @@ jet().add('datatable', function ($) {
 				rows = rows.getRecords();
 			}
 			A.each(rows, this._addRow);
-			var sortedBy = this.get('sortedBy');
+			var sortedBy = this.get(SORTED_BY);
 			if (sortedBy) {
 				this._sort($(NUMERAL + this.getClassName(this._uid, 'th', sortedBy)), true);
 			}
 			return this;
 		},
+		
 		/*@TODO
 		deleteRow: function () {
 			
@@ -313,9 +311,9 @@ jet().add('datatable', function ($) {
 		 * @return Column
 		 */
 		getColumn: function (id) {
-			var col, cells = [], i, records = this.get('recordSet').getRecords(), length = records.length;
-			var colDefs = this.get("columnDefinitions");
-			var rows = this.get('tbody').children(), key = Lang.isNumber(id) ? colDefs[id].key : id;
+			var col, cells = [], i, records = this.get(RECORDSET).getRecords(), length = records.length;
+			var colDefs = this.get(COLUMN_DEFINITIONS);
+			var rows = this.get(TBODY).children(), key = Lang.isNumber(id) ? colDefs[id].key : id;
 			var index = id;
 			if (!Lang.isNumber(id)) {
 				for (i = 0; i < colDefs.length; i++) {
@@ -343,7 +341,7 @@ jet().add('datatable', function ($) {
 		 * @return NodeList
 		 */
 		getFirstTr: function () {
-			return this.get('tbody').children().eq(0);
+			return this.get(TBODY).children().eq(0);
 		},
 		
 		/**
@@ -357,7 +355,7 @@ jet().add('datatable', function ($) {
 				tr = tr.getId();
 			}
 			if (Lang.isNumber(tr)) {
-				tr = this.get('tbody').find(NUMERAL + this.get('recordIdPrefix') + tr);
+				tr = this.get(TBODY).find(NUMERAL + this.get(RECORD_ID_PREFIX) + tr);
 			}
 			return tr.next();
 		},
@@ -373,7 +371,7 @@ jet().add('datatable', function ($) {
 				row = row.getId();
 			}
 			if (Lang.isNumber(row)) {
-				row = this.get('tbody').find(NUMERAL + this.get('recordIdPrefix') + row);
+				row = this.get(TBODY).find(NUMERAL + this.get(RECORD_ID_PREFIX) + row);
 			}
 			return row.children().eq(0);
 		},
@@ -389,7 +387,7 @@ jet().add('datatable', function ($) {
 				td = td.getId();
 			}
 			if (Lang.isNumber(td)) {
-				td = this.get('tbody').find(NUMERAL + this.get('recordIdPrefix') + td).children(td - 1);
+				td = this.get(TBODY).find(NUMERAL + this.get(RECORD_ID_PREFIX) + td).children(td - 1);
 			}
 			return td.next();
 		},
@@ -442,9 +440,9 @@ jet().add('datatable', function ($) {
 		 * @param {RecordSet} recordSet
 		 */
 		onDataReturnReplaceRows: function (e, newRecordSet) {
-			this.get('tbody').children().remove();
+			this.get(TBODY).children().remove();
 			this.addRows(newRecordSet);
-			this.get('recordSet').replace(newRecordSet);
+			this.get(RECORDSET).replace(newRecordSet);
 		},
 		
 		/**
@@ -455,7 +453,7 @@ jet().add('datatable', function ($) {
 		 */
 		onDataReturnAddRows: function (e, newRecordSet) {
 			this.addRows(newRecordSet);
-			this.get('recordSet').push(newRecordSet);
+			this.get(RECORDSET).push(newRecordSet);
 		}
 		
 	});
@@ -464,10 +462,10 @@ jet().add('datatable', function ($) {
 		
 		EVENTS: {
 			afterRender: function () {
-				var boundingBox = this.get("boundingBox");
+				var boundingBox = this.get(BOUNDING_BOX);
 				var table = $("<table/>");
-				var tbody = this.get("tbody");
-				var thead = this.get("thead");
+				var tbody = this.get(TBODY);
+				var thead = this.get(THEAD);
 				var container = $("<div/>").appendTo(boundingBox).css("overflowY", "auto").height(300).width(thead.width());
 				table.append(tbody.detach()).appendTo(container);
 			}
