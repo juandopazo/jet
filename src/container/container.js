@@ -209,7 +209,9 @@ jet().add("container", function ($) {
 			},
 			
 			startZIndex: {
-				value: Global.overlays.length - 1,
+				getter: function () {
+					return Global.overlays.length - 1;
+				},
 				readOnly: true
 			},
 			/**
@@ -230,19 +232,18 @@ jet().add("container", function ($) {
 				var self = this;
 				var boundingBox = this.get(BOUNDING_BOX);
 				var screenSize = DOM.screenSize();
+				var startZIndex = this.get('startZIndex');
 				var modal = this.get(MODAL_BOX).css({
 					position: 'absolute',
 					top: "0px",
 					left: "0px",
 					background: "#000",
 					visibility: !self.get("modal") ? "hidden" : "",
-					zIndex: Global.ovZindex + this.get('startZindex') - 1,
+					zIndex: Global.ovZindex + startZIndex - 1,
 					opacity: 0.4
 				}).width(screenSize.width).height(screenSize.height).appendTo(this.get('doc').body);
-				win.on(RESIZE, this._resizeModal);
-				boundingBox.css({
-					zIndex: Global.ovZindex + this.get('startZindex')
-				});
+				this._handlers.push(win.on(RESIZE, this._resizeModal, this));
+				boundingBox.css('zIndex', Global.ovZindex + startZIndex);
 				this.on("mousedown", this.focus, this);
 			},
 			
@@ -278,8 +279,8 @@ jet().add("container", function ($) {
 			
 			destroy: function () {
 				var win = $(this.get('win')).unbind(RESIZE, this._centerUI).unbind(SCROLL, this._centerUI);
-				win.unbind(RESIZE, this._repositionUI).unbind(SCROLL, this._repositionUI);
-				win.unbind(RESIZE, this._resizeModal);
+				win.unbind(RESIZE, this._repositionUI);
+				win.unbind(SCROLL, this._repositionUI);
 				if (this.dd) {
 					this.dd.destroy();
 				}
@@ -357,7 +358,6 @@ jet().add("container", function ($) {
 	 * @constructor
 	 */
 	var PanelBase = $.mix(function () {
-		this.set('closeButton', this.get('closeButton'));
 	}, {
 		
 		ATTRS: {
@@ -369,16 +369,7 @@ jet().add("container", function ($) {
 			 */
 			close: {
 				value: true,
-				validator: Lang.isBoolean,
-				setter: function (value) {
-					var closeButton = this.get('closeButton');
-					if (value) {
-						closeButton.show();
-					} else {
-						closeButton.hide();
-					}
-					return value;
-				}
+				validator: Lang.isBoolean
 			},
 			/**
 			 * @config underlay
@@ -428,6 +419,15 @@ jet().add("container", function ($) {
 				if (domEvent.target == this.get('closeButton')[0]) {
 					this._onCloseButton(domEvent);
 				}
+			},
+			
+			afterCloseChange: function (e, newVal) {
+				var closeButton = this.get('closeButton');
+				if (newVal) {
+					closeButton.show();
+				} else {
+					closeButton.hide();
+				}
 			}
 			
 		}
@@ -448,15 +448,6 @@ jet().add("container", function ($) {
 			if (e.keyCode == 27 && this.get("focused")) {
 				this._onCloseButton(e);
 			}
-		},
-		
-		initializer: function () {
-			var self = this;
-			this.on(HEIGHT + "Change", function (e, height) {
-				self.get(CONTENT_BOX).height(height);
-			});
-			this.set(UNDERLAY, $(NEW_DIV).addClass(UNDERLAY));
-			this.set('closeButton', this.CLOSE_TEMPLATE);
 		}
 		
 	};
@@ -470,7 +461,16 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.Panel = Widget.create('panel', $.Overlay, [PanelBase]);
+	$.Panel = Widget.create('panel', $.Overlay, [PanelBase], {}, {
+		initializer: function () {
+			var self = this;
+			this.set('closeButton', this.get('closeButton'));
+			this.on(HEIGHT + "Change", function (e, height) {
+				self.get(CONTENT_BOX).height(height);
+			});
+			this.set(UNDERLAY, $(NEW_DIV).addClass(UNDERLAY));
+		}
+	});
 	
 	/**
 	 * An panel with static position and a close button
@@ -502,7 +502,16 @@ jet().add("container", function ($) {
 		 * @description If true, the panel shows a shadow
 		 * @default true
 		 */
-	$.StaticPanel = Widget.create('panel', $.Module, [PanelBase]);
+	$.StaticPanel = Widget.create('panel', $.Module, [PanelBase], {}, {
+		initializer: function () {
+			var self = this;
+			this.set('closeButton', this.get('closeButton'));
+			this.on(HEIGHT + "Change", function (e, height) {
+				self.get(CONTENT_BOX).height(height);
+			});
+			this.set(UNDERLAY, $(NEW_DIV).addClass(UNDERLAY));
+		}
+	});
 	
 	/**
 	 * A SimpleDialog is a Panel with simple form options and a button row instead of the footer

@@ -680,10 +680,10 @@ jet().add('base', function ($) {
 			jet.Widget._instances[this.getClassName(this._uid)] = this;
 			
 			if (!this.get(BOUNDING_BOX)) {
-				this.set(BOUNDING_BOX, $(this.BOUNDING_TEMPLATE));
+				this.set(BOUNDING_BOX, this.BOUNDING_TEMPLATE);
 			}
 			if (!this.get(CONTENT_BOX)) {
-				this.set(CONTENT_BOX, this.CONTENT_TEMPLATE ? $(this.CONTENT_TEMPLATE) : this.get(BOUNDING_BOX));
+				this.set(CONTENT_BOX, this.CONTENT_TEMPLATE || this.get(BOUNDING_BOX));
 			}
 			
 			this._parseHTML();
@@ -748,6 +748,7 @@ jet().add('base', function ($) {
 			 * @default uses BOUNDING_TEMPLATE instance property
 			 */
 			boundingBox: {
+				setter: $
 			},
 			/**
 			 * @config contentBox
@@ -757,6 +758,7 @@ jet().add('base', function ($) {
 			 * @default uses CONTENT_TEMPLATE instance property
 			 */
 			contentBox: {
+				setter: $
 			},
 			win: {
 				value: $.win
@@ -814,8 +816,8 @@ jet().add('base', function ($) {
 		 * @description creates a new widget class
 		 * @static
 		 * @param {String} name Name of the widget class to create
-		 * @param {Function} [Optional] superclass The superclass for this new widget. Defaults to Widget
-		 * @param {Array} [Optional] extensions A list of extensions to apply to the created class
+		 * @param {Function} superclass [Optional] The superclass for this new widget. Defaults to Widget
+		 * @param {Array} extensions [Optional] A list of extensions to apply to the created class
 		 * @param {Hash} attrs [Optional] Static properties of the widget. Recommended order: ATTRS, EVENTS, HTML_PARSER 
 		 * @param {Hash} proto [Optional] Prototype properties to add to the widget
 		 */

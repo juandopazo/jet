@@ -10,7 +10,9 @@ jet().add('widget-sandbox', function ($) {
 	 * @class Sandbox
 	 * @constructor
 	 */
-	$.WidgetSandbox = $.mix(function WidgetSandbox() {}, {
+	$.WidgetSandbox = $.mix(function WidgetSandbox() {
+		this.set(FRAME, '<iframe/>');
+	}, {
 		
 		ATTRS: {
 			/**
@@ -19,6 +21,7 @@ jet().add('widget-sandbox', function ($) {
 			 * @readOnly
 			 */
 			frame: {
+				setter: $,
 				writeOnce: true
 			},
 			/**
@@ -57,7 +60,6 @@ jet().add('widget-sandbox', function ($) {
 		EVENTS: {
 			
 			render: function () {
-				this.set(FRAME, $('<iframe/>'));
 				this.get(FRAME).attr({
 					frameborder: 0,
 					width: '100%',
@@ -68,11 +70,19 @@ jet().add('widget-sandbox', function ($) {
 			afterRender: function () {
 				this.get(CONTENT_WINDOW).jet = jet;
 				var contentDoc = this.get(CONTENT_DOCUMENT);
+				var contentBox = this.get('contentBox');
 				var body = contentDoc.body;
 				var prevContext = $.context;
+				var newContentBox;
 				$.context = contentDoc;
 				
-				this.get('contentBox').appendTo(body);
+				try {
+					contentBox.appendTo(body);
+				} catch (e) {
+					newContentBox = contentDoc.importNode(contentBox[0], true);
+					body.appendChild(newContentBox);
+					this.set('contentBox', newContentBox);
+				}
 				A.each(this.get('extraCss'), $.Get.css);
 				A.each(this.get('extraScripts'), $.Get.script);
 				$.context = prevContext; 

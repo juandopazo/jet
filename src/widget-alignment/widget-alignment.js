@@ -174,12 +174,12 @@ jet().add('widget-alignment', function ($) {
 			
 			if (!target) {
 				if (targetAlignVert == WidgetAlignment.Bottom) {
-					resultingPosition.bottom = this._getPositionBottom();
+					resultingPosition.bottom = this._getPositionBottom(boundingAlignVert, boundingOffset.height, alignOffset[1], fixed, constrain);
 				} else {
 					resultingPosition.top = getPositionTop(boundingAlignVert, targetAlignVert, boundingOffset.height, screenSize.height, 0, alignOffset[1] || 0, screenSize.height, fixed, constrain);
 				}
 				if (targetAlignHoriz == WidgetAlignment.Right) {
-					resultingPosition.right = this._getPositionRight();
+					resultingPosition.right = this._getPositionRight(boundingAlignHoriz, boundingOffset.width, alignOffset[0], fixed, constrain);
 				} else {
 					resultingPosition.left = getPositionLeft(boundingAlignHoriz, targetAlignHoriz, boundingOffset.width, screenSize.width, 0, alignOffset[0] || 0, screenSize.width, fixed, constrain);
 				}
@@ -242,7 +242,7 @@ jet().add('widget-alignment', function ($) {
 			render: function () {
 				var fixed = this.get(FIXED);
 				var win = $(this.get('win'));
-				this.get('boundingBox').css('position', fixed && UA_SUPPORTS_FIXED ? FIXED : 'absolute');
+				this.get('boundingBox').css('position', (fixed && UA_SUPPORTS_FIXED) ? FIXED : 'absolute');
 				this._handlers.push(win.on('resize', this._repositionUI, this));
 				if (fixed && !UA_SUPPORTS_FIXED) {
 					this._handlers.push(win.on('scroll', this._repositionUI, this));
