@@ -211,7 +211,7 @@ jet().add('widget-parentchild', function ($) {
 		},
 		
 		EVENTS: {
-			afterRender: function () {
+			render: function () {
 				var self = this;
 				var domEventChildrenProxy = function (e, domEvent) {
 					var targetWidget = Widget.getByNode(domEvent.target);
