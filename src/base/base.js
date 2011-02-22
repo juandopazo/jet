@@ -828,9 +828,10 @@ jet().add('base', function ($) {
 		 * @description creates a new widget class
 		 * @static
 		 * @param {String} name Name of the widget class to create
+		 * @param {Function} [Optional] superclass The superclass for this new widget. Defaults to Widget
 		 * @param {Array} [Optional] extensions A list of extensions to apply to the created class
-		 * @param {Hash} attrs [Optional] Static properties of the widget (ATTRS, EVENTS, HTML_PARSER, etc) 
-		 * @param {Hash} proto [Optional] Prototype properties to adsrcNode* @param [Function] superclass [Optional] Superclass to use. Default: Widget
+		 * @param {Hash} attrs [Optional] Static properties of the widget. Recommended order: ATTRS, EVENTS, HTML_PARSER 
+		 * @param {Hash} proto [Optional] Prototype properties to add to the widget
 		 */
 		create: function (name, superclass, extensions, attrs, proto) {
 			extensions = extensions || [];
