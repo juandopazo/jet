@@ -3,6 +3,7 @@ jet().add('widget-alignment', function ($) {
 	var UA_SUPPORTS_FIXED = $.UA.support.fixed;
 	var DOM = $.DOM;
 	var FIXED = 'fixed';
+	var PX = 'px';
 	
 	/**
 	 * A widget extension that provides alignment support
@@ -33,86 +34,162 @@ jet().add('widget-alignment', function ($) {
 		BottomRight: WidgetAlignment.Bottom + WidgetAlignment.Right
 	});
 	WidgetAlignment.prototype = {
+		
+		_getPositionTop: function (boundingAlignVert, targetAlignVert, boundingHeight, targetHeight, targetTop, offsetTop, screenHeight, fixed, constrain) {
+			var boundingRelative = 0;
+			
+			switch (boundingAlignVert) {
+				case WidgetAlignment.Middle:
+					boundingRelative -= boundingHeight / 2;
+					break;
+				case WidgetAlignment.Bottom:
+					boundingRelative -= boundingHeight;
+					break;
+			}
+			switch (targetAlignVert) {
+				case WidgetAlignment.Middle:
+					targetTop += targetHeight / 2;
+					break;
+				case WidgetAlignment.Bottom:
+					targetTop += targetHeight;
+					break;
+			}
+			if (fixed && !UA_SUPPORTS_FIXED) {
+				targetTop += DOM.scrollTop();
+			}
+			
+			targetTop += boundingRelative + offsetTop;
+			
+			if (constrain) {
+				if (targetTop < 0) {
+					targetTop = 0;
+				} else if (targetTop > screenHeight - boundingHeight) {
+					targetTop = screenHeight - boundingHeight;
+				}
+			}
+			return targetTop + PX;
+		},
+		
+		_getPositionLeft: function (boundingAlignHoriz, targetAlignHoriz, boundingWidth, targetWidth, targetLeft, offsetLeft, screenWidth, fixed, constrain) {
+			var boundingRelative = 0;
+
+			switch (boundingAlignHoriz) {
+				case WidgetAlignment.Center:
+					boundingRelative -= boundingWidth / 2;
+					break;
+				case WidgetAlignment.Right:
+					boundingRelative -= boundingWidth;
+					break;
+			}
+			switch (targetAlignHoriz) {
+				case WidgetAlignment.Center:
+					targetLeft += targetWidth / 2;
+					break;
+				case WidgetAlignment.Right:
+					targetLeft += targetWidth;
+					break;
+			}
+			if (fixed && !UA_SUPPORTS_FIXED) {
+				targetLeft += DOM.scrollLeft();
+			}
+			targetLeft += boundingRelative + offsetLeft;
+			
+			if (constrain) {
+				if (targetLeft < 0) {
+					targetLeft = 0;
+				} else if (targetLeft > screenWidth - boundingWidth) {
+					targetLeft = screenWidth - boundingWidth;
+				}
+			}
+			return targetLeft + PX;
+		},
+		
+		_getPositionBottom: function (boundingAlignVert, boundingHeight, offsetTop, fixed, constrain) {
+			var bottom = 0;
+			switch (boundingAlignVert) {
+				case WidgetAlignment.Top:
+					bottom -= boundingHeight;
+					break;
+				case WidgetAlignment.Middle:
+					bottom -= boundingHeight / 2;
+					break;
+			}
+			bottom -= offsetTop;
+			if (fixed && !UA_SUPPORTS_FIXED) {
+				bottom -= DOM.scrollTop();
+			}
+			if (constrain) {
+				bottom = Math.max(bottom, 0);
+			}
+			return bottom + PX;
+		},
+		
+		_getPositionRight: function (boundingAlignHoriz, boundingWidth, offsetLeft, fixed, constrain) {
+			var right = 0;
+			switch (boundingAlignHoriz) {
+				case WidgetAlignment.Left:
+					right -= boundingWidth;
+					break;
+				case WidgetAlignment.Center:
+					right -= boundingWidth / 2;
+					break;
+			}
+			right -= offsetLeft;
+			if (fixed && !UA_SUPPORTS_FIXED) {
+				right -= DOM.scrollTop();
+			}
+			if (constrain) {
+				right = Math.max(right, 0);
+			}
+			return right + PX;
+		},
+		
 		_repositionUI: function () {
 			var align = this.get('align');
 			var points = align.points || [WidgetAlignment.TopLeft, WidgetAlignment.TopLeft];
 			var alignOffset = align.offset || [0, 0];
+			
 			var target = align.node ? $(align.node) : null;
 			var boundingBox = this.get(this.get('alignedBox'));
-			var targetOffset, boundingOffset = boundingBox.offset();
+			
+			var targetOffset = target ? target.offset() : null;
+			var boundingOffset = boundingBox.offset();
+			
+			var fixed = this.get(FIXED);
 			var constrain = this.get('constrain');
-			var screenSize = $.DOM.screenSize();
+			var screenSize = DOM.screenSize();
+			
 			var boundingAlign = points[0];
 			var targetAlign = points[1];
 			
-			var boundingRelative = {
-				left: 0,
-				top: 0
-			};
+			var boundingAlignVert = boundingAlign.substr(0, 1);
+			var boundingAlignHoriz = boundingAlign.substr(1);
+			var targetAlignVert = targetAlign.substr(0, 1);
+			var targetAlignHoriz = targetAlign.substr(1);
+			
+			var getPositionLeft = this._getPositionLeft;
+			var getPositionTop = this._getPositionTop;
+			
+			var resultingPosition = {};
 			
 			if (!target) {
-				targetOffset = {};
-				$.mix(targetOffset, screenSize);
-				targetOffset.left = 0;
-				targetOffset.top = 0;
+				if (targetAlignVert == WidgetAlignment.Bottom) {
+					resultingPosition.bottom = this._getPositionBottom();
+				} else {
+					resultingPosition.top = getPositionTop(boundingAlignVert, targetAlignVert, boundingOffset.height, screenSize.height, 0, alignOffset[1] || 0, screenSize.height, fixed, constrain);
+				}
+				if (targetAlignHoriz == WidgetAlignment.Right) {
+					resultingPosition.right = this._getPositionRight();
+				} else {
+					resultingPosition.left = getPositionLeft(boundingAlignHoriz, targetAlignHoriz, boundingOffset.width, screenSize.width, 0, alignOffset[0] || 0, screenSize.width, fixed, constrain);
+				}
 			} else {
-				targetOffset = target.offset();
-			}
-			
-			switch (boundingAlign.substr(0, 1)) {
-				case WidgetAlignment.Middle:
-					boundingRelative.top -= boundingOffset.height / 2;
-					break;
-				case WidgetAlignment.Bottom:
-					boundingRelative.top -= boundingOffset.height;
-					break;
-			}
-			switch (boundingAlign.substr(1)) {
-				case WidgetAlignment.Center:
-					boundingRelative.left -= boundingOffset.width / 2;
-					break;
-				case WidgetAlignment.Right:
-					boundingRelative.left -= boundingOffset.width;
-					break;
-			}
-			switch (targetAlign.substr(0, 1)) {
-				case WidgetAlignment.Middle:
-					targetOffset.top += targetOffset.height / 2;
-					break;
-				case WidgetAlignment.Bottom:
-					targetOffset.top += targetOffset.height;
-					break;
-			}
-			switch (targetAlign.substr(1)) {
-				case WidgetAlignment.Center:
-					targetOffset.left += targetOffset.width / 2;
-					break;
-				case WidgetAlignment.Right:
-					targetOffset.left += targetOffset.width;
-					break;
-			}
-			if (this.get(FIXED) && !UA_SUPPORTS_FIXED) {
-				targetOffset.left += DOM.scrollLeft();
-				targetOffset.top += DOM.scrollTop();
-			}
-			
-			targetOffset.left += boundingRelative.left + alignOffset[0];
-			targetOffset.top += boundingRelative.top + alignOffset[1];
-			
-			if (constrain) {
-				if (targetOffset.left < 0) {
-					targetOffset.left = 0;
-				} else if (targetOffset.left > screenSize.width - boundingOffset.width) {
-					targetOffset.left = screenSize.width - boundingOffset.width;
-				}
-				if (targetOffset.top < 0) {
-					targetOffset.top = 0;
-				} else if (targetOffset.top > screenSize.height - boundingOffset.height) {
-					targetOffset.top = screenSize.height - boundingOffset.height;
-				}
-			}
-			
-			boundingBox.offset(targetOffset.left, targetOffset.top);
+				resultingPosition = {
+					left: getPositionLeft(boundingAlignHoriz, targetAlignHoriz, boundingOffset.width, targetOffset.width, targetOffset.left, alignOffset[0] || 0, screenSize.width, fixed, constrain),
+					top: getPositionTop(boundingAlignVert, targetAlignVert, boundingOffset.height, targetOffset.height, targetOffset.top, alignOffset[1] || 0, screenSize.height, fixed, constrain)
+				};
+			}			
+			boundingBox.css(resultingPosition);
 		}
 	};
 	function doReposition() {
