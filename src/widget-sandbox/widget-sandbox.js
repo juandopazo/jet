@@ -11,7 +11,7 @@ jet().add('widget-sandbox', function ($) {
 	 * @constructor
 	 */
 	$.WidgetSandbox = $.mix(function WidgetSandbox() {
-		this.set(FRAME, '<iframe/>');
+		this.set(FRAME, this.get(FRAME));
 	}, {
 		
 		ATTRS: {
@@ -21,6 +21,7 @@ jet().add('widget-sandbox', function ($) {
 			 * @readOnly
 			 */
 			frame: {
+				value: '<iframe/>',
 				setter: $,
 				writeOnce: true
 			},
@@ -82,10 +83,11 @@ jet().add('widget-sandbox', function ($) {
 					newContentBox = contentDoc.importNode(contentBox[0], true);
 					body.appendChild(newContentBox);
 					this.set('contentBox', newContentBox);
+					contentBox.remove();
 				}
 				A.each(this.get('extraCss'), $.Get.css);
 				A.each(this.get('extraScripts'), $.Get.script);
-				$.context = prevContext; 
+				$.context = prevContext;
 			}
 			
 		}
