@@ -104,15 +104,7 @@
 		'widget-alignment': [BASE],
 		'widget-parentchild': [BASE],
 		'widget-sandbox': [BASE],
-		menu: [WIDGET_PARENTCHILD, 'container', {
-			name: "menu-css",
-			type: "css",
-			path: "menu.css",
-			beacon: {
-				name: "fontWeight",
-				value: "bold"
-			}
-		}],
+		menu: [WIDGET_PARENTCHILD, 'container'],
 		vector: ["anim"]
 	};
 	

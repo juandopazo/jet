@@ -643,7 +643,9 @@ jet().add('base', function ($) {
 			 */
 			if (this.fire(DESTROY)) {
 				A.each(this._handlers, function (handler) {
-					handler.detach();
+					if (handler.detach) {
+						handler.detach();
+					}
 				});
 				/*
 				 * Avoiding memory leaks, specially in IE
