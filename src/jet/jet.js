@@ -315,27 +315,25 @@
 	};
 	Lang.clone = clone;
 	
-	var bind = function(fn, obj) {
-		if (Function.prototype.bind) {
-			bind = function (fn) {
-				return Function.prototype.bind.apply(fn, SLICE.call(arguments, 1));
-			};
-		} else {
-			bind = function(fn, obj) {
-				var slice = [].slice,
-					args = slice.call(arguments, 1), 
-					nop = function () {}, 
-					bound = function () {
-					  return fn.apply( this instanceof nop ? this : ( obj || {} ), 
-										  args.concat( slice.call(arguments) ) );	
-					};
-				nop.prototype = fn.prototype;
-				bound.prototype = new nop();
-				return bound;
-			};
-		}
-		return bind(fn, obj);
-	};
+	var bind;
+	if (Function.prototype.bind) {
+		bind = function (fn) {
+			return Function.prototype.bind.apply(fn, SLICE.call(arguments, 1));
+		};
+	} else {
+		bind = function(fn, obj) {
+			var slice = [].slice,
+				args = slice.call(arguments, 2), 
+				nop = function () {}, 
+				bound = function () {
+				  return fn.apply( this instanceof nop ? this : ( obj || {} ), 
+									  args.concat( slice.call(arguments) ) );	
+				};
+			nop.prototype = fn.prototype;
+			bound.prototype = new nop();
+			return bound;
+		};
+	}
 	
 
 	
