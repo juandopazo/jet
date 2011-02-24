@@ -511,11 +511,11 @@ jet().add('base', function ($) {
 		 * @chainable
 		 */
 		hide: function () {
-			var self = this;
-			if (self.fire("hide")) {
-				self.get(BOUNDING_BOX).css(VISIBILITY, "hidden");
+			if (this.fire("hide")) {
+				this.get(BOUNDING_BOX).addClass(this.getClassName("hidden"));
+				return this.fire("afterHide");
 			}
-			return self.fire("afterHide");
+			return this;
 		},
 		/**
 		 * Shows the widget
@@ -523,11 +523,11 @@ jet().add('base', function ($) {
 		 * @chainable
 		 */
 		show: function () {
-			var self = this;
-			if (self.fire("show")) {
-				self.get(BOUNDING_BOX).css(VISIBILITY, "visible");
+			if (this.fire("show")) {
+				this.get(BOUNDING_BOX).removeClass(this.getClassName("hidden"));
+				return this.fire("afterShow");
 			}
-			return self.fire("afterShow");
+			return this;
 		},
 		/**
 		 * Focuses the widget
@@ -608,7 +608,7 @@ jet().add('base', function ($) {
 				if (boundingBox[0] != contentBox[0]) {
 					boundingBox.append(contentBox.css(VISIBILITY, 'inherit'));
 				}
-				boundingBox.attr('id', this.getClassName(self._uid)).css(VISIBILITY, "visible");
+				boundingBox.attr('id', this.getClassName(self._uid));
 				/**
 				 * Render event. Preventing the default behavior will stop the rendering process
 				 * @event render

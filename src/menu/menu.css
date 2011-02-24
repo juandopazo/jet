@@ -1,0 +1,11 @@
+
+.jet-menu-content {
+	margin: 0;
+	padding: 0;
+	background: #e3e9ff;
+	border-top: 2px solid #bbccff;
+}
+
+#jet-tracker {
+	font-weight: bold;
+}

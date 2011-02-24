@@ -67,6 +67,13 @@ jet().add('widget-parentchild', function ($) {
 			});
 		},
 		
+		_domEventChildrenProxy: function (e, domEvent) {
+			var targetWidget = Widget.getByNode(domEvent.target);
+			if (targetWidget && A.indexOf(targetWidget, this.get(CHILDREN)) > -1) {
+				targetWidget.fire(e.type, domEvent);
+			}
+		},
+		
 		/**
 		 * @method add
 		 * @description Adds a Widget as a child. If the specified Widget already has a parent it will be removed from its current parent before being added as a child
@@ -213,40 +220,19 @@ jet().add('widget-parentchild', function ($) {
 		EVENTS: {
 			render: function () {
 				var self = this;
-				var domEventChildrenProxy = function (e, domEvent) {
-					var targetWidget = Widget.getByNode(domEvent.target);
-					if (targetWidget && A.indexOf(targetWidget, this.get(CHILDREN)) > -1) {
-						targetWidget.fire(e.type, domEvent);
-					}
-				};
 				A.each(this.get(CHILDREN), this.add, this);
-				if (!this.get(MULTIPLE) && !this.get(SELECTION) && this.item(0)) {
-					this.item(0).select();
-				}
 				Hash.each(Widget.DOM_EVENTS, function (name) {
-					self.on(name, domEventChildrenProxy);
+					self.on(name, self._domEventChildrenProxy);
 				});
 			},
 			
 			afterSelectionChange: function (e, newVal) {
-				if (!this.get(MULTIPLE)) {
+				if (newVal && !this.get(MULTIPLE)) {
 					A.each(this.get(CHILDREN), function (child) {
 						if (child != newVal && Lang.isFunction(child.unselect)) {
 							child.unselect();
 						}
 					});
-				}
-			},
-			
-			afterAddChild: function () {
-				if (!this.get(MULTIPLE) && !this.get(SELECTION)) {
-					this.item(0).select();
-				}
-			},
-			
-			afterRemoveChild: function () {
-				if (!this.get(MULTIPLE) && !this.get(SELECTION)) {
-					this.item(0).select();
 				}
 			}
 		},

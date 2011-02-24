@@ -934,6 +934,16 @@ jet().add("node", function ($) {
 			});
 		},
 		/**
+		 * Sets the innerHTML of the nodelist by safely removing all children first
+		 * @method setContent
+		 * @param {String} content
+		 * @chainable
+		 */
+		setContent: function (content) {
+			this.children().unbindAll(true).remove();
+			return this.html(content);
+		},
+		/**
 		 * Removes all the nodes from the DOM tree. Unline remove(), it keeps all event listeners
 		 * @method detach
 		 * @chainable

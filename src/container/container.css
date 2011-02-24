@@ -17,6 +17,10 @@
     margin: 0;
 }
 
+.jet-overlay-hidden {
+	visibility: hidden;
+}
+
 .mask {
     z-index: 1;
     display: none;

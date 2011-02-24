@@ -10,7 +10,8 @@ jet().add('menu', function ($) {
 		Widget = $.Widget;
 	
 	var BOUNDING_BOX = 'boundingBox',
-		HOVER = 'hover';
+		HOVER = 'hover',
+		LABEL_NODE = 'labelNode';
 		
 	/**
 	 * A menu item
@@ -24,6 +25,7 @@ jet().add('menu', function ($) {
 		
 		ATTRS: {
 			labelNode: {
+				value: '<span/>',
 				setter: $
 			},
 			labelContent: {
@@ -43,14 +45,14 @@ jet().add('menu', function ($) {
 		EVENTS: {
 			render: function () {
 				var boundingBox = this.get(BOUNDING_BOX);
-				var contentBox = this.get('contentBox');
+				var contentBox = this.get('contentBox').attr('href', '#');
 				var olay = this._olay =  new $.Overlay({
 					align: {
 						node: boundingBox,
 						points: this.get('align')
 					}
 				});
-				this.get('labelNode').appendTo(contentBox);
+				this.get(LABEL_NODE).html(this.get('labelContent')).appendTo(contentBox);
 				olay.render(contentBox);
 				this.get('childrenContainer').appendTo(olay.get('body'));
 				if (this.get('children').length > 0) {
@@ -59,6 +61,7 @@ jet().add('menu', function ($) {
 				if (!this.get('selected')) {
 					olay.hide();
 				}
+				this._handlers.push(boundingBox.on('click', this._toggleSelected, this));
 			},
 			mouseover: function () {
 				this.get(BOUNDING_BOX).addClass(this.getClassName(HOVER));
@@ -73,9 +76,7 @@ jet().add('menu', function ($) {
 				this.get(BOUNDING_BOX).removeClass(this.getClassName(HOVER));
 			},
 			labelContentChange: function (e, newVal) {
-				var labelNode = this.get('labelNode');
-				labelNode.children().remove();
-				labelNode.html(newVal);
+				this.get(LABEL_NODE).setContent(newVal);
 			},
 			afterSelectedChange: function (e, newVal) {
 				var olay = this._olay;
@@ -93,7 +94,14 @@ jet().add('menu', function ($) {
 		
 		initializer: function () {
 			this.set('childrenContainer', '<ul/>');
-			this.set('labelNode', '<span/>');
+			this.set(LABEL_NODE, this.get(LABEL_NODE));
+		},
+		
+		_toggleSelected: function (e) {
+			if (e.target == this.get(LABEL_NODE)[0]) {
+				e.preventDefault();
+				this.toggle();
+			}
 		}
 	});
 	
@@ -115,6 +123,10 @@ jet().add('menu', function ($) {
 			},
 			align: {
 				value: [$.WidgetAlignment.TopLeft, $.WidgetAlignment.BottomLeft]
+			},
+			multiple: {
+				value: false,
+				readOnly: true
 			}
 		},
 		

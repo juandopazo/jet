@@ -72,8 +72,8 @@ jet().add("container", function ($) {
 			 * @writeOnce
 			 */
 			header: {
-				setter: $,
-				wriceOnce: true
+				value: '<div/>',
+				setter: $
 			},
 			/**
 			 * @config body
@@ -81,8 +81,8 @@ jet().add("container", function ($) {
 			 * @writeOnce
 			 */
 			body: {
-				setter: $,
-				writeOnce: true
+				value: '<div/>',
+				setter: $
 			},
 			/**
 			 * @config footer
@@ -90,8 +90,8 @@ jet().add("container", function ($) {
 			 * @writeOnce
 			 */
 			footer: {
-				setter: $,
-				writeOnce: true
+				value: '<div/>',
+				setter: $
 			},
 			/**
 			 * @config header
@@ -146,25 +146,26 @@ jet().add("container", function ($) {
 						node.appendTo(contentBox);
 					}
 				});
+			},
+			
+			headerContentChange: function (e, newVal) {
+				this.get(HEADER).setContent(newVal);
+			},
+			bodyContentChange: function (e, newVal) {
+				this.get(BODY).setContent(newVal);
+			},
+			footerContentChange: function (e, newVal) {
+				this.get(FOOTER).setContent(newVal);
 			}
 			
 		}
 	}, {
 		CONTENT_TEMPLATE: null,
-		HEADER_TEMPLATE: '<div/>',
-		BODY_TEMPLATE: '<div/>',
-		FOOTER_TEMPLATE: '<div/>',
 		
 		initializer: function () {
-			var self = this;
-			A.each([HEADER, BODY, FOOTER], function (name) {
-				var node = $(self[name.toUpperCase() + '_TEMPLATE']);
-				self.on(name + 'ContentChange', function (e, newVal) {
-					node.children().remove();
-					node.html(newVal);
-				});
-				self.set(name, node);
-			});
+			this.set(HEADER, this.get(HEADER));
+			this.set(BODY, this.get(BODY));
+			this.set(FOOTER, this.get(FOOTER));
 		}
 	});
 	
