@@ -55,7 +55,9 @@ jet().add('menu', function ($) {
 					}
 				});
 				this.get(LABEL_NODE).addClass(this.getClassName('label')).html(this.get('labelContent')).appendTo(contentBox);
-				olay.render(contentBox);
+				if (this.get(CHILDREN).length > 0) {
+					olay.render(boundingBox);
+				}
 				this.get('childrenContainer').appendTo(olay.get('body'));
 				if (this.get(CHILDREN).length > 0) {
 					boundingBox.addClass(this.getClassName('submenu'));
@@ -80,6 +82,9 @@ jet().add('menu', function ($) {
 			afterSelectedChange: function (e, newVal) {
 				var olay = this._olay;
 				if (newVal && this.get(CHILDREN).length > 0) {
+					if (!olay.get('rendered')) {
+						olay.render(this.get(BOUNDING_BOX));
+					}
 					olay.show();
 				} else {
 					olay.hide();
