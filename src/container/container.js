@@ -170,12 +170,6 @@ jet().add("container", function ($) {
 	});
 	
 	
-	if (!Global.overlays) {
-		Global.overlays = [];
-	}
-	if (!Lang.isNumber(Global.ovZindex)) {
-		Global.ovZindex = 10;
-	}
 	/**
 	 * @class Overlay
 	 * @description An Overlay is a Module that floats in the page (doesn't have position static)
@@ -184,7 +178,7 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.Overlay = Widget.create('overlay', $.Module, [$.WidgetAlignment], {
+	$.Overlay = Widget.create('overlay', $.Module, [$.WidgetAlignment, $.WidgetStack], {
 		
 		ATTRS: {
 			/**
@@ -208,13 +202,6 @@ jet().add("container", function ($) {
 			modal: {
 				value: false
 			},
-			
-			startZIndex: {
-				getter: function () {
-					return Global.overlays.length - 1;
-				},
-				readOnly: true
-			},
 			/**
 			 * @config modalBox
 			 * @config Node that prevents the user from interacting with the page if 'modal' is set to true
@@ -233,18 +220,16 @@ jet().add("container", function ($) {
 				var self = this;
 				var boundingBox = this.get(BOUNDING_BOX);
 				var screenSize = DOM.screenSize();
-				var startZIndex = this.get('startZIndex');
 				var modal = this.get(MODAL_BOX).css({
 					position: 'absolute',
 					top: "0px",
 					left: "0px",
 					background: "#000",
 					visibility: !self.get("modal") ? "hidden" : "",
-					zIndex: Global.ovZindex + startZIndex - 1,
+					zIndex: this.get('zIndex') - 1,
 					opacity: 0.4
 				}).width(screenSize.width).height(screenSize.height).appendTo(this.get('doc').body);
 				this._handlers.push(win.on(RESIZE, this._resizeModal, this));
-				boundingBox.css('zIndex', Global.ovZindex + startZIndex);
 				this.on("mousedown", this.focus, this);
 			},
 			
@@ -259,13 +244,12 @@ jet().add("container", function ($) {
 				}	
 			},
 			
-			focus: function () {
-				A.remove(this, Global.overlays);
-				Global.overlays.push(this);
-				var olays = Global.overlays, i, length = olays.length;
-				for (i = 0; i < length; i++) {
-					olays[i].get(BOUNDING_BOX).css("zIndex", Global.ovZindex + i);
-				}
+			afterFocus: function () {
+				this.bringToFront();
+			},
+			
+			afterBlur: function () {
+				this.sendToBack();
 			},
 			
 			hide: function () {
@@ -299,8 +283,6 @@ jet().add("container", function ($) {
 		},
 
 		initializer: function () {
-			var self = this;
-			Global.overlays.push(this);
 			this.set(MODAL_BOX, this.MODAL_TEMPLATE);
 		}
 	});

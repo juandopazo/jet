@@ -4,7 +4,8 @@ jet().add('widget-stack', function ($) {
 		A = $.Array,
 		layers,
 		
-		ZINDEX = 'zIndex';
+		ZINDEX = 'zIndex',
+		BOUNDING_BOX;
 		
 	if (!jet.layers) {
 		jet.layers = [];
@@ -20,10 +21,23 @@ jet().add('widget-stack', function ($) {
 			layers.splice(zIndex, 0, this);
 			this._refreshZIndex();
 		}
+		
+		this._shim = $('<iframe/>').attr({
+			src: 'javascript:false',
+			frameborder: 0
+		}).css({
+			position: 'absolute',
+			zIndex: zIndex
+		});
 	}
 	$.WidgetStack = $.mix(WidgetStack, {
 		
 		ATTRS: {
+			shim: {
+				value: ($.UA.ie == 6),
+				validator: Lang.isBoolean
+			},
+			
 			zIndex: {
 				value: 0,
 				setter: function (val) {
@@ -39,9 +53,26 @@ jet().add('widget-stack', function ($) {
 		},
 		
 		EVENTS: {
+			
+			afterRender: function () {
+				if (this.get('shim')) {
+					this._shim.insertBefore(this.get(BOUNDING_BOX));
+				}
+			},
+			
+			afterShimChange: function (e, newVal) {
+				var shim = this._shim;
+				if (newVal) {
+					shim.insertBefore(this.get(BOUNDING_BOX));
+				} else {
+					shim.remove();
+				}
+			},
+			
 			afterZIndexChange: function (e, newVal) {
-				this.get('boundingBox').css(ZINDEX, newVal);
+				this.get(BOUNDING_BOX).css(ZINDEX, newVal);
 			}
+			
 		},
 		
 		HTML_PARSER: {

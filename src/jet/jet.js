@@ -60,7 +60,7 @@
 				value: "solid"
 			}
 		}],
-		container: [BASE, 'widget-alignment', {
+		container: [BASE, 'widget-alignment', 'widget-stack', {
 			name: "container-css",
 			type: "css",
 			path: "container.css",
@@ -104,6 +104,7 @@
 		'widget-alignment': [BASE],
 		'widget-parentchild': [BASE],
 		'widget-sandbox': [BASE],
+		'widget-stack': [BASE],
 		menu: [WIDGET_PARENTCHILD, 'container'],
 		vector: ["anim"]
 	};
