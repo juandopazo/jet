@@ -1038,4 +1038,6 @@ jet().add('base', function ($) {
 		EventTarget: EventTarget,
 		extend: extend
 	});
+	
+	EventTarget.apply($);
 });

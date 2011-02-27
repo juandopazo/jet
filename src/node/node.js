@@ -283,6 +283,10 @@ jet().add("node", function ($) {
 		return myself;
 	};
 	
+	var eventProxy = function (e) {
+		$.fire(e.type, e);
+	};
+	
 	/**
 	 * A collection of DOM Nodes
 	 * @class NodeList
@@ -1077,6 +1081,12 @@ jet().add("node", function ($) {
 			return Lang.isNumber(parseFloat(px)) ? parseFloat(px) :
 				   Lang.isString(px) ? parseFloat(px.substr(0, px.length - 2)) : px;
 		}
+	});
+	
+	var win = $($.win);
+	
+	A.each(['load', 'unload', 'resize', 'scroll'], function (name) {
+		win.on(name, eventProxy);
 	});
 	
 	addEvent($.win, "unload", EventCache.flush);
