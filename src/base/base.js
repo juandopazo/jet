@@ -132,19 +132,22 @@ jet().add('base', function ($) {
 		 * @param {Function} callback
 		 * @chainable
 		 */
-		this.on = function (eventType, callback) {
+		this.on = function (eventType, callback, thisp) {
 			if (!collection[eventType]) {
 				collection[eventType] = [];
 			}
 			if (Lang.isObject(callback)) {
-				collection[eventType].push(callback);
+				collection[eventType].push({
+					fn: callback,
+					o: thisp
+				});
 			}
 			return self;
 		};
 		
-		this.once = function (eventType, callback) {
+		this.once = function (eventType, callback, thisp) {
 			onceList.push(callback);
-			return self.on(eventType, callback);
+			return self.on(eventType, callback, thisp);
 		};
 		
 		/**
@@ -156,7 +159,15 @@ jet().add('base', function ($) {
 		 */
 		this.unbind = function (eventType, callback) {
 			if (eventType) {
-				$.Array.remove(callback, collection[eventType] || []);
+				var evnt = collection[eventType],
+					i = 0;
+				while (i < evnt.length) {
+					if (evnt[i].fn == callback) {
+						evnt.splice(i, 1);
+					} else {
+						i++;
+					}
+				}
 			} else {
 				collection = {};
 			}
@@ -178,6 +189,7 @@ jet().add('base', function ($) {
 			var i, collecLength = handlers.length;
 			var stop = false;
 			var args = SLICE.call(arguments, 1);
+			var fn, thisp;
 			args.unshift({
 				stopPropagation: function () {
 					stop = true;
@@ -189,15 +201,17 @@ jet().add('base', function ($) {
 				target: self
 			});
 			for (i = 0; i < collecLength; i++) {
-				if (Lang.isFunction(handlers[i])) {
-					handlers[i].apply(self, args);
+				fn = handlers[i].fn;
+				thisp = handlers[i].o;
+				if (Lang.isFunction(fn)) {
+					fn.apply(thisp || self, args);
 				// if the event handler is an object with a handleEvent method,
 				// that method is used but the context is the object itself
-				} else if (Lang.isObject(handlers[i]) && handlers[i].handleEvent) {
-					handlers[i].handleEvent.apply(handlers[i], args);
+				} else if (Lang.isObject(fn) && fn.handleEvent) {
+					fn.handleEvent.apply(fn, args);
 				}
-				if (A.indexOf(onceList, handlers[i]) > -1) {
-					A.remove(onceList, handlers[i]);
+				if (A.indexOf(onceList, fn) > -1) {
+					A.remove(onceList, fn);
 					A.remove(handlers, handlers[i]);
 					i--;
 				}
