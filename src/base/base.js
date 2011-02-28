@@ -392,7 +392,7 @@ jet().add('base', function ($) {
 		}
 		for (i = 0; i < classes.length; i++) {
 			this.addAttrs(classes[i].ATTRS || {});
-			Hash.each(classes[i].EVENTS || {}, this.on);
+			Hash.each(classes[i].EVENTS || {}, this.on, this);
 			if (classes[i][PROTO].hasOwnProperty('initializer')) {
 				classes[i][PROTO].initializer.call(this);
 			}
@@ -655,22 +655,14 @@ jet().add('base', function ($) {
 			 * Preventing the default behavior will stop the destroy process
 			 * @event destroy
 			 */
-			if (this.fire(DESTROY)) {
+			if (!this.get('destroyed') && this.fire(DESTROY)) {
 				A.each(this._handlers, function (handler) {
 					if (handler.detach) {
 						handler.detach();
 					}
 				});
-				/*
-				 * Avoiding memory leaks, specially in IE
-				 */
+				//Avoiding memory leaks, specially in IE
 				this.get(BOUNDING_BOX).unbindAll(true).remove();
-				/*
-				 * Helping gargage collection
-				 */
-				Hash.each(this, function (name) {
-					delete self[name];
-				});
 			}
 		},
 		
@@ -749,11 +741,20 @@ jet().add('base', function ($) {
 			},
 			/**
 			 * @config rendered
-			 * @description Rendered status. Shouldn't be changed by anything appart from the Widget.render() method
+			 * @description Rendered status. Shouldn't be changed by anything besides the Widget.render() method
 			 * @writeOnce
 			 * @default false
 			 */
 			rendered: {
+				value: false
+			},
+			/**
+			 * @config rendered
+			 * @description Destroyed status. Shouldn't be changed by anything besides the Widget.destroy() method
+			 * @writeOnce
+			 * @default false
+			 */
+			destroyed: {
 				value: false
 			},
 			/**
@@ -845,7 +846,7 @@ jet().add('base', function ($) {
 				BuiltWidget.superclass.constructor.apply(this, args);
 				A.each(extensions, function (extension) {
 					extension.apply(self, args);
-					Hash.each(extension.EVENTS || {}, self.on);
+					Hash.each(extension.EVENTS || {}, self.on, self);
 				});
 			}
 			extend(BuiltWidget, superclass || Widget, proto);
