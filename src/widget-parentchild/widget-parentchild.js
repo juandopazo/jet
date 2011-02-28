@@ -18,6 +18,7 @@ jet().add('widget-parentchild', function ($) {
 		Widget = $.Widget;
 		
 	var SELECTED = 'selected',
+		SELECTED_INDEX = 'selectedIndex',
 		SELECT = 'select',
 		BOUNDING_BOX = 'boundingBox',
 		CONTENT_BOX = 'contentBox',
@@ -95,7 +96,8 @@ jet().add('widget-parentchild', function ($) {
 					return val;
 				},
 				getter: function () {
-					return this.get(SELECTION).get(INDEX);
+					var selection = this.get(SELECTION); 
+					return selection ? selection.get(INDEX) : 0;
 				}
 			},
 			/**
@@ -120,6 +122,7 @@ jet().add('widget-parentchild', function ($) {
 				Hash.each(Widget.DOM_EVENTS, function (name) {
 					self.on(name, self._domEventChildrenProxy);
 				});
+				this.set(SELECTED_INDEX, this.get(SELECTED_INDEX));
 			},
 			
 			afterSelectionChange: function (e, newVal) {
@@ -165,12 +168,12 @@ jet().add('widget-parentchild', function ($) {
 			} else {
 				if (newVal) {
 					selection = e.target;
+					this.each(function (child) {
+						if (child != e.target && child.get(SELECTED)) {
+							child.unselect();
+						}
+					});
 				}
-				this.each(function (child) {
-					if (child != e.target && child.get(SELECTED)) {
-						child.unselect();
-					}
-				});
 			}
 			this.set(SELECTION, selection);
 		},

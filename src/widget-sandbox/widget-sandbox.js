@@ -22,8 +22,7 @@ jet().add('widget-sandbox', function ($) {
 			 */
 			frame: {
 				value: '<iframe/>',
-				setter: $,
-				writeOnce: true
+				setter: $
 			},
 			/**
 			 * @config contentWindow

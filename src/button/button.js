@@ -139,6 +139,8 @@ jet().add('button', function ($) {
 					this.get(BOUNDING_BOX).prepend(labelNode.html(label));
 				}
 				contentBox[0].disabled = !this.get(ENABLED);
+				this._handlers.push(contentBox.on(FOCUS, this._onDomFocus, this));
+				this._handlers.push(contentBox.on(BLUR, this._onDomBlur, this));
 			},
 			
 			destroy: function () {
@@ -176,7 +178,6 @@ jet().add('button', function ($) {
 			this._onDomBlur = function (e) {
 				self.blur();
 			};
-			this.get(CONTENT_BOX).on(FOCUS, this._onDomFocus).on(BLUR, this._onDomBlur);
 		}
 		
 	});
