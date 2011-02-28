@@ -175,30 +175,34 @@ jet().add('datatable', function ($) {
 		
 		_setupTableHeaders: function () {
 			var colDefs = this.get(COLUMN_DEFINITIONS);
-			var getClassName = this.getClassName;
+			var getClassName = $.bind(this.getClassName, this);
 			var linerClassName = getClassName(LINER);
 			var labelClassname = getClassName('label');
 			var sortableClassName = getClassName(SORTABLE);
 			var uid = this._uid;
 			var self = this;
 			var thead = this.get(THEAD);
+			var theadRow = $('<tr/>').addClass(getClassName('first'), getClassName('last')).appendTo(thead);
 			A.each(colDefs, function (colDef, i) {
-				var th = $("<th/>").append($(NEW_DIV).append($("<span/>").addClass(labelClassname).html(colDef.label || colDef.key)));
+				var content = $("<span/>").addClass(labelClassname).html(colDef.label || colDef.key);
+				var liner = $(NEW_DIV).addClass(getClassName('liner')).append(content);
+				var th = $("<th/>").append(liner);
 				th.attr(ID, getClassName(uid, 'th', colDef.key));
 				if (i === 0) {
 					th.addClass(getClassName('first'));
 				} else if (i == colDefs.length - 1) {
 					th.addClass(getClassName('last'));
 				}
+				th.addClass(getClassName('col', colDef.key));
 				if (colDef.sortable) {
 					th.addClass(sortableClassName).on('click', self._onThClick, self);
 				}
-				thead.first().append(th);
+				theadRow.append(th);
 			});
 		},
 		
 		_sort: function (th, keepOrder) {
-			var getClassName = this.getClassName;
+			var getClassName = $.bind(this.getClassName, this);
 			var key = th.attr(ID).split("-").pop();
 			var classNameDESC = getClassName(DESC);
 			var isDesc = th.hasClass(classNameDESC);
@@ -245,7 +249,7 @@ jet().add('datatable', function ($) {
 			}
 			var recordIdPrefix = this.get(RECORD_ID_PREFIX);
 			var tr = $("<tr/>").attr(ID, recordIdPrefix + row.getId());
-			var getClassName = this.getClassName;
+			var getClassName = $.bind(this.getClassName, this);
 			var tbody = this.get(TBODY);
 			A.each(this.get(COLUMN_DEFINITIONS), function (colDef) {
 				var text = row.get(colDef.key);
@@ -286,7 +290,7 @@ jet().add('datatable', function ($) {
 			} else if (Lang.isRecordSet(rows)) {
 				rows = rows.getRecords();
 			}
-			A.each(rows, this._addRow);
+			A.each(rows, this._addRow, this);
 			var sortedBy = this.get(SORTED_BY);
 			if (sortedBy) {
 				this._sort($(NUMERAL + this.getClassName(this._uid, 'th', sortedBy)), true);
