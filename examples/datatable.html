@@ -11,14 +11,15 @@
 		}
 	</style>
 </head>
-<body class="yui-skin-sam">
+<body class="jet-skin-sam">
 	<div id="doc">
 		<div id="bd"></div>
 	</div>
-<script type="text/javascript" src="http://jet-js.googlecode.com/svn/trunk/build/jet.min.js"></script>
+<script type="text/javascript" src="../build/jet.js"></script>
 <script type="text/javascript">
 	jet({
-		loadCss: true
+		loadCss: true,
+		base: '../build'
 	}).use('button', 'datatable', function ($) {
 		
 		var body = $("#bd");
@@ -62,7 +63,7 @@
 			},
 			initialRequest: recentPhotosRequest,
 			on: {
-				update: dataTable.onDataReturnAddRows
+				update: $.bind(dataTable.onDataReturnAddRows, dataTable)
 			}
 		});
 		button.on("pressed", function () {
