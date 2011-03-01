@@ -7,6 +7,8 @@
 jet().add('menu', function ($) {
 	
 	var Lang = $.Lang,
+		A = $.Array,
+		Base = $.Base,
 		Widget = $.Widget;
 	
 	var BOUNDING_BOX = 'boundingBox',
@@ -23,7 +25,7 @@ jet().add('menu', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	$.MenuItem = Widget.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
+	$.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 		
 		ATTRS: {
 			labelNode: {
@@ -117,7 +119,7 @@ jet().add('menu', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	$.Menu = Widget.create('menu', Widget, [$.WidgetParent], {
+	$.Menu = Base.create('menu', Widget, [$.WidgetParent], {
 		ATTRS: {
 			childType: {
 				value: 'MenuItem',

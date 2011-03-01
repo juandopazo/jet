@@ -362,7 +362,7 @@ jet().add('base', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	Base = function () {
+	Base = function (config) {
 		/*
 		 * Base should hold basic logic shared among a lot of classes, 
 		 * to avoid having to extend the Attribute class which is very specific in what it does
@@ -380,7 +380,7 @@ jet().add('base', function ($) {
 			this.addAttrs(classes[i].ATTRS || {});
 			Hash.each(classes[i].EVENTS || {}, this.on);
 			if (classes[i][PROTO].hasOwnProperty('initializer')) {
-				classes[i][PROTO].initializer.call(this);
+				classes[i][PROTO].initializer.call(this, config);
 			}
 		}
 		Hash.each(this.get("on"), this.on);
@@ -398,11 +398,44 @@ jet().add('base', function ($) {
 			}
 		},
 		
-		create: function (superclass, proto, attrs) {
-			var BuiltClass = function () {
-				BuiltClass.superclass.constructor.apply(this, arguments);
-			};
-			return extend(BuiltClass, superclass, proto, attrs);
+		/**
+		 * @method create
+		 * @description creates a new base class
+		 * @static
+		 * @param {String} name Name of the base class to create
+		 * @param {Function} superclass [Optional] The superclass for this new class. Defaults to Base
+		 * @param {Array} extensions [Optional] A list of extensions to apply to the created class
+		 * @param {Hash} attrs [Optional] Static properties of the class. Recommended order: ATTRS, EVENTS, HTML_PARSER
+		 * @param {Hash} proto [Optional] Prototype properties to add to the class
+		 */
+		create: function (name, superclass, extensions, attrs, proto) {
+			extensions = extensions || [];
+			function BuiltWidget() {
+				var args = arguments;
+				var self = this;
+				BuiltWidget.superclass.constructor.apply(this, args);
+				A.each(extensions, function (extension) {
+					extension.apply(self, args);
+					Hash.each(extension.EVENTS || {}, self.on);
+				});
+			}
+			extend(BuiltWidget, superclass || Base, proto);
+			$.mix(BuiltWidget, attrs || {});
+			$.mix(BuiltWidget, {
+				NAME: name,
+				exts: extensions,
+				ATTRS: {}
+			});
+			A.each(extensions, function (extension) {
+				$.mix(BuiltWidget[PROTO], extension[PROTO]);
+				Hash.each(extension, function (prop, val) {
+					if (!BuiltWidget[prop]) {
+						BuiltWidget[prop] = {};
+					}
+					$.mix(BuiltWidget[prop], val);
+				});
+			});
+			return BuiltWidget;
 		}
 		
 	});
@@ -467,12 +500,6 @@ jet().add('base', function ($) {
 					return val;
 				}
 			}
-		},
-		
-		create: function (name, attrs, proto) {
-			var built = Base.create(Utility, proto, attrs);
-			built.NAME = name;
-			return built;
 		}
 		
 	});
@@ -811,42 +838,6 @@ jet().add('base', function ($) {
 					return boundingBox.first();
 				}
 			}
-		},
-		
-		/**
-		 * @method create
-		 * @description creates a new widget class
-		 * @static
-		 * @param {String} name Name of the widget class to create
-		 * @param {Function} superclass [Optional] The superclass for this new widget. Defaults to Widget
-		 * @param {Array} extensions [Optional] A list of extensions to apply to the created class
-		 * @param {Hash} attrs [Optional] Static properties of the widget. Recommended order: ATTRS, EVENTS, HTML_PARSER 
-		 * @param {Hash} proto [Optional] Prototype properties to add to the widget
-		 */
-		create: function (name, superclass, extensions, attrs, proto) {
-			extensions = extensions || [];
-			function BuiltWidget() {
-				var args = arguments;
-				var self = this;
-				BuiltWidget.superclass.constructor.apply(this, args);
-				A.each(extensions, function (extension) {
-					extension.apply(self, args);
-					Hash.each(extension.EVENTS || {}, self.on);
-				});
-			}
-			extend(BuiltWidget, superclass || Widget, proto);
-			$.mix(BuiltWidget, attrs || {});
-			$.mix(BuiltWidget, {
-				NAME: name,
-				exts: extensions,
-				ATTRS: {}
-			});
-			A.each(extensions, function (extension) {
-				$.mix(BuiltWidget[PROTO], extension[PROTO]);
-				$.mix(BuiltWidget.ATTRS, extension.ATTRS || {});
-				$.mix(BuiltWidget.HTML_PARSER, extension.HTML_PARSER || {});
-			});
-			return BuiltWidget;
 		},
 		
 		getByNode: function (node) {

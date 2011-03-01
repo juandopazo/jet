@@ -12,7 +12,8 @@ jet().add('datasource', function ($) {
 	
 	var Lang = $.Lang,
 		Hash = $.Hash,
-		A = $.Array;
+		A = $.Array,
+		Base = $.Base;
 
 	var RESPONSE_TYPE_JSON		= 'json',
 		RESPONSE_TYPE_XML		= 'xml',
@@ -50,7 +51,7 @@ jet().add('datasource', function ($) {
 	 */
 	var Record = function (data) {
 		var id = jet.Record.ids++;
-		var myself = this;
+		var self = this;
 		
 		/**
 		 * Returns the id of the record. Each record has a unique id globally.alert
@@ -58,14 +59,14 @@ jet().add('datasource', function ($) {
 		 * @method getId
 		 * @return Number
 		 */
-		myself.getId = function () {
+		self.getId = function () {
 			return id;
 		};
 		/**
 		 * Returns the data of the record. Must be an object literal
 		 * @method getData
 		 */
-		myself.getData = function () {
+		self.getData = function () {
 			return data;
 		};
 		/**
@@ -73,16 +74,17 @@ jet().add('datasource', function ($) {
 		 * @method get
 		 * @param {String} key
 		 */
-		myself.get = function (key) {
+		self.get = function (key) {
 			return data[key];
 		};
 	};
 	/**
 	 * Returns if an object is a Record
-	 * @method isRecord
-	 * @for Lang
+	 * @method hasInstance
+	 * @statoc
+	 * @param {Object} o The object to check
 	 */
-	Lang.isRecord = function (o) {
+	Record.hasInstance = function (o) {
 		return o instanceof Record;
 	};
 	
@@ -123,7 +125,7 @@ jet().add('datasource', function ($) {
 		var sortedBy = false;
 		var order;
 		
-		var myself = this;
+		var self = this;
 		
 		A.each(data, function (recordData) {
 			records[records.length] = new Record(recordData);
@@ -133,7 +135,7 @@ jet().add('datasource', function ($) {
 		 * Returns all records in the set
 		 * @method getRecords
 		 */
-		myself.getRecords = function () {
+		self.getRecords = function () {
 			return records;
 		};
 		
@@ -142,7 +144,7 @@ jet().add('datasource', function ($) {
 		 * @method getCount
 		 * @return Number
 		 */
-		myself.getCount = function () {
+		self.getCount = function () {
 			return records.length;
 		};
 		
@@ -153,18 +155,18 @@ jet().add('datasource', function ($) {
 		 * @param {String} order the order in which to sort. May be "asc" or "desc"
 		 * @chainable
 		 */
-		myself.sortBy =  function (key, newOrder) {
-			var myself = this;
+		self.sortBy =  function (key, newOrder) {
+			var self = this;
 			if (records.length > 1) {
 				records = quicksortSet(records, key, newOrder);
 				sortedBy = key;
 				order = newOrder;
 			}
-			return myself;
+			return self;
 		};
 		
 		var toData = function (data) {
-			if (Lang.isRecordSet(data)) {
+			if (RecordSet.hasInstance(data)) {
 				data = data.getRecords();
 			} else if (!Lang.isArray(data)) {
 				data = [data];
@@ -178,10 +180,10 @@ jet().add('datasource', function ($) {
 		 * @param {Array} data
 		 * @chainable
 		 */
-		myself.replace = function (data) {
+		self.replace = function (data) {
 			data = toData(data);
-			myself.fire("replace", data);
-			return sortedBy ? myself.sortBy(sortedBy, order) : myself;
+			self.fire("replace", data);
+			return sortedBy ? self.sortBy(sortedBy, order) : self;
 		};
 		
 		/**
@@ -190,13 +192,13 @@ jet().add('datasource', function ($) {
 		 * @param {Array} data
 		 * @chainable
 		 */
-		myself.push = function (data) {
+		self.push = function (data) {
 			records = records.concat(toData(data));
-			myself.fire("push", records, data);
-			return sortedBy ? myself.sortBy(sortedBy, order) : myself;
+			self.fire("push", records, data);
+			return sortedBy ? self.sortBy(sortedBy, order) : self;
 		};
 		
-		myself.getRecordById = function (id) {
+		self.getRecordById = function (id) {
 			var requiredRecord;
 			A.each(records, function (record) {
 				if (record.getId() == id) {
@@ -210,10 +212,11 @@ jet().add('datasource', function ($) {
 	$.extend(RecordSet, $.EventTarget);
 	/**
 	 * Returns whether an object is a RecordSet
-	 * @method isRecordSet
-	 * @for Lang
+	 * @method hasInstance
+	 * @static
+	 * @param {object} o The object to check
 	 */
-	Lang.isRecordSet = function (o) {
+	RecordSet.hasInstance = function (o) {
 		return o instanceof RecordSet;
 	};
 		
@@ -225,11 +228,8 @@ jet().add('datasource', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	var DataSource = function () {
-		DataSource.superclass.constructor.apply(this, arguments);
-		
-		var recordSet = new RecordSet([]);
-		var myself = this.addAttrs({
+	var DataSource = Base.create('datasource', $.Utility, [], {
+		ATTRS: {
 			/**
 			 * @config recordSet
 			 * @description This datasource's associated recordset
@@ -297,26 +297,18 @@ jet().add('datasource', function ($) {
 				required: true
 			},
 			/**
-			 * @config requestLogic
-			 * @description The logic for the chosen source type. Should only be used when extending the DataSource class
-			 * @protected
-			 * @writeOnce
-			 */
-			requestLogic: {
-				writeOnce: true
-			}
-			/**
 			 * @config initialRequest
 			 * @description Data to send in the automatic initial request
 			 * @type Object
 			 */
-		});
-		
-		var internalEvents = new $.EventTarget();
-		
-		var parser = function (rawData) {
-			var responseType = myself.get(RESPONSE_TYPE);
-			var responseSchema = myself.get("responseSchema");
+			initialRequest: {
+				value: {}
+			}
+		}
+	}, {
+		_parser: function (rawData) {
+			var responseType = this.get(RESPONSE_TYPE);
+			var responseSchema = this.get("responseSchema");
 			
 			var data = [];
 			
@@ -394,7 +386,7 @@ jet().add('datasource', function ($) {
 						});
 					});
 				} else {
-					myself.fire("parserError", "Result list not found");
+					this.fire("parserError", "Result list not found");
 				}
 			}
 			/*
@@ -451,7 +443,7 @@ jet().add('datasource', function ($) {
 				$.context = doc;
 			}
 			return new RecordSet(data);
-		};
+		},
 		
 		/**
 		 * Sends a request
@@ -460,33 +452,43 @@ jet().add('datasource', function ($) {
 		 * @param {Boolean} ignoreCache
 		 * @chainable
 		 */
-		myself.sendRequest = function (request, ignoreCache) {
-			myself.get(REQUEST_LOGIC)(request, function (rawData) {
-				myself.set(TEMP_DATA, rawData);
+		sendRequest: function (request, ignoreCache) {
+			var self = this;
+			var internalEvents = this._events;
+			this.handleRequest(request, function (rawData) {
+				self.set(TEMP_DATA, rawData);
 				var tempData = rawData;
 				if (internalEvents.fire("beforeParse", rawData)) {
-					tempData = parser(myself.get(TEMP_DATA));
+					tempData = self._parser(self.get(TEMP_DATA));
 				}
-				recordSet = tempData;
-				myself.fire("update", tempData);
+				this.set('recordSet', tempData);
+				self.fire("update", tempData);
 				/*Hash.each(tempData, function (key, val) {
 					if (!recordSet[key]) {
 						recordSet[key] = val;
-						myself.fire("recordAdded", key, val);
+						self.fire("recordAdded", key, val);
 					} else if (recordSet[key] != val || ignoreCache) {
 						recordSet[key] = val;
-						myself.fire("recordUpdate", key, val);
+						self.fire("recordUpdate", key, val);
 					}
 				});*/
 				
 			}, function (reason) {
-				myself.fire(ERROR, {
+				self.fire(ERROR, {
 					message: REQUEST_FAILED_MSG,
 					reason: reason
 				});
 			});
-			return myself;
-		};
+			return this;
+		},
+		
+		/**
+		 * @method handleRequest
+		 * @description The logic for the chosen source type. Should be overwritten when extending the DataSourceClass
+		 */
+		handleRequest: function (request, success) {
+			success(request);
+		},
 		
 		/**
 		 * Adds an event listener to the "beforeParse" event
@@ -494,27 +496,29 @@ jet().add('datasource', function ($) {
 		 * @param {Function} callback
 		 * @chainable
 		 */
-		myself.onBeforeParse = function (callback) {
-			internalEvents.on("beforeParse", function (e, rawData) {
-				myself.set(TEMP_DATA, callback(rawData));
+		onBeforeParse: function (callback) {
+			var self = this;
+			this._events.on("beforeParse", function (e, rawData) {
+				self.set(TEMP_DATA, callback(rawData));
 			});
-			return myself;
-		};
-	};
-	$.extend(DataSource, $.Utility);
+			return this;
+		},
+		
+		initializer: function () {
+			this._events = new $.EventTarget();
+			this.sendRequest(this.get(INITIAL_REQUEST));
+		}
+	});
 	
 	/**
 	 * An AJAX DataSource
-	 * @namespace DataSource
-	 * @class Ajax
+	 * @class DataSource.Ajax
 	 * @extends DataSource
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	var Ajax = function () {
-		Ajax.superclass.constructor.apply(this, arguments);
-		
-		var myself = this.addAttrs({
+	DataSource.Ajax = Base.create('datasource-ajax', DataSource, [], {
+		ATTRS: {
 			/**
 			 * @config url
 			 * @description Url from which to fetch the data
@@ -524,33 +528,28 @@ jet().add('datasource', function ($) {
 			url: {
 				required: true
 			}
-		});
-		
-		myself.set(REQUEST_LOGIC, function (request, success, failure) {
+		}
+	}, {
+		handleRequest: function (request, success, failure) {
 			$.ajax({
-				url: myself.get(URL),
+				url: this.get(URL),
 				data: request,
-				dataType: myself.get(RESPONSE_TYPE),
+				dataType: this.get(RESPONSE_TYPE),
 				success: success,
 				error: failure
 			});
-		});
-		
-		myself.sendRequest(myself.get(INITIAL_REQUEST));
-	};
-	$.extend(Ajax, DataSource);
+		}
+	});
 	
 	/**
 	 * A Get DataSource that uses JSON for getting data across domains
-	 * @class Get
+	 * @class DataSource.Get
 	 * @extends DataSource
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	var Get = function () {
-		Get.superclass.constructor.apply(this, arguments);
-		
-		var myself = this.addAttrs({
+	DataSource.Get = Base.create('datasource-get', DataSource, [], {
+		ATTRS: {
 			/**
 			 * @config jsonCallbackParam
 			 * @description Name of the URL parameter that defines the name of the JSONP callback
@@ -581,35 +580,30 @@ jet().add('datasource', function ($) {
 					return val.substr(val.length - 1) == "?" ? val : val + "?";
 				}
 			}
-		});
-		
-		myself.set(REQUEST_LOGIC, function (request, success, failure) {
+		}
+	}, {
+		handleRequest: function (request, success, failure) {
 			$.jsonp({
-				url: myself.get(URL),
+				url: this.get(URL),
 				data: request,
 				success: success,
-				jsonCallbackParam: myself.get("jsonCallbackParam"),
+				jsonCallbackParam: this.get("jsonCallbackParam"),
 				error: failure,
-				timeout: myself.get(TIMEOUT)
+				timeout: this.get(TIMEOUT)
 			});
-		});
-		
-		myself.sendRequest(myself.get(INITIAL_REQUEST));
-	};
-	$.extend(Get, DataSource);
+		}
+	});
 	
 	/**
 	 * Cross-domain data source
-	 * @class XDR
+	 * @class DataSource.XDR
 	 * @extends DataSource
 	 * @namespace DataSource
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	var XDR = function () {
-		XDR.superclass.constructor.apply(this, arguments);
-		
-		var myself = this.addAttrs({
+	DataSource.XDR = Base.create('datasource-xdr', DataSource, [], {
+		ATTRS: {
 			/**
 			 * @config url
 			 * @description Url from which to fetch the data
@@ -619,54 +613,43 @@ jet().add('datasource', function ($) {
 			url: {
 				required: true
 			}
-		});
-		
-		myself.set(REQUEST_LOGIC, function (request, success, failure) {
-			var type = myself.get(RESPONSE_TYPE);
+		}
+	}, {
+		handleRequest: function (request, success, failure) {
+			var type = this.get(RESPONSE_TYPE);
 			$.flajax({
-				url: myself.get(URL),
+				url: this.get(URL),
 				data: request,
-				dataType: myself.get(RESPONSE_TYPE),
+				dataType: this.get(RESPONSE_TYPE),
 				success: success,
 				error: failure
 			});
-		});
-		
-		myself.sendRequest(myself.get(INITIAL_REQUEST));
-	};
-	$.extend(XDR, DataSource);
+		}
+	});
 	
 	/**
 	 * A Local DataSource uses local variables
-	 * @class Local
+	 * @class DataSource.Local
 	 * @extends DataSource
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	var Local = function () {
-		Local.superclass.constructor.apply(this, arguments);
-		
-		/**
-		 * @config localData
-		 * @description The data to be added to the data source
-		 * @required
-		 */
-		var myself = this.addAttr("localData", {
-			required: true
-		});
-		
-		myself.set(REQUEST_LOGIC, function (request, success, failure) {
-			var localData = myself.get("localData");
+	DataSource.Local = Base.create('datasource-local', DataSource, [], {
+		ATTRS: {
+			localData: {
+				required: true
+			}
+		}
+	}, {
+		handleRequest: function (request, success, failure) {
+			var localData = this.get('localData');
 			if (Lang.isFunction(localData)) {
 				success(localData(request));
 			} else {
 				success(localData);
 			}
-		});
-		
-		myself.sendRequest(myself.get(INITIAL_REQUEST));
-	};
-	$.extend(Local, DataSource);
+		}
+	});
 	
 	$.mix(DataSource, {
 		responseType: {
@@ -674,11 +657,7 @@ jet().add('datasource', function ($) {
 			XML: RESPONSE_TYPE_XML,
 			TEXT: RESPONSE_TYPE_TEXT,
 			JSARRAY: RESPONSE_TYPE_JSARRAY
-		},
-		Ajax: Ajax,
-		Get: Get,
-		Local: Local,
-		XDR: XDR
+		}
 	});
 	
 	$.add({

@@ -8,6 +8,7 @@ jet().add('combobox', function ($) {
 	
 	var Lang = $.Lang,
 		A = $.Array,
+		Base = $.Base,
 		Widget = $.Widget;
 		
 	var BOUNDING_BOX = 'boundingBox',

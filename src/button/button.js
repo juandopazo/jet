@@ -9,6 +9,7 @@ jet().add('button', function ($) {
 	var A = $.Array,
 		Hash = $.Hash,
 		Lang = $.Lang,
+		Base = $.Base,
 		Widget = $.Widget,
 		WidgetParent = $.WidgetParent,
 		WidgetChild = $.WidgetChild;
@@ -40,7 +41,7 @@ jet().add('button', function ($) {
 	 * @uses WidgetChild
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	var Button = Widget.create('button', Widget, [WidgetChild], {
+	var Button = Base.create('button', Widget, [WidgetChild], {
 		
 		ATTRS: {
 			/**
@@ -189,7 +190,7 @@ jet().add('button', function ($) {
 	 * @extends Button
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.ToggleButton = Widget.create('button-toggle', Button, [], {
+	$.ToggleButton = Base.create('button-toggle', Button, [], {
 		EVENTS: {
 			click: function () {
 				this.toggle();
@@ -205,7 +206,7 @@ jet().add('button', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.ButtonGroup = Widget.create('button-group', Widget, [WidgetParent], {
+	$.ButtonGroup = Base.create('button-group', Widget, [WidgetParent], {
 		ATTRS: {
 			childType: {
 				value: $.Button
@@ -253,7 +254,7 @@ jet().add('button', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.ComboOption = Widget.create('combo-option', Widget, [WidgetChild], {
+	$.ComboOption = Base.create('combo-option', Widget, [WidgetChild], {
 		ATTRS: {
 			/**
 			 * @config value
@@ -295,7 +296,7 @@ jet().add('button', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.ComboBox = Widget.create('combobox', Button, [WidgetParent], {
+	$.ComboBox = Base.create('combobox', Button, [WidgetParent], {
 		ATTRS: {
 			childType: {
 				value: $.ComboOption,
@@ -326,7 +327,7 @@ jet().add('button', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.RadioButton = Widget.create('radio', Button, [], {
+	$.RadioButton = Base.create('radio', Button, [], {
 		EVENTS: {
 			selectedChange: function (e, val) {
 				this.get(CONTENT_BOX)[0].checked = !!val;
@@ -350,7 +351,7 @@ jet().add('button', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.RadioGroup = Widget.create('radio-group', Widget, [WidgetParent], {
+	$.RadioGroup = Base.create('radio-group', Widget, [WidgetParent], {
 		ATTRS: {
 			/**
 			 * @config multiple
@@ -388,7 +389,7 @@ jet().add('button', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.CheckBox = Widget.create('checkbox', Button, [], {
+	$.CheckBox = Base.create('checkbox', Button, [], {
 		EVENTS: {
 			selectedChange: function (e, val) {
 				this.get(CONTENT_BOX)[0].checked = !!val;
@@ -412,7 +413,7 @@ jet().add('button', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.CheckBoxGroup = Widget.create('checkbox-group', Widget, [WidgetParent], {
+	$.CheckBoxGroup = Base.create('checkbox-group', Widget, [WidgetParent], {
 		ATTRS: {
 			/**
 			 * @config name

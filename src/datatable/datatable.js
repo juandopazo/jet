@@ -15,7 +15,9 @@ jet().add('datatable', function ($) {
 		Hash = $.Hash,
 		A = $.Array,
 		Base = $.Base,
-		Widget = $.Widget;	
+		Widget = $.Widget,
+		Record = $.Record,
+		RecordSet = $.RecordSet;	
 		
 	var DATA = "data",
 		ASC = "asc",
@@ -40,7 +42,7 @@ jet().add('datatable', function ($) {
 		
 	var COLUMN_DEFINITIONS = "columnDefinitions";
 		
-	var Cell = Base.create(Base, {
+	var Cell = Base.create('cell', Base, [], {
 		ATTRS: {
 			value: {
 				required: true,
@@ -57,7 +59,16 @@ jet().add('datatable', function ($) {
 		}
 	});
 	
-	var Column = Base.create(Base, {
+	var Column = Base.create('column', Base, [], {
+		
+		ATTRS: {
+			cells: {
+				required: true,
+				writeOnce: true
+			}
+		}
+		
+	}, {
 		
 		getFirstTd: function () {
 			return this.get(CELLS)[0].get(TD);
@@ -86,15 +97,6 @@ jet().add('datatable', function ($) {
 			}
 			return i < length - 2 ? cells[++i] : null; 
 		}
-	}, {
-		
-		ATTRS: {
-			cells: {
-				required: true,
-				writeOnce: true
-			}
-		}
-		
 	});
 	
 	/**
@@ -104,7 +106,7 @@ jet().add('datatable', function ($) {
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 * @constructor
 	 */
-	var DataTable = Widget.create('dt', Widget, [], {
+	var DataTable = Base.create('dt', Widget, [], {
 		
 		ATTRS: {
 			/**
@@ -170,7 +172,12 @@ jet().add('datatable', function ($) {
 		_onThClick: function (e) {
 			e.stopPropagation();
 			e.preventDefault();
-			this._sort(e.target);
+			var target = e.target;
+			var parent = this.get(THEAD).first()[0];
+			while (target.parentNode != parent) {
+				target = target.parentNode;
+			}
+			this._sort($(target));
 		},
 		
 		_setupTableHeaders: function () {
@@ -195,7 +202,7 @@ jet().add('datatable', function ($) {
 				}
 				th.addClass(getClassName('col', colDef.key));
 				if (colDef.sortable) {
-					th.addClass(sortableClassName).on('click', self._onThClick, self);
+					self._handlers.push(th.addClass(sortableClassName).on('click', self._onThClick, self));
 				}
 				theadRow.append(th);
 			});
@@ -244,7 +251,7 @@ jet().add('datatable', function ($) {
 		},
 		
 		_addRow: function (row) {
-			if (!Lang.isRecord(row)) {
+			if (!Record.hasInstance(row)) {
 				row = new $.Record(row);
 			}
 			var recordIdPrefix = this.get(RECORD_ID_PREFIX);
@@ -254,7 +261,14 @@ jet().add('datatable', function ($) {
 			A.each(this.get(COLUMN_DEFINITIONS), function (colDef) {
 				var text = row.get(colDef.key);
 				var td = $("<td/>").addClass(getClassName('col', colDef.key));
-				td.append($(NEW_DIV).addClass(getClassName(LINER)).html(colDef.formatter ? colDef.formatter(text, row.getData(), td) : text)).appendTo(tr);
+				var content = colDef.formatter ? colDef.formatter(text, row.getData(), td) : text;
+				var liner = $(NEW_DIV).addClass(getClassName(LINER));
+				if (Lang.isString(content)) {
+					liner.html(content);
+				} else {
+					liner.append(content);
+				}
+				td.append(liner).appendTo(tr);
 			});
 			tr.addClass(getClassName(tbody.children().length % 2 === 0 ? EVEN : ODD)).appendTo(tbody);
 		},
@@ -283,11 +297,11 @@ jet().add('datatable', function ($) {
 		addRows: function (rows) {
 			if (Lang.isArray(rows)) {
 				A.each(rows, function (row) {
-					if (!Lang.isRecord(row)) {
+					if (!Record.hasInstance(row)) {
 						row = new $.Record(row);
 					}
 				});
-			} else if (Lang.isRecordSet(rows)) {
+			} else if (RecordSet.hasInstance(rows)) {
 				rows = rows.getRecords();
 			}
 			A.each(rows, this._addRow, this);
@@ -355,7 +369,7 @@ jet().add('datatable', function ($) {
 		 * @return NodeList
 		 */
 		getNextTr: function (tr) {
-			if (Lang.isRecord(tr)) {
+			if (Record.hasInstance(tr)) {
 				tr = tr.getId();
 			}
 			if (Lang.isNumber(tr)) {
@@ -371,7 +385,7 @@ jet().add('datatable', function ($) {
 		 * @return NodeList
 		 */
 		getFirstTd: function (row) {
-			if (Lang.isRecord(row)) {
+			if (Record.hasInstance(row)) {
 				row = row.getId();
 			}
 			if (Lang.isNumber(row)) {
@@ -387,7 +401,7 @@ jet().add('datatable', function ($) {
 		 * @return NodeList
 		 */
 		getNextTd: function (td) {
-			if (Lang.isRecord(td)) {
+			if (Record.hasInstance(td)) {
 				td = td.getId();
 			}
 			if (Lang.isNumber(td)) {
@@ -462,7 +476,7 @@ jet().add('datatable', function ($) {
 		
 	});
 	
-	$.ScrollableDataTable = Widget.create('scrollableDT', DataTable, [], {
+	$.ScrollableDataTable = Base.create('scrollableDT', DataTable, [], {
 		
 		EVENTS: {
 			afterRender: function () {

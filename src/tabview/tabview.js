@@ -12,6 +12,7 @@ jet().add('tabview', function ($) {
 	var SELECTED = 'selected';
 	var Lang = $.Lang;
 	var ArrayHelper = $.Array,
+		Base = $.Base,
 		Widget = $.Widget;
 	
 	var LI = '<li/>',
@@ -31,7 +32,7 @@ jet().add('tabview', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	$.Tab = Widget.create('tab', Widget, [$.WidgetChild], {
+	$.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 		
 		ATTRS: {
 			/**
@@ -180,7 +181,7 @@ jet().add('tabview', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying configuration properties
 	 */
-	$.TabView = Widget.create('tabview', Widget, [$.WidgetParent], {
+	$.TabView = Base.create('tabview', Widget, [$.WidgetParent], {
 		ATTRS: {
 			/**
 			 * @config panelContainer

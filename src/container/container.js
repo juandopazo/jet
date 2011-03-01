@@ -10,6 +10,7 @@ jet().add("container", function ($) {
 		Hash = $.Hash,
 		A = $.Array,
 		DOM = $.DOM,
+		Base = $.Base,
 		Widget = $.Widget;
 		
 	var Global = jet;
@@ -64,7 +65,7 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.Module = Widget.create('module', Widget, [], {
+	$.Module = Base.create('module', Widget, [], {
 		ATTRS: {
 			/**
 			 * @config header
@@ -184,7 +185,7 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.Overlay = Widget.create('overlay', $.Module, [$.WidgetAlignment], {
+	$.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment], {
 		
 		ATTRS: {
 			/**
@@ -312,7 +313,7 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.Tooltip = Widget.create('tooltip', Widget, [$.WidgetAlignment], {
+	$.Tooltip = Base.create('tooltip', Widget, [$.WidgetAlignment], {
 		ATTRS: {
 			align: {
 				points: ['tl', 'bl']
@@ -462,7 +463,7 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.Panel = Widget.create('panel', $.Overlay, [PanelBase], {}, {
+	$.Panel = Base.create('panel', $.Overlay, [PanelBase], {}, {
 		initializer: function () {
 			var self = this;
 			this.set('closeButton', this.get('closeButton'));
@@ -503,7 +504,7 @@ jet().add("container", function ($) {
 		 * @description If true, the panel shows a shadow
 		 * @default true
 		 */
-	$.StaticPanel = Widget.create('panel', $.Module, [PanelBase], {}, {
+	$.StaticPanel = Base.create('panel', $.Module, [PanelBase], {}, {
 		initializer: function () {
 			var self = this;
 			this.set('closeButton', this.get('closeButton'));
@@ -521,7 +522,7 @@ jet().add("container", function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	$.SimpleDialog = Widget.create('dialog', $.Panel, [], {
+	$.SimpleDialog = Base.create('dialog', $.Panel, [], {
 		ATTRS: {
 			
 			/**
