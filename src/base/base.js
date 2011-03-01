@@ -410,32 +410,32 @@ jet().add('base', function ($) {
 		 */
 		create: function (name, superclass, extensions, attrs, proto) {
 			extensions = extensions || [];
-			function BuiltWidget() {
+			function BuiltClass() {
 				var args = arguments;
 				var self = this;
-				BuiltWidget.superclass.constructor.apply(this, args);
+				BuiltClass.superclass.constructor.apply(this, args);
 				A.each(extensions, function (extension) {
 					extension.apply(self, args);
 					Hash.each(extension.EVENTS || {}, self.on);
 				});
 			}
-			extend(BuiltWidget, superclass || Base, proto);
-			$.mix(BuiltWidget, attrs || {});
-			$.mix(BuiltWidget, {
+			extend(BuiltClass, superclass || Base, proto);
+			$.mix(BuiltClass, attrs || {});
+			$.mix(BuiltClass, {
 				NAME: name,
 				exts: extensions,
 				ATTRS: {}
 			});
 			A.each(extensions, function (extension) {
-				$.mix(BuiltWidget[PROTO], extension[PROTO]);
+				$.mix(BuiltClass[PROTO], extension[PROTO]);
 				Hash.each(extension, function (prop, val) {
-					if (!BuiltWidget[prop]) {
-						BuiltWidget[prop] = {};
+					if (!BuiltClass[prop]) {
+						BuiltClass[prop] = {};
 					}
-					$.mix(BuiltWidget[prop], val);
+					$.mix(BuiltClass[prop], val);
 				});
 			});
-			return BuiltWidget;
+			return BuiltClass;
 		}
 		
 	});

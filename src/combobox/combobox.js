@@ -17,7 +17,7 @@ jet().add('combobox', function ($) {
 		INPUT = 'input',
 		ROLE = 'role';
 	
-	$.ComboOption = Widget.create('option', Widget, [$.WidgetChild], {
+	$.ComboOption = Base.create('option', Widget, [$.WidgetChild], {
 		
 		ATTRS: {
 			
@@ -50,7 +50,7 @@ jet().add('combobox', function ($) {
 		jet.ComboBox.id = 0;
 	}
 	
-	$.ComboBox = Widget.create('combobox', Widget, [$.WidgetParent, $.WidgetAlignment], {
+	$.ComboBox = Base.create('combobox', Widget, [$.WidgetParent, $.WidgetAlignment], {
 		
 		ATTRS: {
 			input: {
