@@ -461,7 +461,7 @@ jet().add('datasource', function ($) {
 				if (internalEvents.fire("beforeParse", rawData)) {
 					tempData = self._parser(self.get(TEMP_DATA));
 				}
-				this.set('recordSet', tempData);
+				self.set('recordSet', tempData);
 				self.fire("update", tempData);
 				/*Hash.each(tempData, function (key, val) {
 					if (!recordSet[key]) {

@@ -447,9 +447,9 @@ jet().add('base', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	var Utility = function () {
+	function Utility() {
 		Utility.superclass.constructor.apply(this, arguments);
-	};
+	}
 	extend(Utility, Base, {
 		
 		initializer: function () {
@@ -523,7 +523,10 @@ jet().add('base', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	var Widget = Base.create(Base, {
+	function Widget() {
+		Widget.superclass.constructor.apply(this, arguments);
+	}
+	extend(Widget, Base, {
 		
 		BOUNDING_TEMPLATE: '<div/>',
 		CONTENT_TEMPLATE: '<div/>',
