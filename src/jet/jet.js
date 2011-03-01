@@ -590,7 +590,7 @@
 		// @TODO: consider moving this to the Node module
 		var $ = function (query, root) {
 			root = root || $.context;
-			$.context = root.ownerDocument || $.context;
+			root = root.ownerDocument || root;
 			if (Lang.isString(query)) {
 				query = $.parseQuery(query, root);
 				query = !Lang.isValue(query) ? new $.NodeList([]) : new $.NodeList(query);
@@ -851,7 +851,7 @@
 		 * @param {Object} config Object literal with configuration options
 		 */
 		win.jet = function (o) {
-			var config = Lang.isHash(o) ? o : {};
+			var config = mix(win.jet_Config || {}, Lang.isHash(o) ? o : {}, true);
 			var base = baseUrl;
 			/**
 			 * @config base

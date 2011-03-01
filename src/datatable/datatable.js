@@ -205,6 +205,9 @@ jet().add('datatable', function ($) {
 				if (colDef.sortable) {
 					self._handlers.push(th.addClass(sortableClassName).on('click', self._onThClick, self));
 				}
+				if (Lang.isNumber(colDef.width)) {
+					th.width(colDef.width);
+				}
 				theadRow.append(th);
 			});
 		},
@@ -477,18 +480,39 @@ jet().add('datatable', function ($) {
 		
 	});
 	
-	$.ScrollableDataTable = Base.create('scrollable-dt', DataTable, [], {
+	$.ScrollingDataTable = Base.create('dt', DataTable, [], {
 		
 		EVENTS: {
 			afterRender: function () {
 				var boundingBox = this.get(BOUNDING_BOX);
-				var table = $("<table/>");
+				var table = $("<table/>").addClass(this.getClassName('content'));
 				var tbody = this.get(TBODY);
 				var thead = this.get(THEAD);
-				var container = $("<div/>").appendTo(boundingBox).css("overflowY", "auto").height(300).width(thead.width());
+				var height = this.get('height');
+				var container = $("<div/>").appendTo(boundingBox).css("overflowY", "auto");
+				if (height) {
+					container.height(height - thead.height());
+				}
+				table[0].setAttribute('cellspacing', '0');
 				container.addClass(this.getClassName('table', 'body'));
 				table.append(tbody.detach()).appendTo(container);
+				
+				this._syncColumnWidths();
+				
+				this._handlers.push($($.win).on('resize', this._syncColumnWidths, this));
 			}
+		}
+		
+	}, {
+		
+		_syncColumnWidths: function () {
+			var ths = this.get(THEAD).first().children();
+			if (!this._firstTr) {
+				this._firstTr = this.getFirstTr();
+			}
+			this._firstTr.children().each(function (td, i) {
+				$(td).width($(ths[i]).width());
+			});
 		}
 		
 	});
