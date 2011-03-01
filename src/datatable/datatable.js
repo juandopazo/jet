@@ -148,6 +148,7 @@ jet().add('datatable', function ($) {
 		EVENTS: {
 			render: function () {
 				var contentBox = this.get('contentBox');
+				contentBox[0].setAttribute('cellspacing', '0px');
 				var thead = this.get(THEAD);
 				var tbody = this.get(TBODY);
 				
@@ -476,7 +477,7 @@ jet().add('datatable', function ($) {
 		
 	});
 	
-	$.ScrollableDataTable = Base.create('scrollableDT', DataTable, [], {
+	$.ScrollableDataTable = Base.create('scrollable-dt', DataTable, [], {
 		
 		EVENTS: {
 			afterRender: function () {
@@ -485,6 +486,7 @@ jet().add('datatable', function ($) {
 				var tbody = this.get(TBODY);
 				var thead = this.get(THEAD);
 				var container = $("<div/>").appendTo(boundingBox).css("overflowY", "auto").height(300).width(thead.width());
+				container.addClass(this.getClassName('table', 'body'));
 				table.append(tbody.detach()).appendTo(container);
 			}
 		}
