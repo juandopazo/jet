@@ -90,14 +90,16 @@ jet().add('widget-parentchild', function ($) {
 			 * @type Number
 			 */
 			selectedIndex: {
-				validator: Lang.isNumber,
+				validator: function (val) {
+					return Lang.isNumber(val) && !!this.item(val);
+				},
 				setter: function (val) {
 					this.item(val).select();
 					return val;
 				},
 				getter: function () {
 					var selection = this.get(SELECTION); 
-					return selection ? selection.get(INDEX) : 0;
+					return selection ? selection.get(INDEX) : -1;
 				}
 			},
 			/**
@@ -347,6 +349,12 @@ jet().add('widget-parentchild', function ($) {
 				} else {
 					boundingBox.removeClass(selectedClass);
 				}
+			}
+		},
+		
+		HTML_PARSER: {
+			selected: function () {
+				return this.get(BOUNDING_BOX).hasClass(this.getClassName(SELECTED));
 			}
 		}
 		

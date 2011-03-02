@@ -246,7 +246,7 @@ jet().add('base', function ($) {
 			var config = attrConfig[attrName];
 			var oldValue = classConfig[attrName];
 			if (!config.readOnly) {
-				if (!config.validator || config.validator(attrValue)) {
+				if (!config.validator || config.validator.call(self, attrValue)) {
 					attrValue = config.setter ? config.setter.call(self, attrValue) : attrValue;
 					if (!Lang.isValue(classConfig[attrName]) && config.value) {
 						classConfig[attrName] = config.value;
@@ -417,7 +417,7 @@ jet().add('base', function ($) {
 				var args = arguments;
 				var self = this;
 				BuiltClass.superclass.constructor.apply(this, args);
-				A.each(extensions, function (extension) {
+				A.each(BuiltClass.exts, function (extension) {
 					extension.apply(self, args);
 					Hash.each(extension.EVENTS || {}, self.on);
 				});
@@ -688,7 +688,7 @@ jet().add('base', function ($) {
 				A.each(this._classes, function (someClass) {
 					Hash.each(someClass.HTML_PARSER || {}, function (attr, parser) {
 						var val = parser.call(self, boundingBox);
-						if (val && (!val instanceof $.NodeList || val[0])) {
+						if (Lang.isValue(val) && (!(val instanceof $.NodeList) || val[0])) {
 							self.set(attr, val);
 						}
 					});
