@@ -241,14 +241,18 @@ jet().add('datatable', function ($) {
 			
 			var records = recordSet.getRecords();
 			var length = records.length;
-			var before, after;
+			var before, after, children;
 			var even = getClassName(length % 2 === 0 ? EVEN : ODD);
 			var odd = getClassName(length % 2 === 0 ? ODD : EVEN);
 			$(NUMERAL + recordIdPrefix + records[length - 1].getId()).addClass(length % 2 === 0 ? odd : even).removeClass(length % 2 === 0 ? even : odd);
 			for (i = length - 2; i >= 0; i--) {
-				before = $(NUMERAL + recordIdPrefix + records[i].getId());
-				after = $(NUMERAL + recordIdPrefix + records[i + 1].getId());
-				before.addClass(i % 2 === 0 ? even : odd).removeClass(i % 2 === 0 ? odd : even).insertBefore(after);
+				before = tbody.find(NUMERAL + recordIdPrefix + records[i].getId());
+				after = tbody.find(NUMERAL + recordIdPrefix + records[i + 1].getId());
+				before.insertBefore(after);
+			}
+			children = tbody.children();
+			for (i = 0; i < length; i++) {
+				children.eq(i).addClass(i % 2 === 0 ? even : odd).removeClass(i % 2 === 0 ? odd : even);
 			}
 			tbody.find(DOT + classNameDESC).removeClass(classNameDESC);
 			tbody.find(DOT + getClassName('col', key)).addClass(classNameDESC);

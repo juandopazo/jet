@@ -590,8 +590,8 @@
 		// @TODO: consider moving this to the Node module
 		var $ = function (query, root) {
 			root = root || $.context;
-			root = root.ownerDocument || root;
 			if (Lang.isString(query)) {
+				root = query.substr(0, 1) == '#' && root.ownerDocument ? root.ownerDocument : root;
 				query = $.parseQuery(query, root);
 				query = !Lang.isValue(query) ? new $.NodeList([]) : new $.NodeList(query);
 			} else {
