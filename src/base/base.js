@@ -372,18 +372,21 @@ jet().add('base', function ($) {
 		var constrct = this.constructor;
 		var classes = this._classes = [];
 		var i;
+		function attachEvent(name, fn) {
+			this.on(name, Lang.isString(fn) ? this[fn] : fn);
+		}
 		while (constrct != Base) {
 			classes.unshift(constrct);
 			constrct = constrct.superclass.constructor;
 		}
 		for (i = 0; i < classes.length; i++) {
 			this.addAttrs(classes[i].ATTRS || {});
-			Hash.each(classes[i].EVENTS || {}, this.on);
+			Hash.each(classes[i].EVENTS || {}, attachEvent, this);
 			if (classes[i][PROTO].hasOwnProperty('initializer')) {
 				classes[i][PROTO].initializer.call(this, config);
 			}
 		}
-		Hash.each(this.get("on"), this.on);
+		Hash.each(this.get("on"), attachEvent, this);
 	};
 	extend(Base, Attribute, {}, {
 		
