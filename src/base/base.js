@@ -876,6 +876,7 @@ jet().add('base', function ($) {
 				left: '0px',
 				width: pageSize.width,
 				height: pageSize.height,
+				border: 0,
 				zIndex: 20000000
 			}).appendTo(this.get('doc').body).hide();
 		}

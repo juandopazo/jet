@@ -503,8 +503,9 @@
 		}));
 	};
 	
-	var domReady = function (fn, lib) {
-		if (doc.body) {
+	var domReady = function (fn, lib, _doc) {
+		_doc = _doc || doc;
+		if (_doc.body) {
 			fn.call(doc, lib);
 		} else {
 			setTimeout(function () {
@@ -513,8 +514,9 @@
 		}
 	};
 	
-	var getCurrentStyle = function (node) {
-		return win.getComputedStyle ? win.getComputedStyle(node, null) : 
+	var getCurrentStyle = function (node, _win) {
+		_win = _win || win;
+		return _win.getComputedStyle ? _win.getComputedStyle(node, null) : 
 						node.currentStyle ? node.currentStyle : {};
 	};
 	
@@ -777,20 +779,25 @@
 		}
 	};
 	
+	var createTrackerDiv = function (_doc) {
+		var trackerDiv = createNode("div", {
+			id: "jet-tracker"
+		}, {
+			position: "absolute",
+			width: "1px",
+			height: "1px",
+			top: "-1000px",
+			left: "-1000px",
+			visibility: "hidden"
+		});
+		(_doc || doc).body.appendChild(trackerDiv);
+		return trackerDiv;
+	}
+	
 	if (!win.jet) {
 		var trackerDiv;
 		domReady(function () {
-			trackerDiv = createNode("div", {
-				id: "jet-tracker"
-			}, {
-				position: "absolute",
-				width: "1px",
-				height: "1px",
-				top: "-1000px",
-				left: "-1000px",
-				visibility: "hidden"
-			});
-			doc.body.appendChild(trackerDiv);
+			trackerDiv = createTrackerDiv(doc);
 		});
 			
 		/**
@@ -897,9 +904,23 @@
 			
 			var loadCssModule = function (module) {
 				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + (config.minify ? ".min.css" : ".css")));
-				loadCSS(url);
+				var _doc = config.doc;
+				var _head = _doc.getElementsByTagName('head')[0];
+				var link = _doc.createElement("link");
+				var _trackerDiv = trackerDiv;
+				link.type = 'text/css',
+				link.rel = 'stylesheet';
+				link.href = url;
+				if (_head.firstChild) {
+					_head.insertBefore(link, _head.firstChild);
+				} else {
+					_head.appendChild(link);
+				}
+				if (_doc != doc) {
+					_trackerDiv = createTrackerDiv(_doc);
+				}
 				var t = setInterval(function () {
-					if (getCurrentStyle(trackerDiv)[module.beacon.name] == module.beacon.value) {
+					if (getCurrentStyle(_trackerDiv, config.win)[module.beacon.name] == module.beacon.value) {
 						clearInterval(t);
 						jet().add(module.name, function () {});
 					}
