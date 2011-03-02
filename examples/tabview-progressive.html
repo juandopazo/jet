@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<title>test</title>
-		<link rel="stylesheet" type="text/css" href="../build/tabview.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../build/tabview.css"/>
 		<style>
 			body {
 				margin: 0;
@@ -27,28 +27,17 @@
 				</div>
 			</div>
 		</div>
-		<script src="../build/jet.min.js"></script>
+		<script src="../build/jet.js"></script>
 		<script>
 			jet({
 				base: '../build',
-				loadCss: false,
-				minify: true
+				loadCss: false
 			}).use('tabview', function ($) {
 				
 				var widget = new $.TabView({
 					boundingBox: $('#test').first()
 				});
-				console.log(widget.get('boundingBox')[0]);
-				console.log(widget.get('contentBox')[0]);
 				widget.render();
-				
-				widget.on('afterAddChild', function () {
-					console.log(widget.get('children'));
-					console.log(widget.item(0));
-					console.log(widget.item(0).get('boundingBox')[0]);
-					console.log(widget.item(0).get('contentBox')[0]);
-					console.log(widget.item(0).get('panel')[0]);
-				});
 				
 			});
 		</script>

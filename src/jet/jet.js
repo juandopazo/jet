@@ -109,7 +109,7 @@ if (!window.jet) {
 		TOSTRING = OP.toString;
 	
 	 //A couple of functions of this module are used throughout the Loader.
-	 //Should this be defined as any other module with the jet().add() method?
+	 //Should this be defined as any other module with the jet.add() method?
 	var ARRAY		= "array",
 		BOOLEAN		= "boolean",
 		FUNCTION	= "function",
@@ -800,10 +800,10 @@ if (!window.jet) {
 	 * });</code>
 	 * 
 	 * <p>This snippet will load the Node module, and when it finishes loading it'll execute
-	 * the function. Each module must call the jet().add() method to tell the loader
+	 * the function. Each module must call the jet.add() method to tell the loader
 	 * it has finished loading:</p>
 	 * 
-	 * <code>jet().add("node", function ($) {
+	 * <code>jet.add("node", function ($) {
 	 *	 $.method = function () {};
 	 * });</code>
 	 * 
@@ -906,7 +906,7 @@ if (!window.jet) {
 			var t = setInterval(function () {
 				if (getCurrentStyle(_trackerDiv, config.win)[module.beacon.name] == module.beacon.value) {
 					clearInterval(t);
-					jet().add(module.name, function () {});
+					jet.add(module.name, function () {});
 				}
 			}, 50);
 		};

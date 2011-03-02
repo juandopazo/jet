@@ -10,6 +10,7 @@
 			font-size: 13px;
 		}
 	</style>
+	<link rel="stylesheet" href="../src/menu/menu.css"/>
 </head>
 <body>
 	<script src="../build/jet.js"></script>
@@ -22,7 +23,12 @@
 				children: [{
 					labelContent: 'foo',
 					children: [{
-						labelContent: 'chan'
+						labelContent: 'chan',
+						children: [{
+							labelContent: 'hello'
+						}, {
+							labelContent: 'world'
+						}]
 					}, {
 						labelContent: 'epa'
 					}]
