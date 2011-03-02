@@ -469,10 +469,6 @@ jet().add('base', function ($) {
 				A.each(this._handlers, function (handler) {
 					handler.detach();
 				});
-				// Helping gargage collection
-				Hash.each(self, function (name) {
-					delete self[name];
-				});
 			}
 		},
 		
@@ -682,12 +678,6 @@ jet().add('base', function ($) {
 				 * Avoiding memory leaks, specially in IE
 				 */
 				this.get(BOUNDING_BOX).unbindAll(true).remove();
-				/*
-				 * Helping gargage collection
-				 */
-				Hash.each(this, function (name) {
-					delete self[name];
-				});
 			}
 		},
 		
@@ -984,7 +974,9 @@ jet().add('base', function ($) {
 			$(prevVal).unbind("selectstart", onSelectStart).unbind(MOUSEMOVE, onMouseMove).unbind(MOUSEUP, onMouseUp);
 			$(newVal).on("selectstart", onSelectStart).on(MOUSEMOVE, onMouseMove).on(MOUSEUP, onMouseUp);
 		});
-		self.on(DESTROY, shim.unbindAll, shim);
+		self.on(DESTROY, function () {
+			shim.unbindAll();
+		});
 	};
 	extend(Mouse, Utility, {
 		/**
