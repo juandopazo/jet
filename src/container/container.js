@@ -404,7 +404,7 @@ jet().add("container", function ($) {
 				var contentBox = this.get(CONTENT_BOX);
 				var closeButton = this.get('closeButton').attr("href", "#").addClass("container-close");
 				var boundingBox = this.get(BOUNDING_BOX);
-				closeButton.on(CLICK, this._onCloseButton);
+				closeButton.on(CLICK, this._onCloseButton, this);
 				closeButton.appendTo(contentBox);
 				boundingBox.append(this.get(UNDERLAY));
 				if (this.get(SHADOW)) {
@@ -415,12 +415,6 @@ jet().add("container", function ($) {
 			
 			destroy: function () {
 				$(this.get('doc')).unbind('keyup', this._onContextKeyUp);
-			},
-			
-			click: function (e, domEvent) {
-				if (domEvent.target == this.get('closeButton')[0]) {
-					this._onCloseButton(domEvent);
-				}
 			},
 			
 			afterCloseChange: function (e, newVal) {

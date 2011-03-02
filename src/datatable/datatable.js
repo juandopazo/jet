@@ -288,10 +288,13 @@ jet().add('datatable', function ($) {
 		 * @chainable
 		 */
 		addRow: function (row) {
-			this._addRow(row);
-			var sortedBy = this.get(SORTED_BY);
-			if (sortedBy) {
-				this._sort($(NUMERAL + this.getClassName(this._uid, 'th', sortedBy)));
+			if (this.fire('addRow', row)) {
+				this._addRow(row);
+				var sortedBy = this.get(SORTED_BY);
+				if (sortedBy) {
+					this._sort($(NUMERAL + this.getClassName(this._uid, 'th', sortedBy)));
+				}
+				this.fire('afterAddRow');
 			}
 			return this;
 		},
@@ -303,19 +306,22 @@ jet().add('datatable', function ($) {
 		 * @chainable
 		 */
 		addRows: function (rows) {
-			if (Lang.isArray(rows)) {
-				A.each(rows, function (row) {
-					if (!Record.hasInstance(row)) {
-						row = new $.Record(row);
-					}
-				});
-			} else if (RecordSet.hasInstance(rows)) {
-				rows = rows.getRecords();
-			}
-			A.each(rows, this._addRow, this);
-			var sortedBy = this.get(SORTED_BY);
-			if (sortedBy) {
-				this._sort($(NUMERAL + this.getClassName(this._uid, 'th', sortedBy)), true);
+			if (this.fire('addRows', rows)) {
+				if (Lang.isArray(rows)) {
+					A.each(rows, function (row) {
+						if (!Record.hasInstance(row)) {
+							row = new $.Record(row);
+						}
+					});
+				} else if (RecordSet.hasInstance(rows)) {
+					rows = rows.getRecords();
+				}
+				A.each(rows, this._addRow, this);
+				var sortedBy = this.get(SORTED_BY);
+				if (sortedBy) {
+					this._sort($(NUMERAL + this.getClassName(this._uid, 'th', sortedBy)), true);
+				}
+				this.fire('afterAddRows');
 			}
 			return this;
 		},
@@ -467,8 +473,8 @@ jet().add('datatable', function ($) {
 		 */
 		onDataReturnReplaceRows: function (e, newRecordSet) {
 			this.get(TBODY).children().remove();
-			this.addRows(newRecordSet);
 			this.get(RECORDSET).replace(newRecordSet);
+			this.addRows(newRecordSet);
 		},
 		
 		/**
@@ -478,13 +484,28 @@ jet().add('datatable', function ($) {
 		 * @param {RecordSet} newRecordSet
 		 */
 		onDataReturnAddRows: function (e, newRecordSet) {
-			this.addRows(newRecordSet);
 			this.get(RECORDSET).push(newRecordSet);
+			this.addRows(newRecordSet);
 		}
 		
 	});
 	
 	$.ScrollingDataTable = Base.create('dt', DataTable, [], {
+		
+		ATTRS: {
+			tbodyContainer: {
+				value: '<div/>',
+				setter: $
+			},
+			
+			autoScroll: {
+				value: false
+			},
+			
+			autoScrollStatus: {
+				value: false
+			}
+		},
 		
 		EVENTS: {
 			afterRender: function () {
@@ -493,7 +514,7 @@ jet().add('datatable', function ($) {
 				var tbody = this.get(TBODY);
 				var thead = this.get(THEAD);
 				var height = this.get('height');
-				var container = $("<div/>").appendTo(boundingBox).css("overflowY", "auto");
+				var container = this.get('tbodyContainer').appendTo(boundingBox).css("overflowY", "auto");
 				if (height) {
 					container.height(height - thead.height());
 				}
@@ -502,12 +523,34 @@ jet().add('datatable', function ($) {
 				table.append(tbody.detach()).appendTo(container);
 				
 				this._syncColumnWidths();
-				
+				this.on('afterAddRow', this._syncColumnWidths, this);
+				this.on('afterAddRows', this._syncColumnWidths, this);
 				this._handlers.push($($.win).on('resize', this._syncColumnWidths, this));
-			}
+			},
+			
+			addRow: '_autoScrollBefore',
+			afterAddRow: '_autoScrollAfter',
+			addRows: '_autoScrollBefore',
+			afterAddRows: '_autoScrollAfter'
 		}
 		
 	}, {
+		
+		initializer: function () {
+			this.set('tbodyContainer', this.get('tbodyContainer'));
+		},
+		
+		_autoScrollBefore: function () {
+			var tbodyContainer = this.get('tbodyContainer');
+			this.set('autoScrollStatus', (tbodyContainer[0].scrollTop + tbodyContainer.height() == tbodyContainer[0].scrollHeight));
+		},
+		
+		_autoScrollAfter: function () {
+			var tbodyContainer = this.get('tbodyContainer');
+			if (this.get('autoScroll') && this.get('autoScrollStatus')) {
+				tbodyContainer[0].scrollTop = tbodyContainer[0].scrollHeight;
+			}
+		},
 		
 		_syncColumnWidths: function () {
 			var ths = this.get(THEAD).first().children();
