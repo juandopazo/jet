@@ -11,7 +11,7 @@ jet().add('widget-alignment', function ($) {
 	 * @constructor
 	 * @param {Object} config Object literal specifying widget configuration properties
 	 */
-	var WidgetAlignment = function () {};
+	function WidgetAlignment() {};
 	$.mix(WidgetAlignment, {
 		Top: 't',
 		Middle: 'm',
