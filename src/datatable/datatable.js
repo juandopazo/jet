@@ -554,7 +554,7 @@ jet().add('datatable', function ($) {
 		
 		_syncColumnWidths: function () {
 			var ths = this.get(THEAD).first().children();
-			if (!this._firstTr) {
+			if (!this._firstTr || !this._firstTr[0].parentNode) {
 				this._firstTr = this.getFirstTr();
 			}
 			this._firstTr.children().each(function (td, i) {
