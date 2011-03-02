@@ -489,15 +489,13 @@ jet().add('base', function ($) {
 				writeOnce: true
 			},
 			win: {
-				value: $.win,
-				setter: function (val) {
-					this.set('doc', val.document);
-					return val;
-				}
+				value: $.win
 			},
 			
 			doc: {
-				value: $.doc,
+				getter: function () {
+					return this.get('win').document;
+				},
 				setter: function (val) {
 					this.set('win', val.parentWindow || val.defaultView);
 					return val;
@@ -875,9 +873,23 @@ jet().add('base', function ($) {
 		var prevX, prevY;
 		var interval;
 		var capturing = false;
+		var pageSize = $.DOM.pageSize();
 		
-		var shim = $([]);
-		var iframes;
+		if (!Mouse.shim) {
+			Mouse.shim = $('<iframe/>').attr({
+				frameborder: '0',
+				src: 'javascript:;'
+			}).css({
+				opacity: 0,
+				position: 'absolute',
+				top: '0px',
+				left: '0px',
+				width: pageSize.width,
+				height: pageSize.height,
+				zIndex: 20000000
+			}).appendTo(this.get('doc').body).hide();
+		}
+		var shim = Mouse.shim;
 		
 		var self = this.addAttrs({
 			/**
@@ -888,11 +900,6 @@ jet().add('base', function ($) {
 			 */
 			frequency: {
 				value: 20
-			},
-			context: {
-				getter: function () {
-					return this.get('doc');
-				}
 			},
 			shields: {
 				readOnly: true,
@@ -908,27 +915,16 @@ jet().add('base', function ($) {
 		 * @type Boolean
 		 * @default false
 		 */
-		self.addAttr(TRACKING, {
+		this.addAttr(TRACKING, {
 			value: false,
 			validator: Lang.isBoolean
 			
 		}).on(TRACKING + "Change", function (e, value) {
 			if (value) {
-				if (self.get("shim")) {
-					var list = [];
-					iframes = $("iframe").each(function (iframe) {
-						iframe = $(iframe);
-						var offset = iframe.offset();
-						list.push($("<div/>").height(offset.height).width(offset.width).css({
-							position: "absolute",
-							left: offset.left,
-							top: offset.top
-						}).hide().appendTo($.context.body)[0]);
-					});	
-					shim = $(list);
-				}
 				if (!capturing) {
-					shim.show();
+					if (self.get('shim')) {
+						shim.show();
+					}
 					interval = setInterval(function () {
 						if (prevX != clientX || prevY != clientY) {
 							self.fire(MOUSEMOVE, clientX, clientY);
@@ -954,16 +950,6 @@ jet().add('base', function ($) {
 		function onMouseMove(e) {
 			clientX = e.clientX;
 			clientY = e.clientY;
-			if (self.get(TRACKING) && self.get("shim")) {
-				iframes.each(function (iframe, i) {
-					iframe = $(iframe);
-					var offset = iframe.offset();
-					$(shim[i]).height(offset.height).width(offset.width).css({
-						left: offset.left + "px",
-						top: offset.top + "px"
-					});
-				});
-			}
 		}
 		
 		function onMouseUp() {
@@ -981,15 +967,24 @@ jet().add('base', function ($) {
 		 * because the native mousemove event fires too quickly
 		 * @event move
 		 */
-		shim.on(MOUSEMOVE, onMouseMove).on(MOUSEUP, onMouseUp);
+		var shimDoc = shim[0].contentWindow.document; 
+		$(shimDoc.body).css({
+			margin: 0,
+			padding: 0
+		});
+		shimDoc = $(shimDoc);
+		shimDoc.on(MOUSEMOVE, onMouseMove);
+		shimDoc.on(MOUSEUP, onMouseUp);
 		
-		$(this.get('context')).on("selectstart", onSelectStart).on(MOUSEMOVE, onMouseMove).on(MOUSEUP, onMouseUp);
+		var context = $(this.get('doc')); 
+		context.on("selectstart", onSelectStart);
+		context.on(MOUSEMOVE, onMouseMove);
+		context.on(MOUSEUP, onMouseUp);
 		self.on('contextChange', function (e, newVal, prevVal) {
 			$(prevVal).unbind("selectstart", onSelectStart).unbind(MOUSEMOVE, onMouseMove).unbind(MOUSEUP, onMouseUp);
 			$(newVal).on("selectstart", onSelectStart).on(MOUSEMOVE, onMouseMove).on(MOUSEUP, onMouseUp);
-		}).on(DESTROY, function () {
-			shim.unbindAll();
 		});
+		self.on(DESTROY, shim.unbindAll, shim);
 	};
 	extend(Mouse, Utility, {
 		/**

@@ -35,8 +35,8 @@ jet().add('resize', function ($) {
 	var Resize = function () {
 		Resize.superclass.constructor.apply(this, arguments);
 		
-		var myself = this;
-		myself.addAttrs({
+		var self = this;
+		self.addAttrs({
 			/**
 			 * @config node
 			 * @description The node to be resized
@@ -117,7 +117,7 @@ jet().add('resize', function ($) {
 			animate: {
 				value: false,
 				validator: function () {
-					return myself.get("proxy");
+					return self.get("proxy");
 				}
 			},
 			/**
@@ -150,7 +150,7 @@ jet().add('resize', function ($) {
 			}
 		});
 
-		var node = myself.get("node");
+		var node = self.get("node");
 				
 		var CLIENT = "client",
 			HEIGHT = "height",
@@ -161,15 +161,15 @@ jet().add('resize', function ($) {
 			PX = "px";
 		
 		var min = {
-			height: myself.get("minHeight"),
-			width: myself.get("minWidth")
+			height: self.get("minHeight"),
+			width: self.get("minWidth")
 		};
 		var max = {
-			height: myself.get("maxHeight"),
-			width: myself.get("maxWidth")
+			height: self.get("maxHeight"),
+			width: self.get("maxWidth")
 		};
 		
-		var useProxy = myself.get("proxy");
+		var useProxy = self.get("proxy");
 		var proxy = useProxy == CLONE_PROXY ? node.clone() :
 				useProxy ? $(NEW_DIV) : node;
 					
@@ -223,7 +223,7 @@ jet().add('resize', function ($) {
 			currentHeight = originalHeight = node.height();
 			node.width(originalWidth).height(originalHeight);
 			
-			if (myself.get("reposition")) {
+			if (self.get("reposition")) {
 				node.css({
 					top:	resizeVertical == TOP ? AUTO : top + PX,
 					bottom:	resizeVertical == BOTTOM ? AUTO : (screenSize.height - top - currentHeight) + PX,
@@ -249,21 +249,21 @@ jet().add('resize', function ($) {
 			
 			return size < min[type] ?  min[type] : 
 				   max[type] && size > max[type] ? max[type] :
-				   myself.get("constrain") && size > screenSize[type] ? screenSize[type] : 
+				   self.get("constrain") && size > screenSize[type] ? screenSize[type] : 
 				   size;
 		};
 		
-		var tracker = new $.utils.Mouse({
-			shim: myself.get("shim")
+		var tracker = new $.Mouse({
+			shim: self.get("shim")
 		});
 				
 		var stopResize = function (e, x, y) {
-			if (!myself.get(LOCKED)) {
+			if (!self.get(LOCKED)) {
 				if (capturing) {
 					screenSize = DOM.screenSize();
 					currentWidth = getNew(WIDTH, x, y);
 					currentHeight = getNew(HEIGHT, x, y);
-					if (!myself.get("animate")) {
+					if (!self.get("animate")) {
 						if (resizeVertical) {
 							node.height(currentHeight);
 						}
@@ -297,7 +297,7 @@ jet().add('resize', function ($) {
 				 * @event endResize
 				 * @description Fires when the resize action ends
 				 */
-				myself.fire("endResize", currentWidth, currentHeight, offset.left, offset.top);
+				self.fire("endResize", currentWidth, currentHeight, offset.left, offset.top);
 			}
 		};
 		
@@ -305,7 +305,7 @@ jet().add('resize', function ($) {
 		var duringResize = function (e, x, y) {
 			lastX = x;
 			lastY = y;
-			if (!myself.get(LOCKED) && capturing) {
+			if (!self.get(LOCKED) && capturing) {
 				var offset = proxy.offset();
 				/**
 				 * @event beforeResize
@@ -315,7 +315,7 @@ jet().add('resize', function ($) {
 				 * @param {Number} offsetLeft
 				 * @param {Number} offsetTop 
 				 */
-				if (myself.fire("beforeResize", currentWidth, currentHeight, offset.left, offset.top)) {
+				if (self.fire("beforeResize", currentWidth, currentHeight, offset.left, offset.top)) {
 					screenSize = DOM.screenSize();
 					if (resizeVertical) {
 						currentHeight = getNew(HEIGHT, x, y);
@@ -332,7 +332,7 @@ jet().add('resize', function ($) {
 					 * @param {Number} offsetLeft
 					 * @param {Number} offsetTop 
 					 */
-					if (myself.fire("resize", currentWidth, currentHeight, offset.left, offset.top)) {
+					if (self.fire("resize", currentWidth, currentHeight, offset.left, offset.top)) {
 						if (Lang.isNumber(currentHeight) && Lang.isNumber(currentWidth)) {
 							proxy.height(currentHeight).width(currentWidth);
 						}
@@ -343,42 +343,45 @@ jet().add('resize', function ($) {
 			}
 		};
 		
-		var resizeClass = myself.get("prefix") + "-resize";
+		var resizeClass = self.get("prefix") + "-resize";
 		var hoverClass = resizeClass + "-hover";
 		var handleClass = resizeClass + "-handle";
 		var handleClassActive = "-active";
-		$.Array.each(myself.get("handles"), function (type) {
+		$.Array.each(self.get("handles"), function (type) {
 			var handle = $(NEW_DIV);
 			handle.addClass([handleClass, " ", handleClass, "-", type].join(""));
 			handle.on("mousedown", function (e) {
-				if (!myself.get(LOCKED)) {
+				if (!self.get(LOCKED)) {
 					var offset = proxy.offset();
 					capturing = type;
 					tracker.get("shields").css("cursor", handle.currentStyle().cursor);
 					tracker.set("tracking", true);
 					startResize(e.clientX, e.clientY, offset.left, offset.top, type);
-					myself.fire("startResize", currentWidth, currentHeight, offset.left, offset.top, type);
+					self.fire("startResize", currentWidth, currentHeight, offset.left, offset.top, type);
 				}
-			}).on("mouseover", function (e) {
-				if (!myself.get(LOCKED) && !capturing) {
+			});
+			handle.on("mouseover", function (e) {
+				if (!self.get(LOCKED) && !capturing) {
 					handle.addClass([handleClass, handleClassActive, " ", handleClass, "-", type, handleClassActive].join(""));
-					if (myself.get(HOVER)) {
+					if (self.get(HOVER)) {
 						node.removeClass(hoverClass);
 					}
 				}
-			}).on("mouseout", function (e) {
-				if (!myself.get(LOCKED)) {
+			});
+			handle.on("mouseout", function (e) {
+				if (!self.get(LOCKED)) {
 					handle.removeClass(handleClass + handleClassActive).removeClass(handleClass + "-" + type + handleClassActive);
-					if (myself.get(HOVER)) {
+					if (self.get(HOVER)) {
 						node.addClass(hoverClass);
 					}
 				}
-			}).append($(NEW_DIV).addClass(handleClass + "-inner-" + type)).appendTo(node);
+			})
+			handle.append($(NEW_DIV).addClass(handleClass + "-inner-" + type)).appendTo(node);
 		});
 		node.addClass(resizeClass).css("display", "block");
-		if (myself.get("hiddenHandles")) {
+		if (self.get("hiddenHandles")) {
 			node.addClass(resizeClass + "-hidden");
-		} else if (myself.get(HOVER)) {
+		} else if (self.get(HOVER)) {
 			node.addClass(hoverClass);
 		}
 		tracker.on("mouseup", stopResize);
