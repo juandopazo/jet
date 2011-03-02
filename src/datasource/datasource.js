@@ -1,14 +1,8 @@
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
 /**
  * DataSources are different ways of accessing data and parsing it into an schema
  * @module datasource
- * @namespace
  */
-jet().add('datasource', function ($) {
+jet.add('datasource', function ($) {
 	
 	var Lang = $.Lang,
 		Hash = $.Hash,

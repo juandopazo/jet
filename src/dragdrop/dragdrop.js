@@ -1,14 +1,9 @@
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
 /**
  * Provides functionality for dragging and dropping elements
  * @module dragdrop
  * @requires lang, base, node
  */
-jet().add('dragdrop', function ($) {
+jet.add('dragdrop', function ($) {
 	
 	var ArrayHelper = $.Array,
 		Lang = $.Lang;

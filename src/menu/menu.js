@@ -2,9 +2,8 @@
  * OS-like menus for navigation
  * @module menu
  * @requires jet, node, base, widget-parentchild, widget-alignment, container
- * @namespace
  */
-jet().add('menu', function ($) {
+jet.add('menu', function ($) {
 	
 	var Lang = $.Lang,
 		A = $.Array,

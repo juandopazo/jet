@@ -1,14 +1,8 @@
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
 /**
  * Handles AJAX requests
  * @module io
- * @namespace
  */
-jet().add('io', function ($) {
+jet.add('io', function ($) {
 	var win = $.win;
 	var Lang = $.Lang,
 		Hash = $.Hash;

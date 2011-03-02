@@ -1,14 +1,9 @@
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
 /**
  * Cross-browser XSL Transformations support
  * @submodule io-xsl
  * @module io
  */
-jet().add('io-xsl', function ($) {
+jet.add('io-xsl', function ($) {
 	var win = $.win;
 	var Lang = $.Lang;
 	var IO = $.IO;

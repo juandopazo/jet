@@ -1164,6 +1164,8 @@ var posProcess = function(selector, context){
 
 // EXPOSE
 
-window.Sizzle = Sizzle;
+jet.add('sizzle', function ($) {
+	$.Sizzle = Sizzle;
+});
 
 })();

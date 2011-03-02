@@ -1,4 +1,4 @@
-jet().add('widget-alignment', function ($) {
+jet.add('widget-alignment', function ($) {
 	
 	var UA_SUPPORTS_FIXED = $.UA.support.fixed;
 	var DOM = $.DOM;

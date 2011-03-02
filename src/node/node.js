@@ -1,14 +1,9 @@
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
 /**
  * Node collections and DOM abstraction
  * @module node
  * @requires lang, ua
  */
-jet().add("node", function ($) {
+jet.add("node", function ($) {
 	
 	var NONE = "none",
 		ON = "on",
@@ -787,7 +782,7 @@ jet().add("node", function ($) {
 		attr: function (key, value) {
 			key = key || {};
 			var attrs = {};
-			if (Lang.isHash(key)) {
+			if (Lang.isObject(key)) {
 				attrs = key;
 			} else if (Lang.isValue(value)) {
 				attrs[key] = value;
@@ -809,7 +804,7 @@ jet().add("node", function ($) {
 		 */
 		css: function (key, value) {
 			var css = {};
-			if (Lang.isHash(key)) {
+			if (Lang.isObject(key)) {
 				css = key;
 			} else if (Lang.isValue(value)) {
 				css[key] = value;

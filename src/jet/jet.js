@@ -10,103 +10,103 @@
  * <p>This module allows to load different modules asynchronously and to reuse
  * them when they were already loaded. Its basic use looks like:</p>
  */
+if (!window.jet) {
+
 (function () {
-	var baseUrl = location.protocol + "//github.com/juandopazo/jet/raw/master/build/";
 	
-	var win = window,
-		doc = document,
-		OP = Object.prototype,
+	var doc = document;
+	
+	var NODE = 'node',
+		BASE = 'base',
+		CSS = 'css',
+		IO = 'io',
+		WIDGET_PARENTCHILD = 'widget-parentchild',
+		SOLID = 'solid';
+	
+	var GlobalConfig = {
+		base: location.protocol + '//github.com/juandopazo/jet/raw/master/build/',
+		modules: {
+			ua: {},
+			log: {},
+			node: ['log', 'ua'],
+			xsl: [NODE],
+			swf: {},
+			json: [NODE],
+			cookie: [BASE],
+			sizzle: [NODE],
+			base: {
+				requires: [NODE]
+			},
+			io: ['json'],
+			'io-xdr': [NODE, 'swf', IO],
+			'io-xsl': [IO],
+			history: [BASE, 'json'],
+			'resize-styles': {
+				type: CSS,
+				beacon: {
+					name: "borderLeftStyle",
+					value: SOLID
+				}
+			},
+			resize: [BASE, 'resize-styles'],
+			'button-styles': {
+				type: CSS,
+				beacon: {
+					name: "borderBottomStyle",
+					value: SOLID
+				}
+			},
+			button: [WIDGET_PARENTCHILD, 'button-styles'],
+			'container-styles': {
+				type: CSS,
+				beacon: {
+					name: "borderRightStyle",
+					value: SOLID
+				}
+			},
+			container: [BASE, 'widget-alignment', 'container-styles'],
+			'progressbar-styles': {
+				type: CSS,
+				beacon: {
+					name: "cursor",
+					value: "pointer"
+				}
+			},
+			progressbar: [BASE, 'progressbar-styles'],
+			dragdrop: [BASE],
+			imageloader: [BASE],
+			anim: [BASE],
+			datasource: [BASE],
+			'datatable-styles': {
+				type: CSS,
+				beacon: {
+					name: "borderTopStyle",
+					value: SOLID
+				}
+			},
+			datatable: ["datasource", 'datatable-styles'],
+			'tabview-styles': {
+				type: CSS,
+				beacon: {
+					name: "display",
+					value: "none"
+				}
+			},
+			tabview: [WIDGET_PARENTCHILD, 'tabview-styles'],
+			treeview: [WIDGET_PARENTCHILD],
+			'widget-alignment': [BASE],
+			'widget-parentchild': [BASE],
+			'widget-sandbox': [BASE],
+			menu: [WIDGET_PARENTCHILD, 'container'],
+			vector: ['anim']
+		}
+	};
+	
+	var OP = Object.prototype,
 		AP = Array.prototype,
 		SP = String.prototype,
 		SLICE = AP.slice,
-		TOSTRING = OP.toString,
-		BASE = "base",
-		NODE = "node",
-		WIDGET_PARENTCHILD = "widget-parentchild";
-	
-	/*
-	 * These modules can be called by the jet().use() method without defining a path.
-	 * Each module should be defined after its requirements
-	 */
-	var predefinedModules = {
-		ua: true,
-		log: true,
-		node: ["log", "ua"],
-		xsl: [NODE],
-		swf: true,
-		json: [NODE],
-		cookie: [NODE],
-		sizzle: [NODE],
-		base: [NODE],
-		io: ["json"],
-		"io-xdr": [NODE, "swf", "io"],
-		"io-xsl": ["io"],
-		"history": [BASE, "json"],
-		resize: [BASE, {
-			name: "resize-css",
-			type: "css",
-			path: "resize.css",
-			beacon: {
-				name: "borderLeftStyle",
-				value: "solid"
-			}
-		}],
-		button: [WIDGET_PARENTCHILD, {
-			name: "button-css",
-			type: "css",
-			path: "button.css",
-			beacon: {
-				name: "borderBottomStyle",
-				value: "solid"
-			}
-		}],
-		container: [BASE, 'widget-alignment', {
-			name: "container-css",
-			type: "css",
-			path: "container.css",
-			beacon: {
-				name: "borderRightStyle",
-				value: "solid"
-			}
-		}],
-		progressbar: [BASE, {
-			name: "progressbar-css",
-			type: "css",
-			path: "progressbar.css",
-			beacon: {
-				name: "cursor",
-				value: "pointer"
-			}
-		}],
-		dragdrop: [BASE],
-		imageloader: [BASE],
-		anim: [BASE],
-		datasource: [BASE, "io"],
-		datatable: ["datasource", {
-			name: "datatable-css",
-			type: "css",
-			path: "datatable.css",
-			beacon: {
-				name: "borderTopStyle",
-				value: "solid"
-			}
-		}],
-		tabview: [WIDGET_PARENTCHILD, {
-			name: "tabview-css",
-			type: "css",
-			path: "tabview.css",
-			beacon: {
-				name: "display",
-				value: "none"
-			}
-		}],
-		treeview: [WIDGET_PARENTCHILD],
-		'widget-alignment': [BASE],
-		'widget-parentchild': [BASE],
-		'widget-sandbox': [BASE],
-		menu: [WIDGET_PARENTCHILD, 'container'],
-		vector: ["anim"]
-	};
+		TOSTRING = OP.toString;
 	
 	 //A couple of functions of this module are used throughout the Loader.
 	 //Should this be defined as any other module with the jet().add() method?
@@ -132,7 +132,6 @@
 			"number"			: NUMBER,
 			"string"			: STRING,
 			"undefined"			: UNDEFINED,
-			"[object Object]"	: HASH,
 			"[object Function]" : FUNCTION,
 			"[object Array]"	: ARRAY,
 			"boolean"           : BOOLEAN
@@ -177,14 +176,6 @@
 			 */
 			isArray: function (o) {
 				return type(o) === ARRAY;
-			},
-			/**
-			 * Returns if o is an object literal
-			 * @method isHash
-			 * @param {Object} o
-			 */
-			isHash: function (o) {
-				return type(o) === HASH;
 			},
 			/**
 			 * Returns if o is a function
@@ -327,9 +318,6 @@
 		};
 	}
 	
-
-	
-	
 	/**
 	 * Utilities for working with Arrays
 	 * @class Array
@@ -469,40 +457,6 @@
 		return node;
 	};
 	
-	var head = doc.getElementsByTagName("head")[0];
-	/**
-	 * Dinamically inserts a script before the first script it finds on the page (at least the one executing this)
-	 * It loads scripts asynchronously, so it doesn't lock the browser and the loaded scripts can't use document.write()
-	 * 
-	 * @private
-	 * @param {String} url
-	 */
-	var loadScript = function (url, keep) {
-		var script = createNode("script", {
-			type: "text/javascript",
-			asyng: true,
-			src: url
-		});
-		head.appendChild(script);
-		if (!keep) {
-			setTimeout(function () {
-				
-				//Added src = null as suggested by Google in 
-				//http://googlecode.blogspot.com/2010/11/instant-previews-under-hood.html
-				script.src = null;
-				head.removeChild(script);
-			}, 10000);
-		}
-	};
-	
-	var loadCSS = function (url) {
-		head.appendChild(createNode("link", {
-			type: "text/css",
-			rel: "stylesheet",
-			href: url
-		}));
-	};
-	
 	var domReady = function (fn, lib, _doc) {
 		_doc = _doc || doc;
 		if (_doc.body) {
@@ -515,7 +469,7 @@
 	};
 	
 	var getCurrentStyle = function (node, _win) {
-		_win = _win || win;
+		_win = _win || window;
 		return _win.getComputedStyle ? _win.getComputedStyle(node, null) : 
 						node.currentStyle ? node.currentStyle : {};
 	};
@@ -529,6 +483,52 @@
 			}
 		}
 		return a;
+	};
+	
+	/**
+	 * Loads scripts and CSS files.
+	 * Included in the jet() core
+	 * @class Get
+	 * @static
+	 */
+	var GetFactory = function (_doc) {
+		
+		var head = _doc.getElementsByTagName('head')[0];
+		
+		/**
+		 * Loads a script asynchronously
+		 * @method script
+		 * @param {String} url
+		 */
+		this.script = function (url, keep) {
+			var script = createNode("script", {
+				type: "text/javascript",
+				asyng: true,
+				src: url
+			}, {}, _doc);
+			head.appendChild(script);
+			if (!keep) {
+				setTimeout(function () {
+					
+					//Added src = null as suggested by Google in 
+					//http://googlecode.blogspot.com/2010/11/instant-previews-under-hood.html
+					script.src = null;
+					head.removeChild(script);
+				}, 10000);
+			}
+		};
+		/**
+		 * Loads a CSS file
+		 * @method css
+		 * @param {String} url
+		 */
+		this.css = function (url) {
+			head.appendChild(createNode("link", {
+				type: "text/css",
+				rel: "stylesheet",
+				href: url
+			}, {}, _doc));
+		};
 	};
 
 
@@ -606,8 +606,8 @@
 			mix($, o, true);
 		};
 		
-		if (win.JSON) {
-			$.JSON = win.JSON;
+		if (config.win.JSON) {
+			$.JSON = config.win.JSON;
 		}
 		
 		add({
@@ -683,51 +683,11 @@
 			
 			Hash: Hash,
 			
-			utils: {},
+			utils: {}
 			
-			/**
-			 * Loads scripts and CSS files.
-			 * Included in the jet() core
-			 * @class Get
-			 * @static
-			 */
-			Get: {
-				/**
-				 * Loads a script asynchronously
-				 * @method script
-				 * @param {String} url
-				 */
-				script: function (url, keep) {
-					var script =$('<script/>').attr({
-						type: "text/javascript",
-						asyng: true,
-						src: url
-					});
-					$('head').append(script);
-					if (!keep) {
-						setTimeout(function () {
-							
-							//Added src = null as suggested by Google in 
-							//http://googlecode.blogspot.com/2010/11/instant-previews-under-hood.html
-							script[0].src = null;
-							script.remove();
-						}, 10000);
-					}
-				},
-				/**
-				 * Loads a CSS file
-				 * @method css
-				 * @param {String} url
-				 */
-				css: function (url) {
-					$('head').append($('<link/>').attr({
-						type: "text/css",
-						rel: "stylesheet",
-						href: url
-					}));
-				}
-			}
 		});
+		
+		$.Get = new GetFactory(config.doc);
 		
 		return $;
 	};
@@ -747,7 +707,7 @@
 	 * Checks the state of each queue. If a queue has finished loading it executes it
 	 * @private
 	 */
-	var update = function (win, doc) {
+	var update = function () {
 		var core, i = 0, j, required, requiredLength, ready;
 		while (i < queueList.length) {
 			required = queueList[i].req;
@@ -768,7 +728,7 @@
 				/*
 				 * Create a new instance of the core, call each module and the queue's callback 
 				 */
-				core = new Core(win, doc);
+				core = new Core(queueList[i].config);
 				for (j = 0; j < requiredLength; j++) {
 					modules[required[j].name](core);
 				}
@@ -790,253 +750,282 @@
 			left: "-1000px",
 			visibility: "hidden"
 		});
-		(_doc || doc).body.appendChild(trackerDiv);
+		(_doc || document).body.appendChild(trackerDiv);
 		return trackerDiv;
-	}
+	};
 	
-	if (!win.jet) {
-		var trackerDiv;
-		domReady(function () {
-			trackerDiv = createTrackerDiv(doc);
-		});
-			
-		/**
-		 * <p>Global function. Returns an object with 2 methods: use() and add().</p>
-		 *  
-		 * <code>jet().use("node", function ($) {
-		 *	 //do something with $
-		 * });</code>
-		 * 
-		 * <p>This snippet will load the Node module, and when it finishes loading it'll execute
-		 * the function. Each module must call the jet().add() method to tell the loader
-		 * it has finished loading:</p>
-		 * 
-		 * <code>jet().add("node", function ($) {
-		 *	 $.method = function () {};
-		 * });</code>
-		 * 
-		 * <p>A variable is passed to every module and the function defined in the use() method. 
-		 * This variable acts as a main library and is shared by each module and the main
-		 * function, but not between different calls to the "use" method. Ie:</p>
-		 * 
-		 * <code>jet().use("node", function ($) {
-		 *	 $.testProperty = "test";
-		 * });
-		 * 
-		 * jet().use("node", function ($) {
-		 *	 alert($.testProperty); //alerts "undefined"
-		 * });</code>
-		 * 
-		 * <p>Since it is a parameter, it can have any name but it still acts the same way. Also,
-		 * each module is called in the order defined by the "use" method. So:</p>
-		 * 
-		 * <code>jet().use("node", "anim", function (L) {
-		 *	 // Here the L variable contains both Node and Anim
-		 *	 // The Node module is called first on L and the Anim module after,
-		 *	 // so it can overwrite anything Node did, extend classes, etc
-		 * });</code>
-		 * 
-		 * <p>New modules can be defined by passing an object literal instead of a string to the
-		 * "use" method with a "name" property and a "path" or "fullpath" property.</p> 
-		 * 
-		 * <code>jet().use("node", {name:"myModule", fullpath:"http://localhost/myModule.js"}, function ($) {
-		 *	 //do something
-		 * });</code>
-		 * 
-		 * <p>If "path" is defined instead of "fullpath", the loader will append "path"
-		 * to a predefined base URL. This base URL can be modified by passing
-		 * the jet() function an object literal with a "base" property:</p>
-		 * 
-		 *  <code>jet({
-		 *	  base: "http://www.mydomain.com/modules/"
-		 *  }).use("node", function ($) {
-		 *	  //in this case the "core" module is loaded from http://www.mydomain.com/modules/node.min.js
-		 *  });</code>
-		 * 
-		 * @class jet
-		 * @constructor
-		 * @param {Object} config Object literal with configuration options
-		 */
-		win.jet = function (o) {
-			var config = mix(win.jet_Config || {}, Lang.isHash(o) ? o : {}, true);
-			var base = baseUrl;
-			/**
-			 * @config base
-			 * @description prefix for all script and css urls
-			 * @type String
-			 * @default "//jet-js.googlecode.com/svn/trunk/src/"
-			 */
-			if (config.base) {
-				base = config.base;
-				base = base.substr(base.length - 1, 1) == "/" ? base : base + "/";
+	var buildConfig = function (config, next) {
+		if (!Lang.isObject(next)) {
+			next = config;
+			config = {};
+		}
+		next.modules = next.modules || {};
+		Hash.each(next.modules, function (name, opts) {
+			if (Lang.isArray(opts)) {
+				opts = {
+					requires: opts
+				};
 			}
-			/**
-			 * @config base
-			 * @description defines whether predefined modules should be minified or not
-			 * @type Boolean
-			 * @default true
-			 */
-			config.minify = Lang.isBoolean(config.minify) ? config.minify : false;
-			/**
-			 * @config loadCss
-			 * @description If true, css modules are loaded
-			 * @type Boolean
-			 * @default true
-			 */
-			config.loadCss = Lang.isBoolean(config.loadCss) ? config.loadCss : true;
-			/**
-			 * @config modules
-			 * @description Allows to define your own modules. Currently the same as using object literals in the use() method
-			 * @type Array
-			 */
-			var predef = mix(clone(predefinedModules), config.modules || {}, true);
+			if (!opts.path) {
+				opts.path = name + '.js';
+			}
+			opts.name = name;
+			next.modules[name] = opts;
+		});
+		Hash.each(next, function (name, opts) {
+			if (Lang.isObject(opts)) {
+				if (!Lang.isObject(config[name])) {
+					config[name] = {};
+				}
+				mix(config[name], opts, true);
+			} else {
+				config[name] = opts;
+			}
+		});
+		return config;
+	};
+		
+
+	
+	var trackerDiv;
+	domReady(function () {
+		trackerDiv = createTrackerDiv(doc);
+	});
+		
+	/**
+	 * <p>Global function. Returns an object with 2 methods: use() and add().</p>
+	 *  
+	 * <code>jet().use("node", function ($) {
+	 *	 //do something with $
+	 * });</code>
+	 * 
+	 * <p>This snippet will load the Node module, and when it finishes loading it'll execute
+	 * the function. Each module must call the jet().add() method to tell the loader
+	 * it has finished loading:</p>
+	 * 
+	 * <code>jet().add("node", function ($) {
+	 *	 $.method = function () {};
+	 * });</code>
+	 * 
+	 * <p>A variable is passed to every module and the function defined in the use() method. 
+	 * This variable acts as a main library and is shared by each module and the main
+	 * function, but not between different calls to the "use" method. Ie:</p>
+	 * 
+	 * <code>jet().use("node", function ($) {
+	 *	 $.testProperty = "test";
+	 * });
+	 * 
+	 * jet().use("node", function ($) {
+	 *	 alert($.testProperty); //alerts "undefined"
+	 * });</code>
+	 * 
+	 * <p>Since it is a parameter, it can have any name but it still acts the same way. Also,
+	 * each module is called in the order defined by the "use" method. So:</p>
+	 * 
+	 * <code>jet().use("node", "anim", function (L) {
+	 *	 // Here the L variable contains both Node and Anim
+	 *	 // The Node module is called first on L and the Anim module after,
+	 *	 // so it can overwrite anything Node did, extend classes, etc
+	 * });</code>
+	 * 
+	 * <p>New modules can be defined by passing an object literal instead of a string to the
+	 * "use" method with a "name" property and a "path" or "fullpath" property.</p> 
+	 * 
+	 * <code>jet().use("node", {name:"myModule", fullpath:"http://localhost/myModule.js"}, function ($) {
+	 *	 //do something
+	 * });</code>
+	 * 
+	 * <p>If "path" is defined instead of "fullpath", the loader will append "path"
+	 * to a predefined base URL. This base URL can be modified by passing
+	 * the jet() function an object literal with a "base" property:</p>
+	 * 
+	 *  <code>jet({
+	 *	  base: "http://www.mydomain.com/modules/"
+	 *  }).use("node", function ($) {
+	 *	  //in this case the "core" module is loaded from http://www.mydomain.com/modules/node.min.js
+	 *  });</code>
+	 * 
+	 * @class jet
+	 * @constructor
+	 * @param {Object} config Object literal with configuration options
+	 */
+	window.jet = function (o) {
+		
+		var config = buildConfig(GlobalConfig);
+		config = buildConfig(config, (o && o.win) ? o.win.jet_Config : window.jet_Config);
+		config = buildConfig(config, o);
+		var base = config.base;
+		/**
+		 * @config base
+		 * @description prefix for all script and css urls
+		 * @type String
+		 * @default "//jet-js.googlecode.com/svn/trunk/src/"
+		 */
+		base = base.substr(base.length - 1, 1) == "/" ? base : base + "/";
+		/**
+		 * @config base
+		 * @description defines whether predefined modules should be minified or not
+		 * @type Boolean
+		 * @default true
+		 */
+		config.minify = Lang.isBoolean(config.minify) ? config.minify : false;
+		/**
+		 * @config loadCss
+		 * @description If true, css modules are loaded
+		 * @type Boolean
+		 * @default true
+		 */
+		config.loadCss = Lang.isBoolean(config.loadCss) ? config.loadCss : true;
+		/**
+		 * @config modules
+		 * @description Allows to define your own modules. Currently the same as using object literals in the use() method
+		 * @type Array
+		 */
+		
+		/**
+		 * @config win
+		 * @description A reference to the global object that is accesible later with $.win
+		 */
+		config.win = config.win || window;
+		/**
+		 * @config doc
+		 * @description A reference to the document that is accesible later with $.doc
+		 */
+		config.doc = config.doc || config.win.document;
+		
+		var get = new GetFactory(config.doc);
+		
+		var loadCssModule = function (module) {
+			var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + (config.minify ? ".min.css" : ".css")));
+			var _doc = config.doc;
+			var _trackerDiv = trackerDiv;
+			if (_doc != document) {
+				_trackerDiv = createTrackerDiv(_doc);
+			}
+			get.css(url);
+			var t = setInterval(function () {
+				if (getCurrentStyle(_trackerDiv, config.win)[module.beacon.name] == module.beacon.value) {
+					clearInterval(t);
+					jet().add(module.name, function () {});
+				}
+			}, 50);
+		};
+		
+		var use = function () {
 			
-			/**
-			 * @config win
-			 * @description A reference to the global object that is accesible later with $.win
-			 */
-			config.win = config.win || window;
-			/**
-			 * @config doc
-			 * @description A reference to the document that is accesible later with $.doc
-			 */
-			config.doc = config.doc || document;
+			var request = SLICE.call(arguments);
+			var i = 0, j = 0, k, module, moveForward;
 			
-			var loadCssModule = function (module) {
-				var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + (config.minify ? ".min.css" : ".css")));
-				var _doc = config.doc;
-				var _head = _doc.getElementsByTagName('head')[0];
-				var link = _doc.createElement("link");
-				var _trackerDiv = trackerDiv;
-				link.type = 'text/css',
-				link.rel = 'stylesheet';
-				link.href = url;
-				if (_head.firstChild) {
-					_head.insertBefore(link, _head.firstChild);
+			// if "*" is used, include everything
+			if (ArrayHelper.indexOf("*", request) > -1) {
+				request = [];
+				AP.unshift.apply(request, Hash.keys(config.modules));
+				
+			// add widget-parentchild by default
+			} else if (ArrayHelper.indexOf(BASE, request) == -1) {
+				request.unshift(BASE);
+			}
+			
+			// handle requirements
+			while (i < request.length - 1) {
+				module = request[i];
+				moveForward = 1;
+				if (Lang.isString(module)) {
+					module = config.modules[module.toLowerCase()];
+				}
+				if (module && module.requires) {
+					module = module.requires;
+					for (j = module.length - 1; j >= 0; j--) {
+						if (!ArrayHelper.inArray(module[j], request)) {
+							request.splice(i, 0, module[j]);
+							moveForward = 0;
+						}
+					}
+				}
+				i += moveForward;
+			}
+			
+			// remove JSON module if there's native JSON support
+			if (config.win.JSON) {
+				ArrayHelper.remove('json', request);
+			}
+			
+			// transform every module request into an object and load the required css/script if not already loaded
+			for (i = 0; i < request.length - 1; i++) {
+				module = request[i];
+				/*
+				 * If a module is a string, it is considered a predefined module.
+				 * If it isn't defined, it's probably a mistake and will lead to errors
+				 */
+				if (Lang.isString(module) && config.modules[module]) {
+					request[i] = module = config.modules[module];
+				}
+				if (!Lang.isObject(module) || (module.type == CSS && !config.loadCss)) {
+					request.splice(i, 1);
+					i--;
 				} else {
-					_head.appendChild(link);
-				}
-				if (_doc != doc) {
-					_trackerDiv = createTrackerDiv(_doc);
-				}
-				var t = setInterval(function () {
-					if (getCurrentStyle(_trackerDiv, config.win)[module.beacon.name] == module.beacon.value) {
-						clearInterval(t);
-						jet().add(module.name, function () {});
-					}
-				}, 50);
-			};
-			
-			var use = function () {
-				
-				var request = SLICE.call(arguments);
-				var i = 0, j = 0, k, module, moveForward;
-				
-				// if "*" is used, include everything
-				if (ArrayHelper.indexOf("*", request) > -1) {
-					while (j < request.length) {
-						if (Lang.isString(request[j])) {
-							request.splice(j, 1);
-						} else {
-							j++;
-						}
-					}
-					AP.unshift.apply(request, Hash.keys(predef));
-					
-				// add widget-parentchild by default
-				} else if (ArrayHelper.indexOf(BASE, request) == -1) {
-					request.unshift(BASE);
-				}
-				
-				// handle requirements
-				while (i < request.length - 1) {
-					module = request[i];
-					moveForward = 1;
-					if (Lang.isString(module)) {
-						module = predef[module.toLowerCase()];
-						if (module && Lang.isArray(module)) {
-							for (j = module.length - 1; j >= 0; j--) {
-								if (!ArrayHelper.inArray(module[j], request)) {
-									request.splice(i, 0, module[j]);
-									moveForward = 0;
-								}
-							}
-						}
-					}
-					i += moveForward;
-				}
-				
-				// remove JSON module if there's native JSON support
-				if (win.JSON) {
-					ArrayHelper.remove("json", request);
-				}
-				
-				// transform every module request into an object and load the required css/script if not already loaded
-				for (i = 0; i < request.length - 1; i++) {
-					module = request[i];
-					/*
-					 * If a module is a string, it is considered a predefined module.
-					 * If it isn't defined, it's probably a mistake and will lead to errors
-					 */
-					if (Lang.isString(module) && predef[module]) {
-						request[i] = module = Lang.isHash(predef[module]) ? predef[module] : {
-							name: module,
-							path: module + (config.minify ? ".min.js" : ".js")
-						};
-					}
-					if (module.type == "css" && !config.loadCss) {
-						request.splice(i, 1);
-						i--;
-					} else if (!(modules[module.name] || queuedScripts[module.fullpath || (base + module.path)])) {
+					module.fullpath = module.fullpath || base + module.path;
+					if (!(modules[module.name] || queuedScripts[module.fullpath])) {
 						if (!module.type || module.type == "js") {
-							loadScript(module.fullpath || (base + module.path)); 
-						} else if (module.type == "css") {
+							get.script(module.fullpath); 
+						} else if (module.type == CSS) {
 							domReady(loadCssModule, module);
 						}
-						queuedScripts[module.fullpath || (base + module.path)] = 1;
+						queuedScripts[module.fullpath] = 1;
 					}
 				}
-				
-				// add the queue to the waiting list
-				queueList.push({
-					main: request.pop(),
-					req: request,
-					// onProgress handlers are managed by queue
-					onProgress: config.onProgress
-				});
-				update(config);
-			};
-		
-			if (Lang.isFunction(o)) {
-				use(o);
 			}
 			
-			return {
-				/**
-				 * Allows to load modules and obtain a unique reference to the library augmented by the requested modules 
-				 * 
-				 * This method works by overloading its parameters. It takes names (String) of predefined modules
-				 * or objects defining name and path/fullpath of a module. The last parameter must be a function 
-				 * that contains the main logic of the application.
-				 * @method use 
-				 */
-				use: use,
-				/**
-				 * Adds a module to the loaded module list and calls update() to check if a queue is ready to fire
-				 * This method must be called from a module to register it
-				 * @method add
-				 * @param {String} moduleName
-				 * @param {Function} expose
-				 */
-				add: function (moduleName, expose) {
-					/*
-					 * Modules are overwritten by default.
-					 * Maybe it would be a good idea to add an option not to overwrite if present?
-					 */ 
-					modules[moduleName] = expose;
-					update(config);
-				}
-			};
+			// add the queue to the waiting list
+			queueList.push({
+				main: request.pop(),
+				req: request,
+				// onProgress handlers are managed by queue
+				onProgress: config.onProgress,
+				config: config
+			});
+			update();
 		};
-	}
+	
+		/**
+		 * Allows for the following pattern:
+		 * jet(function ($) {
+		 *	...
+		 * });
+		 */
+		if (Lang.isFunction(o)) {
+			use(o);
+		}
+		
+		return {
+			/**
+			 * Allows to load modules and obtain a unique reference to the library augmented by the requested modules 
+			 * 
+			 * This method works by overloading its parameters. It takes names (String) of predefined modules
+			 * or objects defining name and path/fullpath of a module. The last parameter must be a function 
+			 * that contains the main logic of the application.
+			 * @method use 
+			 */
+			use: use
+		};
+	};
+	/**
+	 * Adds a module to the loaded module list and calls update() to check if a queue is ready to fire
+	 * This method must be called from a module to register it
+	 * @method add
+	 * @static
+	 * @param {String} moduleName
+	 * @param {Function} expose
+	 */
+	jet.add = function (moduleName, expose) {
+		/*
+		 * Modules are overwritten by default.
+		 * Maybe it would be a good idea to add an option not to overwrite if present?
+		 */ 
+		modules[moduleName] = expose;
+		update();
+	};
+	
 }());
+
+}

@@ -11,7 +11,7 @@
  * @module history
  * @uses jet, ua, json, base
  */
-jet().add('history', function ($) {
+jet.add('history', function ($) {
 	
 	var UA = $.UA,
 		Lang = $.Lang,

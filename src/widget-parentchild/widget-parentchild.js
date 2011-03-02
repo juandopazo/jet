@@ -1,15 +1,10 @@
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
 /**
  * A module declaring extensions for parent/child relationships between nodes
  * @module widget-parentchild
  * @requires jet, node, base
  * @namespace
  */
-jet().add('widget-parentchild', function ($) {
+jet.add('widget-parentchild', function ($) {
 
 	var Lang = $.Lang,
 		A = $.Array,

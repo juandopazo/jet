@@ -1,9 +1,8 @@
 /**
  * Animations
  * @module anim
- * @namespace
  */
-jet().add('anim', function ($) {
+jet.add('anim', function ($) {
 	
 	var Lang = $.Lang,
 		Hash = $.Hash,

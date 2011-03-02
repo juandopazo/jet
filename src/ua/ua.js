@@ -1,13 +1,8 @@
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
 /**
  * Browser sniffing
  * @module ua
  */
-jet().add("ua", function ($) {
+jet.add("ua", function ($) {
 	/**
 	 * Browser sniffing
 	 * @class UA

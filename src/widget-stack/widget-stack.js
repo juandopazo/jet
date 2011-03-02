@@ -1,4 +1,4 @@
-jet().add('widget-stack', function ($) {
+jet.add('widget-stack', function ($) {
 	
 	var Lang = $.Lang,
 		A = $.Array,

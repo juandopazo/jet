@@ -1,4 +1,4 @@
-jet().add('widget-sandbox', function ($) {
+jet.add('widget-sandbox', function ($) {
 
 	var FRAME = 'frame',
 		CONTENT_WINDOW = 'contentWindow',

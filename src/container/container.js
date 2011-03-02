@@ -2,9 +2,8 @@
  * Contains widgets that act as containers, windows, dialogs 
  * @module container
  * @requires jet, node, base
- * @namespace
  */
-jet().add("container", function ($) {
+jet.add("container", function ($) {
 	
 	var Lang = $.Lang,
 		Hash = $.Hash,

@@ -2,13 +2,13 @@
  * Provides abstracion for easier use of cookies
  * @module cookie
  */
-jet().add('cookie', function (L) {
+jet.add('cookie', function ($) {
 	/**
 	 * Provides abstracion for easier use of cookies
 	 * @class Cookie
 	 * @static
 	 */
-	L.cookie = {
+	$.Cookie = {
 		/**
 		 * Sets the value of a cookie variable
 		 * @method set

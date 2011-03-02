@@ -8,7 +8,7 @@
  * @module base
  * @requires lang, dom
  */
-jet().add('base', function ($) {
+jet.add('base', function ($) {
 	
 	var OP = Object.prototype;
 
@@ -294,7 +294,7 @@ jet().add('base', function ($) {
 		 * @chainable
 		 */
 		this.set = function (attrName, attrValue) {
-			if (Lang.isHash(attrName)) {
+			if (Lang.isObject(attrName)) {
 				Hash.each(attrName, function (name, value) {
 					set(name, value);
 				});

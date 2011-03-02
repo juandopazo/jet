@@ -1,15 +1,10 @@
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
 /**
  * A progressbar for informing the user of the status of loading resources.
  * Other uses include equalizers, ratings, etc
  * @module progressbar
  * @requires jet, lang, node, base
  */
-jet().add('progressbar', function ($) {
+jet.add('progressbar', function ($) {
 	
 	var CONTENT_BOX = 'contentBox',
 		BOUNDING_BOX = 'boundingBox',

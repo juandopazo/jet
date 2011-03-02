@@ -1,14 +1,9 @@
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
 /**
  * A TabView
  * @module tabs
  * @requires jet, lang, node, base
  */
-jet().add('tabview', function ($) {
+jet.add('tabview', function ($) {
 	var SELECTED = 'selected';
 	var Lang = $.Lang;
 	var ArrayHelper = $.Array,

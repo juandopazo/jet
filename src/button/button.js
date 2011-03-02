@@ -2,9 +2,8 @@
  * Different kinds of buttons and form elements
  * @module button
  * @require jet, node, base
- * @namespace
  */
-jet().add('button', function ($) {
+jet.add('button', function ($) {
 	
 	var A = $.Array,
 		Hash = $.Hash,

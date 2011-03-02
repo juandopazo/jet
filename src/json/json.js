@@ -3,7 +3,6 @@
  * is not loaded but the $.JSON object is still found if needed
  * @module json
  * @requires jet
- * @namespace
  */
  /**
   * JSON parsing
@@ -20,7 +19,7 @@
    * @method stringify
    * @param {Object} an object literal
    */
-jet().add('json', function ($) {
+jet.add('json', function ($) {
 /*
     http://www.JSON.org/json2.js
     2010-11-17

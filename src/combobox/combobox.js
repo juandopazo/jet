@@ -2,9 +2,8 @@
  * A searchable ComboBox
  * @module combobox
  * @require jet, node, base, widget-alignment, widget-parentchild
- * @namespace
  */
-jet().add('combobox', function ($) {
+jet.add('combobox', function ($) {
 	
 	var Lang = $.Lang,
 		A = $.Array,
