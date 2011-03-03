@@ -463,7 +463,7 @@ if (!window.jet) {
 			fn.call(doc, lib);
 		} else {
 			setTimeout(function () {
-				domReady(fn, lib);
+				domReady(fn, lib, _doc);
 			}, 13);
 		}
 	};
@@ -491,9 +491,7 @@ if (!window.jet) {
 	 * @class Get
 	 * @static
 	 */
-	var GetFactory = function (_doc) {
-		
-		var head = _doc.getElementsByTagName('head')[0];
+	var GetFactory = function (conf) {
 		
 		/**
 		 * Loads a script asynchronously
@@ -501,21 +499,24 @@ if (!window.jet) {
 		 * @param {String} url
 		 */
 		this.script = function (url, keep) {
-			var script = createNode("script", {
-				type: "text/javascript",
-				asyng: true,
-				src: url
-			}, {}, _doc);
-			head.appendChild(script);
-			if (!keep) {
-				setTimeout(function () {
-					
-					//Added src = null as suggested by Google in 
-					//http://googlecode.blogspot.com/2010/11/instant-previews-under-hood.html
-					script.src = null;
-					head.removeChild(script);
-				}, 10000);
-			}
+			domReady(function () {
+				var head = conf.doc.getElementsByTagName('head')[0];
+				var script = createNode("script", {
+					type: "text/javascript",
+					asyng: true,
+					src: url
+				}, {}, conf.doc);
+				head.appendChild(script);
+				if (!keep) {
+					setTimeout(function () {
+						
+						//Added src = null as suggested by Google in 
+						//http://googlecode.blogspot.com/2010/11/instant-previews-under-hood.html
+						script.src = null;
+						head.removeChild(script);
+					}, 10000);
+				}
+			}, null, conf.doc);
 		};
 		/**
 		 * Loads a CSS file
@@ -523,11 +524,13 @@ if (!window.jet) {
 		 * @param {String} url
 		 */
 		this.css = function (url) {
-			head.appendChild(createNode("link", {
-				type: "text/css",
-				rel: "stylesheet",
-				href: url
-			}, {}, _doc));
+			domReady(function () {
+				conf.doc.getElementsByTagName('head')[0].appendChild(createNode("link", {
+					type: "text/css",
+					rel: "stylesheet",
+					href: url
+				}, {}, conf.doc));
+			}, null, conf.doc);
 		};
 	};
 
@@ -687,7 +690,7 @@ if (!window.jet) {
 			
 		});
 		
-		$.Get = new GetFactory(config.doc);
+		$.Get = new GetFactory(config);
 		
 		return $;
 	};
@@ -739,21 +742,6 @@ if (!window.jet) {
 		}
 	};
 	
-	var createTrackerDiv = function (_doc) {
-		var trackerDiv = createNode("div", {
-			id: "jet-tracker"
-		}, {
-			position: "absolute",
-			width: "1px",
-			height: "1px",
-			top: "-1000px",
-			left: "-1000px",
-			visibility: "hidden"
-		});
-		(_doc || document).body.appendChild(trackerDiv);
-		return trackerDiv;
-	};
-	
 	var buildConfig = function (config, next) {
 		if (!Lang.isObject(next)) {
 			next = config;
@@ -784,13 +772,6 @@ if (!window.jet) {
 		});
 		return config;
 	};
-		
-
-	
-	var trackerDiv;
-	domReady(function () {
-		trackerDiv = createTrackerDiv(doc);
-	});
 		
 	/**
 	 * <p>Global function. Returns an object with 2 methods: use() and add().</p>
@@ -893,10 +874,26 @@ if (!window.jet) {
 		 */
 		config.doc = config.doc || config.win.document;
 		
-		var get = new GetFactory(config.doc);
+		var createTrackerDiv = function () {
+			var trackerDiv = createNode("div", {
+				id: "jet-tracker"
+			}, {
+				position: "absolute",
+				width: "1px",
+				height: "1px",
+				top: "-1000px",
+				left: "-1000px",
+				visibility: "hidden"
+			});
+			config.doc.body.appendChild(trackerDiv);
+			return trackerDiv;
+		};
+		var trackerDiv = createTrackerDiv();
+		
+		var get = new GetFactory(config);
 		
 		var loadCssModule = function (module) {
-			var url = module.fullpath || (module.path ? (base + module.path) : (base + module.fileName + (config.minify ? ".min.css" : ".css")));
+			var url = module.fullpath || (module.path ? (base + module.path) : (base + module.name + (config.minify ? ".min.css" : ".css")));
 			var _doc = config.doc;
 			var _trackerDiv = trackerDiv;
 			if (_doc != document) {
