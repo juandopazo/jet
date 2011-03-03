@@ -229,13 +229,10 @@ jet.add('datasource', function ($) {
 			 * @config recordSet
 			 * @description This datasource's associated recordset
 			 * @type RecordSet
-			 * @readOnly
+			 * @writeOnce
 			 */
 			recordSet: {
-				readOnly: true,
-				getter: function () {
-					return recordSet;
-				}
+				writeOnce: true
 			},
 			/**
 			 * @config responseType
