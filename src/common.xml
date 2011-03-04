@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="jet-module">
+	<description>
+		jet module build lifecycle
+	</description>
+	
+	<property name="builddir" location="../../build/"/>
+	<property name="filename" value="${ant.project.name}.js"/>
+	<property file="build.properties"/>
+	
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp>
+			<format property="TODAY" pattern="dd-MM-yyyy"/>
+			<format property="YEAR" pattern="yyyy"/>
+		</tstamp>
+		<delete>
+			<fileset dir="${builddir}" includes="${filename},${ant.project.name}.min.js" />
+		</delete>
+		
+		<concat destfile="${filename}">
+			<header trimleading="yes">jet.add('${ant.project.name}', function ($) {
+			
+			</header>
+			<filelist dir="./js" files="${build.jsfiles}"/>
+			<footer trimleading="yes">
+			
+			});
+			</footer>
+		</concat>
+		
+		<apply executable="java">
+			<arg value="-jar"/>
+			<arg value="c:/yuicompressor/build/compiler.jar"/>
+			<arg value="--js"/>
+			<srcfile/>
+			<arg value="--js_output_file"/>
+			<targetfile/>
+			<fileset dir="." includes="${ant.project.name}.js"/>
+			<mapper>
+				<chainedmapper>
+					<flattenmapper/>
+					<globmapper from="*.js" to="./*.min.js"/>
+				</chainedmapper>
+			</mapper>
+		</apply>
+		
+		<concat destfile="${builddir}/${filename}" append="yes">
+			<header trimleading="yes">/*
+			 Copyright (c) ${YEAR}, Juan Ignacio Dopazo. All rights reserved.
+			 Code licensed under the BSD License
+			 https://github.com/juandopazo/jet/blob/master/LICENSE.md
+			 
+			 ${description}
+			 @module ${ant.project.name}
+			 @requires ${requires}
+			*/
+			</header>
+			<filelist dir="." files="${filename}"/>
+		</concat>
+		<concat destfile="${builddir}/${ant.project.name}.min.js" append="yes">
+			<header trimleading="yes">/*
+			 Copyright (c) ${YEAR}, Juan Ignacio Dopazo. All rights reserved.
+			 Code licensed under the BSD License
+			 https://github.com/juandopazo/jet/blob/master/LICENSE.md
+			 
+			 ${description}
+			 @module ${ant.project.name}
+			 @requires ${requires}
+			*/
+			</header>
+			<filelist dir="." files="${ant.project.name}.min.js"/>
+		</concat>
+		
+		<delete>
+			<fileset dir="." includes="${filename},${ant.project.name}.min.js" />
+		</delete>
+	</target>
+	
+</project>
