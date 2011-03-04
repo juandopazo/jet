@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="jet" default="init" basedir=".">
+	<description>
+		jet Core build lifecycle
+	</description>
+	
+	<property name="builddir" location="../../build/"/>
+	<property name="filename" value="${ant.project.name}.js"/>
+	
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp>
+			<format property="TODAY" pattern="dd-MM-yyyy"/>
+			<format property="YEAR" pattern="yyyy"/>
+		</tstamp>
+		<delete>
+			<fileset dir="${builddir}" includes="${filename},${ant.project.name}.min.js" />
+		</delete>
+		
+		<concat destfile="${filename}">
+			<header trimleading="yes">
+			if (!window.jet) {
+
+			(function () {
+			
+			</header>
+			<filelist dir="./js" files="GlobalConfig.js,Lang.js,ArrayHelper.js,Hash.js,GetFactory.js,Core.js,jet.js"/>
+			<footer trimleading="yes">
+			
+			}());
+
+			}
+			</footer>
+		</concat>
+		
+		<apply executable="java">
+			<arg value="-jar"/>
+			<arg value="c:/yuicompressor/build/compiler.jar"/>
+			<arg value="--js"/>
+			<srcfile/>
+			<arg value="--js_output_file"/>
+			<targetfile/>
+			<fileset dir="." includes="${ant.project.name}.js"/>
+			<mapper>
+				<chainedmapper>
+					<flattenmapper/>
+					<globmapper from="*.js" to="./*.min.js"/>
+				</chainedmapper>
+			</mapper>
+		</apply>
+		
+		<concat destfile="${builddir}/${filename}" append="yes">
+			<header trimleading="yes">/*
+			 Copyright (c) ${YEAR}, Juan Ignacio Dopazo. All rights reserved.
+			 Code licensed under the BSD License
+			 https://github.com/juandopazo/jet/blob/master/LICENSE.md
+			 
+			 Based on YUI3's namespace. This module allows to load different
+			 modules asynchronously and to reuse them when they were already loaded
+			 @module jet
+			*/
+			</header>
+			<filelist dir="." files="${filename}"/>
+			<filelist dir="${builddir}" files="log.js,ua.js,node.js,base.js"/>
+		</concat>
+		<concat destfile="${builddir}/${ant.project.name}.min.js" append="yes">
+			<header trimleading="yes">/*
+			 Copyright (c) ${YEAR}, Juan Ignacio Dopazo. All rights reserved.
+			 Code licensed under the BSD License
+			 https://github.com/juandopazo/jet/blob/master/LICENSE.md
+			 
+			 Based on YUI3's namespace. This module allows to load different
+			 modules asynchronously and to reuse them when they were already loaded
+			 @module jet
+			*/
+			</header>
+			<filelist dir="." files="${ant.project.name}.min.js"/>
+			<filelist dir="${builddir}" files="log.min.js,ua.min.js,node.min.js,base.min.js"/>
+		</concat>
+		
+		<delete>
+			<fileset dir="." includes="${filename},${ant.project.name}.min.js" />
+		</delete>
+	</target>
+</project>
