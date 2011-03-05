@@ -27,18 +27,18 @@ if (!jet.TimeFrame) {
 			 * @chainable
 			 */
 			play: function () {
-				var myself = this;
+				var self = this;
 				if (!playing) {
 					if (interval) {
 						clearInterval(interval);
 					}
-					var frameLength = Math.round(1000 / myself.fps);
+					var frameLength = Math.round(1000 / self.fps);
 					interval = setInterval(function () {
-						myself.fire(ENTER_FRAME, (new Date()).getTime());
+						self.fire(ENTER_FRAME, (new Date()).getTime());
 					}, frameLength);
 					playing = true;
 				}
-				return myself;
+				return self;
 			},
 			/**
 			 * @method stop

@@ -24,7 +24,7 @@
 			(function () {
 			
 			</header>
-			<filelist dir="./js" files="GlobalConfig.js,Lang.js,ArrayHelper.js,Hash.js,GetFactory.js,Core.js,jet.js"/>
+			<filelist dir="./js" files="GlobalConfig.js,Lang.js,ArrayHelper.js,Hash.js,Get.js,Core.js,jet.js"/>
 			<footer trimleading="yes">
 			
 			}());
@@ -55,8 +55,6 @@
 			 Code licensed under the BSD License
 			 https://github.com/juandopazo/jet/blob/master/LICENSE.md
 			 
-			 Based on YUI3's namespace. This module allows to load different
-			 modules asynchronously and to reuse them when they were already loaded
 			 @module jet
 			*/
 			</header>
@@ -69,8 +67,6 @@
 			 Code licensed under the BSD License
 			 https://github.com/juandopazo/jet/blob/master/LICENSE.md
 			 
-			 Based on YUI3's namespace. This module allows to load different
-			 modules asynchronously and to reuse them when they were already loaded
 			 @module jet
 			*/
 			</header>

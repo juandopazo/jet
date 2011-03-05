@@ -67,13 +67,12 @@ $.WidgetSandbox = $.mix(function WidgetSandbox() {
 		},
 		
 		afterRender: function () {
-			this.get(CONTENT_WINDOW).jet = jet;
+			var self = this;
+			var contentWindow = this.get(CONTENT_WINDOW);
 			var contentDoc = this.get(CONTENT_DOCUMENT);
 			var contentBox = this.get('contentBox');
 			var body = contentDoc.body;
-			var prevContext = $.context;
-			var newContentBox;
-			$.context = contentDoc;
+			contentWindow.jet = jet;
 			
 			try {
 				contentBox.appendTo(body);
@@ -83,9 +82,15 @@ $.WidgetSandbox = $.mix(function WidgetSandbox() {
 				this.set('contentBox', newContentBox);
 				contentBox.remove();
 			}
-			A.each(this.get('extraCss'), $.Get.css);
-			A.each(this.get('extraScripts'), $.Get.script);
-			$.context = prevContext;
+			
+			jet({
+				win: contentWindow,
+				doc: contentDoc
+			}).use(function (j) {
+				A.each(self.get('extraCss'), j.Get.css, j.Get);
+				A.each(self.get('extraScripts'), j.Get.script, j.Get);
+				self.fire('ready');
+			});
 		}
 		
 	}

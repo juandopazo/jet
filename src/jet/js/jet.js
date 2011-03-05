@@ -178,6 +178,11 @@ window.jet = function (o) {
 	 */
 	config.doc = config.doc || config.win.document;
 	
+	/**
+	 * @config before
+	 * @description id of a node before which to insert all scripts and css files
+	 */
+	
 	var createTrackerDiv = function () {
 		var trackerDiv = createNode("div", {
 			id: "jet-tracker"
@@ -192,24 +197,27 @@ window.jet = function (o) {
 		config.doc.body.appendChild(trackerDiv);
 		return trackerDiv;
 	};
-	var trackerDiv = createTrackerDiv();
+	var trackerDiv = config.doc.getElementById('jet-tracker') || createTrackerDiv();
 	
 	var get = new GetFactory(config);
 	
 	var loadCssModule = function (module) {
 		var url = module.fullpath || (module.path ? (base + module.path) : (base + module.name + (config.minify ? ".min.css" : ".css")));
-		var _doc = config.doc;
-		var _trackerDiv = trackerDiv;
-		if (_doc != document) {
-			_trackerDiv = createTrackerDiv(_doc);
-		}
 		get.css(url);
+		var loaded = false;
 		var t = setInterval(function () {
-			if (getCurrentStyle(_trackerDiv, config.win)[module.beacon.name] == module.beacon.value) {
+			if (getCurrentStyle(trackerDiv, config.win)[module.beacon.name] == module.beacon.value) {
 				clearInterval(t);
+				loaded = true;
 				jet.add(module.name, function () {});
 			}
 		}, 50);
+		setTimeout(function () {
+			if (!loaded) {
+				clearInterval(t);
+				jet.add(module.name, function () {});
+			}
+		}, 5000);
 	};
 	
 	var use = function () {

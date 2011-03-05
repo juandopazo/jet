@@ -106,18 +106,30 @@ $.mix(WidgetParent, {
 	EVENTS: {
 		render: function () {
 			var self = this;
-			A.each(this.get(CHILDREN), function (child, index) {
-				self.add(child, index);
-			});
+			var multiple = this.get(MULTIPLE);
+			var selection = multiple ? [] : null;
+			this.each(this.add);
 			Hash.each(Widget.DOM_EVENTS, function (name) {
 				self.on(name, self._domEventChildrenProxy);
 			});
-			this.set(SELECTED_INDEX, this.get(SELECTED_INDEX));
+			this.each(function (child) {
+				if (child.get(SELECTED)) {
+					if (multiple) {
+						selection.push(child);
+					} else {
+						selection = child;
+					}
+				}
+			});
+			this.set(SELECTION, selection);
+			if (!selection) {
+				this.set(SELECTED_INDEX, 0);
+			}
 		},
 		
 		afterSelectionChange: function (e, newVal) {
 			if (newVal && !this.get(MULTIPLE)) {
-				A.each(this.get(CHILDREN), function (child) {
+				this.each(function (child) {
 					if (child != newVal && Lang.isFunction(child.unselect)) {
 						child.unselect();
 					}
@@ -255,8 +267,8 @@ WidgetParent.prototype = {
 	 * @param {Function} fn Callback
 	 * @chainable
 	 */
-	each: function (fn) {
-		A.each(this.get(CHILDREN), fn);
+	each: function (fn, thisp) {
+		A.each(this.get(CHILDREN), fn, thisp || this);
 		return this;
 	}
 	

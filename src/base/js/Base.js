@@ -66,20 +66,19 @@ extend(Base, Attribute, {}, {
 				Hash.each(extension.EVENTS || {}, self.on);
 			});
 		}
-		extend(BuiltClass, superclass || Base, proto);
-		$.mix(BuiltClass, attrs || {});
+		extend(BuiltClass, superclass || Base, proto, attrs || {});
 		$.mix(BuiltClass, {
 			NAME: name,
-			exts: extensions,
-			ATTRS: {}
-		});
+			exts: extensions
+		}, true);
 		A.each(extensions, function (extension) {
 			$.mix(BuiltClass[PROTO], extension[PROTO]);
 			Hash.each(extension, function (prop, val) {
 				if (!BuiltClass[prop]) {
-					BuiltClass[prop] = {};
+					BuiltClass[prop] = val;
+				} else if (Lang.isObject(BuiltClass[prop]) && Lang.isObject(val)) {
+					$.mix(BuiltClass[prop], val);
 				}
-				$.mix(BuiltClass[prop], val);
 			});
 		});
 		return BuiltClass;
