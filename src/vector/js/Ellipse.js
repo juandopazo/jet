@@ -6,12 +6,9 @@
  * @namespace Vector
  * @param {Object} config
  */
-var Ellipse = function (config) {
-	config.node = config.node && config.node == "circle" ? "circle" :
-				UA_SUPPORTS_SVG ? "ellipse" : "oval";
-	Ellipse.superclass.constructor.apply(this, arguments);
+var Ellipse = Base.create('ellipse', Vector, [], {
 	
-	var myself = this.addAttrs({
+	ATTRS: {
 		/**
 		 * @cponfig rx
 		 * @description Horizontal radius length
@@ -47,9 +44,7 @@ var Ellipse = function (config) {
 				this.get(NODE).style.height = value * 2;
 				return value;
 			}
-		}		
-	});
-	myself.addAttrs({
+		},
 		/**
 		 * @config cx
 		 * @description X coordinate of the ellipse's center
@@ -60,7 +55,7 @@ var Ellipse = function (config) {
 				this.get(NODE).setAttribute("cx", value);
 				return value;
 			} : function (value) {
-				this.get(NODE).style.left = (value - $.pxToFloat(myself.get("rx"))) + "px";
+				this.get(NODE).style.left = (value - $.pxToFloat(this.get("rx"))) + "px";
 				return value;
 			}
 		},
@@ -74,10 +69,13 @@ var Ellipse = function (config) {
 				this.get(NODE).setAttribute("cy", value);
 				return value;
 			} : function (value) {
-				this.get(NODE).style.top = (value - $.pxToFloat(myself.get("ry")) / 2) + "px";
+				this.get(NODE).style.top = (value - $.pxToFloat(this.get("ry")) / 2) + "px";
 				return value;
 			}
 		}
-	});
-};
-$.extend(Ellipse, Vector);
+	}
+}, {
+	initializer: function (config) {
+		this.set(NODE, config.node && config.node == "circle" ? "circle" : UA_SUPPORTS_SVG ? "ellipse" : "oval");
+	}
+});

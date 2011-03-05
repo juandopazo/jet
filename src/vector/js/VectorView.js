@@ -7,82 +7,33 @@
  * @constructor
  * @param {Object} config
  */
-var VectorView = UA_SUPPORTS_SVG ? function () {
-	VectorView.superclass.constructor.apply(this, arguments);
-	var box = new Vector({
-		node: "svg",
-		xmlns: NAMESPACE_URI,
-		version: "1.1"
-	});
-	var myself = this.addAttrs({
-		/**
-		 * @config width
-		 * @description Width of the VectorView (a vector "canvas")
-		 */
-		width: {
-			setter: function (value) {
-				box.set("width", value);
-				return value;
-			}
-		},
-		/**
-		 * @config height
-		 * @description Height of the VectorView (a vector "canvas")
-		 */
-		height: {
-			setter: function (value) {
-				box.set("height", value);
-				return value;
-			}
-		},
-		boundingBox: {
-			readOnly: true,
-			getter: function () {
-				return box;
-			}
-		},
-		className: {
-			value: "vectorview"
+$.VectorView = Base.create('vectorview', $.Widget, [], {
+	ATTRS: {
+		canvas: {
+			value: null
 		}
-	});
+	},
 	
-} : function () {
-	VectorView.superclass.constructor.apply(this, arguments);
-	
-	var box = $("<div/>").css({
-		position: "relative",
-		overflow: "hidden"
-	});
-
-	var myself = this.addAttrs({
-		width: {
-			setter: function (value) {
-				box.css("width", value);
-				return value;
-			}
+	EVENTS: {
+		afterWidthChange: function (e, newVal) {
+			this.get('canvas').set('width', newVal);
 		},
-		height: {
-			setter: function (value) {
-				box.css("height", value);
-				return value;
-			}
-		},
-		boundingBox: {
-			readOnly: true,
-			getter: function () {
-				return box;
-			}
-		},
-		className: {
-			value: "vectorview"
+		afterHeightChange: function (e, newVal) {
+			this.get('canvas').set('height', newVal);
 		}
-	});
+	}
+}, {
+	initializer: function () {
+		this.set('canvas', UA_SUPPORTS_SVG ? new Vector({
+			node: "svg",
+			xmlns: NAMESPACE_URI,
+			version: "1.1"
+		}) : $("<div/>").css({
+			position: "relative",
+			overflow: "hidden"
+		}));
+	},
 	
-};
-var appendToVectorView = function (shape, vectorview) {
-	return shape.set(VECTOR, vectorview).appendTo(vectorview.get(BOUNDING_BOX));
-};
-$.extend(VectorView, $.Widget, {
 	/**
 	 * @method rectangle
 	 * @description Draw a rectangle in this vector view
@@ -90,7 +41,7 @@ $.extend(VectorView, $.Widget, {
 	 * @return Vector.Rectangle
 	 */
 	rectangle: function (config) {
-		return appendToVectorView(new Rectangle(config), this);
+		return this._append(new Rectangle(config));
 	},
 	/**
 	 * @method circle
@@ -99,7 +50,7 @@ $.extend(VectorView, $.Widget, {
 	 * @return Vector.Circle
 	 */
 	circle: function (config) {
-		return appendToVectorView(new Circle(config), this);
+		return this._append(new Circle(config));
 	},
 	/**
 	 * @method ellipse
@@ -108,7 +59,7 @@ $.extend(VectorView, $.Widget, {
 	 * @return Vector.Ellipse
 	 */
 	ellipse: function (config) {
-		return appendToVectorView(new Ellipse(config), this);
+		return this._append(new Ellipse(config));
 	},
 	/**
 	 * @method image
@@ -117,7 +68,7 @@ $.extend(VectorView, $.Widget, {
 	 * @return Vector.Image
 	 */
 	image: function (config) {
-		return appendToVectorView(new ImageVector(config), this);
+		return this._append(new ImageVector(config));
 	},
 	/**
 	 * @method text
@@ -126,7 +77,7 @@ $.extend(VectorView, $.Widget, {
 	 * @return Vector.Text
 	 */
 	text: function (config) {
-		return appendToVectorView(new Text(config), this);
+		return this._append(new Text(config));
 	},
 	/**
 	 * @method line
@@ -135,7 +86,7 @@ $.extend(VectorView, $.Widget, {
 	 * @return Vector.Line
 	 */
 	line: function (config) {
-		return appendToVectorView(new Line(config), this);
+		return this._append(new Line(config));
 	},
 	/**
 	 * @method path
@@ -144,7 +95,7 @@ $.extend(VectorView, $.Widget, {
 	 * @return Vector.Path
 	 */
 	path: function (config) {
-		return appendToVectorView(new Path(config), this);
+		return this._append(new Path(config));
 	},
 	/**
 	 * @method clear
@@ -152,7 +103,11 @@ $.extend(VectorView, $.Widget, {
 	 * @chainable
 	 */
 	clear: function () {
-		this.get(BOUNDING_BOX).children().remove();
+		this.get('canvas').children().remove();
+	},
+
+	_append: function (shape) {
+		return shape.set(VECTOR, this).appendTo(this.get('canvas'));
 	}
 });
 
@@ -166,9 +121,4 @@ $.mix(Vector, {
 	hexToDec: hexToDec,
 	colorHexToArray: colorHexToArray,
 	colorArrayToHex: colorArrayToHex
-});
-
-$.add({
-	VectorView: VectorView,
-	Vector: Vector
 });

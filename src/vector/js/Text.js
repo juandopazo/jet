@@ -7,8 +7,8 @@
  * @namespace Vector
  * @param {Object} config
  */
-var Text = function (config) {
-	config.node = "text";
-	Text.superclass.constructor.apply(this, arguments);
-};
-$.extend(Text, Vector);
+var Text = Base.create('text', Vector, [], {}, {
+	initializer: function () {
+		this.set(NODE, 'text');
+	}
+});

@@ -7,8 +7,8 @@
  * @namespace Vector
  * @param {Object} config
  */
-var RoundedRectangle = function (config) {
-	config.node = UA_SUPPORTS_SVG ? "rect" : "roundrect";
-	RoundedRectangle.superclass.constructor.apply(this, arguments);
-};
-$.extend(RoundedRectangle, Rectangle);
+var RoundedRectangle = Base.create('roundrect', Rectangle, [], {}, {
+	initializer: function () {
+		this.set(NODE, UA_SUPPORTS_SVG ? "rect" : "roundrect");
+	}
+});

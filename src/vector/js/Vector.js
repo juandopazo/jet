@@ -2,6 +2,7 @@
 var Lang = $.Lang,
 	Hash = $.Hash,
 	A = $.Array,
+	Base = $.Base,
 	SLICE = Array.prototype.slice;
 	
 var BOUNDING_BOX = "boundingBox",
@@ -216,59 +217,34 @@ Hash.each(STROKE_ATTR_MAPPING, function (asvg) {
 	};
 });
 
-var Vector = UA_SUPPORTS_SVG ? function (config) {
-	Vector.superclass.constructor.apply(this, arguments);
-	var myself = this;
-	
-	var node;
+Vector_ATTRS.node = {
+	setter: UA_SUPPORTS_SVG ? function (node) {
+		return node.nodeType ? node : $.context.createElementNS(NAMESPACE_URI, node);
+	} : function (node) {
+		return node.nodeType ? node : createIENode(node);
+	}
+};
+Vector_ATTRS['fill-opacity'] = {
+	getter: UA_SUPPORTS_SVG ? function () {
+			return this.get(NODE).getAttribute("fill-opacity");
+		} : function () {
+			return this.get("fill-node").opacity;
+		},
+	setter: UA_SUPPORTS_SVG ? function (value) {
+			this.get(NODE).setAttribute("opacity", value);
+			return value;
+		} : function (value) {
+			this.get("fill-node").opacity = value;
+			return value;
+		}
+};
+
+var Vector = $.Vector = Base.create('vector', $.Attribute, [], {
 	/**
 	 * @config node
 	 * @description A pointer to the vector node
-	 * @required
-	 * @writeOnce
 	 * @type SVG/VML node
 	 */
-	myself.addAttr(NODE, {
-		required: true,
-		writeOnce: true,
-		getter: function () {
-			return node;
-		},
-		setter: function (newNode) {
-			node = newNode.nodeType ? newNode : $.context.createElementNS(NAMESPACE_URI, newNode);
-			return node;
-		}
-	});
-
-	node = myself.get(NODE);
-	
-	/**
-	 * @method on
-	 * @description Adds an event listener to the vector node
-	 * @param {String} eventType
-	 * @param {Function} callback
-	 * @chainable
-	 */
-	/**
-	 * @method unbind
-	 * @description Remove an event listeners from the vector node
-	 * @param {String} eventType
-	 * @param {Function} callback
-	 * @chainable
-	 */
-	/**
-	 * @method unbindAll
-	 * @description Removes all event listeners of a certain type from the vector node
-	 * @param {String} eventType
-	 * @chainable
-	 */
-	A.each(['on', 'unbind', 'unbindAll'], function (method) {
-		myself[method] = function (type, fn) {
-			$(node)[method](type, fn);
-			return myself;
-		};
-	});
-	
 	/**
 	 * @config width
 	 * @description width
@@ -277,59 +253,22 @@ var Vector = UA_SUPPORTS_SVG ? function (config) {
 	 * @config fill-opacity
 	 * @description Opacity
 	 */
-	myself.addAttrs(Vector_ATTRS).addAttr("fill-opacity", {
-		getter: function () {
-			return this.get(NODE).getAttribute("fill-opacity");
-		},
-		setter: function (value) {
-			this.get(NODE).setAttribute("opacity", value);
-			return value;
+	ATTRS: Vector_ATTRS
+}, {
+	initializer: function () {
+		if (!UA_SUPPORTS_SVG) {
+			var stroke = createIENode('stroke');
+			var fill = createIENode('fill');
+			var node = this.get(NODE);
+			stroke.on = false;
+			this.set('stroke-node', stroke);
+			this.set('fill-node', fill);
+			
+			node.style.position = "absolute";
+			node.appendChild(stroke);
+			node.appendChild(fill);
 		}
-	});
-	
-} : function () {
-	Vector.superclass.constructor.apply(this, arguments);
-	var myself = this;
-	myself.addAttr(NODE, {
-		required: true,
-		writeOnce: true,
-		getter: function () {
-			return myself.node;
-		},
-		setter: function (node) {
-			myself.node = node.nodeType ? node : createIENode(node);
-			return myself.node;
-		}
-	});
-	var stroke = createIENode("stroke");
-	stroke.on = false;
-	myself.set("stroke-node", stroke);
-	var fill = createIENode("fill");
-	myself.set("fill-node", fill);
-	
-	var node = myself.get(NODE);
-	node.style.position = "absolute";
-	node.appendChild(stroke);
-	node.appendChild(fill);
-	
-	A.each(['on', 'unbind', 'unbindAll'], function (method) {
-		myself[method] = function (type, fn) {
-			$(node)[method](type, fn);
-			return myself;
-		};
-	});
-	
-	myself.addAttrs(Vector_ATTRS).addAttr("fill-opacity", {
-		getter: function () {
-			return this.get("fill-node").opacity;
-		},
-		setter: function (value) {
-			this.get("fill-node").opacity = value;
-			return value;
-		}
-	});
-};
-$.extend(Vector, $.Attribute, {
+	},
 	translate: function () {
 		
 	},
@@ -505,4 +444,30 @@ $.extend(Vector, $.Attribute, {
 		}
 		return this;
 	}
+});
+/**
+ * @method on
+ * @description Adds an event listener to the vector node
+ * @param {String} eventType
+ * @param {Function} callback
+ * @chainable
+ */
+/**
+ * @method unbind
+ * @description Remove an event listeners from the vector node
+ * @param {String} eventType
+ * @param {Function} callback
+ * @chainable
+ */
+/**
+ * @method unbindAll
+ * @description Removes all event listeners of a certain type from the vector node
+ * @param {String} eventType
+ * @chainable
+ */
+A.each(['on', 'unbind', 'unbindAll'], function (method) {
+	Vector.prototype[method] = function (type, fn) {
+		$(this.get('node'))[method](type, fn);
+		return this;
+	};
 });

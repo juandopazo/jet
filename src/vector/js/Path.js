@@ -7,11 +7,8 @@
  * @namespace Vector
  * @param {Object} config
  */
-var Path = function (config) {
-	config.node = "path";
-	Path.superclass.constructor.apply(this, arguments);
-	
-	this.addAttrs({
+var Path = Base.create('path', Vector, [], {
+	ATTRS: {
 		/**
 		 * @config y2
 		 * @description Y coordinate of the line's ending point
@@ -20,6 +17,9 @@ var Path = function (config) {
 			getter: getDefaultGetter("d"),
 			setter: getDefaultSetter("d")
 		}
-	});
-};
-$.extend(Path, Vector);
+	}
+}, {
+	initializer: function () {
+		this.set(NODE, 'path');
+	}
+});

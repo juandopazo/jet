@@ -7,10 +7,9 @@
  * @namespace Vector
  * @param {Object} config
  */
-var Circle = function (config) {
-	config.node = UA_SUPPORTS_SVG ? "circle" : "oval";
-	Circle.superclass.constructor.apply(this, arguments);
-	var myself = this.addAttrs({
+var Circle = Base.create('circle', Vector, [], {
+	
+	ATTRS: {
 		/**
 		 * @config r
 		 * @description Radius of the circle
@@ -30,8 +29,7 @@ var Circle = function (config) {
 				ns.height = value * 2;
 				return value;
 			}
-		}
-	}).addAttrs({
+		},
 		/**
 		 * @config cx
 		 * @description X coordinate of the circle's center
@@ -42,7 +40,7 @@ var Circle = function (config) {
 				this.get(NODE).setAttribute("cx", value);
 				return value;
 			} : function (value) {
-				this.get(NODE).style.left = (value - $.pxToFloat(myself.get("r")) / 2) + "px";
+				this.get(NODE).style.left = (value - $.pxToFloat(this.get("r")) / 2) + "px";
 				return value;
 			}
 		},
@@ -56,10 +54,15 @@ var Circle = function (config) {
 				this.get(NODE).setAttribute("cy", value);
 				return value;
 			} : function (value) {
-				this.get(NODE).style.top = (value - $.pxToFloat(myself.get("r")) / 2) + "px";
+				this.get(NODE).style.top = (value - $.pxToFloat(this.get("r")) / 2) + "px";
 				return value;
 			}
 		}
-	});
-};
-$.extend(Circle, Vector);
+	}
+}, {
+	
+	initializer: function () {
+		this.set(NODE, UA_SUPPORTS_SVG ? "circle" : "oval");
+	}
+	
+});

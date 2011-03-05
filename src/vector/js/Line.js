@@ -7,11 +7,8 @@
  * @namespace Vector
  * @param {Object} config
  */
-var Line = function (config) {
-	config.node = "line";
-	Line.superclass.constructor.apply(this, arguments);
-	
-	this.addAttrs({
+var Line = Base.create('line', Vector, [], {
+	ATTRS: {
 		/**
 		 * @config x1
 		 * @description X coordinate of the line's starting point
@@ -44,6 +41,9 @@ var Line = function (config) {
 			getter: getDefaultGetter("y2"),
 			setter: getDefaultSetter("y2")
 		}
-	});
-};
-$.extend(Line, Vector);
+	}
+}, {
+	initializer: function () {
+		this.set(NODE, 'line');
+	}
+});

@@ -7,11 +7,10 @@
  * @constructor
  * @param {Object} config
  */
-var Rectangle = function (config) {
-	config.node = config.node && config.node == "roundrect" ? "roundrect" : "rect";
-	Rectangle.superclass.constructor.apply(this, arguments);
-};
-$.extend(Rectangle, Vector, {
+var Rectangle = Base.create('rectangle', Vector, [], {}, {
+	initializer: function (config) {
+		this.set(NODE, config.node && config.node == "roundrect" ? "roundrect" : "rect");
+	},
 	/**
 	 * @method rotate
 	 * @description Rotates the rectangle
