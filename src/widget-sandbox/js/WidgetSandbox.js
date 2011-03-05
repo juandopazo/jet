@@ -47,6 +47,10 @@ $.WidgetSandbox = $.mix(function WidgetSandbox() {
 			}
 		},
 		
+		src: {
+			value:  'javascript' + (($.UA.ie) ? ':false' : ':') + ';'
+		},
+		
 		extraScripts: {
 			value: []
 		},
@@ -61,6 +65,7 @@ $.WidgetSandbox = $.mix(function WidgetSandbox() {
 		render: function () {
 			this.get(FRAME).attr({
 				frameborder: 0,
+				src: this.get('src'),
 				width: '100%',
 				height: '100%'
 			}).css('border', 'none').addClass(this.getClassName(FRAME)).prependTo(this.get('boundingBox'));
