@@ -6,10 +6,8 @@
  * @extends Base
  * @param {Object} config Object literal specifying configuration properties
  */
-var ImageLoader = function () {
-	ImageLoader.superclass.constructor.apply(this, arguments);
-	
-	var myself = this.addAttrs({
+$.ImageLoader = Base.create('imageloader', Base, [], {
+	ATTRS: {
 		/**
 		 * @config srcs
 		 * @description An array of image URIs
@@ -18,18 +16,17 @@ var ImageLoader = function () {
 		srcs: {
 			validator: Lang.isArray
 		}
-	});
-};
-$.extend(ImageLoader, $.Base, {
+	}
+}, {
 	/**
 	 * Loads all images whose srcs where specified
 	 * @method load
 	 * @chainable
 	 */
 	load: function () {
-		var myself = this;
+		var self = this;
 		var completed = 0;
-		var srcs = myself.get("srcs");
+		var srcs = this.get('srcs');
 		var length = srcs.length;
 		ArrayHelper.each(srcs, function (src) {
 			var img = new Img({
@@ -41,7 +38,7 @@ $.extend(ImageLoader, $.Base, {
 						 * @event image:load
 						 * @param {Image} the image that fired the event
 						 */
-						myself.fire(IMAGE_ + LOAD, img);
+						self.fire(IMAGE_ + LOAD, img);
 					},
 					error: function () {
 						/**
@@ -49,7 +46,7 @@ $.extend(ImageLoader, $.Base, {
 						 * @event image:error
 						 * @param {Image} the image that fired the event
 						 */
-						myself.fire(IMAGE_ + ERROR, img);
+						self.fire(IMAGE_ + ERROR, img);
 					},
 					timeout: function () {
 						/**
@@ -57,7 +54,7 @@ $.extend(ImageLoader, $.Base, {
 						 * @event image:timeout
 						 * @param {Image} the image that fired the event
 						 */
-						myself.fire(IMAGE_ + TIMEOUT, img);
+						self.fire(IMAGE_ + TIMEOUT, img);
 					},
 					complete: function () {
 						/**
@@ -65,35 +62,26 @@ $.extend(ImageLoader, $.Base, {
 						 * @event image:complete
 						 * @param {Image} the image that fired the event
 						 */
-						myself.fire(IMAGE_ + COMPLETE, img);
+						self.fire(IMAGE_ + COMPLETE, img);
 						completed++;
 						/**
 						 * Fires each time an image loads
 						 * @event progress
 						 * @param {Number} percentage completed
 						 */
-						myself.fire("progress", Math.round(completed * 100 / length), img);
+						self.fire("progress", Math.round(completed * 100 / length), img);
 						if (completed == length) {
 							/**
 							 * Fires when all images loaded
 							 * @event complete
 							 */
-							myself.fire(COMPLETE);
+							self.fire(COMPLETE);
 						}
 					}
 				}
 			});
 			img.load();
 		});
-		return myself;
+		return this;
 	}
-});
-
-/*
- * @TODO: fixPNG method for Node and NodeList
- */
-
-$.add({
-	Image: Img,
-	ImageLoader: ImageLoader
 });

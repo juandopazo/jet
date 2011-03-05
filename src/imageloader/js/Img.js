@@ -1,5 +1,6 @@
 
 var Lang = $.Lang,
+	Base = $.Base,
 	ArrayHelper = $.Array;
 
 var LOAD = "load",
@@ -15,11 +16,8 @@ var LOAD = "load",
  * @extends Base
  * @param {Object} config Object literal specifying image configuration properties
  */
-var Img = function () {
-	Img.superclass.constructor.apply(this, arguments);
-	var img = new Image();
-	var node = $(img);
-	var myself = this.addAttrs({
+var Img = $.Img = Base.create('image', Base, [], {
+	ATTRS: {
 		/**
 		 * @config src
 		 * @description URI of the image to load
@@ -35,19 +33,18 @@ var Img = function () {
 		/**
 		 * @config image
 		 * @description A pointer to the actual Image object
-		 * @readOnly
 		 */
 		image: {
-			readOnly: true,
-			value: img
+			value: null
 		},
 		/**
 		 * @config node
 		 * @description A NodeList with the image node
+		 * @readOnly
 		 * @type NodeList
 		 */
 		node: {
-			value: node
+			value: null
 		},
 		/**
 		 * @config timeout
@@ -57,10 +54,7 @@ var Img = function () {
 		 */
 		timeout: {
 			value: 5000
-		}
-	});
-	var loaded = false;
-	myself.addAttrs({
+		},
 		/**
 		 * @config type
 		 * @description The image type. Used to specify if an image is PNG
@@ -76,49 +70,59 @@ var Img = function () {
 		/**
 		 * @config loaded
 		 * @description Specifies if the image has finished loading or not
-		 * @readOnly
 		 * @type Boolean
 		 */
 		loaded: {
-			readOnly: true,
-			getter: function () {
-				return !!loaded;
-			}
+			value: false
 		}
-	/**
-	 * Start loading the image
-	 * @method load
-	 * @chainable
-	 */
-	}).load = function () {
-		var completed = false;
-		img.onload = function () {
-			if (myself.get("type") == "png" && $.UA.ie) {
-				myself.set("node", $("<span/>").css({
+		/**
+		 * Start loading the image
+		 * @method load
+		 * @chainable
+		 */
+	},
+	
+	EVENTS: {
+		load: function () {
+			var img = this.get('image');
+			if (this.get('type') == 'png' && $.UA.ie) {
+				this.set('node', $("<span/>").css({
 					display: "inline-block",
-					filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader (src='" + myself.get("src") + "',sizingMethod='crop');"
+					filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader (src='" + this.get("src") + "',sizingMethod='crop');"
 				}).height(img.height).width(img.width));
 			}
+		}
+	}
+}, {
+	initializer: function () {
+		this.set('image', new Image()).set('node', $(this.get('image')));
+	},
+	
+	load: function () {
+		var self = this;
+		var completed = false;
+		var img = this.get('image');
+		img.onload = function () {
 			/**
 			 * Fires when the image finished loading successfully
 			 * @event load
 			 */
-			myself.fire(LOAD);
+			self.fire(LOAD);
 			/**
 			 * Fires when the image finished loading, successfully or not
 			 * @event complete
 			 */
-			myself.fire(COMPLETE);
+			self.fire(COMPLETE);
 			completed = true;
-			loaded = true;
+			self.set('loaded', true);
 		};
 		img.onerror = function () {
 			/**
 			 * Fires if the image didn't load successfully
 			 * @event error
 			 */
-			myself.fire(ERROR);
-			myself.fire(COMPLETE);
+			self.fire(ERROR);
+			self.fire(COMPLETE);
 			completed = true;
 		};
 		setTimeout(function () {
@@ -127,15 +131,13 @@ var Img = function () {
 				 * Fires if the image timed out
 				 * @event error
 				 */
-				myself.fire(TIMEOUT);
-				myself.fire(COMPLETE);
+				self.fire(TIMEOUT);
+				self.fire(COMPLETE);
 			}
-		}, myself.get(TIMEOUT));
-		img.src = myself.get("src");
-		return myself;
-	};
-};
-$.extend(Img, $.Base, {
+		}, self.get(TIMEOUT));
+		img.src = this.get('src');
+		return this;
+	},
 	/**
 	 * Set the image as a background once it loaded
 	 * @method setAsBackground
@@ -144,20 +146,20 @@ $.extend(Img, $.Base, {
 	 */
 	setAsBackground: function (node) {
 		node = $(node);
-		var myself = this;
+		var self = this;
 		var setBg = function () {
-			var src = myself.get("src");
-			if (myself.get("type") == "png" && $.UA.ie) {
+			var src = self.get("src");
+			if (self.get("type") == "png" && $.UA.ie) {
 				node.css("filter", "progid:DXImageTransform.Microsoft.AlphaImageLoader (src='" + src + "',sizingMethod='crop');");
 			} else {
 				node.css("backgroundImage", "url(" + src + ")");
 			}
 		};
-		if (myself.get("loaded")) {
+		if (self.get("loaded")) {
 			setBg();
 		} else {
-			myself.on(LOAD, setBg);
+			self.on(LOAD, setBg);
 		}
-		return myself;
+		return self;
 	}
 });
