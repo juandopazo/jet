@@ -52,9 +52,8 @@ $.jsonp = function (settings) {
 				error({
 					message: "Request failed",
 					reason: "Timeout"
-					});
-				}
-			}, settings.timeout || 10000);
-		}
+				});
+			}
+		}, settings.timeout || 10000);
 	}
 };
