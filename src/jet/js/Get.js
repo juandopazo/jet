@@ -1,16 +1,4 @@
 
-var createNode = function (name, attrs, s, docum) {
-	docum = docum || doc;
-	var node = docum.createElement(name);
-	Hash.each(attrs, function (attr, val) {
-		node[attr] = val;
-	});
-	Hash.each(s, function (name, val) {
-		node.style[name] = val;
-	});
-	return node;
-};
-
 var domReady = function (fn, lib, _doc) {
 	_doc = _doc || doc;
 	if (_doc.body) {
@@ -20,12 +8,6 @@ var domReady = function (fn, lib, _doc) {
 			domReady(fn, lib, _doc);
 		}, 13);
 	}
-};
-
-var getCurrentStyle = function (node, _win) {
-	_win = _win || window;
-	return _win.getComputedStyle ? _win.getComputedStyle(node, null) : 
-					node.currentStyle ? node.currentStyle : {};
 };
 
 var mix = function (a, b, overwrite) {
@@ -47,10 +29,10 @@ var mix = function (a, b, overwrite) {
  */
 var GetFactory = function (conf) {
 	
-	this._doc = conf.doc;
-	this._head = conf.doc.getElementsByTagName('head')[0];
-	this._before = conf.before ? conf.doc.getElementById(conf.before) : null;
-	this._before = this._before || conf.before;
+	var doc = this._doc = conf.doc;
+	var before = Lang.isString(conf.before) ? doc.getElementById(conf.before) : conf.before;
+	this._head = doc.getElementsByTagName('head')[0];
+	this._before = before || conf.before;
 	
 };
 GetFactory.prototype = {
@@ -58,14 +40,14 @@ GetFactory.prototype = {
 	 * Loads a script asynchronously
 	 * @method script
 	 * @param {String} url
+	 * @chainable
 	 */
 	script: function (url, keep) {
-		this._refresh();
-		var script = createNode("script", {
-			type: "text/javascript",
+		var script = this._create('script', {
+			type: 'text/javascript',
 			asyng: true,
 			src: url
-		}, {}, this._doc);
+		});
 		this._insert(script);
 		if (!keep) {
 			setTimeout(function () {
@@ -78,24 +60,61 @@ GetFactory.prototype = {
 				}
 			}, 10000);
 		}
+		return this;
 	},
 	/**
 	 * Loads a CSS file
 	 * @method css
 	 * @param {String} url
+	 * @chainable
 	 */
-	css: function (url) {
-		this._refresh();
-		var node = createNode("link", {
-			type: "text/css",
-			rel: "stylesheet",
+	css: function (url, callback) {
+		var node = this._create('link', {
+			type: 'text/css',
+			rel: 'stylesheet',
 			href: url
-		}, {}, this._doc);
+		});
+		var interval, count = 0, stylesheets = this._doc.styleSheets;
 		this._insert(node);
+		if (UA.ie) {
+			node.onreadystatechange = function () {
+				var readyState = this.readyState;
+				if (readyState === 'loaded' || readyState === 'complete') {
+					this.onreadystatechange = null;
+					callback();
+				}
+			};
+		} else if (UA.webkit) {
+			url = node.href;
+			interval = setInterval(function () {
+				for (var i = 0, length = stylesheets.length; i < length; i++) {
+					if (stylesheets[i].href == url) {
+						clearInterval(interval);
+						callback();
+						break;
+					}
+				}
+				if (++count == 100) {
+					clearInterval(interval);
+					callback();
+				}
+			}, 50);
+		} else {
+			setTimeout(callback, 80);
+		}
 		return this;
 	},
 	
+	_create: function (name, attrs) {
+		var node = this._doc.createElement(name);
+		Hash.each(attrs, function (attr, val) {
+			node[attr] = val;
+		});
+		return node;
+	},
+	
 	_insert: function (node) {
+		this._refresh();
 		var before = this._before;
 		if (before && !Lang.isString(before)) {
 			before.parentNode.insertBefore(node, before);
@@ -105,9 +124,13 @@ GetFactory.prototype = {
 	},
 	
 	_refresh: function () {
-		this._head = this._head || this._doc.getElementsByTagName('head')[0];
-		if (Lang.isString(this._before)) {
-			this._before = this._doc.getElementById(this._before) || this._before;
+		var doc = this._doc;
+		var before = this._before;
+		if (!this._head) {
+			this._head = doc.getElementsByTagName('head')[0];
+		}
+		if (Lang.isString(before)) {
+			this._before = doc.getElementById(before) || before;
 		}
 	}
-}
+};

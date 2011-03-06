@@ -24,7 +24,7 @@
 			(function () {
 			
 			</header>
-			<filelist dir="./js" files="GlobalConfig.js,Lang.js,ArrayHelper.js,Hash.js,Get.js,Core.js,jet.js"/>
+			<filelist dir="./js" files="GlobalConfig.js,Lang.js,ArrayHelper.js,Hash.js,ua.js,Get.js,Core.js,jet.js"/>
 			<footer trimleading="yes">
 			
 			}());
@@ -59,7 +59,7 @@
 			*/
 			</header>
 			<filelist dir="." files="${filename}"/>
-			<filelist dir="${builddir}" files="log.js,ua.js,node.js,base.js"/>
+			<filelist dir="${builddir}" files="log.js,node.js,base.js"/>
 		</concat>
 		<concat destfile="${builddir}/${ant.project.name}.min.js" append="yes">
 			<header trimleading="yes">/*
@@ -71,7 +71,7 @@
 			*/
 			</header>
 			<filelist dir="." files="${ant.project.name}.min.js"/>
-			<filelist dir="${builddir}" files="log.min.js,ua.min.js,node.min.js,base.min.js"/>
+			<filelist dir="${builddir}" files="log.min.js,node.min.js,base.min.js"/>
 		</concat>
 		
 		<delete>

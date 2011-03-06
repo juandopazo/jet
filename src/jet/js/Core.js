@@ -150,7 +150,9 @@ var Core = function (config) {
 		
 		Hash: Hash,
 		
-		config: config
+		config: config,
+		
+		UA: UA
 		
 	});
 	

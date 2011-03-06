@@ -4,8 +4,8 @@
  * @class UA
  * @static
  */
-$.UA = (function () {
-	var nav = $.win.navigator,
+var UA = (function () {
+	var nav = window.navigator,
 		ua = nav.userAgent.toLowerCase(),
 		p = nav.platform.toLowerCase();
 
