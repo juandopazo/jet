@@ -1,4 +1,4 @@
-$.augment($.NodeList, {
+$.mix($.NodeList.prototype, {
 		/**
 	 * @method animate
 	 * @for NodeList

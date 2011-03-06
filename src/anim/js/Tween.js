@@ -7,16 +7,8 @@
  * @namespace
  * @param {Object} config Object literal specifying configuration properties
  */
-var Tween = function () {
-	Tween.superclass.constructor.apply(this, arguments);
-	
-	var timeframe = jet.TimeFrame;
-	var playing = false;
-	var notPlaying = function () {
-		return !playing;
-	};
-	
-	var myself = this.addAttrs({
+var Tween = Base.create('tween', Base, [], {
+	ATTRS: {
 		/**
 		 * @config node
 		 * @description The node that will be animated
@@ -24,11 +16,7 @@ var Tween = function () {
 		 * @writeOnce
 		 */
 		node: {
-			writeOnce: true,
-			required: true,
-			setter: function (value) {
-				return $(value);
-			}
+			setter: $
 		},
 		/**
 		 * @config from
@@ -53,7 +41,10 @@ var Tween = function () {
 		 * @default Easing.linear
 		 */
 		easing: {
-			value: Easing.linear
+			value: Easing.linear,
+			setter: function (easing) {
+				return Lang.isFunction(easing) ? easing : Easing[easing];
+			}
 		},
 		/**
 		 * @config easingStrength
@@ -81,49 +72,60 @@ var Tween = function () {
 					   Lang.isNumber(value) ? value :
 					   1000; 
 			}
+		},
+		playing: {
+			value: false,
+			validator: Lang.isBoolean
+		},
+		startTime: {
+			value: 0
+		},
+		/**
+		 * Previous time is used for pausing. It keeps how much time had
+		 * elapsed in the last run before the tween was _paused_.
+		 * When stopped, "previous" is reset to 0.
+		 * @config previousTime
+		 * @private
+		 */
+		previousTime: {
+			value: 0
 		}
-	});
+	}
 	
-	var node = myself.get("node");
-	var from;
-	var to;
-	var startTime;
-	/*
-	 * Previous time is used for pausing. It keeps how much time had
-	 * elapsed in the last run before the tween was _paused_.
-	 * When stopped, "previous" is reset to 0.
-	 */
-	var previous = 0;
-	var easing, duration, strength;
-	
-	var enterFrame = function (e, time) {
-		if (playing) {
-			if (!startTime) {
-				startTime = time;
+}, {
+	_enterFrame: function (e, time) {
+		if (this.get('playing')) {
+			if (!this.get('startTime')) {
+				this.set('startTime', time);
 			}
-			var elapsed = time - startTime + previous;
-			var check = 0;
-			var against = Hash.keys(to).length;
-			Hash.each(to, function (name, val) {
-				var go = easing(elapsed, from[name], val, duration, strength);
-				if ((val > from[name] && go > val) || (val < from[name] && go < val)) {
-					go = val;
-				}
-				if (myself.fire("tween", go)) {
-					node.css(name, go);
-				} else {
-					elapsed = duration;
-				}
-			});
-			if (elapsed >= duration) {
-				myself.stop();
+			var self = this;
+			var easing = this.get('easing');
+			var to = this.get('to');
+			var from = this.get('from');
+			var duration = this.get('duration');
+			var strength = this.get('easingStrength');
+			var node = this.get('node');
+			var elapsed = time - this.get('startTime') + this.get('previousTime');
+			if (elapsed < duration) {
+				Hash.each(to, function (name, val) {
+					var go = easing(elapsed, from[name], val, duration, strength);
+					if ((val > from[name] && go > val) || (val < from[name] && go < val)) {
+						go = val;
+					}
+					if (self.fire("tween", go)) {
+						node.css(name, go);
+					} else {
+						elapsed = duration;
+					}
+				});
+			} else {
+				self.stop();
 				setTimeout(function () {
-					myself.fire("end");
+					self.fire("end");
 				}, 0); 
 			}
 		}
-	};
-	
+	},
 	/**
 	 * Play the tween's animation
 	 * @method play
@@ -131,12 +133,13 @@ var Tween = function () {
 	 * @param {Number} frameLength
 	 * @chainable
 	 */
-	myself.play = function () {
+	play: function () {
+		var node = this.get('node');
 		var startStyle = node.currentStyle();
-		playing = true;
-		from = myself.get("from") || {};
-		to = myself.get("to");
+		var from = this.get("from") || {};
+		var to = this.get("to");
 		var offset = node.offset();
+		var timeframe = jet.TimeFrame;
 		Hash.each(to, function (name, val) {
 			to[name] = pxToFloat(val);
 			if (!from[name]) {
@@ -161,47 +164,46 @@ var Tween = function () {
 				}
 			} 
 		});
-		easing = myself.get("easing");
-		easing = Lang.isFunction(easing) ? easing : Easing[easing];
-		duration = myself.get("duration");
-		strength = myself.get("easingStrength");
-		if (myself.fire("start")) {
-			timeframe.on(ENTER_FRAME, enterFrame);
-			timeframe.addTween(myself).play();
+		this.set('from', from);
+		if (this.fire("start")) {
+			this.set('playing', true);
+			timeframe.on(ENTER_FRAME, this._enterFrame, this);
+			timeframe.addTween(this).play();
 		}
-		return myself;
-	};
+		return this;
+	},
 	/**
 	 * Stops the tween
 	 * @method stop
 	 * @chainable
 	 */
-	myself.stop = function () {
-		playing = false;
-		timeframe.removeTween(myself);
-		timeframe.unbind(ENTER_FRAME, enterFrame);
-		previous = startTime = 0;
-		return myself;
-	};
+	stop: function () {
+		this.set('playing', false);
+		var timeframe = jet.TimeFrame;
+		timeframe.removeTween(this);
+		timeframe.unbind(ENTER_FRAME, this._enterFrame);
+		this.set('previousTime', 0);
+		return this.set('startTime', 0);
+	},
 	/**
 	 * Pauses the tween
 	 * @method pause
 	 * @chainable
 	 */
-	myself.pause = function () {
-		playing = false;
-		timeframe.removeTween(myself);
-		timeframe.unbind(ENTER_FRAME, enterFrame);
-		previous = (new Date()).getTime() - startTime;
-		return myself;
-	};
+	pause: function () {
+		this.set('playing', false)
+		var timeframe = jet.TimeFrame;
+		timeframe.removeTween(this);
+		timeframe.unbind(ENTER_FRAME, this._enterFrame);
+		return this.set('previousTime', (new Date()).getTime() - this.get('startTime'));
+	},
 	/**
 	 * Reverses the tween
 	 * @method reverse
 	 * @chainable
 	 */
-	myself.reverse = function () {
-		return myself.set("from", to).set("to", from);
-	};
-};
-$.extend(Tween, $.Base);
+	reverse: function () {
+		var from = this.get('from');
+		return this.set('from', this.get('to')).set('to', from);
+	}
+});

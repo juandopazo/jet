@@ -1,6 +1,7 @@
 
 var Lang = $.Lang,
 	Hash = $.Hash,
+	Base = $.Base,
 	A = $.Array;
 
 var PLAYING = "playing",

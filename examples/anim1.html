@@ -20,10 +20,10 @@
 </head>
 
 <body>
-	<script type="text/javascript" src="../src/jet/jet.js"></script>
+	<script type="text/javascript" src="../build/jet.js"></script>
 	<script type="text/javascript">
 		jet({
-			base: "../src"
+			base: "../build"
 		}).use('anim', function ($) {
 			
 			var random = $.Lang.random;
@@ -50,12 +50,11 @@
 				}).appendTo(document.body);
 			}
 			
-			var x = random(900) + 100;
-			var y = random(300) + 100;
-			
-			$(".movable").each(function () {
+			$(".movable").each(function (node) {
+				var x = random(900) + 100;
+				var y = random(300) + 100;
 				var tween = new $.Tween({
-					node: this,
+					node: node,
 					to: {
 						left: x,
 						top: y
@@ -64,7 +63,7 @@
 					easing: "sling",
 					easingStrength: 100,
 					on: {
-						complete: function () {
+						end: function () {
 							setTimeout(function () {
 								tween.reverse().play();
 							}, random(3000));
