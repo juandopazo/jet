@@ -54,23 +54,26 @@ var EventTarget = function () {
 	 * @param {Function} callback
 	 * @chainable
 	 */
-	this.on = function (eventType, callback) {
+	this.on = function (eventType, callback, thisp) {
 		if (!collection[eventType]) {
 			collection[eventType] = [];
 		}
 		if (Lang.isObject(callback)) {
-			collection[eventType].push(callback);
+			collection[eventType].push({
+				fn: callback,
+				o: thisp
+			});
 		}
 		return self;
 	};
 	
-	this.once = function (eventType, callback) {
+	this.once = function (eventType, callback, thisp) {
 		onceList.push(callback);
-		return self.on(eventType, callback);
+		return self.on(eventType, callback, thisp);
 	};
 	
-	this.after = function (eventType, callback) {
-		return self.on('after' + eventType.substr(0, 1).toUpperCase() + eventType.substr(1), callback);
+	this.after = function (eventType, callback, thisp) {
+		return self.on('after' + eventType.substr(0, 1).toUpperCase() + eventType.substr(1), callback, thisp);
 	};
 	
 	/**
@@ -104,6 +107,7 @@ var EventTarget = function () {
 		var i, collecLength = handlers.length;
 		var stop = false;
 		var args = SLICE.call(arguments, 1);
+		var callback;
 		args.unshift({
 			stopPropagation: function () {
 				stop = true;
@@ -115,15 +119,16 @@ var EventTarget = function () {
 			target: self
 		});
 		for (i = 0; i < collecLength; i++) {
-			if (Lang.isFunction(handlers[i])) {
-				handlers[i].apply(self, args);
+			callback = handlers[i].fn;
+			if (Lang.isFunction(callback)) {
+				callback.apply(handlers[i].o || self, args);
 			// if the event handler is an object with a handleEvent method,
 			// that method is used but the context is the object itself
-			} else if (Lang.isObject(handlers[i]) && handlers[i].handleEvent) {
-				handlers[i].handleEvent.apply(handlers[i], args);
+			} else if (Lang.isObject(callback) && callback.handleEvent) {
+				callback.handleEvent.apply(handlers[i].o || callback, args);
 			}
-			if (A.indexOf(onceList, handlers[i]) > -1) {
-				A.remove(onceList, handlers[i]);
+			if (A.indexOf(onceList, callback) > -1) {
+				A.remove(onceList, callback);
 				A.remove(handlers, handlers[i]);
 				i--;
 			}
