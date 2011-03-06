@@ -63,7 +63,9 @@ extend(Base, Attribute, {}, {
 			BuiltClass.superclass.constructor.apply(this, args);
 			A.each(BuiltClass.exts, function (extension) {
 				extension.apply(self, args);
-				Hash.each(extension.EVENTS || {}, self.on);
+				Hash.each(extension.EVENTS || {}, function (type, fn) {
+					self.on(type, fn);
+				});
 			});
 		}
 		extend(BuiltClass, superclass || Base, proto, attrs || {});
