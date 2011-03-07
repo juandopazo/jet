@@ -9,11 +9,8 @@
  */
 $.Menu = Base.create('menu', Widget, [$.WidgetParent], {
 	ATTRS: {
-		childType: {
-			value: 'MenuItem',
-			getter: function (val) {
-				return Lang.isString(val) ? $[val] : val;
-			}
+		defaultChildType: {
+			value: 'MenuItem'
 		},
 		align: {
 			value: [$.WidgetAlignment.TopLeft, $.WidgetAlignment.BottomLeft]

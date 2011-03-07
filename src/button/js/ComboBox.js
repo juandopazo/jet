@@ -51,9 +51,8 @@ $.ComboOption = Base.create('combo-option', Widget, [WidgetChild], {
  */
 $.ComboBox = Base.create('combobox', Button, [WidgetParent], {
 	ATTRS: {
-		childType: {
-			value: $.ComboOption,
-			readOnly: true
+		defaultChildType: {
+			value: $.ComboOption
 		},
 		multiple: {
 			value: false,

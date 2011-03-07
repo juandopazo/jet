@@ -43,6 +43,9 @@ $.CheckBoxGroup = Base.create('checkbox-group', Widget, [WidgetParent], {
 		 */
 		name: {
 			writeOnce: true
+		},
+		defaultChildType: {
+			value: $.CheckBox
 		}
 	}
 }, {

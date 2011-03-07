@@ -9,7 +9,7 @@
  */
 $.ButtonGroup = Base.create('button-group', Widget, [WidgetParent], {
 	ATTRS: {
-		childType: {
+		defaultChildType: {
 			value: $.Button
 		},
 		/**

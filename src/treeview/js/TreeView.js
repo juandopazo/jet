@@ -9,9 +9,8 @@
  */
 $.TreeView = Base.create('treeview', Widget, [$.WidgetParent], {
 	ATTRS: {
-		childType: {
-			value: $.TreeNode,
-			readOnly: true
+		defaultChildType: {
+			value: 'TreeNode'
 		}
 	}
 	/**

@@ -81,11 +81,8 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 		labelNode: {
 			setter: $
 		},
-		childType: {
-			value: 'TreeNode',
-			getter: function (val) {
-				return Lang.isString(val) ? $[val] : val;
-			}
+		defaultChildType: {
+			value: 'TreeNode'
 		}
 		
 	},

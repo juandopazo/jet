@@ -38,8 +38,10 @@ $.mix(WidgetParent, {
 		 * @default WidgetChild 
 		 */
 		childType: {
-			value: 'WidgetChild',
 			getter: function (val) {
+				if (!val) {
+					val = this.get('defaultChildType');
+				}
 				return Lang.isString(val) ? $[val] : val;
 			}
 		},

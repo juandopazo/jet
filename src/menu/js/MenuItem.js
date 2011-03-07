@@ -28,11 +28,8 @@ $.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 		labelContent: {
 			value: ''
 		},
-		childType: {
-			value: 'MenuItem',
-			getter: function (val) {
-				return Lang.isString(val) ? $[val] : val;
-			}
+		defaultChildType: {
+			value: 'MenuItem'
 		},
 		align: {
 			value: [$.WidgetAlignment.TopLeft, $.WidgetAlignment.TopRight]

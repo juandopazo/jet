@@ -53,6 +53,9 @@ $.RadioGroup = Base.create('radio-group', Widget, [WidgetParent], {
 		 */
 		name: {
 			writeOnce: true
+		},
+		defaultChildType: {
+			value: $.RadioButton
 		}
 	}
 }, {
