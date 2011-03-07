@@ -34,8 +34,7 @@ $.mix(WidgetParent, {
 			
 		/**
 		 * @config childType
-		 * @description Constructor reference to the default type of the children managed by this Widget
-		 * @default WidgetChild 
+		 * @description Constructor reference to the default type of the children managed by this Widget. The default value is taken from defaultChildType
 		 */
 		childType: {
 			getter: function (val) {
@@ -44,6 +43,14 @@ $.mix(WidgetParent, {
 				}
 				return Lang.isString(val) ? $[val] : val;
 			}
+		},
+		/**
+		 * @config defaultChildType
+		 * @description default value used when a childType is not provided. This attribute is used mostly by classes using WidgetParent.
+		 * @default
+		 */
+		defaultChildType: {
+			value: 'WidgetChild'
 		},
 		
 		/**
