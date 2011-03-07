@@ -18,7 +18,7 @@ $.TabView = Base.create('tabview', Widget, [$.WidgetParent], {
 		panelContainer: {
 			setter: $
 		},
-		childType: {
+		defaultChildType: {
 			value: $.Tab
 		},
 		multiple: {

@@ -41,41 +41,59 @@ var BOUNDING_BOX = "boundingBox",
  * @class EventTarget
  * @constructor
  */
-var EventTarget = function () {
-	var collection = {};
+function EventTarget() {
 	
-	var self = this;
-	var onceList = [];
+	this._events = {};
+	this._onceEvents = {};
 	
+};
+EventTarget.prototype = {
 	/**
 	 * Adds an event listener 
 	 * @method on
-	 * @param {String} eventType
-	 * @param {Function} callback
+	 * @param {String} eventType Name of the event to listen to
+	 * @param {Function} callback Callback to execute when the event fires
+	 * @param {Object} thisp Optional. Context on which the callback will run
 	 * @chainable
 	 */
-	this.on = function (eventType, callback, thisp) {
+	on: function (eventType, callback, thisp) {
+		var collection = this._events;
 		if (!collection[eventType]) {
 			collection[eventType] = [];
 		}
 		if (Lang.isObject(callback)) {
 			collection[eventType].push({
 				fn: callback,
-				o: thisp
+				o: thisp || this
 			});
 		}
-		return self;
-	};
+		return this;
+	},
 	
-	this.once = function (eventType, callback, thisp) {
-		onceList.push(callback);
-		return self.on(eventType, callback, thisp);
-	};
+	/**
+	 * Listens to an event only once
+	 * @method once
+	 * @param {String} eventType Name of the event to listen to
+	 * @param {Function} callback Callback to execute when the event fires
+	 * @param {Object} thisp Optional. Context on which the callback will run
+	 * @chainable
+	 */
+	once: function (eventType, callback, thisp) {
+		this._onceEvents.push(callback);
+		return this.on(eventType, callback, thisp);
+	},
 	
-	this.after = function (eventType, callback, thisp) {
-		return self.on('after' + eventType.substr(0, 1).toUpperCase() + eventType.substr(1), callback, thisp);
-	};
-	
+	/**
+	 * Listens to an 'after' event. This is a shortcut for writing on('afterEvent), callback)
+	 * @method once
+	 * @param {String} eventType Name of the event to listen to
+	 * @param {Function} callback Callback to execute when the event fires
+	 * @param {Object} thisp Optional. Context on which the callback will run
+	 * @chainable
+	 */
+	after: function (eventType, callback, thisp) {
+		return this.on('after' + eventType.substr(0, 1).toUpperCase() + eventType.substr(1), callback, thisp);
+	},
 	/**
 	 * Removes and event listener
 	 * @method unbind
@@ -83,22 +101,23 @@ var EventTarget = function () {
 	 * @param {Function} callback
 	 * @chainable
 	 */
-	this.unbind = function (eventType, callback) {
+	unbind: function (eventType, callback) {
 		if (eventType) {
-			$.Array.remove(callback, collection[eventType] || []);
+			$.Array.remove(callback, this._events[eventType] || []);
 		} else {
-			collection = {};
+			this._events = {};
 		}
-		return self;
-	};
-	
+		return this;
+	},
 	/**
 	 * Fires an event, executing all its listeners
 	 * @method fire
 	 * @param {String} eventType
 	 * Extra parameters will be passed to all event listeners
 	 */
-	this.fire = function (eventType) {
+	fire: function (eventType) {
+		var collection = this._events;
+		var onceList = this._onceEvents;
 		var handlers = collection[eventType] || [];
 		var returnValue = true;
 		if (collection["*"]) {
@@ -116,12 +135,12 @@ var EventTarget = function () {
 				returnValue = false;
 			},
 			type: eventType,
-			target: self
+			target: this
 		});
 		for (i = 0; i < collecLength; i++) {
 			callback = handlers[i].fn;
 			if (Lang.isFunction(callback)) {
-				callback.apply(handlers[i].o || self, args);
+				callback.apply(handlers[i].o, args);
 			// if the event handler is an object with a handleEvent method,
 			// that method is used but the context is the object itself
 			} else if (Lang.isObject(callback) && callback.handleEvent) {
@@ -136,7 +155,6 @@ var EventTarget = function () {
 				break;
 			}
 		}
-		return returnValue;
-	};
-	
+		return this;
+	}
 };

@@ -100,7 +100,9 @@ GetFactory.prototype = {
 				}
 			}, 50);
 		} else {
-			setTimeout(callback, 80);
+			if (Lang.isFunction(callback)) {
+				setTimeout(callback, 80);
+			}
 		}
 		return this;
 	},

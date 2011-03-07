@@ -3,14 +3,22 @@ var Lang = $.Lang,
 	Hash = $.Hash,
 	DOM = $.DOM;
 
-var TOP = "t",
-	BOTTOM = "b",
-	LEFT = "l",
-	RIGHT = "r";
+var TOP = 't',
+	BOTTOM = 'b',
+	LEFT = 'l',
+	RIGHT = 'r';
 
-var NEW_DIV = "<div/>",
-	LOCKED = "locked",
-	HOVER = "hover";
+var CLIENT = 'client',
+	HEIGHT = 'height',
+	WIDTH = 'width',
+	VISIBILITY = 'visibility',
+	CLONE_PROXY = 'clone',
+	AUTO = 'auto',
+	PX = 'px';
+
+var NEW_DIV = '<div/>',
+	LOCKED = 'locked',
+	HOVER = 'hover';
 	
 var de = $.context.documentElement,
 	db = $.context.body;
@@ -21,11 +29,9 @@ var de = $.context.documentElement,
  * @extends Utility
  * @param {Object} config Object literal specifying configuration properties
  */
-var Resize = function () {
-	Resize.superclass.constructor.apply(this, arguments);
+var Resize = $.Base.create('resize', $.Utility, [], {
 	
-	var self = this;
-	self.addAttrs({
+	ATTRS: {
 		/**
 		 * @config node
 		 * @description The node to be resized
@@ -39,9 +45,9 @@ var Resize = function () {
 		},
 		/**
 		 * qconfig handles
-		 * @description An array with the position of the needed handles. Posible values: "t", "b", "r", "l", "tr", "tl", etc
+		 * @description An array with the position of the needed handles. Posible values: 't', 'b', 'r', 'l', 'tr', 'tl', etc
 		 * @type Array
-		 * @default ["b", "r", "br"]
+		 * @default ['b', 'r', 'br']
 		 */
 		handles: {
 			value: [Resize.Bottom, Resize.Right, Resize.BottomRight],
@@ -57,7 +63,7 @@ var Resize = function () {
 			value: false
 		},
 		prefix: {
-			value: "yui"
+			value: 'yui'
 		},
 		/**
 		 * @config minWidth
@@ -87,26 +93,28 @@ var Resize = function () {
 			value: false
 		},
 		/**
-		 * @config proxy
+		 * @config useProxy
 		 * @description Whether to use a copy of the node while resizing or not.
-		 * Possible values: false, true, "clone"
+		 * Possible values: false, true, 'clone'
 		 * @type Boolean | String
+		 * @writeOnce
 		 * @default false
 		 */
-		proxy: {
-			value: false
+		useProxy: {
+			value: false,
+			writeOnce: true
 		},
 		/**
 		 * @config animate
 		 * @description Creates an animation when the resize handle is released. Can only be set to true
-		 * if "proxy" is set to true. <strong>Requires the Anim module.</strong>
+		 * if 'proxy' is set to true. <strong>Requires the Anim module.</strong>
 		 * @type Boolean
 		 * @default false
 		 */
 		animate: {
 			value: false,
 			validator: function () {
-				return self.get("proxy");
+				return this.get('proxy');
 			}
 		},
 		/**
@@ -136,166 +144,192 @@ var Resize = function () {
 		 */
 		locked: {
 			value: false
+		},
+		capturing: {
+			value: false
 		}
-	});
-
-	var node = self.get("node");
-			
-	var CLIENT = "client",
-		HEIGHT = "height",
-		WIDTH = "width",
-		VISIBILITY = "visibility",
-		CLONE_PROXY = "clone",
-		AUTO = "auto",
-		PX = "px";
+	},
 	
-	var min = {
-		height: self.get("minHeight"),
-		width: self.get("minWidth")
-	};
-	var max = {
-		height: self.get("maxHeight"),
-		width: self.get("maxWidth")
-	};
-	
-	var useProxy = self.get("proxy");
-	var proxy = useProxy == CLONE_PROXY ? node.clone() :
-			useProxy ? $(NEW_DIV) : node;
-				
-	var originalStyle = node.currentStyle();
-	if (useProxy) {
-		if (useProxy === true) {
-			var offset = node.offset();
-			proxy.addClass("yui-resize-proxy").css({
-				left: originalStyle.left,
-				top: originalStyle.top,
-				bottom: originalStyle.bottom,
-				right: originalStyle.right,
-				width: originalStyle.width,
-				height: originalStyle.height
-			});
-		} else if (useProxy == CLONE_PROXY) {
-			proxy.css({
-				visibility: "hidden",
-				opacity: 0.5
-			});
+	EVENTS: {
+		destroy: function () {
+			this._tracker.destroy();
 		}
-		proxy.appendTo(node.parent());
 	}
+}, {
 	
-	var capturing = false;
-	var start = {
-		X: 0,
-		Y: 0
-	};
-	var originalWidth, originalHeight;
-	var currentWidth, currentHeight;
-	var screenSize = {
-		width: 0,
-		height: 0
-	};
-	var resizeVertical = false, resizeHorizontal = false;
+	initializer: function () {
+		var tracker = this._tracker = new $.Mouse({
+			shim: this.get('shim')
+		});
+		this._setupProxy();
+		this._setupHandlers();
+
+		tracker.on('mouseup', this._stop, this);
+		tracker.on('mousemove', this._during, this);
+	},
 	
-	var startResize = function (x, y, left, top) {
-		resizeVertical = capturing.indexOf(TOP) > -1 ? TOP :
-						 capturing.indexOf(BOTTOM) > -1 ? BOTTOM :
-						 false;
-		resizeHorizontal = capturing.indexOf(RIGHT) > -1 ? RIGHT :
-							capturing.indexOf(LEFT) > -1 ? LEFT :
-							false;
-		start.X = x;
-		start.Y = y;
-		
-		screenSize = DOM.screenSize();
-		
-		currentWidth = originalWidth = node.width();
-		currentHeight = originalHeight = node.height();
-		node.width(originalWidth).height(originalHeight);
-		
-		if (self.get("reposition")) {
-			node.css({
-				top:	resizeVertical == TOP ? AUTO : top + PX,
-				bottom:	resizeVertical == BOTTOM ? AUTO : (screenSize.height - top - currentHeight) + PX,
-				left:	resizeHorizontal == LEFT ? AUTO : left + PX,
-				right:	resizeHorizontal == RIGHT ? AUTO : (screenSize.width - left - currentWidth) + PX
-			});
-		}
-		
+	_setupProxy: function () {
+		var node = this.get('node');
+		var useProxy = this.get('useProxy');
+		var proxy = useProxy == CLONE_PROXY ? node.clone() :
+					useProxy ? $(NEW_DIV) : node;
+					
+		var originalStyle = node.currentStyle();
 		if (useProxy) {
-			proxy.css(VISIBILITY, "visible");
+			if (useProxy === true) {
+				var offset = node.offset();
+				proxy.addClass('yui-resize-proxy').css({
+					left: originalStyle.left,
+					top: originalStyle.top,
+					bottom: originalStyle.bottom,
+					right: originalStyle.right,
+					width: originalStyle.width,
+					height: originalStyle.height
+				});
+			} else if (useProxy == CLONE_PROXY) {
+				proxy.css({
+					visibility: 'hidden',
+					opacity: 0.5
+				});
+			}
+			proxy.appendTo(node.parent());
 		}
-	};
+	},
 	
-	var getNew = function (type, x, y) {
-		var vertical = (type == HEIGHT);
-		var resize = vertical ? resizeVertical : resizeHorizontal;
-		var original = vertical ? originalHeight : originalWidth;
-		var direction = vertical ? "Y" : "X";
+	_onHandleMouseDown: function (e) {
+		if (!this.get(LOCKED)) {
+			var proxy = this.get('proxy');
+			var offset = proxy.offset();
+			var tracker = this._tracker;
+			this.set('capturing', type);
+			tracker.get('shields').css('cursor', $(e.target).currentStyle().cursor);
+			tracker.set('tracking', true);
+			this._start(null, e.clientX, e.clientY, offset.left, offset.top, type);
+			this.fire('startResize', this.get('currentWidth'), this.get('currentHeight'), offset.left, offset.top, type);
+		}
+	},
+	
+	_onHandleMouseOver: function (e) {
+		var resizeClass = this.get('prefix') + '-resize';
+		var hoverClass = resizeClass + '-hover';
+		var handleClass = resizeClass + '-handle';
+		var handleClassActive = '-active';
+		if (!this.get(LOCKED) && !this.get('capturing')) {
+			$(e.target).addClass([handleClass, handleClassActive, ' ', handleClass, '-', type, handleClassActive].join(''));
+			if (this.get(HOVER)) {
+				this.get('node').removeClass(hoverClass);
+			}
+		}
+	},
+	
+	_onHandleMouseOut: function (e) {
+		var resizeClass = this.get('prefix') + '-resize';
+		var hoverClass = resizeClass + '-hover';
+		var handleClass = resizeClass + '-handle';
+		var handleClassActive = '-active';
+		if (!this.get(LOCKED)) {
+			$(e.target).removeClass(handleClass + handleClassActive).removeClass(handleClass + '-' + type + handleClassActive);
+			if (this.get(HOVER)) {
+				this.get('node').addClass(hoverClass);
+			}
+		}
+	},
+	
+	_setupHandlers: function () {
+		var self = this;
+		var node = this.get('node');
+		var proxy = this.get('proxy');
+		var tracker = this._tracker;
+		var resizeClass = this.get('prefix') + '-resize';
+		var hoverClass = resizeClass + '-hover';
+		var handleClass = resizeClass + '-handle';
+		var handleClassActive = '-active';
+		$.Array.each(this.get('handles'), function (type) {
+			var handle = $(NEW_DIV);
+			handle.addClass([handleClass, ' ', handleClass, '-', type].join(''));
+			self._handlers.push(handle.on('mousedown', self._onHandleMouseDown, self), handle.on('mouseover', self._onHandleMouseOver, self), handle.on('mouseout', self._onHandleMouseOut, self));
+			handle.append($(NEW_DIV).addClass(handleClass + '-inner-' + type)).appendTo(node);
+		});
+		node.addClass(resizeClass).css('display', 'block');
+		if (this.get('hiddenHandles')) {
+			node.addClass(resizeClass + '-hidden');
+		} else if (this.get(HOVER)) {
+			node.addClass(hoverClass);
+		}
+	},
+	
+	_getNew: function (type, x, y) {
+		var vertical = (type == 'height');
+		var resize = this.get(vertical ? 'resizeVertical' : 'resizeHorizontal');
+		var original = this.get(vertical ? 'originalHeight' : 'originalWidth');
+		var direction = vertical ? 'Y' : 'X';
 		
-		var size = resize == (vertical ? TOP : LEFT) ? original - (vertical ? y : x) + start[direction] :
-				   resize == (vertical ? BOTTOM : RIGHT) ? original + (vertical ? y : x) - start[direction] :
+		var size = resize == (vertical ? TOP : LEFT) ? original - (vertical ? y : x) + this.get('start' + direction) :
+				   resize == (vertical ? BOTTOM : RIGHT) ? original + (vertical ? y : x) - this.get('start' + direction) :
 				   original;
 		
-		return size < min[type] ?  min[type] : 
-			   max[type] && size > max[type] ? max[type] :
-			   self.get("constrain") && size > screenSize[type] ? screenSize[type] : 
+		var min = this.get('min' + type.substr(0, 1).toUpperCase() + type.substr(1));
+		var max = this.get('max' + type.substr(0, 1).toUpperCase() + type.substr(1));
+		var screenSize = this.get('screenSize');
+		
+		return size < min ? min : 
+			   max && size > max ? max :
+			   this.get('constrain') && size > screenSize[type] ? screenSize[type] : 
 			   size;
-	};
+	},
 	
-	var tracker = new $.Mouse({
-		shim: self.get("shim")
-	});
-			
-	var stopResize = function (e, x, y) {
-		if (!self.get(LOCKED)) {
-			if (capturing) {
-				screenSize = DOM.screenSize();
-				currentWidth = getNew(WIDTH, x, y);
-				currentHeight = getNew(HEIGHT, x, y);
-				if (!self.get("animate")) {
-					if (resizeVertical) {
-						node.height(currentHeight);
-					}
-					if (resizeHorizontal) {
-						node.width(currentWidth);
-					}
-				} else if ($.Anim) {
-					var to = {};
-					if (resizeVertical) {
-						to.height = currentHeight;
-					}
-					if (resizeHorizontal) {
-						to.width = currentWidth;
-					}
-					(new $.Anim({
-						node: node,
-						to: to,
-						duration: "fast"
-					})).start();
-				}
-			}
-			capturing = false;
-			var offset;
-			if (useProxy) {
-				proxy.css(VISIBILITY, "hidden");
-				offset = proxy.offset();
-			} else {
-				offset = node.offset();
-			}
-			/**
-			 * @event endResize
-			 * @description Fires when the resize action ends
-			 */
-			self.fire("endResize", currentWidth, currentHeight, offset.left, offset.top);
+	_start: function (x, y, left, top) {
+		var node = this.get('node');
+		var capturing = this.get('capturing');
+		var resizeVertical = capturing.indexOf(TOP) > -1 ? TOP :
+						 capturing.indexOf(BOTTOM) > -1 ? BOTTOM :
+						 false;
+		var resizeHorizontal = capturing.indexOf(RIGHT) > -1 ? RIGHT :
+							capturing.indexOf(LEFT) > -1 ? LEFT :
+							false;
+		this.set({
+			resizeVertical: resizeVertical,
+			resizeHorizontal: resizeHorizontal,
+			startX: x,
+			startY: y
+		});
+		
+		var screenSize = DOM.screenSize();
+		
+		var originalWidth = node.width();
+		var originalHeight = node.height();
+		this.set({
+			currentWidth: originalWidth,
+			currentHeight: originalHeight,
+			originalWidth: originalWidth,
+			originalHeight: originalHeight
+		});
+		node.width(originalWidth).height(originalHeight);
+		
+		if (this.get('reposition')) {
+			node.css({
+				top:	resizeVertical == TOP ? AUTO : top + PX,
+				bottom:	resizeVertical == BOTTOM ? AUTO : (screenSize.height - top - originalHeight) + PX,
+				left:	resizeHorizontal == LEFT ? AUTO : left + PX,
+				right:	resizeHorizontal == RIGHT ? AUTO : (screenSize.width - left - originalWidth) + PX
+			});
 		}
-	};
+		
+		if (this.get('useProxy')) {
+			this.get('proxy').css(VISIBILITY, 'visible');
+		}
+	},
 	
-	var lastX, lastY;
-	var duringResize = function (e, x, y) {
-		lastX = x;
-		lastY = y;
-		if (!self.get(LOCKED) && capturing) {
+	_during: function (e, x, y) {
+		this.set({
+			lastX: x,
+			lastY: y
+		});
+		if (!this.get(LOCKED) && this.get('capturing')) {
+			var proxy = this.get('proxy');
 			var offset = proxy.offset();
+			var currentWidth = this.get('currentWidth');
+			var currentHeight = this.get('currentHeight');
 			/**
 			 * @event beforeResize
 			 * @description Fires before the resize action starts. If prevented, the resize action doesn't start
@@ -304,15 +338,14 @@ var Resize = function () {
 			 * @param {Number} offsetLeft
 			 * @param {Number} offsetTop 
 			 */
-			if (self.fire("beforeResize", currentWidth, currentHeight, offset.left, offset.top)) {
-				screenSize = DOM.screenSize();
-				if (resizeVertical) {
-					currentHeight = getNew(HEIGHT, x, y);
+			if (this.fire('beforeResize', currentWidth, currentHeight, offset.left, offset.top)) {
+				var screenSize = DOM.screenSize();
+				if (this.get('resizeVertical')) {
+					this.set('currentHeight', currentHeight = this._getNew(HEIGHT, x, y));
 				}
-				if (resizeHorizontal) {
-					currentWidth = getNew(WIDTH, x, y);
+				if (this.get('resizeHorizontal')) {
+					this.set('currentWidth', currentWidth = this._getNew(WIDTH, x, y));
 				}
-				offset = proxy.offset();
 				/**
 				 * @event resize
 				 * @description Fires during the resize action
@@ -321,72 +354,74 @@ var Resize = function () {
 				 * @param {Number} offsetLeft
 				 * @param {Number} offsetTop 
 				 */
-				if (self.fire("resize", currentWidth, currentHeight, offset.left, offset.top)) {
+				if (this.fire('resize', currentWidth, currentHeight, offset.left, offset.top)) {
 					if (Lang.isNumber(currentHeight) && Lang.isNumber(currentWidth)) {
 						proxy.height(currentHeight).width(currentWidth);
 					}
 				}
 			} else {
-				stopResize(x, y);
+				this._stop(null, x, y);
 			}
 		}
-	};
+	},
 	
-	var resizeClass = self.get("prefix") + "-resize";
-	var hoverClass = resizeClass + "-hover";
-	var handleClass = resizeClass + "-handle";
-	var handleClassActive = "-active";
-	$.Array.each(self.get("handles"), function (type) {
-		var handle = $(NEW_DIV);
-		handle.addClass([handleClass, " ", handleClass, "-", type].join(""));
-		handle.on("mousedown", function (e) {
-			if (!self.get(LOCKED)) {
-				var offset = proxy.offset();
-				capturing = type;
-				tracker.get("shields").css("cursor", handle.currentStyle().cursor);
-				tracker.set("tracking", true);
-				startResize(e.clientX, e.clientY, offset.left, offset.top, type);
-				self.fire("startResize", currentWidth, currentHeight, offset.left, offset.top, type);
-			}
-		});
-		handle.on("mouseover", function (e) {
-			if (!self.get(LOCKED) && !capturing) {
-				handle.addClass([handleClass, handleClassActive, " ", handleClass, "-", type, handleClassActive].join(""));
-				if (self.get(HOVER)) {
-					node.removeClass(hoverClass);
+	_stop: function (e, x, y) {
+		if (!this.get(LOCKED)) {
+			var node = this.get('node');
+			var currentWidth = this._getNew(WIDTH, x, y);
+			var currentHeight = this._getNew(HEIGHT, x, y);
+			if (this.get('capturing')) {
+				var screenSize = DOM.screenSize();
+				var resizeVertical = this.get('resizeVertical');
+				var resizeHorizontal = this.get('resizeHorizontal');
+				if (!this.get('animate')) {
+					if (resizeVertical) {
+						node.height(currentHeight);
+					}
+					if (resizeHorizontal) {
+						node.width(currentWidth);
+					}
+				} else if ($.Tween) {
+					var to = {};
+					if (resizeVertical) {
+						to.height = currentHeight;
+					}
+					if (resizeHorizontal) {
+						to.width = currentWidth;
+					}
+					(new $.Tween({
+						node: node,
+						to: to,
+						duration: 'fast'
+					})).start();
 				}
 			}
-		});
-		handle.on("mouseout", function (e) {
-			if (!self.get(LOCKED)) {
-				handle.removeClass(handleClass + handleClassActive).removeClass(handleClass + "-" + type + handleClassActive);
-				if (self.get(HOVER)) {
-					node.addClass(hoverClass);
-				}
+			this.set('capturing', false);
+			var offset;
+			var proxy = this.get('proxy');
+			if (this.get('useProxy')) {
+				proxy.css('visibility', 'hidden');
+				offset = proxy.offset();
+			} else {
+				offset = node.offset();
 			}
-		})
-		handle.append($(NEW_DIV).addClass(handleClass + "-inner-" + type)).appendTo(node);
-	});
-	node.addClass(resizeClass).css("display", "block");
-	if (self.get("hiddenHandles")) {
-		node.addClass(resizeClass + "-hidden");
-	} else if (self.get(HOVER)) {
-		node.addClass(hoverClass);
-	}
-	tracker.on("mouseup", stopResize);
-	tracker.on("mousemove", duringResize);
+			/**
+			 * @event endResize
+			 * @description Fires when the resize action ends
+			 */
+			this.fire('endResize', currentWidth, currentHeight, offset.left, offset.top);
+		}
+	},
 	
 	/**
 	 * @method stop
 	 * @description Makes the resize action end prematurely
 	 * @chainable
 	 */
-	this.stop = function () {
-		stopResize(lastX, lastY);
+	stop: function () {
+		this._stop(null, this.get('lastX'), this.get('lastY'));
 		return this;
-	};
-};
-$.Resize = $.extend(Resize, $.Utility, {
+	},
 	/**
 	 * @method lock
 	 * @description Makes the handles non interactive
@@ -403,6 +438,7 @@ $.Resize = $.extend(Resize, $.Utility, {
 	unlock: function () {
 		return this.set(LOCKED, false);
 	}
+
 });
 
 Hash.each({

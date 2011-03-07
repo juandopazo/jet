@@ -1,4 +1,25 @@
 
+var Lang = $.Lang,
+	DATA = "data",
+	ASC = "asc",
+	DESC = "desc",
+	ODD = "odd",
+	EVEN = "even",
+	REC = "rec",
+	LINER = "liner",
+	NUMERAL = "#",
+	DOT = ".",
+	ID = "id",
+	SORTABLE = "sortable",
+	NEW_DIV = "<div/>",
+	THEAD = 'thead',
+	TBODY = 'tbody',
+	RECORDSET = 'recordSet',
+	SORTED_BY = 'sortedBy',
+	RECORD_ID_PREFIX = 'recordIdPrefix',
+	BOUNDING_BOX = 'boundingBox',
+	COLUMN_DEFINITIONS = "columnDefinitions";
+	
 /**
  * A DataTable is an HTML table that can be sorted and linked to a DataSource
  * @class DataTable
@@ -93,7 +114,7 @@ var DataTable = Base.create('dt', Widget, [], {
 		var theadRow = $('<tr/>').addClass(getClassName('first'), getClassName('last')).appendTo(thead);
 		A.each(colDefs, function (colDef, i) {
 			var content = $("<span/>").addClass(labelClassname).html(colDef.label || colDef.key);
-			var liner = $(NEW_DIV).addClass(getClassName('liner')).append(content);
+			var liner = $(NEW_DIV).addClass(linerClassName).append(content);
 			var th = $("<th/>").append(liner);
 			th.attr(ID, getClassName(uid, 'th', colDef.key));
 			if (i === 0) {

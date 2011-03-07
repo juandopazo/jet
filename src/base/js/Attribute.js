@@ -5,46 +5,58 @@
  * @extends EventTarget
  * @constructor
  */
-var Attribute = function (classConfig) {
-	Attribute.superclass.constructor.apply(this);
-	classConfig = classConfig || {};
-	var self = this;
+function Attribute(state) {
 	
-	var attrConfig = {};
+	Attribute.superclass.constructor.call(this);
 	
-	function addAttr(attrName, config) {
-		attrConfig[attrName] = config;
-		var isValue = Lang.isValue(classConfig[attrName]);
+	this._state = state || {};
+	this._stateConf = {};
+	
+};
+extend(Attribute, EventTarget, {
+	/**
+	 * Adds a configuration attribute, along with its options
+	 * @method addAttr
+	 * @param {String} attrName
+	 * @param {Hash} config
+	 * @chainable
+	 */
+	addAttr: function (attrName, config) {
+		this._stateConf[attrName] = config;
+		var state = this._state;
+		var isValue = Lang.isValue(state[attrName]);
 		if (config.required && config.readOnly) {
 			$.error("You can't have both 'required' and 'readOnly'");
 		}
 		if (config.readOnly && isValue) {
-			delete classConfig[attrName];
+			delete state[attrName];
 		}
 		if (config.required && !isValue) {
 			$.error("Missing required attribute: " + attrName);
 		}
 		if (isValue && config.setter) {
-			classConfig[attrName] = config.setter.call(self, classConfig[attrName]);
+			state[attrName] = config.setter.call(self, state[attrName]);
 		}
-		return self;
-	}
+		return this;
+	},
 	
-	function set(attrName, attrValue) {
+	_set: function (attrName, attrValue) {
+		var attrConfig = this._stateConf;
+		var state = this._state;
 		attrConfig[attrName] = attrConfig[attrName] || {};
 		var config = attrConfig[attrName];
-		var oldValue = classConfig[attrName];
+		var oldValue = state[attrName];
 		if (!config.readOnly) {
-			if (!config.validator || config.validator.call(self, attrValue)) {
-				attrValue = config.setter ? config.setter.call(self, attrValue) : attrValue;
-				if (!Lang.isValue(classConfig[attrName]) && config.value) {
-					classConfig[attrName] = config.value;
+			if (!config.validator || config.validator.call(this, attrValue)) {
+				attrValue = config.setter ? config.setter.call(this, attrValue) : attrValue;
+				if (!Lang.isValue(state[attrName]) && config.value) {
+					state[attrName] = config.value;
 				}
 				if (attrValue !== oldValue) {
-					classConfig[attrName] = classConfig[attrName] == attrValue ? attrValue :
-											self.fire(attrName + "Change", attrValue, classConfig[attrName]) ? attrValue :
-											classConfig[attrName];
-					self.fire('after' + Lang.capitalize(attrName) + 'Change', attrValue, oldValue);
+					state[attrName] = state[attrName] == attrValue ? attrValue :
+											this.fire(attrName + "Change", attrValue, state[attrName]) ? attrValue :
+											state[attrName];
+					this.fire('after' + Lang.capitalize(attrName) + 'Change', attrValue, oldValue);
 				}
 			}
 			if (config.writeOnce && !config.readOnly) {
@@ -53,28 +65,30 @@ var Attribute = function (classConfig) {
 		} else {
 			$.error(attrName + " is a " + (config.writeOnce ? "write-once" : "read-only") + " attribute");
 		}
-	}
-	
+		return this;
+	},
 	/**
 	 * Returns a configuration attribute
 	 * @method get
 	 * @param {String} attrName
 	 */	
-	this.get = function (attrName) {
+	get: function (attrName) {
+		var attrConfig = this._stateConf;
+		var state = this._state;
 		attrConfig[attrName] = attrConfig[attrName] || {};
 		var config = attrConfig[attrName];
 		/*
-		 * If it is write-once and it wasn't set before, use the default value and mark it as written (readOnly works as written)
+		 * If it is writstateit wasn't set before, use the default value and mark it as written (readOnly works as written)
 		 */
 		if (config.writeOnce && !config.readOnly) {
 			attrConfig[attrName].readOnly = true;
 		}
-		if (!Lang.isValue(classConfig[attrName])) {
-			classConfig[attrName] = config.value;
+		if (!Lang.isValue(state[attrName])) {
+			state[attrName] = config.value;
 		}
-		return	config.getter ? config.getter.call(self, classConfig[attrName], attrName) :
-				classConfig[attrName];
-	};
+		return	config.getter ? config.getter.call(this, state[attrName], attrName) :
+				state[attrName];
+	},
 	/**
 	 * Sets a configuration attribute
 	 * @method set
@@ -82,64 +96,46 @@ var Attribute = function (classConfig) {
 	 * @param {Object} attrValue
 	 * @chainable
 	 */
-	this.set = function (attrName, attrValue) {
+	set: function (attrName, attrValue) {
+		var self = this;
 		if (Lang.isObject(attrName)) {
-			Hash.each(attrName, function (name, value) {
-				set(name, value);
-			});
+			Hash.each(attrName, this._set, this);
 		} else {
-			set(attrName, attrValue);
+			this._set(attrName, attrValue);
 		}
-		return self;
-	};
+		return this;
+	},
 	/**
 	 * Unsets a configuration attribute
 	 * @method unset
 	 * @param {String} attrName
 	 * @chainable
 	 */
-	this.unset = function (attrName) {
-		delete classConfig[attrName];
-		return self;
-	};
-	/**
-	 * Adds a configuration attribute, along with its options
-	 * @method addAttr
-	 * @param {String} attrName
-	 * @param {Hash} config
-	 * @chainable
-	 */
-	this.addAttr = addAttr;
+	unset: function (attrName) {
+		delete this._state[attrName];
+		return this;
+	},
 	/**
 	 * Adds several configuration attributes
 	 * @method addAttrs
 	 * @param {Hash} config - key/value pairs of attribute names and configs
 	 * @chainable
 	 */
-	this.addAttrs = function (config) {
-		Hash.each(config, addAttr);
-		return self;
-	};
+	addAttrs: function (config) {
+		Hash.each(config, this.addAttr, this);
+		return this;
+	},
 	/**
 	 * Returns a key/value paired object with all attributes
 	 * @method getAttrs
 	 * @return {Hash}
 	 */
-	this.getAttrs = function () {
+	getAttrs: function () {
 		var result = {};
-		Hash.each(classConfig, function (key) {
+		var self = this;
+		Hash.each(this._state, function (key) {
 			result[key] = self.get(key);
 		});
 		return result;
-	};
-	/**
-	 * Returns whether an attribute is set or not
-	 * @method isSet
-	 * @param {String} attrName
-	 * @return {Boolean}
-	 */
-	this.isSet = function (attrName) {
-		return Lang.isValue(classConfig[attrName]);
-	};
-};
-extend(Attribute, EventTarget);
+	}
+});

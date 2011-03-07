@@ -77,6 +77,7 @@ $.WidgetSandbox = $.mix(function WidgetSandbox() {
 			var contentDoc = this.get(CONTENT_DOCUMENT);
 			var contentBox = this.get('contentBox');
 			var body = contentDoc.body;
+			var newContentBox;
 			contentWindow.jet = jet;
 			
 			try {

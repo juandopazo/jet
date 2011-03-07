@@ -67,7 +67,7 @@ var GlobalConfig = {
 				value: SOLID
 			}
 		},
-		datatable: ["datasource", 'datatable-styles'],
+		datatable: ['io', "datasource", 'datatable-styles'],
 		'tabview-styles': {
 			type: CSS,
 			beacon: {

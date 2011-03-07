@@ -1,4 +1,7 @@
 
+var CELLS = 'cells',
+	TD = 'td';
+
 var Column = Base.create('column', Base, [], {
 	
 	ATTRS: {
