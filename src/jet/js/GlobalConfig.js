@@ -81,6 +81,7 @@ var GlobalConfig = {
 		'widget-parentchild': [BASE],
 		'widget-sandbox': [BASE],
 		menu: [WIDGET_PARENTCHILD, 'container'],
-		vector: ['anim']
+		vector: ['anim'],
+		layout: ['resize', WIDGET_PARENTCHILD]
 	}
 };
