@@ -29,7 +29,7 @@ var de = $.context.documentElement,
  * @extends Utility
  * @param {Object} config Object literal specifying configuration properties
  */
-var Resize = $.Base.create('resize', $.Utility, [], {
+var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 	
 	ATTRS: {
 		/**
@@ -50,7 +50,7 @@ var Resize = $.Base.create('resize', $.Utility, [], {
 		 * @default ['b', 'r', 'br']
 		 */
 		handles: {
-			value: [Resize.Bottom, Resize.Right, Resize.BottomRight],
+			value: [BOTTOM, RIGHT, BOTTOM + RIGHT],
 			validator: Lang.isArray
 		},
 		/**
@@ -194,28 +194,32 @@ var Resize = $.Base.create('resize', $.Utility, [], {
 			}
 			proxy.appendTo(node.parent());
 		}
+		this.set('proxy', proxy);
 	},
 	
 	_onHandleMouseDown: function (e) {
 		if (!this.get(LOCKED)) {
+			var handle = $(e.target);
+			var type = handle[0].type;
 			var proxy = this.get('proxy');
 			var offset = proxy.offset();
 			var tracker = this._tracker;
 			this.set('capturing', type);
-			tracker.get('shields').css('cursor', $(e.target).currentStyle().cursor);
+			tracker.get('shields').css('cursor', handle.currentStyle().cursor);
 			tracker.set('tracking', true);
-			this._start(null, e.clientX, e.clientY, offset.left, offset.top, type);
-			this.fire('startResize', this.get('currentWidth'), this.get('currentHeight'), offset.left, offset.top, type);
+			this._start(e.clientX, e.clientY, offset.left, offset.top, type);
+			this.fire('resize:start', this.get('currentWidth'), this.get('currentHeight'), offset.left, offset.top, type);
 		}
 	},
 	
 	_onHandleMouseOver: function (e) {
+		var handle = $(e.target);
 		var resizeClass = this.get('prefix') + '-resize';
 		var hoverClass = resizeClass + '-hover';
 		var handleClass = resizeClass + '-handle';
 		var handleClassActive = '-active';
 		if (!this.get(LOCKED) && !this.get('capturing')) {
-			$(e.target).addClass([handleClass, handleClassActive, ' ', handleClass, '-', type, handleClassActive].join(''));
+			handle.addClass([handleClass, handleClassActive, ' ', handleClass, '-', handle[0].type, handleClassActive].join(''));
 			if (this.get(HOVER)) {
 				this.get('node').removeClass(hoverClass);
 			}
@@ -223,12 +227,13 @@ var Resize = $.Base.create('resize', $.Utility, [], {
 	},
 	
 	_onHandleMouseOut: function (e) {
+		var handle = $(e.target);
 		var resizeClass = this.get('prefix') + '-resize';
 		var hoverClass = resizeClass + '-hover';
 		var handleClass = resizeClass + '-handle';
 		var handleClassActive = '-active';
 		if (!this.get(LOCKED)) {
-			$(e.target).removeClass(handleClass + handleClassActive).removeClass(handleClass + '-' + type + handleClassActive);
+			handle.removeClass(handleClass + handleClassActive).removeClass(handleClass + '-' + handle[0].type + handleClassActive);
 			if (this.get(HOVER)) {
 				this.get('node').addClass(hoverClass);
 			}
@@ -247,6 +252,7 @@ var Resize = $.Base.create('resize', $.Utility, [], {
 		$.Array.each(this.get('handles'), function (type) {
 			var handle = $(NEW_DIV);
 			handle.addClass([handleClass, ' ', handleClass, '-', type].join(''));
+			handle[0].type = type;
 			self._handlers.push(handle.on('mousedown', self._onHandleMouseDown, self), handle.on('mouseover', self._onHandleMouseOver, self), handle.on('mouseout', self._onHandleMouseOut, self));
 			handle.append($(NEW_DIV).addClass(handleClass + '-inner-' + type)).appendTo(node);
 		});
@@ -409,7 +415,7 @@ var Resize = $.Base.create('resize', $.Utility, [], {
 			 * @event endResize
 			 * @description Fires when the resize action ends
 			 */
-			this.fire('endResize', currentWidth, currentHeight, offset.left, offset.top);
+			this.fire('resize:end', currentWidth, currentHeight, offset.left, offset.top);
 		}
 	},
 	
