@@ -326,7 +326,7 @@ extend(Widget, Base, {
 	HTML_PARSER: {
 		contentBox: function () {
 			var boundingBox = this.get(BOUNDING_BOX);
-			if (boundingBox) {
+			if (boundingBox && this.CONTENT_TEMPLATE) {
 				return boundingBox.first();
 			}
 		}
