@@ -35,7 +35,7 @@ var update = function () {
 			/*
 			 * Create a new instance of the core, call each module and the queue's callback 
 			 */
-			core = Core(queueList[i].config);
+			core = buildJet(queueList[i].config);
 			for (j = 0; j < requiredLength; j++) {
 				modules[required[j].name](core);
 			}

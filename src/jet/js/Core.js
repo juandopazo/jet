@@ -4,7 +4,7 @@
  * @class Core
  * @static
  */
-var Core = function (config) {
+function buildJet(config) {
 	
 	/**
 	 * Walks through the DOM tree starting in th branch that derives from node
@@ -57,7 +57,7 @@ var Core = function (config) {
 	 * @return {NodeList}
 	 */
 	// @TODO: consider moving this to the Node module
-	var $ = function (query, root) {
+	var $ = function Jet(query, root) {
 		root = root || $.context;
 		if (Lang.isString(query)) {
 			root = query.substr(0, 1) == '#' && root.ownerDocument ? root.ownerDocument : root;
