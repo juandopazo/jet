@@ -69,6 +69,7 @@ GetFactory.prototype = {
 	 * @chainable
 	 */
 	css: function (url, callback) {
+		callback = callback || function() {};
 		var node = this._create('link', {
 			type: 'text/css',
 			rel: 'stylesheet',
@@ -81,7 +82,7 @@ GetFactory.prototype = {
 				var readyState = this.readyState;
 				if (readyState === 'loaded' || readyState === 'complete') {
 					this.onreadystatechange = null;
-					callback();
+					callback(node);
 				}
 			};
 		} else if (UA.webkit) {
@@ -90,13 +91,13 @@ GetFactory.prototype = {
 				for (var i = 0, length = stylesheets.length; i < length; i++) {
 					if (stylesheets[i].href == url) {
 						clearInterval(interval);
-						callback();
+						callback(node);
 						break;
 					}
 				}
 				if (++count == 100) {
 					clearInterval(interval);
-					callback();
+					callback(node);
 				}
 			}, 50);
 		} else {

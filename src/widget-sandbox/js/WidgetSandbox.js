@@ -78,6 +78,10 @@ $.WidgetSandbox = $.mix(function WidgetSandbox() {
 			var contentBox = this.get('contentBox');
 			var body = contentDoc.body;
 			var newContentBox;
+			var onCssLoad = function (node) {
+				self.fire('cssLoad', node);
+			};
+			
 			contentWindow.jet = jet;
 			
 			try {
@@ -93,7 +97,9 @@ $.WidgetSandbox = $.mix(function WidgetSandbox() {
 				win: contentWindow,
 				doc: contentDoc
 			}).use(function (j) {
-				A.each(self.get('extraCss'), j.Get.css, j.Get);
+				A.each(self.get('extraCss'), function (url) {
+					j.Get.css(url, onCssLoad);
+				}, j.Get);
 				A.each(self.get('extraScripts'), j.Get.script, j.Get);
 				self.fire('ready');
 			});
