@@ -36,6 +36,7 @@ var update = function () {
 			 * Create a new instance of the core, call each module and the queue's callback 
 			 */
 			core = buildJet(queueList[i].config);
+			core.use = makeUse(queueList[i].config, core.Get);
 			for (j = 0; j < requiredLength; j++) {
 				modules[required[j].name](core);
 			}
@@ -44,6 +45,84 @@ var update = function () {
 			i++;
 		}
 	}
+};
+
+function makeUse(config, get) {
+	return function () {
+		var base = config.base;
+		var request = SLICE.call(arguments);
+		var i = 0, j = 0, k, module, moveForward;
+		
+		// if "*" is used, include everything
+		if (ArrayHelper.indexOf("*", request) > -1) {
+			request = [];
+			AP.unshift.apply(request, Hash.keys(config.modules));
+			
+		// add widget-parentchild by default
+		} else if (ArrayHelper.indexOf(BASE, request) == -1) {
+			request.unshift(BASE);
+		}
+		
+		// handle requirements
+		while (i < request.length - 1) {
+			module = request[i];
+			moveForward = 1;
+			if (Lang.isString(module)) {
+				module = config.modules[module.toLowerCase()];
+			}
+			if (module && module.requires) {
+				module = module.requires;
+				for (j = module.length - 1; j >= 0; j--) {
+					if (!ArrayHelper.inArray(module[j], request)) {
+						request.splice(i, 0, module[j]);
+						moveForward = 0;
+					}
+				}
+			}
+			i += moveForward;
+		}
+		
+		// remove JSON module if there's native JSON support
+		if (config.win.JSON) {
+			ArrayHelper.remove('json', request);
+		}
+		
+		// transform every module request into an object and load the required css/script if not already loaded
+		for (i = 0; i < request.length - 1; i++) {
+			module = request[i];
+			/*
+			 * If a module is a string, it is considered a predefined module.
+			 * If it isn't defined, it's probably a mistake and will lead to errors
+			 */
+			if (Lang.isString(module) && config.modules[module]) {
+				request[i] = module = config.modules[module];
+			}
+			if (!Lang.isObject(module) || (module.type == CSS && !config.loadCss)) {
+				request.splice(i, 1);
+				i--;
+			} else {
+				module.fullpath = module.fullpath || base + module.path;
+				if (!(modules[module.name] || queuedScripts[module.fullpath])) {
+					if (!module.type || module.type == "js") {
+						get.script(module.fullpath); 
+					} else if (module.type == CSS) {
+						domReady(loadCssModule, module);
+					}
+					queuedScripts[module.fullpath] = 1;
+				}
+			}
+		}
+		
+		// add the queue to the waiting list
+		queueList.push({
+			main: request.pop(),
+			req: request,
+			// onProgress handlers are managed by queue
+			onProgress: config.onProgress,
+			config: config
+		});
+		update();
+	};
 };
 
 var buildConfig = function (config, next) {
@@ -146,7 +225,7 @@ window.jet = function (o) {
 	 * @type String
 	 * @default "//jet-js.googlecode.com/svn/trunk/src/"
 	 */
-	base = base.substr(base.length - 1, 1) == "/" ? base : base + "/";
+	base = config.base = base.substr(base.length - 1, 1) == "/" ? base : base + "/";
 	/**
 	 * @config base
 	 * @description defines whether predefined modules should be minified or not
@@ -191,82 +270,6 @@ window.jet = function (o) {
 			jet.add(module.name, function () {});
 		});
 	};
-	
-	var use = function () {
-		
-		var request = SLICE.call(arguments);
-		var i = 0, j = 0, k, module, moveForward;
-		
-		// if "*" is used, include everything
-		if (ArrayHelper.indexOf("*", request) > -1) {
-			request = [];
-			AP.unshift.apply(request, Hash.keys(config.modules));
-			
-		// add widget-parentchild by default
-		} else if (ArrayHelper.indexOf(BASE, request) == -1) {
-			request.unshift(BASE);
-		}
-		
-		// handle requirements
-		while (i < request.length - 1) {
-			module = request[i];
-			moveForward = 1;
-			if (Lang.isString(module)) {
-				module = config.modules[module.toLowerCase()];
-			}
-			if (module && module.requires) {
-				module = module.requires;
-				for (j = module.length - 1; j >= 0; j--) {
-					if (!ArrayHelper.inArray(module[j], request)) {
-						request.splice(i, 0, module[j]);
-						moveForward = 0;
-					}
-				}
-			}
-			i += moveForward;
-		}
-		
-		// remove JSON module if there's native JSON support
-		if (config.win.JSON) {
-			ArrayHelper.remove('json', request);
-		}
-		
-		// transform every module request into an object and load the required css/script if not already loaded
-		for (i = 0; i < request.length - 1; i++) {
-			module = request[i];
-			/*
-			 * If a module is a string, it is considered a predefined module.
-			 * If it isn't defined, it's probably a mistake and will lead to errors
-			 */
-			if (Lang.isString(module) && config.modules[module]) {
-				request[i] = module = config.modules[module];
-			}
-			if (!Lang.isObject(module) || (module.type == CSS && !config.loadCss)) {
-				request.splice(i, 1);
-				i--;
-			} else {
-				module.fullpath = module.fullpath || base + module.path;
-				if (!(modules[module.name] || queuedScripts[module.fullpath])) {
-					if (!module.type || module.type == "js") {
-						get.script(module.fullpath); 
-					} else if (module.type == CSS) {
-						domReady(loadCssModule, module);
-					}
-					queuedScripts[module.fullpath] = 1;
-				}
-			}
-		}
-		
-		// add the queue to the waiting list
-		queueList.push({
-			main: request.pop(),
-			req: request,
-			// onProgress handlers are managed by queue
-			onProgress: config.onProgress,
-			config: config
-		});
-		update();
-	};
 
 	/**
 	 * Allows for the following pattern:
@@ -287,7 +290,7 @@ window.jet = function (o) {
 		 * that contains the main logic of the application.
 		 * @method use 
 		 */
-		use: use
+		use: makeUse(config, get)
 	};
 };
 /**
