@@ -138,8 +138,11 @@ var Tween = Base.create('tween', Base, [], {
 		var startStyle = node.currentStyle();
 		var from = this.get("from") || {};
 		var to = this.get("to");
-		var offset = node.offset();
+		var offset;
 		var timeframe = jet.TimeFrame;
+		if (to.left || to.top) {
+			offset = node.offset();
+		}
 		Hash.each(to, function (name, val) {
 			to[name] = pxToFloat(val);
 			if (!from[name]) {
@@ -147,20 +150,20 @@ var Tween = Base.create('tween', Base, [], {
 				// they might have non numeric values such as "auto"
 				// @TODO: handle "auto" for margin, padding, etc
 				switch (name) {
-				case "left":
-					from[name] = offset.left;
-					break;
-				case "top":
-					from[name] = offset.top;
-					break;
-				case "width":
-					from[name] = offset.width;
-					break;
-				case "height":
-					from[name] = offset.height;
-					break;
-				default:
-					from[name] = Lang.isNumber(pxToFloat(startStyle[name])) ? pxToFloat(startStyle[name]) : 0;
+					case "left":
+						from[name] = offset.left;
+						break;
+					case "top":
+						from[name] = offset.top;
+						break;
+					case "width":
+						from[name] = node.attr('offsetWidth');
+						break;
+					case "height":
+						from[name] = node.attr('offsetHeight');
+						break;
+					default:
+						from[name] = Lang.isNumber(pxToFloat(startStyle[name])) ? pxToFloat(startStyle[name]) : 0;
 				}
 			} 
 		});

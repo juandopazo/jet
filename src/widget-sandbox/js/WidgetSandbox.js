@@ -76,11 +76,13 @@ $.WidgetSandbox = $.mix(function WidgetSandbox() {
 			var contentWindow = this.get(CONTENT_WINDOW);
 			var contentDoc = this.get(CONTENT_DOCUMENT);
 			var contentBox = this.get('contentBox');
+			contentDoc.write('<head><style>html,body{overflow:hidden;margin:0;padding:0;border:0;}</style></head>');
+			contentDoc.close();
 			var body = contentDoc.body;
 			var newContentBox;
-			var onCssLoad = function (node) {
-				self.fire('cssLoad', node);
-			};
+			
+			body.innerHTML = '';
+			body.style.overflow = 'hidden';
 			
 			contentWindow.jet = jet;
 			
@@ -97,11 +99,17 @@ $.WidgetSandbox = $.mix(function WidgetSandbox() {
 				win: contentWindow,
 				doc: contentDoc
 			}).use(function (j) {
-				A.each(self.get('extraCss'), function (url) {
-					j.Get.css(url, onCssLoad);
+				var loadedCss = 0;
+				var allCss = self.get('extraCss');
+				A.each(allCss, function (url) {
+					j.Get.css(url, function () {
+						loadedCss++;
+						if (loadedCss == allCss.length) {
+							A.each(self.get('extraScripts'), j.Get.script, j.Get);
+							self.fire('ready');
+						}
+					});
 				}, j.Get);
-				A.each(self.get('extraScripts'), j.Get.script, j.Get);
-				self.fire('ready');
 			});
 		}
 		

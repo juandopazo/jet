@@ -13,8 +13,8 @@ var swfobject = function () {
 		EXPRESS_INSTALL_ID = "SWFObjectExprInst",
 		ON_READY_STATE_CHANGE = "onreadystatechange",
 		
-		win = window,
-		doc = document,
+		win = $.config.win,
+		doc = $.config.doc,
 		nav = navigator,
 		
 		plugin = false,
@@ -739,6 +739,8 @@ var swfobject = function () {
 		addDomLoadEvent: addDomLoadEvent,
 		
 		addLoadEvent: addLoadEvent,
+		
+		callDomLoadFunctions: callDomLoadFunctions,
 		
 		getQueryParamValue: function (param) {
 			var q = doc.location.search || doc.location.hash;

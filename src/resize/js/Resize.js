@@ -308,7 +308,8 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 			currentWidth: originalWidth,
 			currentHeight: originalHeight,
 			originalWidth: originalWidth,
-			originalHeight: originalHeight
+			originalHeight: originalHeight,
+			screenSize: screenSize
 		});
 		if (resizeHorizontal) {
 			node.width(originalWidth);
