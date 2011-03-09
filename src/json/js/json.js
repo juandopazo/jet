@@ -175,8 +175,8 @@
 // Create a JSON object only if one does not already exist. We create the
 // methods in a closure to avoid creating global variables.
 
-if (!this.JSON) {
-    this.JSON = {};
+if (!window.JSON) {
+    $.JSON = window.JSON = {};
 }
 
 (function () {
