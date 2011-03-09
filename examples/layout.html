@@ -18,28 +18,32 @@
 		.jet-layout, .jet-layout-panel {
 			zoom: 1;
 		}
-		.jet-layout-panel-h {
+		.jet-layout-panel-child-h {
 			height: 100%;
 			float: left;
 		}
 	</style>
 </head>
 <body class="yui-skin-sam">
-	<div class="jet-layout jet-layout-horizontal">
-		<div class="jet-layout-panel"></div>
-		<div class="jet-layout-panel"></div>
-		<div class="jet-layout-panel"></div>
+	<div id="layout" class="jet-layout jet-layout-h">
+		<div class="jet-layout-panel jet-layout-panel-v jet-layout-panel-child-h">
+			<div class="jet-layout-panel jet-layout-panel-child-v"></div>
+			<div class="jet-layout-panel jet-layout-panel-child-v"></div>
+			<div class="jet-layout-panel jet-layout-panel-child-v"></div>
+		</div>
+		<div class="jet-layout-panel jet-layout-panel-child-h"></div>
+		<div class="jet-layout-panel jet-layout-panel-child-h"></div>
 	</div>
 	<script type="text/javascript" src="../build/jet.js"></script>
 	<script type="text/javascript">
 	jet({
 		base: '../build'
-	}).use('resize', 'layout', function ($) {
+	}).use('layout', function ($) {
 		
 		var layout = new $.Layout({
-			boundingBox: '.jet-layout',
+			boundingBox: '#layout',
 			height: 400,
-			direction: $.Layout.Horizontal
+			minSize: 100
 		});
 		layout.render();
 		

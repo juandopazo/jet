@@ -72,14 +72,18 @@ LayoutPanelBase.prototype = {
 		
 	_uiLayoutRender: function () {
 		var direction = this.get('direction');
-		var boundingBox = this.get('boundingBox').addClass(this.getClassName(direction));
+		var boundingBox = this.get('boundingBox');
 		var sizeType = direction == LayoutPanelBase.Horizontal ? 'width' : 'height';
 		var setSize = 0;
 		var freeSize = 0;
+		var childrenNumber = this.get('children').length;
+		if (childrenNumber > 0) {
+			boundingBox.addClass(this.getClassName(direction));
+		}
 		this.each(function (child) {
 			setSize += child.get(sizeType) || 0;
 		});
-		freeSize = (boundingBox[sizeType]() - setSize) / this.get('children').length;
+		freeSize = (boundingBox[sizeType]() - setSize) / childrenNumber;
 		this.each(function (child) {
 			if (!child.get(sizeType)) {
 				child.set(sizeType, freeSize);
