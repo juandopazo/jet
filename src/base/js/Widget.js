@@ -1,4 +1,13 @@
 
+var BOUNDING_BOX = 'boundingBox',
+	CONTENT_BOX = 'contentBox',
+	SRC_NODE = 'srcNode',
+	CONTENT = 'content',
+	CLASS_PREFIX = 'classPrefix',
+	UNLOAD = 'unload',
+	VISIBILITY = 'visibility',
+	DESTROY = 'destroy';
+
 if (!jet.Widget) {
 	jet.Widget = {};
 }
@@ -36,9 +45,9 @@ extend(Widget, Base, {
 	 * @chainable
 	 */
 	hide: function () {
-		if (this.fire("hide")) {
-			this.get(BOUNDING_BOX).addClass(this.getClassName("hidden"));
-			return this.fire("afterHide");
+		if (this.fire('hide')) {
+			this.get(BOUNDING_BOX).addClass(this.getClassName('hidden'));
+			return this.fire('afterHide');
 		}
 		return this;
 	},
@@ -48,9 +57,9 @@ extend(Widget, Base, {
 	 * @chainable
 	 */
 	show: function () {
-		if (this.fire("show")) {
-			this.get(BOUNDING_BOX).removeClass(this.getClassName("hidden"));
-			return this.fire("afterShow");
+		if (this.fire('show')) {
+			this.get(BOUNDING_BOX).removeClass(this.getClassName('hidden'));
+			return this.fire('afterShow');
 		}
 		return this;
 	},
@@ -60,8 +69,8 @@ extend(Widget, Base, {
 	 * @chainable
 	 */
 	focus: function () {
-		if (this.fire("focus")) {
-			this.set("focused", true);
+		if (this.fire('focus')) {
+			this.set('focused', true);
 		}
 		return this;
 	},
@@ -71,14 +80,14 @@ extend(Widget, Base, {
 	 * @chainable
 	 */
 	blur: function () {
-		if (this.fire("blur")) {
-			this.set("focused", false);
+		if (this.fire('blur')) {
+			this.set('focused', false);
 		}
 		return this;
 	},
 	/**
 	 * Starts the rendering process. The rendering process is based on custom events.
-	 * The widget class fires a "render" event to which all subclasses must subscribe.
+	 * The widget class fires a 'render' event to which all subclasses must subscribe.
 	 * This way all listeners are fired in the order of the inheritance chain. ie:
 	 * In the Overlay class, the render process is:
 	 * <code>render() method -> Module listener -> Overlay listener -> rest of the render() method (appends the boundingBox to the srcNode)</code>
@@ -133,13 +142,15 @@ extend(Widget, Base, {
 			if (boundingBox[0] != contentBox[0]) {
 				boundingBox.append(contentBox.css(VISIBILITY, 'inherit'));
 			}
-			boundingBox.attr('id', this.getClassName(self._uid));
+			if (!boundingBox.attr('id')) {
+				boundingBox.attr('id', this.getClassName(self._uid));
+			}
 			/**
 			 * Render event. Preventing the default behavior will stop the rendering process
 			 * @event render
 			 * @see Widget.render()
 			 */
-			if (this.fire("render")) {
+			if (this.fire('render')) {
 				
 				if (!boundingBox.inDoc()) {
 					boundingBox.appendTo(srcNode);
@@ -148,9 +159,9 @@ extend(Widget, Base, {
 				 * Fires after the render process is finished
 				 * @event afterRender
 				 */
-				self.set("rendered", true).focus();
+				self.set('rendered', true).focus();
 				setTimeout(function () {
-					self.fire("afterRender");
+					self.fire('afterRender');
 				}, 0);
 			}
 		}
@@ -216,7 +227,7 @@ extend(Widget, Base, {
 
 }, {
 	
-	CSS_PREFIX: "jet",
+	CSS_PREFIX: 'jet',
 	
 	NAME: 'widget',
 	
@@ -243,7 +254,7 @@ extend(Widget, Base, {
 		/**
 		 * @config classPrefix
 		 * @description Prefix for all CSS clases. Useful for renaming the project
-		 * @default "jet"
+		 * @default 'jet'
 		 * @writeOnce
 		 */
 		classPrefix: {

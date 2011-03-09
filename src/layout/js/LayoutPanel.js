@@ -1,60 +1,103 @@
 
 var Resize = $.Resize;
 
+/**
+ * Base class used to create both the Layout and LayoutPanel classes.
+ * Provides functionality to resize panels keeping the declared layout structure
+ * @class LayoutPanelBase
+ * @constructor
+ */
 function LayoutPanelBase() {}
 
 LayoutPanelBase.Vertical = 'v';
 LayoutPanelBase.Horizontal = 'h';
 
-LayoutPanelBase.ATTRS = {
-	direction: {
-		value: LayoutPanelBase.Vertical
+$.mix(LayoutPanelBase, {
+	
+	ATTRS: {
+		/**
+		 * @config direction
+		 * @description Direction in which this panel can be resized
+		 * @default LayoutPanelBase.Vertical
+		 * @writeOnce
+		 */
+		direction: {
+			value: LayoutPanelBase.Vertical,
+			writeOnce: true
+		},
+		/**
+		 * @config minSize
+		 * @description Minimum size the panel can acquire. Applies to width or height depending on the 'direction' attribute
+		 * @default 0
+		 * @writeOnce
+		 */
+		minSize: {
+			value: 0,
+			wriceOnce: true
+		},
+		/**
+		 * @config shim
+		 * @description Whether the resize utility should use a shim to protect the mouse movements
+		 * @default false
+		 * @writeOnce
+		 */
+		shim: {
+			value: false,
+			writeOnce: true
+		},
+		/**
+		 * @config defaultChildType
+		 * @description Default type to apply to children
+		 * @default LayoutPanel
+		 */
+		defaultChildType: {
+			value: 'LayoutPanel'
+		}
 	},
-	minSize: {
-		value: 0,
-		wriceOnce: true
+	
+	EVENTS: {
+		afterRender: '_uiLayoutRender',
+		afterAddChild: '_setupChildResize',
+		removeChild: '_destroyChildResize'
 	},
-	shim: {
-		value: false,
-		writeOnce: true
-	},
-	defaultChildType: {
-		value: 'LayoutPanel'
+	
+	HTML_PARSER: {
+		direction: function (boundingBox) {
+			return boundingBox.hasClass(this.getClassName(LayoutPanelBase.Horizontal)) ? LayoutPanelBase.Horizontal : LayoutPanelBase.Vertical;
+		}
 	}
-};
-
-LayoutPanelBase.EVENTS = {
-	afterRender: '_uiLayoutRender',
-	afterAddChild: '_setupChildResize',
-	removeChild: '_destroyChildResize'
-};
+});
 
 LayoutPanelBase.prototype = {
-	
+		
 	_uiLayoutRender: function () {
-		var setWidth = 0;
-		var freeWidth = 0;
+		var direction = this.get('direction');
+		var boundingBox = this.get('boundingBox').addClass(this.getClassName(direction));
+		var sizeType = direction == LayoutPanelBase.Horizontal ? 'width' : 'height';
+		var setSize = 0;
+		var freeSize = 0;
 		this.each(function (child) {
-			setWidth += child.get('width') || 0;
+			setSize += child.get(sizeType) || 0;
 		});
-		freeWidth = (this.get('boundingBox').width() - setWidth) / this.get('children').length;
+		freeSize = (boundingBox[sizeType]() - setSize) / this.get('children').length;
 		this.each(function (child) {
-			if (!child.get('width')) {
-				child.set('width', freeWidth);
+			if (!child.get(sizeType)) {
+				child.set(sizeType, freeSize);
 			}
 		});
 	},
 	
 	_setupChildResize: function (e, child, index) {
 		
-		if (index > 0) {
+		var Resize = $.Resize;
+		var minSize = this.get('minSize');
+		var direction = this.get('direction');
 			
-			var Resize = $.Resize;
-			var minSize = this.get('minSize');
+		if (index > 0) {
 			
 			child.resize = new Resize({
 				node: child.get('boundingBox'),
-				handles: [this.get('direction') == LayoutPanelBase.Horizontal ? Resize.Left : Resize.Top],
+				handles: [direction == LayoutPanelBase.Horizontal ? Resize.Left : Resize.Top],
 				minWidth: minSize,
 				minHeight: minSize,
 				shim: this.get('shim')
@@ -65,7 +108,7 @@ LayoutPanelBase.prototype = {
 			
 		}
 			
-		child.get('boundingBox').addClass(child.getClassName(this.get('direction')));
+		child.get('boundingBox').addClass(child.getClassName('child', direction));
 	},
 	
 	_destroyChildResize: function (e, child) {
@@ -103,11 +146,28 @@ LayoutPanelBase.prototype = {
 };
 
 
+/**
+ * A Layout Panel is a resizable block which size is constrained by the other blocks in the same container
+ * @class LayoutPanel
+ * @uses LayoutPanelBase, WidgetParent, WidgetChild
+ * @extends Widget
+ * @constructor
+ * @param {Object} config Object literal specifying widget configuration properties
+ */
 $.LayoutPanel = $.Base.create('layout-panel', $.Widget, [LayoutPanelBase, $.WidgetParent, $.WidgetChild], {}, {
 	
 	CONTENT_TEMPLATE: null
 	
 });
+
+/**
+ * A Layout is a container of Layout Panels
+ * @class Layout
+ * @uses LayoutPanelBase, WidgetParent
+ * @extends Widget
+ * @constructor
+ * @param {Object} config Object literal specifying widget configuration properties
+ */
 $.Layout = $.Base.create('layout', $.Widget, [LayoutPanelBase, $.WidgetParent], {}, {
 	
 	CONTENT_TEMPLATE: null
