@@ -310,7 +310,12 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 			originalWidth: originalWidth,
 			originalHeight: originalHeight
 		});
-		node.width(originalWidth).height(originalHeight);
+		if (resizeHorizontal) {
+			node.width(originalWidth);
+		}
+		if (resizeVertical) {
+			node.height(originalHeight);
+		}
 		
 		if (this.get('reposition')) {
 			node.css({
@@ -336,6 +341,8 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 			var offset = proxy.offset();
 			var currentWidth = this.get('currentWidth');
 			var currentHeight = this.get('currentHeight');
+			var resizeHorizontal = this.get('resizeHorizontal');
+			var resizeVertical = this.get('resizeVertical');
 			/**
 			 * @event beforeResize
 			 * @description Fires before the resize action starts. If prevented, the resize action doesn't start
@@ -346,10 +353,10 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 			 */
 			if (this.fire('beforeResize', currentWidth, currentHeight, offset.left, offset.top)) {
 				var screenSize = DOM.screenSize();
-				if (this.get('resizeVertical')) {
+				if (resizeVertical) {
 					this.set('currentHeight', currentHeight = this._getNew(HEIGHT, x, y));
 				}
-				if (this.get('resizeHorizontal')) {
+				if (resizeHorizontal) {
 					this.set('currentWidth', currentWidth = this._getNew(WIDTH, x, y));
 				}
 				/**
@@ -361,8 +368,11 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 				 * @param {Number} offsetTop 
 				 */
 				if (this.fire('resize', currentWidth, currentHeight, offset.left, offset.top)) {
-					if (Lang.isNumber(currentHeight) && Lang.isNumber(currentWidth)) {
-						proxy.height(currentHeight).width(currentWidth);
+					if (resizeVertical && Lang.isNumber(currentHeight)) {
+						proxy.height(currentHeight);
+					}
+					if (resizeHorizontal && Lang.isNumber(currentWidth)) {
+						proxy.width(currentWidth);
 					}
 				}
 			} else {
