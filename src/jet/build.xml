@@ -5,6 +5,7 @@
 	</description>
 	
 	<property name="builddir" location="../../build/"/>
+	<property name="tmpdir" location="../../tmp/"/>
 	<property name="filename" value="${ant.project.name}.js"/>
 	
 	<target name="init">
@@ -17,7 +18,9 @@
 			<fileset dir="${builddir}" includes="${filename},${ant.project.name}.min.js" />
 		</delete>
 		
-		<concat destfile="${filename}">
+		<mkdir dir="${tmpdir}"/>
+		
+		<concat destfile="${tmpdir}/${filename}">
 			<header trimleading="yes">
 			if (!window.jet) {
 
@@ -40,11 +43,11 @@
 			<srcfile/>
 			<arg value="--js_output_file"/>
 			<targetfile/>
-			<fileset dir="." includes="${ant.project.name}.js"/>
+			<fileset dir="${tmpdir}/" includes="${ant.project.name}.js"/>
 			<mapper>
 				<chainedmapper>
 					<flattenmapper/>
-					<globmapper from="*.js" to="./*.min.js"/>
+					<globmapper from="*.js" to="${tmpdir}/*.min.js"/>
 				</chainedmapper>
 			</mapper>
 		</apply>
@@ -58,7 +61,7 @@
 			 @module jet
 			*/
 			</header>
-			<filelist dir="." files="${filename}"/>
+			<filelist dir="${tmpdir}" files="${filename}"/>
 			<filelist dir="${builddir}" files="log.js,node.js,base.js"/>
 		</concat>
 		<concat destfile="${builddir}/${ant.project.name}.min.js" append="yes">
@@ -70,12 +73,8 @@
 			 @module jet
 			*/
 			</header>
-			<filelist dir="." files="${ant.project.name}.min.js"/>
+			<filelist dir="${tmpdir}" files="${ant.project.name}.min.js"/>
 			<filelist dir="${builddir}" files="log.min.js,node.min.js,base.min.js"/>
 		</concat>
-		
-		<delete>
-			<fileset dir="." includes="${filename},${ant.project.name}.min.js" />
-		</delete>
 	</target>
 </project>

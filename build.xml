@@ -1,103 +1,12 @@
-<project name="jet" default="concatCore" basedir=".">
-		<description>
-			Jet library build lifecycle
-		</description>
-	<!-- set global properties for this build -->
-	<property name="src" location="src"/>
-	<property name="build" location="build"/>
+<project name="jet" default="build" basedir=".">
+	<description>
+		Jet library build lifecycle
+	</description>
 
-	<target name="init">
-		<!-- Create the time stamp -->
-		<tstamp/>
-		<!-- Create the build directory structure used by compile -->
-		<delete>
-			<fileset dir="${build}" includes="*.js" />
-			<fileset dir="${build}" includes="*.css" />
-			<fileset dir="${build}" includes="*.tmp" />
-		</delete>
-	</target>
-
-	<target name="copyunmin" depends="init" description="Copy all files without minification">
-		<copy todir="${build}" flatten="true">
-			<fileset dir="${src}" includes="*/*.js" />
-			<fileset dir="${src}" includes="*/*.css" />
-		</copy>
-		<!-- @TODO: remove error messages with a regexp $.error()--> 
-		<!--<replace file="${build}/jet.js">
-			<replacefilter>
-				<replacetoken><![CDATA[//jet-js.googlecode.com/svn/trunk/src/]]></replacetoken>
-				<replacevalue><![CDATA[//jet-js.googlecode.com/svn/trunk/build/]]></replacevalue>
-			</replacefilter>
-			<replacefilter>
-				<replacetoken><![CDATA[path: module.split("-")[0] + "/" + module]]></replacetoken>
-				<replacevalue><![CDATA[path: module]]></replacevalue>
-			</replacefilter>
-			<replacefilter>
-				<replacetoken><![CDATA[base + module.fileName + "/" + module.fileName]]></replacetoken>
-				<replacevalue><![CDATA[base + module.fileName]]></replacevalue>
-			</replacefilter>
-			<replacefilter>
-				<replacetoken><![CDATA[config.minify = Lang.isBoolean(config.minify) ? config.minify : false]]></replacetoken>
-				<replacevalue><![CDATA[config.minify = Lang.isBoolean(config.minify) ? config.minify : true]]></replacevalue>
-			</replacefilter>
-		</replace>-->
-	</target>
-
-	<target name="minifyjs" depends="copyunmin" description="Generate minified javascript files">
-		<apply executable="java">
-			<arg value="-jar"/>
-			<arg value="c:/yuicompressor/build/compiler.jar"/>
-			<arg value="--js"/>
-			<srcfile/>
-			<arg value="--js_output_file"/>
-			<targetfile/>
-			<fileset dir="${build}" includes="*.js"/>
-			<mapper>
-				<chainedmapper>
-					<flattenmapper/>
-					<globmapper from="*.js" to="${build}/*.min.js"/>
-				</chainedmapper>
-			</mapper>
-		</apply>
-	</target>
-
-	<target name="minifycss" depends="minifyjs" description="Generate minified CSS files">
-		<apply executable="java">
-			<arg value="-jar"/>
-			<arg value="c:/yuicompressor/build/yuicompressor.jar"/>
-			<srcfile/>
-			<arg value="-o"/>
-			<targetfile/>
-			<fileset dir="${build}" includes="*.css"/>
-			<mapper>
-				<chainedmapper>
-					<flattenmapper/>
-					<globmapper from="*.css" to="${build}/*.min.css"/>
-				</chainedmapper>
-			</mapper>
-		</apply>
-	</target>
-	
-	<target name="concatCore" depends="minifycss" description="Generate the core jet file">
-		<concat destfile="${build}/jet.js" append="yes">
-			<fileset dir="${build}" includes="log.js,ua.js,node.js,base.js"/>
-		</concat>
-		<concat destfile="${build}/jet.min.js" append="yes">
-			<fileset dir="${build}" includes="log.min.js,ua.min.js,node.min.js,base.min.js"/>
-		</concat>
-		<delete>
-			<fileset dir="${build}" includes="log.*,ua.*,node.*,base.*"/>
-		</delete>
-		<copy todir="${build}">
-			<fileset dir="${build}" includes="*.min.*"/>
-			<filterchain>
-				<concatfilter prepend="license.txt"/>
-			</filterchain>
-			<globmapper from="*" to="*.tmp"/>
-		</copy>
-		<move todir="${build}">
-			<fileset dir="${build}" includes="*.tmp"/>
-			<globmapper from="*.tmp" to="*"/>
-		</move>
+	<target name="build"  description="Build all sub projects">
+	    <subant target="init" inheritAll="false" inheritrefs="false">
+	    	<fileset dir="src" includes="*/build.xml"/>
+	    </subant>
+		<delete dir="tmp"/>
 	</target>
 </project>

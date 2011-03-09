@@ -6,9 +6,10 @@
 	
 	<property name="builddir" location="../../build/"/>
 	<property name="filename" value="${ant.project.name}.js"/>
+	<property name="tmpdir" location="../../tmp"/>
 	<property file="build.properties"/>
 	
-	<target name="init">
+	<target name="setup">
 		<!-- Create the time stamp -->
 		<tstamp>
 			<format property="TODAY" pattern="dd-MM-yyyy"/>
@@ -18,7 +19,11 @@
 			<fileset dir="${builddir}" includes="${filename},${ant.project.name}.min.js" />
 		</delete>
 		
-		<concat destfile="${filename}">
+		<mkdir dir="${tmpdir}"/>
+	</target>
+	
+	<target name="generatejs" depends="setup">
+		<concat destfile="${tmpdir}/${filename}">
 			<header trimleading="yes">jet.add('${ant.project.name}', function ($) {
 			
 			</header>
@@ -28,7 +33,9 @@
 			});
 			</footer>
 		</concat>
-		
+	</target>
+	
+	<target name="minify" depends="generatejs">
 		<apply executable="java">
 			<arg value="-jar"/>
 			<arg value="c:/yuicompressor/build/compiler.jar"/>
@@ -36,15 +43,17 @@
 			<srcfile/>
 			<arg value="--js_output_file"/>
 			<targetfile/>
-			<fileset dir="." includes="${ant.project.name}.js"/>
+			<fileset dir="${tmpdir}" includes="${ant.project.name}.js"/>
 			<mapper>
 				<chainedmapper>
 					<flattenmapper/>
-					<globmapper from="*.js" to="./*.min.js"/>
+					<globmapper from="*.js" to="${tmpdir}/*.min.js"/>
 				</chainedmapper>
 			</mapper>
 		</apply>
-		
+	</target>
+	
+	<target name="init" depends="minify">
 		<concat destfile="${builddir}/${filename}" append="yes">
 			<header trimleading="yes">/*
 			 Copyright (c) ${YEAR}, Juan Ignacio Dopazo. All rights reserved.
@@ -56,7 +65,7 @@
 			 @requires ${requires}
 			*/
 			</header>
-			<filelist dir="." files="${filename}"/>
+			<filelist dir="${tmpdir}" files="${filename}"/>
 		</concat>
 		<concat destfile="${builddir}/${ant.project.name}.min.js" append="yes">
 			<header trimleading="yes">/*
@@ -69,12 +78,9 @@
 			 @requires ${requires}
 			*/
 			</header>
-			<filelist dir="." files="${ant.project.name}.min.js"/>
+			<filelist dir="${tmpdir}" files="${ant.project.name}.min.js"/>
 		</concat>
 		
-		<delete>
-			<fileset dir="." includes="${filename},${ant.project.name}.min.js" />
-		</delete>
 	</target>
 	
 </project>
