@@ -29,7 +29,7 @@
 			base: '../build'
 		}).use('widget-alignment', function ($) {
 			
-			var AlignedWidget = $.Widget.create('aligned', [$.WidgetAlignment]);
+			var AlignedWidget = $.Base.create('aligned', $.Widget, [$.WidgetAlignment]);
 			
 			var aligned = new AlignedWidget({
 				fixed: true,
@@ -44,7 +44,7 @@
 			aligned.render();
 			aligned.get('boundingBox').css('background', 'green');
 			
-		})
+		});
 	</script>	
 </body>
 </html>

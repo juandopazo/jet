@@ -17,7 +17,7 @@ var substitute = function (str, o) {
  * @constructor
  */
 
-$.Frame = $.Base.create('frame', $.Base, [], {
+var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 	
 	/**
 	* @static
@@ -354,6 +354,7 @@ $.Frame = $.Base.create('frame', $.Base, [], {
 	_onContentReady: function(e) {
 		if (!this._ready) {
 			this._ready = true;
+			this._iframe.css('visibility', '');
 			var inst = this.getInstance(),
 				args = this.get('use');
 			
@@ -497,6 +498,8 @@ $.Frame = $.Base.create('frame', $.Base, [], {
 			var inst, timer,
 			
 				cb = $.bind(function(i) {
+					i.config.win.jet_Config = i.config;
+					i.config.win.jet = jet;
 					this._instanceLoaded(i);
 				}, this),
 				

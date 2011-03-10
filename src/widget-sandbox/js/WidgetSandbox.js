@@ -10,50 +10,14 @@ var FRAME = 'frame',
  * @constructor
  */
 function WidgetSandbox() {
-	this.set(FRAME, new $.Frame({
+	this.frame = new $.Frame({
 		linkedcss: this.get('extraCss')
-	}));
+	});
 }
 
 $.WidgetSandbox = $.mix(WidgetSandbox, {
 	
 	ATTRS: {
-		/**
-		 * @config frame
-		 * @description Pointer to the iframe node
-		 * @readOnly
-		 */
-		frame: {
-			value: null
-		},
-		/**
-		 * @config contentWindow
-		 * @description Pointer to the window inside the iframe
-		 * @readOnly
-		 */
-		contentWindow: {
-			readOnly: true,
-			getter: function () {
-				return this.get(FRAME).attr(CONTENT_WINDOW);
-			}
-		},
-		/**
-		 * @config contentDocument
-		 * @description Pointer to the document inside the iframe
-		 * @readOnly
-		 */
-		contentDocument: {
-			readOnly: true,
-			getter: function () {
-				var frame = this.get(FRAME)[0];
-				return frame.contentDocument || frame.contentWindow.document || frame.document;
-			}
-		},
-		
-		src: {
-			value:  'javascript' + (($.UA.ie) ? ':false' : ':') + ';'
-		},
-		
 		extraScripts: {
 			writeOnce: true,
 			value: []
@@ -67,8 +31,8 @@ $.WidgetSandbox = $.mix(WidgetSandbox, {
 	
 	EVENTS: {
 		
-		render: function () {
-			var frame = this.get(FRAME);
+		afterRender: function () {
+			var frame = this.frame;
 			frame.on('contentready', this._onFrameReady, this);
 			frame.render(this.get('boundingBox'));
 		}
@@ -78,9 +42,18 @@ $.WidgetSandbox = $.mix(WidgetSandbox, {
 });
 
 WidgetSandbox.prototype = {
+	
+	/**
+	 * @method getInstance
+	 * @description Returns the jet instance inside the frame
+	 */
+	getInstance: function () {
+		return this.frame.getInstance();
+	},
+	
 	_onFrameReady: function () {
 		var self = this;
-		var frame = this.get(FRAME);
+		var frame = this.frame;
 		var inst = frame.getInstance();
 		var contentDoc = inst.config.doc;
 		var body = contentDoc.body;
@@ -98,5 +71,6 @@ WidgetSandbox.prototype = {
 		
 		A.each(this.get('extraScripts'), inst.Get.script, inst.Get);
 		this.fire('ready');
-	} 
+	}
+	 
 };

@@ -83,8 +83,17 @@ function handleRequirements(request, config) {
 }
 
 function makeUse(config, get) {
+
+	var base = config.base;
+	
+	var loadCssModule = function (module) {
+		var url = module.fullpath || (module.path ? (base + module.path) : (base + module.name + (config.minify ? ".min.css" : ".css")));
+		get.css(url, function () {
+			jet.add(module.name, function () {});
+		});
+	};
+
 	return function () {
-		var base = config.base;
 		var request = SLICE.call(arguments);
 		var i = 0, module;
 		var fn = request.pop();
@@ -278,13 +287,6 @@ window.jet = function (o) {
 	
 	var get = new GetFactory(config);
 	
-	var loadCssModule = function (module) {
-		var url = module.fullpath || (module.path ? (base + module.path) : (base + module.name + (config.minify ? ".min.css" : ".css")));
-		get.css(url, function () {
-			jet.add(module.name, function () {});
-		});
-	};
-
 	/**
 	 * Allows for the following pattern:
 	 * jet(function ($) {

@@ -151,6 +151,41 @@ extend(Mouse, Utility, {
 	}
 });
 
+(function () {
+	
+	var $_event = new EventTarget();
+	var interval, timeout;
+	var lastScrollLeft, lastScrollTop;
+	
+	var scroll = function () {
+		var scrollLeft = $.DOM.scrollLeft();
+		var scrollTop = $.DOM.scrollTop();
+		if (scrollLeft != lastScrollLeft || scrollTop != lastScrollTop) {
+			$_event.fire('scroll', scrollLeft, scrollTop);
+		} else {
+			clearInterval(interval);
+			interval = null;
+		}
+		lastScrollLeft = scrollLeft;
+		lastScrollTop = scrollTop;
+	}
+	
+	$($.config.win).on('scroll', function () {
+		if (!interval) {
+			interval = setInterval(scroll, 50);
+		}
+	});
+	
+	$.on = $.bind($_event.on, $_event);
+	
+	A.each(['load', 'unload'], function (name) {
+		$($.config.win).on(name, function () {
+			$_event.fire(name);
+		});
+	});
+	
+}());
+
 $.add({
 	Mouse: Mouse,
 	Attribute: Attribute,
