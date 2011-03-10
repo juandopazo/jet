@@ -34,6 +34,12 @@ extend(Attribute, EventTarget, {
 		if (config.required && !isValue) {
 			$.error("Missing required attribute: " + attrName);
 		}
+		if (Lang.isString(config.setter)) {
+			config.setter = this[config.setter];
+		}
+		if (Lang.isString(config.getter)) {
+			config.getter = this[config.getter];
+		}
 		if (isValue && config.setter) {
 			state[attrName] = config.setter.call(self, state[attrName]);
 		}

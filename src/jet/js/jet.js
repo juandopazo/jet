@@ -47,11 +47,47 @@ var update = function () {
 	}
 };
 
+function handleRequirements(request, config) {
+	var i = 0, j, moveForward;
+	var module, required;
+	var index;
+	// handle requirements
+	while (i < request.length) {
+		module = request[i];
+		moveForward = 1;
+		if (Lang.isString(module)) {
+			module = config.modules[module.toLowerCase()];
+		}
+		if (module && module.requires) {
+			required = module.requires;
+			for (j = required.length - 1; j >= 0; j--) {
+				index = ArrayHelper.indexOf(required[j], request);
+				if (index == -1) {
+					request.splice(i, 0, required[j]);
+					moveForward = 0;
+				} else if (index > i) {
+					request.splice(i, 0, request.splice(index, 1)[0]);
+					moveForward = 0;
+				}
+			}
+		}
+		i += moveForward;
+	}
+	
+	// remove JSON module if there's native JSON support
+	if (config.win.JSON) {
+		ArrayHelper.remove('json', request);
+	}
+		
+	return request;
+}
+
 function makeUse(config, get) {
 	return function () {
 		var base = config.base;
 		var request = SLICE.call(arguments);
-		var i = 0, j = 0, k, module, moveForward;
+		var i = 0, module;
+		var fn = request.pop();
 		
 		// if "*" is used, include everything
 		if (ArrayHelper.indexOf("*", request) > -1) {
@@ -63,32 +99,10 @@ function makeUse(config, get) {
 			request.unshift(BASE);
 		}
 		
-		// handle requirements
-		while (i < request.length - 1) {
-			module = request[i];
-			moveForward = 1;
-			if (Lang.isString(module)) {
-				module = config.modules[module.toLowerCase()];
-			}
-			if (module && module.requires) {
-				module = module.requires;
-				for (j = module.length - 1; j >= 0; j--) {
-					if (!ArrayHelper.inArray(module[j], request)) {
-						request.splice(i, 0, module[j]);
-						moveForward = 0;
-					}
-				}
-			}
-			i += moveForward;
-		}
-		
-		// remove JSON module if there's native JSON support
-		if (config.win.JSON) {
-			ArrayHelper.remove('json', request);
-		}
+		request = handleRequirements(request, config);
 		
 		// transform every module request into an object and load the required css/script if not already loaded
-		for (i = 0; i < request.length - 1; i++) {
+		for (i = 0; i < request.length; i++) {
 			module = request[i];
 			/*
 			 * If a module is a string, it is considered a predefined module.
@@ -115,7 +129,7 @@ function makeUse(config, get) {
 		
 		// add the queue to the waiting list
 		queueList.push({
-			main: request.pop(),
+			main: fn,
 			req: request,
 			// onProgress handlers are managed by queue
 			onProgress: config.onProgress,

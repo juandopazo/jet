@@ -9,9 +9,13 @@ var FRAME = 'frame',
  * @class Sandbox
  * @constructor
  */
-$.WidgetSandbox = $.mix(function WidgetSandbox() {
-	this.set(FRAME, this.get(FRAME));
-}, {
+function WidgetSandbox() {
+	this.set(FRAME, new $.Frame({
+		linkedcss: this.get('extraCss')
+	}));
+}
+
+$.WidgetSandbox = $.mix(WidgetSandbox, {
 	
 	ATTRS: {
 		/**
@@ -20,8 +24,7 @@ $.WidgetSandbox = $.mix(function WidgetSandbox() {
 		 * @readOnly
 		 */
 		frame: {
-			value: '<iframe/>',
-			setter: $
+			value: null
 		},
 		/**
 		 * @config contentWindow
@@ -52,10 +55,12 @@ $.WidgetSandbox = $.mix(function WidgetSandbox() {
 		},
 		
 		extraScripts: {
+			writeOnce: true,
 			value: []
 		},
 		
 		extraCss: {
+			writeOnce: true,
 			value: []
 		}
 	},
@@ -63,56 +68,35 @@ $.WidgetSandbox = $.mix(function WidgetSandbox() {
 	EVENTS: {
 		
 		render: function () {
-			this.get(FRAME).attr({
-				frameborder: 0,
-				src: this.get('src'),
-				width: '100%',
-				height: '100%'
-			}).css('border', 'none').addClass(this.getClassName(FRAME)).prependTo(this.get('boundingBox'));
-		},
-		
-		afterRender: function () {
-			var self = this;
-			var contentWindow = this.get(CONTENT_WINDOW);
-			var contentDoc = this.get(CONTENT_DOCUMENT);
-			var contentBox = this.get('contentBox');
-			contentDoc.write('<head><style>html,body{overflow:hidden;margin:0;padding:0;border:0;}</style></head>');
-			contentDoc.close();
-			var body = contentDoc.body;
-			var newContentBox;
-			
-			body.innerHTML = '';
-			body.style.overflow = 'hidden';
-			
-			contentWindow.jet = jet;
-			
-			try {
-				contentBox.appendTo(body);
-			} catch (e) {
-				newContentBox = contentDoc.importNode(contentBox[0], true);
-				body.appendChild(newContentBox);
-				this.set('contentBox', newContentBox);
-				contentBox.remove();
-			}
-			
-			jet({
-				win: contentWindow,
-				doc: contentDoc
-			}).use(function (j) {
-				var loadedCss = 0;
-				var allCss = self.get('extraCss');
-				A.each(allCss, function (url) {
-					j.Get.css(url, function () {
-						loadedCss++;
-						if (loadedCss == allCss.length) {
-							A.each(self.get('extraScripts'), j.Get.script, j.Get);
-							self.fire('ready');
-						}
-					});
-				}, j.Get);
-			});
+			var frame = this.get(FRAME);
+			frame.on('contentready', this._onFrameReady, this);
+			frame.render(this.get('boundingBox'));
 		}
 		
 	}
 	
 });
+
+WidgetSandbox.prototype = {
+	_onFrameReady: function () {
+		var self = this;
+		var frame = this.get(FRAME);
+		var inst = frame.getInstance();
+		var contentDoc = inst.config.doc;
+		var body = contentDoc.body;
+		var contentBox = this.get('contentBox');
+		var newContentBox;
+		
+		try {
+			contentBox.appendTo(body);
+		} catch (e) {
+			newContentBox = contentDoc.importNode(contentBox[0], true);
+			body.appendChild(newContentBox);
+			this.set('contentBox', newContentBox);
+			contentBox.remove();
+		}
+		
+		A.each(this.get('extraScripts'), inst.Get.script, inst.Get);
+		this.fire('ready');
+	} 
+};
