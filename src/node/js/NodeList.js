@@ -1,14 +1,14 @@
 
 var ready = function (fn) {
-	var myself = this;
-	if ((myself[0].ownerDocument || myself[0]).body) {
-		fn.call(myself);
+	var node = this._nodes[0];
+	if ((node.ownerDocument || node).body) {
+		fn.call(this);
 	} else {
 		setTimeout(function () {
 			ready(fn);
 		}, 13);
 	}
-	return myself;
+	return this;
 };
 
 /**
@@ -18,14 +18,13 @@ var ready = function (fn) {
  * @param {Array|DOMCollection|DOMNode} nodes
  * @param {DOMNode|Document} root
  */
-var NodeList = function (nodes, root) {
+function NodeList(nodes, root) {
 	var i = 0, length, tmp;
 	root = root || $.context;
 	nodes = Lang.isValue(nodes) ? nodes : [];
-	if (NodeList.is(nodes)) {
-		return nodes;
-	}
-	if (Lang.isString(nodes)) {
+	if (nodes instanceof NodeList) {
+		nodes = nodes._nodes;
+	} else if (Lang.isString(nodes)) {
 		nodes = [root.createElement(nodes)];
 	} else if (nodes.nodeType || nodes.body || nodes.navigator) {
 		nodes = [nodes];
@@ -47,10 +46,7 @@ var NodeList = function (nodes, root) {
 	} else {
 		$.error("Wrong argument for NodeList");
 	}
-	for (i = 0, length = nodes.length; i < length; i++) {
-		this[i] = nodes[i];
-	}
-	this.length = length;
+	this._nodes = nodes;
 };
 NodeList.prototype = {
 	/**
@@ -68,12 +64,12 @@ NodeList.prototype = {
 	 * @param {Function} callback
 	 * @chainable
 	 */
-	each: function (fn) {
-		var i, myself = this, length = myself.length;
+	each: function (fn, thisp) {
+		var i, nodes = this._nodes, length = nodes.length;
 		for (i = 0; i < length; i++) {
-			fn.call($(myself[i]), myself[i], i);
+			fn.call(thisp || nodes[i], nodes[i], i, nodes);
 		}
-		return myself;
+		return this;
 	},
 	/**
 	 * Iterates through the nodelist, returning a new nodelist with all the elements
@@ -162,7 +158,7 @@ NodeList.prototype = {
 	 * @chainable
 	 */
 	hasClass: function (className) {
-		return classRE(className).test(this[0].className);
+		return classRE(className).test(this._nodes[0].className);
 	},
 	/**
 	 * Removes a number of classes from all nodes in the collection.
@@ -245,7 +241,7 @@ NodeList.prototype = {
 				}
 			});
 		} else {
-			var node = this[0];
+			var node = this._nodes[0];
 			var offset = {
 				left: 0,
 				top: 0,
@@ -306,7 +302,7 @@ NodeList.prototype = {
 				node.style.width = width;
 			});
 		}
-		return this[0].offsetWidth;
+		return this._nodes[0].offsetWidth;
 	},
 	/**
 	 * Gets/sets the height of all the nodes in the collection
@@ -324,7 +320,7 @@ NodeList.prototype = {
 				node.style.height = height;
 			});
 		}
-		return this[0].offsetHeight;
+		return this._nodes[0].offsetHeight;
 	},
 	/**
 	 * Returns a new NodeList with all nodes cloned from the current one
@@ -359,7 +355,7 @@ NodeList.prototype = {
 	 * @chainable
 	 */
 	appendTo: function (target) {
-		target = $(target)[0];
+		target = $(target)._nodes[0];
 		return this.each(function (node) {
 			target.appendChild(node);
 		});
@@ -389,7 +385,7 @@ NodeList.prototype = {
 	 * @chainable
 	 */
 	prependTo: function (target) {
-		target = $(target)[0];
+		target = $(target)._nodes[0];
 		return this.each(function (node) {
 			if (target.firstChild) {
 				target.insertBefore(node, target.firstChild);
@@ -405,7 +401,7 @@ NodeList.prototype = {
 	 * @chainable
 	 */
 	insertBefore: function (target) {
-		target = $(target)[0];
+		target = $(target)._nodes[0];
 		return this.each(function (node) {
 			target.parentNode.insertBefore(node, target);
 		});
@@ -417,10 +413,10 @@ NodeList.prototype = {
 	 * @return Boolean
 	 */
 	inDoc: function () {
-		var de = this[0].ownerDocument.documentElement;
+		var de = this._nodes[0].ownerDocument.documentElement;
 		var parent = this.parent();
-		while (parent[0]) {
-			if (parent[0].nodeName.toLowerCase() == 'html') {
+		while (parent._nodes[0]) {
+			if (parent._nodes[0].nodeName.toLowerCase() == 'html') {
 				return true;
 			}
 			parent = parent.parent();
@@ -446,7 +442,7 @@ NodeList.prototype = {
 	 */
 	first: function () {
 		return this.map(function (node) {
-			node = $(node).children(0)[0];
+			node = $(node).children(0)._nodes[0];
 			if (node) {
 				return node;
 			}
@@ -503,7 +499,7 @@ NodeList.prototype = {
 	html: function (html) {
 		return Lang.isValue(html) ? this.each(function (node) {
 			node.innerHTML = html;
-		}) : this[0].innerHTML;
+		}) : this._nodes[0].innerHTML;
 	},
 	/**
 	 * Gets or sets tag attributes to the nodes in the collection
@@ -520,7 +516,7 @@ NodeList.prototype = {
 		} else if (Lang.isValue(value)) {
 			attrs[key] = value;
 		} else {
-			return this[0][key];
+			return this._nodes[0][key];
 		}
 		return this.each(function (node) {
 			Hash.each(attrs, function (name, val) {
@@ -542,7 +538,7 @@ NodeList.prototype = {
 		} else if (Lang.isValue(value)) {
 			css[key] = value;
 		} else {
-			return $(this[0]).currentStyle()[key];
+			return $(this._nodes[0]).currentStyle()[key];
 		}
 		return this.each(function (node) {
 			Hash.each(css, function (prop, value) {
@@ -706,7 +702,7 @@ NodeList.prototype = {
 	 * @return {CSSDeclaration}
 	 */
 	currentStyle: function () {
-		var node = this[0];
+		var node = this._nodes[0];
 		return $.win[GET_COMPUTED_STYLE] ? $.win[GET_COMPUTED_STYLE](node, null) : 
 				node[CURRENT_STYLE] ? node[CURRENT_STYLE] : node.style;
 	},
