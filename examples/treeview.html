@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title></title>
+	<meta name="generator" content="Studio 3 http://aptana.com/">
+	<meta name="author" content="Juan Ignacio">
+	<!-- Date: 2010-08-15 -->
+	<link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.1.1/build/cssfonts/fonts-min.css&3.1.1/build/cssreset/reset-min.css">
+	<link rel="stylesheet" type="text/css" href="../build/treeview.css">
+	<style type="text/css">
+	body {
+		margin: 0;
+		padding: 0;
+	}
+	</style>
+</head>
+<body>
+<script type="text/javascript" src="../build/jet.js"></script>
+<script type="text/javascript">
+	jet({
+		base: '../build/'
+	}).use('treeview', function ($) {
+		
+		var treeview = new $.TreeView({
+			children: [
+				{
+					label: "hola",
+					selected: true,
+					children: [
+						{
+							label: "kc",
+							selected: true,
+							children: [
+								{
+									label: "todo bien?",
+									selected: true,
+									children: [
+										{
+											label: "seh, vos?",
+											selected: true,
+											children: [
+												{
+													label: "todo tranqui",
+													selected: true
+												}
+											]
+										},
+										{
+											label: "nah, todo mal. Se me seco el potus",
+											selected: true,
+											children: [
+												{
+													label: "uh que feo"
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					label: "chau",
+					selected: true
+				}
+			]
+		});
+		treeview.render(document.body);
+		
+	});
+</script>
+</body>
+</html>

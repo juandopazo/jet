@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title></title>
+	<meta name="generator" content="Studio 3 http://aptana.com/">
+	<meta name="author" content="Juan Ignacio">
+	<!-- Date: 2010-08-13 -->
+</head>
+<body>
+	<div></div>
+<script type="text/javascript" src="../src/jet/jet.js"></script>
+<script type="text/javascript">
+	jet({
+		base: "../src"
+	}).use('io', 'swf', {
+		name: 'io-xdr',
+		path: 'io/io-xdr.js'
+	}, function ($) {
+		
+		$.IO.flajax({
+			url: "http://query.yahooapis.com/v1/publc/yql?q=show%20tables",
+			dataType: "xml",
+			success: function (data) {
+				console.log(data);
+			},
+			error: function () {
+				console.log("error");
+			}
+		});
+		
+	});
+</script>
+</body>
+</html>

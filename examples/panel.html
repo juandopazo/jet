@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+	<title>jet Test</title>
+	<style type="text/css">
+		body {
+			margin: 0;
+			padding: 0;
+		}
+		.movable {
+			position: absolute;
+			width: 15px;
+			height: 15px;
+		}
+	</style>
+</head>
+
+<body class="yui-skin-sam">
+	<script type="text/javascript" src="http://jet-js.googlecode.com/svn/trunk/build/jet.min.js"></script>
+	<script type="text/javascript">
+		jet().use('button', 'dragdrop', 'container', function ($) {
+			
+			for (var i = 0; i < 10; i++) {
+				(new $.Panel({
+					header: "Panel " + i,
+					body: "Hello world!",
+					draggable: true
+				})).render(document.body);
+			}
+			
+		});
+	</script>
+</body>
+</html>

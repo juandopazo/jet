@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>test</title>
+		<link rel="stylesheet" type="text/css" href="../build/tabview-styles.css"/>
+		<style>
+			body {
+				margin: 0;
+				padding: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="test">
+			<div class="jet-tabview">
+				<ul class="jet-tabview-content">
+					<li class="jet-tab jet-tab-selected">
+						<a href="#" class="jet-tab-content">Hola</a>
+					</li>
+					<li class="jet-tab">
+						<a href="#" class="jet-tab-content">Chau</a>
+					</li>
+				</ul>
+				<div class="jet-tabview-panel-container">
+					<div class="jet-tab-panel jet-tab-panel-selected">Que tal?</div>
+					<div class="jet-tab-panel">Ta luego</div>
+				</div>
+			</div>
+		</div>
+		<script src="../build/jet.js"></script>
+		<script>
+			jet({
+				base: '../build',
+				loadCss: false
+			}).use('tabview', function ($) {
+				
+				var widget = new $.TabView({
+					boundingBox: $('#test').first()
+				});
+				widget.render();
+				
+			});
+		</script>
+	</body>
+</html>
