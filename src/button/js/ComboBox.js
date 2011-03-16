@@ -61,7 +61,7 @@ $.ComboBox = Base.create('combobox', Button, [WidgetParent], {
 	},
 	EVENTS: {
 		selectionChange: function (e, val) {
-			this.get(CONTENT_BOX)[0].selectedIndex = val.get('index');
+			this.get(CONTENT_BOX)._nodes[0].selectedIndex = val.get('index');
 		}
 	}
 }, {

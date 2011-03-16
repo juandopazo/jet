@@ -69,7 +69,7 @@ var DataTable = Base.create('dt', Widget, [], {
 	EVENTS: {
 		render: function () {
 			var contentBox = this.get('contentBox');
-			contentBox[0].setAttribute('cellspacing', '0px');
+			contentBox._nodes[0].setAttribute('cellspacing', '0px');
 			var thead = this.get(THEAD);
 			var tbody = this.get(TBODY);
 			
@@ -95,7 +95,7 @@ var DataTable = Base.create('dt', Widget, [], {
 		e.stopPropagation();
 		e.preventDefault();
 		var target = e.target;
-		var parent = this.get(THEAD).first()[0];
+		var parent = this.get(THEAD).first()._nodes[0];
 		while (target.parentNode != parent) {
 			target = target.parentNode;
 		}

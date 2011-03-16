@@ -41,7 +41,7 @@ extend(Attribute, EventTarget, {
 			config.getter = this[config.getter];
 		}
 		if (isValue && config.setter) {
-			state[attrName] = config.setter.call(self, state[attrName]);
+			state[attrName] = config.setter.call(this, state[attrName]);
 		}
 		return this;
 	},

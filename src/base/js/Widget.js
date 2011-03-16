@@ -139,7 +139,7 @@ extend(Widget, Base, {
 				contentBox.addClass([className, CONTENT].join(DASH));
 			});
 			
-			if (boundingBox[0] != contentBox[0]) {
+			if (boundingBox._nodes[0] != contentBox._nodes[0]) {
 				boundingBox.append(contentBox.css(VISIBILITY, 'inherit'));
 			}
 			if (!boundingBox.attr('id')) {
@@ -193,11 +193,11 @@ extend(Widget, Base, {
 	_parseHTML: function () {
 		var self = this;
 		var boundingBox = this.get(BOUNDING_BOX);
-		if (boundingBox[0] && boundingBox.inDoc()) {
+		if (boundingBox._nodes[0] && boundingBox.inDoc()) {
 			A.each(this._classes, function (someClass) {
 				Hash.each(someClass.HTML_PARSER || {}, function (attr, parser) {
 					var val = parser.call(self, boundingBox);
-					if (Lang.isValue(val) && (!(val instanceof $.NodeList) || val[0])) {
+					if (Lang.isValue(val) && (!(val instanceof $.NodeList) || val._nodes[0])) {
 						self.set(attr, val);
 					}
 				});
@@ -344,7 +344,7 @@ extend(Widget, Base, {
 	},
 	
 	getByNode: function (node) {
-		node = $(node)[0];
+		node = $(node)._nodes[0];
 		var de = node.ownerDocument.documentElement;
 		while (node && node != de) {
 			if (node.id && jet.Widget._instances[node.id]) {

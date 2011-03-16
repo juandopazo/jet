@@ -86,14 +86,14 @@ var Button = Base.create('button', Widget, [WidgetChild], {
 			} else {
 				disabledClass.removeClass(disabledClass);
 			}
-			this.get(CONTENT_BOX)[0].disabled = !val;
+			this.get(CONTENT_BOX)._nodes[0].disabled = !val;
 		},
 		
 		labelChange: function (e, val) {
 			var labelNode = this.get(LABEL_NODE);
 			if (Lang.isString(val)) {
 				labelNode.html(val);
-				if (!labelNode.parent()[0]) {
+				if (!labelNode.parent()._nodes[0]) {
 					this.get(BOUNDING_BOX).prepend(labelNode);
 				}
 			} else {
@@ -128,11 +128,11 @@ var Button = Base.create('button', Widget, [WidgetChild], {
 			var contentBox = this.get(CONTENT_BOX).attr(ID, id).html(this.get('text'));
 			var labelNode = this.get(LABEL_NODE);
 			var label = this.get('label');
-			labelNode[0].setAttribute('for', id);
+			labelNode._nodes[0].setAttribute('for', id);
 			if (Lang.isString(label)) {
 				this.get(BOUNDING_BOX).prepend(labelNode.html(label));
 			}
-			contentBox[0].disabled = !this.get(ENABLED);
+			contentBox._nodes[0].disabled = !this.get(ENABLED);
 			this._handlers.push(contentBox.on(FOCUS, this._onDomFocus, this));
 			this._handlers.push(contentBox.on(BLUR, this._onDomBlur, this));
 		},

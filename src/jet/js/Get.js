@@ -27,7 +27,7 @@ var mix = function (a, b, overwrite) {
  * @class Get
  * @static
  */
-var GetFactory = function (conf) {
+var Get = function (conf) {
 	
 	var doc = this._doc = conf.doc;
 	var before = Lang.isString(conf.before) ? doc.getElementById(conf.before) : conf.before;
@@ -35,7 +35,7 @@ var GetFactory = function (conf) {
 	this._before = before || conf.before;
 	
 };
-GetFactory.prototype = {
+Get.prototype = {
 	/**
 	 * Loads a script asynchronously
 	 * @method script

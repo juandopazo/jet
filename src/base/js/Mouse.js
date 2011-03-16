@@ -109,7 +109,7 @@ var Mouse = function () {
 	 * because the native mousemove event fires too quickly
 	 * @event move
 	 */
-	var shimDoc = shim[0].contentWindow.document; 
+	var shimDoc = shim._nodes[0].contentWindow.document; 
 	$(shimDoc.body).css({
 		margin: 0,
 		padding: 0

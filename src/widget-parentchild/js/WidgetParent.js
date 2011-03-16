@@ -91,7 +91,10 @@ $.mix(WidgetParent, {
 				return Lang.isNumber(val) && !!this.item(val);
 			},
 			setter: function (val) {
-				this.item(val).select();
+				var child = this.item(val);
+				if (child && child.select) {
+					child.select();
+				}
 				return val;
 			},
 			getter: function () {

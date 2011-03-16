@@ -22,7 +22,7 @@ function NodeList(nodes, root) {
 	var i = 0, length, tmp;
 	root = root || $.context;
 	nodes = Lang.isValue(nodes) ? nodes : [];
-	if (nodes instanceof NodeList) {
+	if (Lang.isArray(nodes._nodes)) {
 		nodes = nodes._nodes;
 	} else if (Lang.isString(nodes)) {
 		nodes = [root.createElement(nodes)];
@@ -355,9 +355,9 @@ NodeList.prototype = {
 	 * @chainable
 	 */
 	appendTo: function (target) {
-		target = $(target)._nodes[0];
+		var mytarget = $(target)._nodes[0];
 		return this.each(function (node) {
-			target.appendChild(node);
+			mytarget.appendChild(node);
 		});
 	},
 	/**

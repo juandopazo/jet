@@ -153,7 +153,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 		container: {
 			value: 'body',
 			setter: function(n) {
-				return $($(n)[0]);
+				return $($(n)._nodes[0]);
 			}
 		},
 		/**
@@ -296,8 +296,8 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 	*/
 	_resolveWinDoc: function(c) {
 		var config = (c) ? c : {};
-		config.win = this._iframe[0].contentWindow;
-		config.doc = this._iframe[0].contentWindow.document;
+		config.win = this._iframe._nodes[0].contentWindow;
+		config.doc = this._iframe._nodes[0].contentWindow.document;
 		if (!config.doc) {
 			config.doc = $.config.doc;
 		}
@@ -306,42 +306,13 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 		}
 		return config;
 	},
-	/**
-	* @private
-	* @method _onDomEvent
-	* @description Generic handler for all DOM events fired by the iframe or window. This handler
-	* takes the current EventFacade and augments it to fire on the Frame host. It adds two new properties
-	* to the EventFacade called frameX and frameY which adds the scroll and xy position of the iframe
-	* to the original pageX and pageY of the event so external nodes can be positioned over the frame.
-	* @param {Event.Facade} e
-	*/
-	_onDomEvent: function(e) {
-		var xy, node;
-
-		e.frameX = e.frameY = 0;
-
-		if (e.pageX > 0 || e.pageY > 0) {
-			if (e.type.substring(0, 3) !== 'key') {
-				node = this._instance.one('win');
-				xy = this._iframe.getXY();
-				e.frameX = xy[0] + e.pageX - node.get('scrollLeft');
-				e.frameY = xy[1] + e.pageY - node.get('scrollTop');
-			}
-		}
-
-		e.frameTarget = e.target;
-		e.frameCurrentTarget = e.currentTarget;
-		e.frameEvent = e;
-
-		this.fire('dom:' + e.type, e);
-	},
 	initializer: function() {
 		
 	},
 	destructor: function() {
 		var inst = this.getInstance();
 
-		inst.one('doc').detachAll();
+		inst.one('doc').unbindAll();
 		inst = null;
 		this._iframe.remove();
 	},
@@ -365,7 +336,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 			this.fire('contentready');
 
 			if (e) {
-				inst.config.doc = e.target[0] || e.target;
+				inst.config.doc = e.target._nodes[0] || e.target;
 			}
 			//TODO Circle around and deal with CSS loading...
 			/*args.push($.bind(function() {

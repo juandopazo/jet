@@ -147,6 +147,9 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 		},
 		capturing: {
 			value: false
+		},
+		screenSize: {
+			value: DOM.screenSize()
 		}
 	},
 	
@@ -200,7 +203,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 	_onHandleMouseDown: function (e) {
 		if (!this.get(LOCKED)) {
 			var handle = $(e.target);
-			var type = handle[0].type;
+			var type = handle._nodes[0].type;
 			var proxy = this.get('proxy');
 			var offset = proxy.offset();
 			var tracker = this._tracker;
@@ -219,7 +222,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 		var handleClass = resizeClass + '-handle';
 		var handleClassActive = '-active';
 		if (!this.get(LOCKED) && !this.get('capturing')) {
-			handle.addClass([handleClass, handleClassActive, ' ', handleClass, '-', handle[0].type, handleClassActive].join(''));
+			handle.addClass([handleClass, handleClassActive, ' ', handleClass, '-', handle._nodes[0].type, handleClassActive].join(''));
 			if (this.get(HOVER)) {
 				this.get('node').removeClass(hoverClass);
 			}
@@ -233,7 +236,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 		var handleClass = resizeClass + '-handle';
 		var handleClassActive = '-active';
 		if (!this.get(LOCKED)) {
-			handle.removeClass(handleClass + handleClassActive).removeClass(handleClass + '-' + handle[0].type + handleClassActive);
+			handle.removeClass(handleClass + handleClassActive).removeClass(handleClass + '-' + handle._nodes[0].type + handleClassActive);
 			if (this.get(HOVER)) {
 				this.get('node').addClass(hoverClass);
 			}
@@ -252,7 +255,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 		$.Array.each(this.get('handles'), function (type) {
 			var handle = $(NEW_DIV);
 			handle.addClass([handleClass, ' ', handleClass, '-', type].join(''));
-			handle[0].type = type;
+			handle._nodes[0].type = type;
 			self._handlers.push(handle.on('mousedown', self._onHandleMouseDown, self), handle.on('mouseover', self._onHandleMouseOver, self), handle.on('mouseout', self._onHandleMouseOut, self));
 			handle.append($(NEW_DIV).addClass(handleClass + '-inner-' + type)).appendTo(node);
 		});

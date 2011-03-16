@@ -156,7 +156,7 @@ function buildJet(config) {
 		
 	});
 	
-	$.Get = new GetFactory(config);
+	$.Get = new Get(config);
 	
 	return $;
 };

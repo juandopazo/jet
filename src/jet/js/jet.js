@@ -285,7 +285,7 @@ window.jet = function (o) {
 	 * @description id of a node before which to insert all scripts and css files
 	 */
 	
-	var get = new GetFactory(config);
+	var get = new Get(config);
 	
 	/**
 	 * Allows for the following pattern:

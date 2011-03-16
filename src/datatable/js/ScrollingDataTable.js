@@ -27,7 +27,7 @@ $.ScrollingDataTable = Base.create('dt', DataTable, [], {
 			if (height) {
 				container.height(height - thead.height());
 			}
-			table[0].setAttribute('cellspacing', '0');
+			table._nodes[0].setAttribute('cellspacing', '0');
 			container.addClass(this.getClassName('table', 'body'));
 			table.append(tbody.detach()).appendTo(container);
 			
@@ -51,19 +51,19 @@ $.ScrollingDataTable = Base.create('dt', DataTable, [], {
 	
 	_autoScrollBefore: function () {
 		var tbodyContainer = this.get('tbodyContainer');
-		this.set('autoScrollStatus', (tbodyContainer[0].scrollTop + tbodyContainer.height() == tbodyContainer[0].scrollHeight));
+		this.set('autoScrollStatus', (tbodyContainer._nodes[0].scrollTop + tbodyContainer.height() == tbodyContainer._nodes[0].scrollHeight));
 	},
 	
 	_autoScrollAfter: function () {
 		var tbodyContainer = this.get('tbodyContainer');
 		if (this.get('autoScroll') && this.get('autoScrollStatus')) {
-			tbodyContainer[0].scrollTop = tbodyContainer[0].scrollHeight;
+			tbodyContainer._nodes[0].scrollTop = tbodyContainer._nodes[0].scrollHeight;
 		}
 	},
 	
 	_syncColumnWidths: function () {
 		var ths = this.get(THEAD).first().children();
-		if (!this._firstTr || !this._firstTr[0] || !this._firstTr[0].parentNode) {
+		if (!this._firstTr || !this._firstTr._nodes[0] || !this._firstTr._nodes[0].parentNode) {
 			this._firstTr = this.getFirstTr();
 		}
 		this._firstTr.children().each(function (td, i) {

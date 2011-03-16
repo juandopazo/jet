@@ -63,7 +63,7 @@ WidgetSandbox.prototype = {
 		try {
 			contentBox.appendTo(body);
 		} catch (e) {
-			newContentBox = contentDoc.importNode(contentBox[0], true);
+			newContentBox = contentDoc.importNode(contentBox._nodes[0], true);
 			body.appendChild(newContentBox);
 			this.set('contentBox', newContentBox);
 			contentBox.remove();
