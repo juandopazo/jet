@@ -109,7 +109,7 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 			this.on(this.get('triggerEvent'), this._selectHandler);
 			var panel = this.get(PANEL).html(this.get('panelContent')).addClass(this.getClassName(PANEL));
 			var panelContainer = this.get(PARENT).get(PANEL_CONTAINER);
-			if (panel.parent()[0] != panelContainer[0]) {
+			if (panel.parent()._nodes[0] != panelContainer._nodes[0]) {
 				panel.appendTo(this.get(PARENT).get(PANEL_CONTAINER));					
 			}
 			if (this.get(SELECTED)) {

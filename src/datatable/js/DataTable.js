@@ -199,7 +199,7 @@ var DataTable = Base.create('dt', Widget, [], {
 			}
 			td.append(liner).appendTo(tr);
 		});
-		tr.addClass(getClassName(tbody.children().length % 2 === 0 ? EVEN : ODD)).appendTo(tbody);
+		tr.addClass(getClassName(tbody.children().size() % 2 === 0 ? EVEN : ODD)).appendTo(tbody);
 	},
 	
 	/**

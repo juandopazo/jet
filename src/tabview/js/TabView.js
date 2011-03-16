@@ -35,7 +35,7 @@ $.TabView = Base.create('tabview', Widget, [$.WidgetParent], {
 	
 	HTML_PARSER: {
 		panelContainer: function (boundingBox) {
-			return $(boundingBox.children('div')[0]);
+			return $(boundingBox.children('div')._nodes[0]);
 		}
 	}
 }, {

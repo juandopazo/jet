@@ -67,7 +67,7 @@ $.ScrollingDataTable = Base.create('dt', DataTable, [], {
 			this._firstTr = this.getFirstTr();
 		}
 		this._firstTr.children().each(function (td, i) {
-			$(td).width($(ths[i]).width());
+			$(td).width(ths.eq(i).width());
 		});
 	}
 	

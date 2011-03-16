@@ -72,6 +72,14 @@ NodeList.prototype = {
 		return this;
 	},
 	/**
+	 * Returns the length of this NodeList
+	 * @method size
+	 * @return Number
+	 */
+	size: function() {
+		return this._nodes.length;
+	},
+	/**
 	 * Iterates through the nodelist, returning a new nodelist with all the elements
 	 * return by the callback function
 	 * @method map
@@ -726,11 +734,9 @@ NodeList.prototype = {
 			result.push(node);
 		});
 		A.each(arguments, function (nodelist) {
-			if (nodelist instanceof NodeList) {
-				nodelist.each(function (node) {
-					result.push(node);
-				});
-			}
+			$(nodelist).each(function (node) {
+				result.push(node);
+			});
 		});
 		return new NodeList(result);
 	},
@@ -776,7 +782,7 @@ NodeList.prototype = {
 	 * @param {Number} nth
 	 */
 	eq: function (nth) {
-		return new NodeList(this[nth]);
+		return new NodeList(this._nodes[nth]);
 	}
 };
 NodeList.is = Lang.is;
