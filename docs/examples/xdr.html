@@ -11,14 +11,11 @@
 </head>
 <body>
 	<div></div>
-<script type="text/javascript" src="../src/jet/jet.js"></script>
+<script type="text/javascript" src="../../build/jet.js"></script>
 <script type="text/javascript">
 	jet({
-		base: "../src"
-	}).use('io', 'swf', {
-		name: 'io-xdr',
-		path: 'io/io-xdr.js'
-	}, function ($) {
+		base: "../../build"
+	}).use('io-xdr', function ($) {
 		
 		$.IO.flajax({
 			url: "http://query.yahooapis.com/v1/publc/yql?q=show%20tables",

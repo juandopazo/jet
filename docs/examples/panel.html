@@ -20,9 +20,11 @@
 </head>
 
 <body class="yui-skin-sam">
-	<script type="text/javascript" src="http://jet-js.googlecode.com/svn/trunk/build/jet.min.js"></script>
+	<script type="text/javascript" src="../../build/jet.min.js"></script>
 	<script type="text/javascript">
-		jet().use('button', 'dragdrop', 'container', function ($) {
+		jet({
+			base: '../../build'
+		}).use('button', 'dragdrop', 'container', function ($) {
 			
 			for (var i = 0; i < 10; i++) {
 				(new $.Panel({
