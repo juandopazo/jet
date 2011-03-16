@@ -18,6 +18,10 @@ $.Menu = Base.create('menu', Widget, [$.WidgetParent], {
 		multiple: {
 			value: false,
 			readOnly: true
+		},
+		interaction: {
+			value: OS_INTERACTION,
+			writeOnce: true
 		}
 	},
 	
@@ -28,8 +32,10 @@ $.Menu = Base.create('menu', Widget, [$.WidgetParent], {
 			}
 		},
 		afterAddChild: function (e, child) {
-			child._handlers.push(child.on('mouseover', $.bind(this._onMenuMouseOver, this)));
-			child._handlers.push(child.on('mouseout', $.bind(this._onMenuMouseOut, this)));
+			if (this.get('interaction') == OS_INTERACTION) {
+				child._handlers.push(child.on('mouseover', $.bind(this._onMenuMouseOver, this)));
+				child._handlers.push(child.on('mouseout', $.bind(this._onMenuMouseOut, this)));
+			}
 		},
 		click: function (e, domEvent) {
 			var target = domEvent.target;
@@ -69,8 +75,10 @@ $.Menu = Base.create('menu', Widget, [$.WidgetParent], {
 	},
 	
 	initializer: function () {
-		this.on('mouseout', this._onMenuMouseOut);
-		this.on('mouseover', this._onMenuMouseOver);
+		if (this.get('interaction') == OS_INTERACTION) {
+			this.on('mouseout', this._onMenuMouseOut);
+			this.on('mouseover', this._onMenuMouseOver);
+		}
 	}
 	
 });

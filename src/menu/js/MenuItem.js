@@ -8,7 +8,9 @@ var BOUNDING_BOX = 'boundingBox',
 	CONTENT_BOX = 'contentBox',
 	HOVER = 'hover',
 	CHILDREN = 'children',
-	LABEL_NODE = 'labelNode';
+	LABEL_NODE = 'labelNode',
+	
+	OS_INTERACTION = 'os';
 	
 /**
  * A menu item
@@ -60,8 +62,9 @@ $.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 			boundingBox.on('click', this._toggleSelected, this);
 		},
 		mouseover: function () {
+			var parent = this.get('parent');
 			this.get(BOUNDING_BOX).addClass(this.getClassName(HOVER));
-			if (this.get('parent').get('selection')) {
+			if (parent.get('interaction') == OS_INTERACTION && parent.get('selection')) {
 				this.select();
 			}
 		},
