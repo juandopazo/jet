@@ -156,6 +156,7 @@ extend(Mouse, Utility, {
 	var $_event = new EventTarget();
 	var interval, timeout;
 	var lastScrollLeft, lastScrollTop;
+	var win = $.config.win;
 	
 	var scroll = function () {
 		var scrollLeft = $.DOM.scrollLeft();
@@ -179,9 +180,13 @@ extend(Mouse, Utility, {
 	$.on = $.bind($_event.on, $_event);
 	
 	A.each(['load', 'unload'], function (name) {
-		$($.config.win).on(name, function () {
+		$(win).on(name, function () {
 			$_event.fire(name);
 		});
+	});
+	
+	$(win).on('resize', function () {
+		$_event.fire('resize');
 	});
 	
 }());
