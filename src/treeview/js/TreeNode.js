@@ -120,10 +120,13 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 			var controlNode = this.get(CONTROL_NODE).addClass(this.getClassName(CONTROL));
 			var expanded = this.get(SELECTED);
 			var title = this.get(TITLE);
-			labelNode.appendTo(contentBox);
+			labelNode.prependTo(boundingBox);
 			controlNode.prependTo(boundingBox);
 			if (title) {
 				controlNode.attr(TITLE, title);
+			}
+			if (this.get('children').length > 0) {
+				labelNode.addClass(this.getClassName(LABEL, 'selectable'));
 			}
 			labelNode.link(controlNode).on(CLICK, this._nodeToggle);
 			this._expandedChange(expanded, expanded);

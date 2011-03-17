@@ -26,5 +26,4 @@ $.TreeView = Base.create('treeview', Widget, [$.WidgetParent], {
 	 * @param {Node} The node that initiated the action
 	 */
 }, {
-	CONTENT_TEMPLATE: null
 });

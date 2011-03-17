@@ -40,6 +40,5 @@
 .jet-treenode-content {
 }
 .jet-treenode-content-collapsed {
-	height: 2em;
-	overflow: hidden;
+	display: none;
 }
