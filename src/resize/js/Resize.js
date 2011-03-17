@@ -203,6 +203,9 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 	_onHandleMouseDown: function (e) {
 		if (!this.get(LOCKED)) {
 			var handle = $(e.target);
+			if (handle.hasClass(this.get('prefix') + '-resize-handle-inner')) {
+				handle = handle.parent();
+			}
 			var type = handle._nodes[0].type;
 			var proxy = this.get('proxy');
 			var offset = proxy.offset();
@@ -221,6 +224,9 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 		var hoverClass = resizeClass + '-hover';
 		var handleClass = resizeClass + '-handle';
 		var handleClassActive = '-active';
+		if (handle.hasClass(handleClass + '-inner')) {
+			handle = handle.parent();
+		}
 		if (!this.get(LOCKED) && !this.get('capturing')) {
 			handle.addClass([handleClass, handleClassActive, ' ', handleClass, '-', handle._nodes[0].type, handleClassActive].join(''));
 			if (this.get(HOVER)) {
@@ -235,6 +241,9 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 		var hoverClass = resizeClass + '-hover';
 		var handleClass = resizeClass + '-handle';
 		var handleClassActive = '-active';
+		if (handle.hasClass(handleClass + '-inner')) {
+			handle = handle.parent();
+		}
 		if (!this.get(LOCKED)) {
 			handle.removeClass(handleClass + handleClassActive).removeClass(handleClass + '-' + handle._nodes[0].type + handleClassActive);
 			if (this.get(HOVER)) {
@@ -257,7 +266,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 			handle.addClass([handleClass, ' ', handleClass, '-', type].join(''));
 			handle._nodes[0].type = type;
 			self._handlers.push(handle.on('mousedown', self._onHandleMouseDown, self), handle.on('mouseover', self._onHandleMouseOver, self), handle.on('mouseout', self._onHandleMouseOut, self));
-			handle.append($(NEW_DIV).addClass(handleClass + '-inner-' + type)).appendTo(node);
+			handle.append($(NEW_DIV).addClass(handleClass + '-inner', handleClass + '-inner-' + type)).appendTo(node);
 		});
 		node.addClass(resizeClass).css('display', 'block');
 		if (this.get('hiddenHandles')) {
