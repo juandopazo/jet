@@ -26,11 +26,11 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 	
 	ATTRS: {
 		/**
-		 * @config panel
-		 * @description The element or text to use as a panel
+		 * @config panelNode
+		 * @description The element to use as a panel
 		 * @writeOnce
 		 */
-		panel: {
+		panelNode: {
 			setter: $
 		},
 		/**
@@ -85,7 +85,7 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 		},
 		
 		panelContentChange: function (e, newVal) {
-			var panel = this.get(PANEL);
+			var panel = this.get('panelNode');
 			panel.children().remove();
 			if (newVal instanceof $.NodeList) {
 				panel.append(newVal);
@@ -96,7 +96,7 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 		
 		selectedChange: function (e, newVal) {
 			var selectedClass = this.getClassName(PANEL, SELECTED);
-			var panel = this.get(PANEL);
+			var panel = this.get('panelNode');
 			if (newVal) {
 				panel.addClass(selectedClass);
 			} else {
@@ -107,7 +107,7 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 		render: function () {
 			this.get(CONTENT_BOX).attr(HREF, this.get(HREF)).html(this.get('labelContent'));
 			this.on(this.get('triggerEvent'), this._selectHandler);
-			var panel = this.get(PANEL).html(this.get('panelContent')).addClass(this.getClassName(PANEL));
+			var panel = this.get('panelNode').html(this.get('panelContent')).addClass(this.getClassName(PANEL));
 			var panelContainer = this.get(PARENT).get(PANEL_CONTAINER);
 			if (panel.parent()._nodes[0] != panelContainer._nodes[0]) {
 				panel.appendTo(this.get(PARENT).get(PANEL_CONTAINER));					
@@ -118,7 +118,7 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 		},
 		
 		destroy: function () {
-			this.get(PANEL).remove();
+			this.get('panelNode').remove();
 		}
 		
 	},
@@ -128,7 +128,7 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 			return this.get(PARENT).get('panelContainer').children(this.get('index'));
 		},
 		panelContent: function () {
-			var panel = this.get(PANEL);
+			var panel = this.get('panelNode');
 			if (panel) {
 				return panel.html();
 			}
@@ -147,8 +147,8 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 	PANEL_TEMPLATE: DIV,
 	
 	initializer: function () {
-		if (!this.get(PANEL)) {
-			this.set(PANEL, this.PANEL_TEMPLATE);
+		if (!this.get('panelNode')) {
+			this.set('panelNode', this.PANEL_TEMPLATE);
 		}
 		var parent = this.get(PARENT);
 		if (parent) {
