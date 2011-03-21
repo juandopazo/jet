@@ -154,7 +154,7 @@ var DataSource = Base.create('datasource', $.Utility, [], {
 						var nested = field.key.split(".");
 						var value = null;
 						A.each(nested, function (key) {
-							if (record[key]) {
+							if (Lang.isValue(record[key])) {
 								value = record[key];
 							}
 						});
