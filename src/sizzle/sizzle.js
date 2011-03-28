@@ -1,4 +1,5 @@
 /**
+ * Makes Sizzle the selector engine
  * @module sizzle
  */
 /*!
@@ -1384,6 +1385,10 @@ var posProcess = function( selector, context ) {
 
 // EXPOSE
 
+/**
+ * @class Sizzle
+ * @static
+ */
 jet.add('sizzle', function ($) {
 	$.parseQuery = Sizzle;
 });

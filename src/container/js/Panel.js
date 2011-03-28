@@ -97,7 +97,7 @@ PanelBase.prototype = {
 /**
  * A panel is an overlay that resembles an OS window without actually being one,
  * to the problems they have (stop javascript execution, etc)
- * @class PanelBase
+ * @class Panel
  * @extends Overlay
  * @uses PanelBase
  * @constructor

@@ -56,30 +56,28 @@ jet.add('${ant.project.name}', function ($) {
 	
 	<target name="init" depends="minify">
 		<concat destfile="${builddir}/${filename}" append="yes">
-			<header>/*
- Copyright (c) ${YEAR}, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- https://github.com/juandopazo/jet/blob/master/LICENSE.md
+			<header>/**
+ * ${description}
+ * @module ${ant.project.name}
+ * @requires ${requires}
+ * 
+ * Copyright (c) ${YEAR}, Juan Ignacio Dopazo. All rights reserved.
+ * Code licensed under the BSD License
+ * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
-/*
- @module ${ant.project.name}
- @description ${description}
- @requires ${requires}
-*/
-			</header>
+</header>
 			<filelist dir="${tmpdir}" files="${filename}"/>
 		</concat>
 		<concat destfile="${builddir}/${ant.project.name}.min.js" append="yes">
-			<header>/*
- Copyright (c) ${YEAR}, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- https://github.com/juandopazo/jet/blob/master/LICENSE.md
+			<header>/**
+ * @module ${ant.project.name}
+ * @requires ${requires}
+ * 
+ * Copyright (c) ${YEAR}, Juan Ignacio Dopazo. All rights reserved.
+ * Code licensed under the BSD License
+ * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
-/*
- @module ${ant.project.name}
- @requires ${requires}
-*/
-			</header>
+</header>
 			<filelist dir="${tmpdir}" files="${ant.project.name}.min.js"/>
 		</concat>
 		

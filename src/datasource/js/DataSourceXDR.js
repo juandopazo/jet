@@ -3,7 +3,6 @@
  * Cross-domain data source
  * @class DataSource.XDR
  * @extends DataSource
- * @namespace DataSource
  * @constructor
  * @param {Object} config Object literal specifying configuration properties
  */

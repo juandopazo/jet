@@ -45,7 +45,7 @@ var GlobalConfig = {
 				value: SOLID
 			}
 		},
-		container: [BASE, 'widget-alignment', 'container-styles'],
+		container: [BASE, 'widget-alignment', 'widget-stack', 'container-styles'],
 		'progressbar-styles': {
 			type: CSS,
 			beacon: {
@@ -76,6 +76,7 @@ var GlobalConfig = {
 		tabview: [WIDGET_PARENTCHILD, 'tabview-styles'],
 		treeview: [WIDGET_PARENTCHILD],
 		'widget-alignment': [BASE],
+		'widget-stack': [BASE],
 		'widget-parentchild': [BASE],
 		'widget-sandbox': [BASE],
 		menu: [WIDGET_PARENTCHILD, 'container'],

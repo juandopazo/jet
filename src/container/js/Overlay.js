@@ -10,10 +10,11 @@ if (!Lang.isNumber(Global.ovZindex)) {
  * @description An Overlay is a Module that floats in the page (doesn't have position static)
  * @extends Module
  * @uses WidgetAlignment
+ * @uses WidgetStack
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment], {
+$.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment, $.WidgetStack], {
 	
 	ATTRS: {
 		/**
