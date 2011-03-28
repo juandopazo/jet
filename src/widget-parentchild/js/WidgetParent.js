@@ -47,7 +47,7 @@ $.mix(WidgetParent, {
 		/**
 		 * @config defaultChildType
 		 * @description default value used when a childType is not provided. This attribute is used mostly by classes using WidgetParent.
-		 * @default
+		 * @default WidgetChild
 		 */
 		defaultChildType: {
 			value: 'WidgetChild'

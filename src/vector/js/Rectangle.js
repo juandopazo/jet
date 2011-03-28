@@ -1,9 +1,8 @@
 
 /**
  * Draws a rectangle
- * @class Rectangle
+ * @class Vector.Rectangle
  * @extends Vector
- * @namespace Vector
  * @constructor
  * @param {Object} config
  */

@@ -1,10 +1,9 @@
 
 /**
  * A rectangle with rounded corners
- * @class RoundedRectangle
+ * @class Vector.RoundedRectangle
  * @extends Rectangle
  * @constructor
- * @namespace Vector
  * @param {Object} config
  */
 var RoundedRectangle = Base.create('roundrect', Rectangle, [], {}, {

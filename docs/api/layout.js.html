@@ -1,0 +1,310 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: json   layout.js  (Jet Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body>
+
+<div id="doc4" class="yui-t2">
+	<div id="hd">
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>json&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
+            &gt; <a href="./module_json.html" title="json">json</a>
+                
+                 &gt; layout.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * Creates a resizable layout</span>
+<span class="cm"> * @module layout</span>
+<span class="cm"> * @requires base,resize,widget-parentchild</span>
+<span class="cm"> * </span>
+<span class="cm"> * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.</span>
+<span class="cm"> * Code licensed under the BSD License</span>
+<span class="cm"> * https://github.com/juandopazo/jet/blob/master/LICENSE.md</span>
+<span class="cm">*/</span>
+<span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
+
+
+			
+<span class="kd">var</span> <span class="nx">Resize</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Resize</span><span class="p">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Base class used to create both the Layout and LayoutPanel classes.</span>
+<span class="cm"> * Provides functionality to resize panels keeping the declared layout structure</span>
+<span class="cm"> * @class LayoutPanelBase</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> */</span>
+<span class="kd">function</span> <span class="nx">LayoutPanelBase</span><span class="p">()</span> <span class="p">{}</span>
+
+<span class="nx">LayoutPanelBase</span><span class="p">.</span><span class="nx">Vertical</span> <span class="o">=</span> <span class="s1">&#39;v&#39;</span><span class="p">;</span>
+<span class="nx">LayoutPanelBase</span><span class="p">.</span><span class="nx">Horizontal</span> <span class="o">=</span> <span class="s1">&#39;h&#39;</span><span class="p">;</span>
+
+<span class="nx">$</span><span class="p">.</span><span class="nx">mix</span><span class="p">(</span><span class="nx">LayoutPanelBase</span><span class="p">,</span> <span class="p">{</span>
+	
+	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config direction</span>
+<span class="cm">		 * @description Direction in which this panel can be resized</span>
+<span class="cm">		 * @default LayoutPanelBase.Vertical</span>
+<span class="cm">		 * @writeOnce</span>
+<span class="cm">		 */</span>
+		<span class="nx">direction</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="nx">LayoutPanelBase</span><span class="p">.</span><span class="nx">Vertical</span><span class="p">,</span>
+			<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config minSize</span>
+<span class="cm">		 * @description Minimum size the panel can acquire. Applies to width or height depending on the &#39;direction&#39; attribute</span>
+<span class="cm">		 * @default 0</span>
+<span class="cm">		 * @writeOnce</span>
+<span class="cm">		 */</span>
+		<span class="nx">minSize</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+			<span class="nx">wriceOnce</span><span class="o">:</span> <span class="kc">true</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config shim</span>
+<span class="cm">		 * @description Whether the resize utility should use a shim to protect the mouse movements</span>
+<span class="cm">		 * @default false</span>
+<span class="cm">		 * @writeOnce</span>
+<span class="cm">		 */</span>
+		<span class="nx">shim</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+			<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config defaultChildType</span>
+<span class="cm">		 * @description Default type to apply to children</span>
+<span class="cm">		 * @default LayoutPanel</span>
+<span class="cm">		 */</span>
+		<span class="nx">defaultChildType</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;LayoutPanel&#39;</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	
+	<span class="nx">EVENTS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">afterRender</span><span class="o">:</span> <span class="s1">&#39;_uiLayoutRender&#39;</span><span class="p">,</span>
+		<span class="nx">afterAddChild</span><span class="o">:</span> <span class="s1">&#39;_setupChildResize&#39;</span><span class="p">,</span>
+		<span class="nx">removeChild</span><span class="o">:</span> <span class="s1">&#39;_destroyChildResize&#39;</span>
+	<span class="p">},</span>
+	
+	<span class="nx">HTML_PARSER</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">direction</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">boundingBox</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">boundingBox</span><span class="p">.</span><span class="nx">hasClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="nx">LayoutPanelBase</span><span class="p">.</span><span class="nx">Horizontal</span><span class="p">))</span> <span class="o">?</span> <span class="nx">LayoutPanelBase</span><span class="p">.</span><span class="nx">Horizontal</span> <span class="o">:</span> <span class="nx">LayoutPanelBase</span><span class="p">.</span><span class="nx">Vertical</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">LayoutPanelBase</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="p">{</span>
+		
+	<span class="nx">_uiLayoutRender</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">direction</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;direction&#39;</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">boundingBox</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;boundingBox&#39;</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">sizeType</span> <span class="o">=</span> <span class="nx">direction</span> <span class="o">==</span> <span class="nx">LayoutPanelBase</span><span class="p">.</span><span class="nx">Horizontal</span> <span class="o">?</span> <span class="s1">&#39;width&#39;</span> <span class="o">:</span> <span class="s1">&#39;height&#39;</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">setSize</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">freeSize</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">childrenNumber</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;children&#39;</span><span class="p">).</span><span class="nx">length</span><span class="p">;</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">childrenNumber</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="nx">direction</span><span class="p">));</span>
+		<span class="p">}</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">setSize</span> <span class="o">+=</span> <span class="nx">child</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">sizeType</span><span class="p">)</span> <span class="o">||</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="p">});</span>
+		<span class="nx">freeSize</span> <span class="o">=</span> <span class="p">(</span><span class="nx">boundingBox</span><span class="p">[</span><span class="nx">sizeType</span><span class="p">]()</span> <span class="o">-</span> <span class="nx">setSize</span><span class="p">)</span> <span class="o">/</span> <span class="nx">childrenNumber</span><span class="p">;</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">child</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">sizeType</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">child</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">sizeType</span><span class="p">,</span> <span class="nx">freeSize</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">});</span>
+	<span class="p">},</span>
+	
+	<span class="nx">_setupChildResize</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">child</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
+		
+		<span class="kd">var</span> <span class="nx">Resize</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Resize</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">minSize</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;minSize&#39;</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">direction</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;direction&#39;</span><span class="p">);</span>
+			
+		<span class="k">if</span> <span class="p">(</span><span class="nx">index</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+			
+			<span class="nx">child</span><span class="p">.</span><span class="nx">resize</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Resize</span><span class="p">({</span>
+				<span class="nx">node</span><span class="o">:</span> <span class="nx">child</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;boundingBox&#39;</span><span class="p">),</span>
+				<span class="nx">handles</span><span class="o">:</span> <span class="p">[</span><span class="nx">direction</span> <span class="o">==</span> <span class="nx">LayoutPanelBase</span><span class="p">.</span><span class="nx">Horizontal</span> <span class="o">?</span> <span class="nx">Resize</span><span class="p">.</span><span class="nx">Left</span> <span class="o">:</span> <span class="nx">Resize</span><span class="p">.</span><span class="nx">Top</span><span class="p">],</span>
+				<span class="nx">minWidth</span><span class="o">:</span> <span class="nx">minSize</span><span class="p">,</span>
+				<span class="nx">minHeight</span><span class="o">:</span> <span class="nx">minSize</span><span class="p">,</span>
+				<span class="nx">shim</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;shim&#39;</span><span class="p">)</span>
+			<span class="p">});</span>
+			
+			<span class="nx">child</span><span class="p">.</span><span class="nx">resize</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;resize:start&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_onChildResizeStart</span><span class="p">,</span> <span class="nx">child</span><span class="p">);</span>
+			<span class="nx">child</span><span class="p">.</span><span class="nx">resize</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;resize&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_onChildResize</span><span class="p">,</span> <span class="nx">child</span><span class="p">);</span>
+			
+		<span class="p">}</span>
+			
+		<span class="nx">child</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;boundingBox&#39;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">child</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="s1">&#39;child&#39;</span><span class="p">,</span> <span class="nx">direction</span><span class="p">));</span>
+	<span class="p">},</span>
+	
+	<span class="nx">_destroyChildResize</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
+		
+		<span class="nx">child</span><span class="p">.</span><span class="nx">resize</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
+		<span class="nx">child</span><span class="p">.</span><span class="nx">resize</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+		
+	<span class="p">},</span>
+	
+	<span class="nx">_onChildResizeStart</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+		
+		<span class="kd">var</span> <span class="nx">previous</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">previous</span><span class="p">();</span>
+		<span class="kd">var</span> <span class="nx">previousBoundingBox</span> <span class="o">=</span> <span class="nx">previous</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;boundingBox&#39;</span><span class="p">);</span>
+		
+		<span class="nx">previous</span><span class="p">.</span><span class="nx">_originalWidth</span> <span class="o">=</span> <span class="nx">previousBoundingBox</span><span class="p">.</span><span class="nx">width</span><span class="p">();</span>
+		<span class="nx">previous</span><span class="p">.</span><span class="nx">_originalHeight</span> <span class="o">=</span> <span class="nx">previousBoundingBox</span><span class="p">.</span><span class="nx">height</span><span class="p">();</span> 
+		
+	<span class="p">},</span>
+	
+	<span class="nx">_onChildResize</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">currentWidth</span><span class="p">,</span> <span class="nx">currentHeight</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">childResize</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">previous</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">previous</span><span class="p">();</span>
+		<span class="kd">var</span> <span class="nx">previousBoundingBox</span> <span class="o">=</span> <span class="nx">previous</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;boundingBox&#39;</span><span class="p">);</span>
+		
+		<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;parent&#39;</span><span class="p">).</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;direction&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="nx">LayoutPanelBase</span><span class="p">.</span><span class="nx">Horizontal</span><span class="p">)</span> <span class="p">{</span>
+			
+			<span class="nx">previousBoundingBox</span><span class="p">.</span><span class="nx">width</span><span class="p">(</span><span class="nx">childResize</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;originalWidth&#39;</span><span class="p">)</span> <span class="o">-</span> <span class="nx">currentWidth</span> <span class="o">+</span> <span class="nx">previous</span><span class="p">.</span><span class="nx">_originalWidth</span><span class="p">);</span>
+			
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			
+			<span class="nx">previousBoundingBox</span><span class="p">.</span><span class="nx">height</span><span class="p">(</span><span class="nx">childResize</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;originalHeight&#39;</span><span class="p">)</span> <span class="o">-</span> <span class="nx">currentHeight</span> <span class="o">+</span> <span class="nx">previous</span><span class="p">.</span><span class="nx">_originalHeight</span><span class="p">);</span>
+			
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">};</span>
+
+
+<span class="cm">/**</span>
+<span class="cm"> * A Layout Panel is a resizable block which size is constrained by the other blocks in the same container</span>
+<span class="cm"> * @class LayoutPanel</span>
+<span class="cm"> * @uses LayoutPanelBase, WidgetParent, WidgetChild</span>
+<span class="cm"> * @extends Widget</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm"> */</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">LayoutPanel</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;layout-panel&#39;</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Widget</span><span class="p">,</span> <span class="p">[</span><span class="nx">LayoutPanelBase</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">WidgetParent</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">WidgetChild</span><span class="p">],</span> <span class="p">{},</span> <span class="p">{</span>
+	
+	<span class="nx">CONTENT_TEMPLATE</span><span class="o">:</span> <span class="kc">null</span>
+	
+<span class="p">});</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * A Layout is a container of Layout Panels</span>
+<span class="cm"> * @class Layout</span>
+<span class="cm"> * @uses LayoutPanelBase, WidgetParent</span>
+<span class="cm"> * @extends Widget</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm"> */</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">Layout</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;layout&#39;</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Widget</span><span class="p">,</span> <span class="p">[</span><span class="nx">LayoutPanelBase</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">WidgetParent</span><span class="p">],</span> <span class="p">{},</span> <span class="p">{</span>
+	
+	<span class="nx">CONTENT_TEMPLATE</span><span class="o">:</span> <span class="kc">null</span>
+	
+<span class="p">});</span>
+
+			
+<span class="p">});</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_anim.html" title="anim">anim</a></li>
+                                <li class=""><a href="module_base.html" title="base">base</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_io.html" title="io">io</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
+                                <li class="selected"><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_node.html" title="node">node</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="JSON.html" title="JSON">JSON</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+
+    var ALL_YUI_PROPS = [{"url": "JSON.html#method_parse", "access": "", "host": "JSON", "type": "method", "name": "parse"}, {"url": "JSON.html#method_stringify", "access": "", "host": "JSON", "type": "method", "name": "stringify"}];
+</script>
+</body>
+</html>

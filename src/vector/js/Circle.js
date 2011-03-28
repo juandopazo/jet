@@ -1,10 +1,9 @@
 
 /**
  * A circle vector
- * @class Circle
+ * @class Vector.Circle
  * @extends Vector
  * @constructor
- * @namespace Vector
  * @param {Object} config
  */
 var Circle = Base.create('circle', Vector, [], {

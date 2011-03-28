@@ -1,10 +1,9 @@
 
 /**
  * An Path vector
- * @class Path
+ * @class Vector.Path
  * @extends Vector
  * @constructor
- * @namespace Vector
  * @param {Object} config
  */
 var Path = Base.create('path', Vector, [], {

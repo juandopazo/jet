@@ -2,7 +2,7 @@
 <html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-	<title>API: paginator   resize.js  (Jet Library)</title>
+	<title>API: progressbar   resize.js  (Jet Library)</title>
 
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
@@ -11,14 +11,14 @@
     <script type="text/javascript" src="assets/ac-js"></script>
 </head>
 
-<body id="yahoo-com">
+<body>
 
-<div id="doc3" class="yui-t2">
+<div id="doc4" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
-        <h3>paginator&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
-            &gt; <a href="./module_paginator.html" title="paginator">paginator</a>
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>progressbar&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
+            &gt; <a href="./module_progressbar.html" title="progressbar">progressbar</a>
                 
                  &gt; resize.js (source view) 
         <form onsubmit="return false">
@@ -47,185 +47,202 @@
                         <style>
                             #doc3 .classopts { display:none; }
                         </style>
-                        <div class="highlight"><pre><span class="cm">/*</span>
-<span class="cm"> Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.</span>
-<span class="cm"> Code licensed under the BSD License</span>
-<span class="cm"> http://code.google.com/p/jet-js/wiki/Licence</span>
-<span class="cm">*/</span>
-<span class="cm">/**</span>
+                        <div class="highlight"><pre><span class="cm">/**</span>
 <span class="cm"> * Provides a utility for resizing elements</span>
 <span class="cm"> * @module resize</span>
-<span class="cm"> * @requires jet, lang, base</span>
-<span class="cm"> */</span>
-<span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;resize&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
-	
-	<span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
-		<span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">;</span>
-	
-	<span class="kd">var</span> <span class="nx">TOP</span> <span class="o">=</span> <span class="s2">&quot;t&quot;</span><span class="p">,</span>
-		<span class="nx">BOTTOM</span> <span class="o">=</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span>
-		<span class="nx">LEFT</span> <span class="o">=</span> <span class="s2">&quot;l&quot;</span><span class="p">,</span>
-		<span class="nx">RIGHT</span> <span class="o">=</span> <span class="s2">&quot;r&quot;</span><span class="p">;</span>
-	
-	<span class="kd">var</span> <span class="nx">NEW_DIV</span> <span class="o">=</span> <span class="s2">&quot;&lt;div/&gt;&quot;</span><span class="p">,</span>
-		<span class="nx">LOCKED</span> <span class="o">=</span> <span class="s2">&quot;locked&quot;</span><span class="p">,</span>
-		<span class="nx">HOVER</span> <span class="o">=</span> <span class="s2">&quot;hover&quot;</span><span class="p">;</span>
-		
-	<span class="kd">var</span> <span class="nx">de</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">,</span>
-		<span class="nx">db</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">body</span><span class="p">;</span>
-				
-	<span class="cm">/**</span>
-<span class="cm">	 * Provides a utility for resizing elements</span>
-<span class="cm">	 * @class Resize</span>
-<span class="cm">	 * @extends Utility</span>
-<span class="cm">	 * @param {Object} config Object literal specifying configuration properties</span>
-<span class="cm">	 */</span>
-	<span class="kd">var</span> <span class="nx">Resize</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-		<span class="nx">Resize</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
-		
-		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config node</span>
-<span class="cm">			 * @description The node to be resized</span>
-<span class="cm">			 * @required</span>
-<span class="cm">			 */</span>
-			<span class="nx">node</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
-				<span class="p">}</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * qconfig handles</span>
-<span class="cm">			 * @description An array with the position of the needed handles. Posible values: &quot;t&quot;, &quot;b&quot;, &quot;r&quot;, &quot;l&quot;, &quot;tr&quot;, &quot;tl&quot;, etc</span>
-<span class="cm">			 * @type Array</span>
-<span class="cm">			 * @default [&quot;b&quot;, &quot;r&quot;, &quot;br&quot;]</span>
-<span class="cm">			 */</span>
-			<span class="nx">handles</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="p">[</span><span class="nx">Resize</span><span class="p">.</span><span class="nx">Bottom</span><span class="p">,</span> <span class="nx">Resize</span><span class="p">.</span><span class="nx">Right</span><span class="p">,</span> <span class="nx">Resize</span><span class="p">.</span><span class="nx">BottomRight</span><span class="p">],</span>
-				<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isArray</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config hiddenHandles</span>
-<span class="cm">			 * @description If set to true, the handles are interactive but invisible</span>
-<span class="cm">			 * @type Boolean</span>
-<span class="cm">			 * @default false</span>
-<span class="cm">			 */</span>
-			<span class="nx">hiddenHandles</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
-			<span class="p">},</span>
-			<span class="nx">prefix</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;yui&quot;</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config minWidth</span>
-<span class="cm">			 * @description The minimum with the node can achieve</span>
-<span class="cm">			 * @type Number</span>
-<span class="cm">			 * @default 0</span>
-<span class="cm">			 */</span>
-			<span class="nx">minWidth</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="mi">0</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config minHeight</span>
-<span class="cm">			 * @description The minimum height the node can achieve</span>
-<span class="cm">			 * @type Number</span>
-<span class="cm">			 * @default 0</span>
-<span class="cm">			 */</span>
-			<span class="nx">minHeight</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="mi">0</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config constrain</span>
-<span class="cm">			 * @description If set to true, the node can&#39;t become bigger than the screen</span>
-<span class="cm">			 * @type Boolean</span>
-<span class="cm">			 * @default false</span>
-<span class="cm">			 */</span>
-			<span class="nx">constrain</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config proxy</span>
-<span class="cm">			 * @description Whether to use a copy of the node while resizing or not.</span>
-<span class="cm">			 * Possible values: false, true, &quot;clone&quot;</span>
-<span class="cm">			 * @type Boolean | String</span>
-<span class="cm">			 * @default false</span>
-<span class="cm">			 */</span>
-			<span class="nx">proxy</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config animate</span>
-<span class="cm">			 * @description Creates an animation when the resize handle is released. Can only be set to true</span>
-<span class="cm">			 * if &quot;proxy&quot; is set to true. &lt;strong&gt;Requires the Anim module.&lt;/strong&gt;</span>
-<span class="cm">			 * @type Boolean</span>
-<span class="cm">			 * @default false</span>
-<span class="cm">			 */</span>
-			<span class="nx">animate</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
-				<span class="nx">validator</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;proxy&quot;</span><span class="p">);</span>
-				<span class="p">}</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @ocnfig reposition</span>
-<span class="cm">			 * @description If set to true, the resize utility will automatically change the position of the </span>
-<span class="cm">			 * node so that is stays in place when resizing it in any direction</span>
-<span class="cm">			 * @type Boolean</span>
-<span class="cm">			 * @default false</span>
-<span class="cm">			 */</span>
-			<span class="nx">reposition</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config shim</span>
-<span class="cm">			 * @description Uses invisible elements to be able to resize the node over iframes</span>
-<span class="cm">			 * @type Boolean</span>
-<span class="cm">			 * @default false </span>
-<span class="cm">			 */</span>
-			<span class="nx">shim</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config locked</span>
-<span class="cm">			 * @description If the resize is locked the handles are not interactive</span>
-<span class="cm">			 * @type Boolean</span>
-<span class="cm">			 * @default false</span>
-<span class="cm">			 */</span>
-			<span class="nx">locked</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
-			<span class="p">}</span>
-		<span class="p">});</span>
+<span class="cm"> * @requires base</span>
+<span class="cm"> * </span>
+<span class="cm"> * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.</span>
+<span class="cm"> * Code licensed under the BSD License</span>
+<span class="cm"> * https://github.com/juandopazo/jet/blob/master/LICENSE.md</span>
+<span class="cm">*/</span>
+<span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;resize&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 
-		<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;node&quot;</span><span class="p">);</span>
-				
-		<span class="kd">var</span> <span class="nx">CLIENT</span> <span class="o">=</span> <span class="s2">&quot;client&quot;</span><span class="p">,</span>
-			<span class="nx">HEIGHT</span> <span class="o">=</span> <span class="s2">&quot;height&quot;</span><span class="p">,</span>
-			<span class="nx">WIDTH</span> <span class="o">=</span> <span class="s2">&quot;width&quot;</span><span class="p">,</span>
-			<span class="nx">VISIBILITY</span> <span class="o">=</span> <span class="s2">&quot;visibility&quot;</span><span class="p">,</span>
-			<span class="nx">CLONE_PROXY</span> <span class="o">=</span> <span class="s2">&quot;clone&quot;</span><span class="p">,</span>
-			<span class="nx">AUTO</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-			<span class="nx">PX</span> <span class="o">=</span> <span class="s2">&quot;px&quot;</span><span class="p">;</span>
-		
-		<span class="kd">var</span> <span class="nx">min</span> <span class="o">=</span> <span class="p">{</span>
-			<span class="nx">height</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;minHeight&quot;</span><span class="p">),</span>
-			<span class="nx">width</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;minWidth&quot;</span><span class="p">)</span>
-		<span class="p">};</span>
-		<span class="kd">var</span> <span class="nx">max</span> <span class="o">=</span> <span class="p">{</span>
-			<span class="nx">height</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;maxHeight&quot;</span><span class="p">),</span>
-			<span class="nx">width</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;maxWidth&quot;</span><span class="p">)</span>
-		<span class="p">};</span>
-		
-		<span class="kd">var</span> <span class="nx">useProxy</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;proxy&quot;</span><span class="p">);</span>
+
+			
+<span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
+	<span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span>
+	<span class="nx">DOM</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">DOM</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">TOP</span> <span class="o">=</span> <span class="s1">&#39;t&#39;</span><span class="p">,</span>
+	<span class="nx">BOTTOM</span> <span class="o">=</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span>
+	<span class="nx">LEFT</span> <span class="o">=</span> <span class="s1">&#39;l&#39;</span><span class="p">,</span>
+	<span class="nx">RIGHT</span> <span class="o">=</span> <span class="s1">&#39;r&#39;</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">CLIENT</span> <span class="o">=</span> <span class="s1">&#39;client&#39;</span><span class="p">,</span>
+	<span class="nx">HEIGHT</span> <span class="o">=</span> <span class="s1">&#39;height&#39;</span><span class="p">,</span>
+	<span class="nx">WIDTH</span> <span class="o">=</span> <span class="s1">&#39;width&#39;</span><span class="p">,</span>
+	<span class="nx">VISIBILITY</span> <span class="o">=</span> <span class="s1">&#39;visibility&#39;</span><span class="p">,</span>
+	<span class="nx">CLONE_PROXY</span> <span class="o">=</span> <span class="s1">&#39;clone&#39;</span><span class="p">,</span>
+	<span class="nx">AUTO</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+	<span class="nx">PX</span> <span class="o">=</span> <span class="s1">&#39;px&#39;</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">NEW_DIV</span> <span class="o">=</span> <span class="s1">&#39;&lt;div/&gt;&#39;</span><span class="p">,</span>
+	<span class="nx">LOCKED</span> <span class="o">=</span> <span class="s1">&#39;locked&#39;</span><span class="p">,</span>
+	<span class="nx">HOVER</span> <span class="o">=</span> <span class="s1">&#39;hover&#39;</span><span class="p">;</span>
+	
+<span class="kd">var</span> <span class="nx">de</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">,</span>
+	<span class="nx">db</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">body</span><span class="p">;</span>
+			
+<span class="cm">/**</span>
+<span class="cm"> * Provides a utility for resizing elements</span>
+<span class="cm"> * @class Resize</span>
+<span class="cm"> * @extends Utility</span>
+<span class="cm"> * @param {Object} config Object literal specifying configuration properties</span>
+<span class="cm"> */</span>
+<span class="kd">var</span> <span class="nx">Resize</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Resize</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;resize&#39;</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Utility</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span>
+	
+	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config node</span>
+<span class="cm">		 * @description The node to be resized</span>
+<span class="cm">		 * @required</span>
+<span class="cm">		 */</span>
+		<span class="nx">node</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+			<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * qconfig handles</span>
+<span class="cm">		 * @description An array with the position of the needed handles. Posible values: &#39;t&#39;, &#39;b&#39;, &#39;r&#39;, &#39;l&#39;, &#39;tr&#39;, &#39;tl&#39;, etc</span>
+<span class="cm">		 * @type Array</span>
+<span class="cm">		 * @default [&#39;b&#39;, &#39;r&#39;, &#39;br&#39;]</span>
+<span class="cm">		 */</span>
+		<span class="nx">handles</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="p">[</span><span class="nx">BOTTOM</span><span class="p">,</span> <span class="nx">RIGHT</span><span class="p">,</span> <span class="nx">BOTTOM</span> <span class="o">+</span> <span class="nx">RIGHT</span><span class="p">],</span>
+			<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isArray</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config hiddenHandles</span>
+<span class="cm">		 * @description If set to true, the handles are interactive but invisible</span>
+<span class="cm">		 * @type Boolean</span>
+<span class="cm">		 * @default false</span>
+<span class="cm">		 */</span>
+		<span class="nx">hiddenHandles</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
+		<span class="p">},</span>
+		<span class="nx">prefix</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;yui&#39;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config minWidth</span>
+<span class="cm">		 * @description The minimum with the node can achieve</span>
+<span class="cm">		 * @type Number</span>
+<span class="cm">		 * @default 0</span>
+<span class="cm">		 */</span>
+		<span class="nx">minWidth</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="mi">0</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config minHeight</span>
+<span class="cm">		 * @description The minimum height the node can achieve</span>
+<span class="cm">		 * @type Number</span>
+<span class="cm">		 * @default 0</span>
+<span class="cm">		 */</span>
+		<span class="nx">minHeight</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="mi">0</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config constrain</span>
+<span class="cm">		 * @description If set to true, the node can&#39;t become bigger than the screen</span>
+<span class="cm">		 * @type Boolean</span>
+<span class="cm">		 * @default false</span>
+<span class="cm">		 */</span>
+		<span class="nx">constrain</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config useProxy</span>
+<span class="cm">		 * @description Whether to use a copy of the node while resizing or not.</span>
+<span class="cm">		 * Possible values: false, true, &#39;clone&#39;</span>
+<span class="cm">		 * @type Boolean | String</span>
+<span class="cm">		 * @writeOnce</span>
+<span class="cm">		 * @default false</span>
+<span class="cm">		 */</span>
+		<span class="nx">useProxy</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+			<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config animate</span>
+<span class="cm">		 * @description Creates an animation when the resize handle is released. Can only be set to true</span>
+<span class="cm">		 * if &#39;proxy&#39; is set to true. &lt;strong&gt;Requires the Anim module.&lt;/strong&gt;</span>
+<span class="cm">		 * @type Boolean</span>
+<span class="cm">		 * @default false</span>
+<span class="cm">		 */</span>
+		<span class="nx">animate</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+			<span class="nx">validator</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;proxy&#39;</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @ocnfig reposition</span>
+<span class="cm">		 * @description If set to true, the resize utility will automatically change the position of the </span>
+<span class="cm">		 * node so that is stays in place when resizing it in any direction</span>
+<span class="cm">		 * @type Boolean</span>
+<span class="cm">		 * @default false</span>
+<span class="cm">		 */</span>
+		<span class="nx">reposition</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config shim</span>
+<span class="cm">		 * @description Uses invisible elements to be able to resize the node over iframes</span>
+<span class="cm">		 * @type Boolean</span>
+<span class="cm">		 * @default false </span>
+<span class="cm">		 */</span>
+		<span class="nx">shim</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config locked</span>
+<span class="cm">		 * @description If the resize is locked the handles are not interactive</span>
+<span class="cm">		 * @type Boolean</span>
+<span class="cm">		 * @default false</span>
+<span class="cm">		 */</span>
+		<span class="nx">locked</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
+		<span class="p">},</span>
+		<span class="nx">capturing</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
+		<span class="p">},</span>
+		<span class="nx">screenSize</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="nx">DOM</span><span class="p">.</span><span class="nx">screenSize</span><span class="p">()</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	
+	<span class="nx">EVENTS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">destroy</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">_tracker</span><span class="p">.</span><span class="nx">destroy</span><span class="p">();</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">},</span> <span class="p">{</span>
+	
+	<span class="nx">initializer</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">tracker</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_tracker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Mouse</span><span class="p">({</span>
+			<span class="nx">shim</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;shim&#39;</span><span class="p">)</span>
+		<span class="p">});</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">_setupProxy</span><span class="p">();</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">_setupHandlers</span><span class="p">();</span>
+
+		<span class="nx">tracker</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;up&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_stop</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+		<span class="nx">tracker</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mousemove&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_during</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+	<span class="p">},</span>
+	
+	<span class="nx">_setupProxy</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">useProxy</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;useProxy&#39;</span><span class="p">);</span>
 		<span class="kd">var</span> <span class="nx">proxy</span> <span class="o">=</span> <span class="nx">useProxy</span> <span class="o">==</span> <span class="nx">CLONE_PROXY</span> <span class="o">?</span> <span class="nx">node</span><span class="p">.</span><span class="nx">clone</span><span class="p">()</span> <span class="o">:</span>
-				<span class="nx">useProxy</span> <span class="o">?</span> <span class="nx">$</span><span class="p">(</span><span class="nx">NEW_DIV</span><span class="p">)</span> <span class="o">:</span> <span class="nx">node</span><span class="p">;</span>
+					<span class="nx">useProxy</span> <span class="o">?</span> <span class="nx">$</span><span class="p">(</span><span class="nx">NEW_DIV</span><span class="p">)</span> <span class="o">:</span> <span class="nx">node</span><span class="p">;</span>
 					
 		<span class="kd">var</span> <span class="nx">originalStyle</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">currentStyle</span><span class="p">();</span>
 		<span class="k">if</span> <span class="p">(</span><span class="nx">useProxy</span><span class="p">)</span> <span class="p">{</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">useProxy</span> <span class="o">===</span> <span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
 				<span class="kd">var</span> <span class="nx">offset</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">offset</span><span class="p">();</span>
-				<span class="nx">proxy</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;yui-resize-proxy&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">({</span>
+				<span class="nx">proxy</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="s1">&#39;yui-resize-proxy&#39;</span><span class="p">).</span><span class="nx">css</span><span class="p">({</span>
 					<span class="nx">left</span><span class="o">:</span> <span class="nx">originalStyle</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span>
 					<span class="nx">top</span><span class="o">:</span> <span class="nx">originalStyle</span><span class="p">.</span><span class="nx">top</span><span class="p">,</span>
 					<span class="nx">bottom</span><span class="o">:</span> <span class="nx">originalStyle</span><span class="p">.</span><span class="nx">bottom</span><span class="p">,</span>
@@ -235,245 +252,298 @@
 				<span class="p">});</span>
 			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">useProxy</span> <span class="o">==</span> <span class="nx">CLONE_PROXY</span><span class="p">)</span> <span class="p">{</span>
 				<span class="nx">proxy</span><span class="p">.</span><span class="nx">css</span><span class="p">({</span>
-					<span class="nx">visibility</span><span class="o">:</span> <span class="s2">&quot;hidden&quot;</span><span class="p">,</span>
+					<span class="nx">visibility</span><span class="o">:</span> <span class="s1">&#39;hidden&#39;</span><span class="p">,</span>
 					<span class="nx">opacity</span><span class="o">:</span> <span class="mf">0.5</span>
 				<span class="p">});</span>
 			<span class="p">}</span>
 			<span class="nx">proxy</span><span class="p">.</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">node</span><span class="p">.</span><span class="nx">parent</span><span class="p">());</span>
 		<span class="p">}</span>
-		
-		<span class="kd">var</span> <span class="nx">capturing</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-		<span class="kd">var</span> <span class="nx">start</span> <span class="o">=</span> <span class="p">{</span>
-			<span class="nx">X</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
-			<span class="nx">Y</span><span class="o">:</span> <span class="mi">0</span>
-		<span class="p">};</span>
-		<span class="kd">var</span> <span class="nx">originalWidth</span><span class="p">,</span> <span class="nx">originalHeight</span><span class="p">;</span>
-		<span class="kd">var</span> <span class="nx">currentWidth</span><span class="p">,</span> <span class="nx">currentHeight</span><span class="p">;</span>
-		<span class="kd">var</span> <span class="nx">screenSize</span> <span class="o">=</span> <span class="p">{</span>
-			<span class="nx">width</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
-			<span class="nx">height</span><span class="o">:</span> <span class="mi">0</span>
-		<span class="p">};</span>
-		<span class="kd">var</span> <span class="nx">resizeVertical</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span> <span class="nx">resizeHorizontal</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-		
-		<span class="kd">var</span> <span class="nx">startResize</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">left</span><span class="p">,</span> <span class="nx">top</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">resizeVertical</span> <span class="o">=</span> <span class="nx">capturing</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">TOP</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span> <span class="o">?</span> <span class="nx">TOP</span> <span class="o">:</span>
-							 <span class="nx">capturing</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">BOTTOM</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span> <span class="o">?</span> <span class="nx">BOTTOM</span> <span class="o">:</span>
-							 <span class="kc">false</span><span class="p">;</span>
-			<span class="nx">resizeHorizontal</span> <span class="o">=</span> <span class="nx">capturing</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">RIGHT</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span> <span class="o">?</span> <span class="nx">RIGHT</span> <span class="o">:</span>
-								<span class="nx">capturing</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">LEFT</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span> <span class="o">?</span> <span class="nx">LEFT</span> <span class="o">:</span>
-								<span class="kc">false</span><span class="p">;</span>
-			<span class="nx">start</span><span class="p">.</span><span class="nx">X</span> <span class="o">=</span> <span class="nx">x</span><span class="p">;</span>
-			<span class="nx">start</span><span class="p">.</span><span class="nx">Y</span> <span class="o">=</span> <span class="nx">y</span><span class="p">;</span>
-			
-			<span class="nx">screenSize</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">screenSize</span><span class="p">();</span>
-			
-			<span class="nx">currentWidth</span> <span class="o">=</span> <span class="nx">originalWidth</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">width</span><span class="p">();</span>
-			<span class="nx">currentHeight</span> <span class="o">=</span> <span class="nx">originalHeight</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">height</span><span class="p">();</span>
-			<span class="nx">node</span><span class="p">.</span><span class="nx">width</span><span class="p">(</span><span class="nx">originalWidth</span><span class="p">).</span><span class="nx">height</span><span class="p">(</span><span class="nx">originalHeight</span><span class="p">);</span>
-			
-			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;reposition&quot;</span><span class="p">))</span> <span class="p">{</span>
-				<span class="nx">node</span><span class="p">.</span><span class="nx">css</span><span class="p">({</span>
-					<span class="nx">top</span><span class="o">:</span>	<span class="nx">resizeVertical</span> <span class="o">==</span> <span class="nx">TOP</span> <span class="o">?</span> <span class="nx">AUTO</span> <span class="o">:</span> <span class="nx">top</span> <span class="o">+</span> <span class="nx">PX</span><span class="p">,</span>
-					<span class="nx">bottom</span><span class="o">:</span>	<span class="nx">resizeVertical</span> <span class="o">==</span> <span class="nx">BOTTOM</span> <span class="o">?</span> <span class="nx">AUTO</span> <span class="o">:</span> <span class="p">(</span><span class="nx">screenSize</span><span class="p">.</span><span class="nx">height</span> <span class="o">-</span> <span class="nx">top</span> <span class="o">-</span> <span class="nx">currentHeight</span><span class="p">)</span> <span class="o">+</span> <span class="nx">PX</span><span class="p">,</span>
-					<span class="nx">left</span><span class="o">:</span>	<span class="nx">resizeHorizontal</span> <span class="o">==</span> <span class="nx">LEFT</span> <span class="o">?</span> <span class="nx">AUTO</span> <span class="o">:</span> <span class="nx">left</span> <span class="o">+</span> <span class="nx">PX</span><span class="p">,</span>
-					<span class="nx">right</span><span class="o">:</span>	<span class="nx">resizeHorizontal</span> <span class="o">==</span> <span class="nx">RIGHT</span> <span class="o">?</span> <span class="nx">AUTO</span> <span class="o">:</span> <span class="p">(</span><span class="nx">screenSize</span><span class="p">.</span><span class="nx">width</span> <span class="o">-</span> <span class="nx">left</span> <span class="o">-</span> <span class="nx">currentWidth</span><span class="p">)</span> <span class="o">+</span> <span class="nx">PX</span>
-				<span class="p">});</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;proxy&#39;</span><span class="p">,</span> <span class="nx">proxy</span><span class="p">);</span>
+	<span class="p">},</span>
+	
+	<span class="nx">_onHandleMouseDown</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">))</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">handle</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">handle</span><span class="p">.</span><span class="nx">hasClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;prefix&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;-resize-handle-inner&#39;</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">handle</span> <span class="o">=</span> <span class="nx">handle</span><span class="p">.</span><span class="nx">parent</span><span class="p">();</span>
 			<span class="p">}</span>
-			
-			<span class="k">if</span> <span class="p">(</span><span class="nx">useProxy</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">proxy</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="nx">VISIBILITY</span><span class="p">,</span> <span class="s2">&quot;visible&quot;</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">type</span> <span class="o">=</span> <span class="nx">handle</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">type</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">proxy</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;proxy&#39;</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">offset</span> <span class="o">=</span> <span class="nx">proxy</span><span class="p">.</span><span class="nx">offset</span><span class="p">();</span>
+			<span class="kd">var</span> <span class="nx">tracker</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_tracker</span><span class="p">;</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;capturing&#39;</span><span class="p">,</span> <span class="nx">type</span><span class="p">);</span>
+			<span class="nx">tracker</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;shields&#39;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;cursor&#39;</span><span class="p">,</span> <span class="nx">handle</span><span class="p">.</span><span class="nx">currentStyle</span><span class="p">().</span><span class="nx">cursor</span><span class="p">);</span>
+			<span class="nx">tracker</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;tracking&#39;</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">_start</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">clientX</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">clientY</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span><span class="p">,</span> <span class="nx">type</span><span class="p">);</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s1">&#39;resize:start&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;currentWidth&#39;</span><span class="p">),</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;currentHeight&#39;</span><span class="p">),</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span><span class="p">,</span> <span class="nx">type</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	
+	<span class="nx">_onHandleMouseOver</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">handle</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">resizeClass</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;prefix&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;-resize&#39;</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">hoverClass</span> <span class="o">=</span> <span class="nx">resizeClass</span> <span class="o">+</span> <span class="s1">&#39;-hover&#39;</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">handleClass</span> <span class="o">=</span> <span class="nx">resizeClass</span> <span class="o">+</span> <span class="s1">&#39;-handle&#39;</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">handleClassActive</span> <span class="o">=</span> <span class="s1">&#39;-active&#39;</span><span class="p">;</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">handle</span><span class="p">.</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">handleClass</span> <span class="o">+</span> <span class="s1">&#39;-inner&#39;</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">handle</span> <span class="o">=</span> <span class="nx">handle</span><span class="p">.</span><span class="nx">parent</span><span class="p">();</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;capturing&#39;</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">handle</span><span class="p">.</span><span class="nx">addClass</span><span class="p">([</span><span class="nx">handleClass</span><span class="p">,</span> <span class="nx">handleClassActive</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="nx">handleClass</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="nx">handle</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">type</span><span class="p">,</span> <span class="nx">handleClassActive</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">));</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">HOVER</span><span class="p">))</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">).</span><span class="nx">removeClass</span><span class="p">(</span><span class="nx">hoverClass</span><span class="p">);</span>
 			<span class="p">}</span>
-		<span class="p">};</span>
-		
-		<span class="kd">var</span> <span class="nx">getNew</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">vertical</span> <span class="o">=</span> <span class="p">(</span><span class="nx">type</span> <span class="o">==</span> <span class="nx">HEIGHT</span><span class="p">);</span>
-			<span class="kd">var</span> <span class="nx">resize</span> <span class="o">=</span> <span class="nx">vertical</span> <span class="o">?</span> <span class="nx">resizeVertical</span> <span class="o">:</span> <span class="nx">resizeHorizontal</span><span class="p">;</span>
-			<span class="kd">var</span> <span class="nx">original</span> <span class="o">=</span> <span class="nx">vertical</span> <span class="o">?</span> <span class="nx">originalHeight</span> <span class="o">:</span> <span class="nx">originalWidth</span><span class="p">;</span>
-			<span class="kd">var</span> <span class="nx">direction</span> <span class="o">=</span> <span class="nx">vertical</span> <span class="o">?</span> <span class="s2">&quot;Y&quot;</span> <span class="o">:</span> <span class="s2">&quot;X&quot;</span><span class="p">;</span>
-			
-			<span class="kd">var</span> <span class="nx">size</span> <span class="o">=</span> <span class="nx">resize</span> <span class="o">==</span> <span class="p">(</span><span class="nx">vertical</span> <span class="o">?</span> <span class="nx">TOP</span> <span class="o">:</span> <span class="nx">LEFT</span><span class="p">)</span> <span class="o">?</span> <span class="nx">original</span> <span class="o">-</span> <span class="p">(</span><span class="nx">vertical</span> <span class="o">?</span> <span class="nx">y</span> <span class="o">:</span> <span class="nx">x</span><span class="p">)</span> <span class="o">+</span> <span class="nx">start</span><span class="p">[</span><span class="nx">direction</span><span class="p">]</span> <span class="o">:</span>
-					   <span class="nx">resize</span> <span class="o">==</span> <span class="p">(</span><span class="nx">vertical</span> <span class="o">?</span> <span class="nx">BOTTOM</span> <span class="o">:</span> <span class="nx">RIGHT</span><span class="p">)</span> <span class="o">?</span> <span class="nx">original</span> <span class="o">+</span> <span class="p">(</span><span class="nx">vertical</span> <span class="o">?</span> <span class="nx">y</span> <span class="o">:</span> <span class="nx">x</span><span class="p">)</span> <span class="o">-</span> <span class="nx">start</span><span class="p">[</span><span class="nx">direction</span><span class="p">]</span> <span class="o">:</span>
-					   <span class="nx">original</span><span class="p">;</span>
-			
-			<span class="k">return</span> <span class="nx">size</span> <span class="o">&lt;</span> <span class="nx">min</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span> <span class="o">?</span>  <span class="nx">min</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span> <span class="o">:</span> 
-				   <span class="nx">max</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="nx">size</span> <span class="o">&gt;</span> <span class="nx">max</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span> <span class="o">?</span> <span class="nx">max</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span> <span class="o">:</span>
-				   <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;constrain&quot;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">size</span> <span class="o">&gt;</span> <span class="nx">screenSize</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span> <span class="o">?</span> <span class="nx">screenSize</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span> <span class="o">:</span> 
-				   <span class="nx">size</span><span class="p">;</span>
-		<span class="p">};</span>
-		
-		<span class="kd">var</span> <span class="nx">tracker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nx">MouseTracker</span><span class="p">({</span>
-			<span class="nx">shim</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;shim&quot;</span><span class="p">)</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	
+	<span class="nx">_onHandleMouseOut</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">handle</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">resizeClass</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;prefix&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;-resize&#39;</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">hoverClass</span> <span class="o">=</span> <span class="nx">resizeClass</span> <span class="o">+</span> <span class="s1">&#39;-hover&#39;</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">handleClass</span> <span class="o">=</span> <span class="nx">resizeClass</span> <span class="o">+</span> <span class="s1">&#39;-handle&#39;</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">handleClassActive</span> <span class="o">=</span> <span class="s1">&#39;-active&#39;</span><span class="p">;</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">handle</span><span class="p">.</span><span class="nx">hasClass</span><span class="p">(</span><span class="nx">handleClass</span> <span class="o">+</span> <span class="s1">&#39;-inner&#39;</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">handle</span> <span class="o">=</span> <span class="nx">handle</span><span class="p">.</span><span class="nx">parent</span><span class="p">();</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">handle</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="nx">handleClass</span> <span class="o">+</span> <span class="nx">handleClassActive</span><span class="p">).</span><span class="nx">removeClass</span><span class="p">(</span><span class="nx">handleClass</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="nx">handle</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">type</span> <span class="o">+</span> <span class="nx">handleClassActive</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">HOVER</span><span class="p">))</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">hoverClass</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	
+	<span class="nx">_setupHandlers</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">proxy</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;proxy&#39;</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">tracker</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_tracker</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">resizeClass</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;prefix&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;-resize&#39;</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">hoverClass</span> <span class="o">=</span> <span class="nx">resizeClass</span> <span class="o">+</span> <span class="s1">&#39;-hover&#39;</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">handleClass</span> <span class="o">=</span> <span class="nx">resizeClass</span> <span class="o">+</span> <span class="s1">&#39;-handle&#39;</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">handleClassActive</span> <span class="o">=</span> <span class="s1">&#39;-active&#39;</span><span class="p">;</span>
+		<span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;handles&#39;</span><span class="p">),</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">type</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">handle</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">NEW_DIV</span><span class="p">);</span>
+			<span class="nx">handle</span><span class="p">.</span><span class="nx">addClass</span><span class="p">([</span><span class="nx">handleClass</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="nx">handleClass</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="nx">type</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">));</span>
+			<span class="nx">handle</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">type</span> <span class="o">=</span> <span class="nx">type</span><span class="p">;</span>
+			<span class="nx">self</span><span class="p">.</span><span class="nx">_handlers</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">handle</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mousedown&#39;</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">_onHandleMouseDown</span><span class="p">,</span> <span class="nx">self</span><span class="p">),</span> <span class="nx">handle</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mouseover&#39;</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">_onHandleMouseOver</span><span class="p">,</span> <span class="nx">self</span><span class="p">),</span> <span class="nx">handle</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mouseout&#39;</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">_onHandleMouseOut</span><span class="p">,</span> <span class="nx">self</span><span class="p">));</span>
+			<span class="nx">handle</span><span class="p">.</span><span class="nx">append</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="nx">NEW_DIV</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">handleClass</span> <span class="o">+</span> <span class="s1">&#39;-inner&#39;</span><span class="p">,</span> <span class="nx">handleClass</span> <span class="o">+</span> <span class="s1">&#39;-inner-&#39;</span> <span class="o">+</span> <span class="nx">type</span><span class="p">)).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">node</span><span class="p">);</span>
 		<span class="p">});</span>
-				
-		<span class="kd">var</span> <span class="nx">stopResize</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">))</span> <span class="p">{</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">capturing</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">screenSize</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">screenSize</span><span class="p">();</span>
-					<span class="nx">currentWidth</span> <span class="o">=</span> <span class="nx">getNew</span><span class="p">(</span><span class="nx">WIDTH</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>
-					<span class="nx">currentHeight</span> <span class="o">=</span> <span class="nx">getNew</span><span class="p">(</span><span class="nx">HEIGHT</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>
-					<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;animate&quot;</span><span class="p">))</span> <span class="p">{</span>
-						<span class="k">if</span> <span class="p">(</span><span class="nx">resizeVertical</span><span class="p">)</span> <span class="p">{</span>
-							<span class="nx">node</span><span class="p">.</span><span class="nx">height</span><span class="p">(</span><span class="nx">currentHeight</span><span class="p">);</span>
-						<span class="p">}</span>
-						<span class="k">if</span> <span class="p">(</span><span class="nx">resizeHorizontal</span><span class="p">)</span> <span class="p">{</span>
-							<span class="nx">node</span><span class="p">.</span><span class="nx">width</span><span class="p">(</span><span class="nx">currentWidth</span><span class="p">);</span>
-						<span class="p">}</span>
-					<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">Anim</span><span class="p">)</span> <span class="p">{</span>
-						<span class="kd">var</span> <span class="nx">to</span> <span class="o">=</span> <span class="p">{};</span>
-						<span class="k">if</span> <span class="p">(</span><span class="nx">resizeVertical</span><span class="p">)</span> <span class="p">{</span>
-							<span class="nx">to</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nx">currentHeight</span><span class="p">;</span>
-						<span class="p">}</span>
-						<span class="k">if</span> <span class="p">(</span><span class="nx">resizeHorizontal</span><span class="p">)</span> <span class="p">{</span>
-							<span class="nx">to</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">currentWidth</span><span class="p">;</span>
-						<span class="p">}</span>
-						<span class="p">(</span><span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Anim</span><span class="p">({</span>
-							<span class="nx">node</span><span class="o">:</span> <span class="nx">node</span><span class="p">,</span>
-							<span class="nx">to</span><span class="o">:</span> <span class="nx">to</span><span class="p">,</span>
-							<span class="nx">duration</span><span class="o">:</span> <span class="s2">&quot;fast&quot;</span>
-						<span class="p">})).</span><span class="nx">start</span><span class="p">();</span>
-					<span class="p">}</span>
-				<span class="p">}</span>
-				<span class="nx">capturing</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-				<span class="kd">var</span> <span class="nx">offset</span><span class="p">;</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">useProxy</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">proxy</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="nx">VISIBILITY</span><span class="p">,</span> <span class="s2">&quot;hidden&quot;</span><span class="p">);</span>
-					<span class="nx">offset</span> <span class="o">=</span> <span class="nx">proxy</span><span class="p">.</span><span class="nx">offset</span><span class="p">();</span>
-				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-					<span class="nx">offset</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">offset</span><span class="p">();</span>
-				<span class="p">}</span>
-				<span class="cm">/**</span>
-<span class="cm">				 * @event endResize</span>
-<span class="cm">				 * @description Fires when the resize action ends</span>
-<span class="cm">				 */</span>
-				<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;endResize&quot;</span><span class="p">,</span> <span class="nx">currentWidth</span><span class="p">,</span> <span class="nx">currentHeight</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span><span class="p">);</span>
-			<span class="p">}</span>
-		<span class="p">};</span>
+		<span class="nx">node</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">resizeClass</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;display&#39;</span><span class="p">,</span> <span class="s1">&#39;block&#39;</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;hiddenHandles&#39;</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">node</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">resizeClass</span> <span class="o">+</span> <span class="s1">&#39;-hidden&#39;</span><span class="p">);</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">HOVER</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">node</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">hoverClass</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	
+	<span class="nx">_getNew</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">vertical</span> <span class="o">=</span> <span class="p">(</span><span class="nx">type</span> <span class="o">==</span> <span class="s1">&#39;height&#39;</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">resize</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">vertical</span> <span class="o">?</span> <span class="s1">&#39;resizeVertical&#39;</span> <span class="o">:</span> <span class="s1">&#39;resizeHorizontal&#39;</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">original</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">vertical</span> <span class="o">?</span> <span class="s1">&#39;originalHeight&#39;</span> <span class="o">:</span> <span class="s1">&#39;originalWidth&#39;</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">direction</span> <span class="o">=</span> <span class="nx">vertical</span> <span class="o">?</span> <span class="s1">&#39;Y&#39;</span> <span class="o">:</span> <span class="s1">&#39;X&#39;</span><span class="p">;</span>
 		
-		<span class="kd">var</span> <span class="nx">lastX</span><span class="p">,</span> <span class="nx">lastY</span><span class="p">;</span>
-		<span class="kd">var</span> <span class="nx">duringResize</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">lastX</span> <span class="o">=</span> <span class="nx">x</span><span class="p">;</span>
-			<span class="nx">lastY</span> <span class="o">=</span> <span class="nx">y</span><span class="p">;</span>
-			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">capturing</span><span class="p">)</span> <span class="p">{</span>
-				<span class="kd">var</span> <span class="nx">offset</span> <span class="o">=</span> <span class="nx">proxy</span><span class="p">.</span><span class="nx">offset</span><span class="p">();</span>
+		<span class="kd">var</span> <span class="nx">size</span> <span class="o">=</span> <span class="nx">resize</span> <span class="o">==</span> <span class="p">(</span><span class="nx">vertical</span> <span class="o">?</span> <span class="nx">TOP</span> <span class="o">:</span> <span class="nx">LEFT</span><span class="p">)</span> <span class="o">?</span> <span class="nx">original</span> <span class="o">-</span> <span class="p">(</span><span class="nx">vertical</span> <span class="o">?</span> <span class="nx">y</span> <span class="o">:</span> <span class="nx">x</span><span class="p">)</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;start&#39;</span> <span class="o">+</span> <span class="nx">direction</span><span class="p">)</span> <span class="o">:</span>
+				   <span class="nx">resize</span> <span class="o">==</span> <span class="p">(</span><span class="nx">vertical</span> <span class="o">?</span> <span class="nx">BOTTOM</span> <span class="o">:</span> <span class="nx">RIGHT</span><span class="p">)</span> <span class="o">?</span> <span class="nx">original</span> <span class="o">+</span> <span class="p">(</span><span class="nx">vertical</span> <span class="o">?</span> <span class="nx">y</span> <span class="o">:</span> <span class="nx">x</span><span class="p">)</span> <span class="o">-</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;start&#39;</span> <span class="o">+</span> <span class="nx">direction</span><span class="p">)</span> <span class="o">:</span>
+				   <span class="nx">original</span><span class="p">;</span>
+		
+		<span class="kd">var</span> <span class="nx">min</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;min&#39;</span> <span class="o">+</span> <span class="nx">type</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="nx">toUpperCase</span><span class="p">()</span> <span class="o">+</span> <span class="nx">type</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+		<span class="kd">var</span> <span class="nx">max</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;max&#39;</span> <span class="o">+</span> <span class="nx">type</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="nx">toUpperCase</span><span class="p">()</span> <span class="o">+</span> <span class="nx">type</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+		<span class="kd">var</span> <span class="nx">screenSize</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;screenSize&#39;</span><span class="p">);</span>
+		
+		<span class="k">return</span> <span class="nx">size</span> <span class="o">&lt;</span> <span class="nx">min</span> <span class="o">?</span> <span class="nx">min</span> <span class="o">:</span> 
+			   <span class="nx">max</span> <span class="o">&amp;&amp;</span> <span class="nx">size</span> <span class="o">&gt;</span> <span class="nx">max</span> <span class="o">?</span> <span class="nx">max</span> <span class="o">:</span>
+			   <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;constrain&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">size</span> <span class="o">&gt;</span> <span class="nx">screenSize</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span> <span class="o">?</span> <span class="nx">screenSize</span><span class="p">[</span><span class="nx">type</span><span class="p">]</span> <span class="o">:</span> 
+			   <span class="nx">size</span><span class="p">;</span>
+	<span class="p">},</span>
+	
+	<span class="nx">_start</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">left</span><span class="p">,</span> <span class="nx">top</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">capturing</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;capturing&#39;</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">resizeVertical</span> <span class="o">=</span> <span class="nx">capturing</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">TOP</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span> <span class="o">?</span> <span class="nx">TOP</span> <span class="o">:</span>
+						 <span class="nx">capturing</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">BOTTOM</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span> <span class="o">?</span> <span class="nx">BOTTOM</span> <span class="o">:</span>
+						 <span class="kc">false</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">resizeHorizontal</span> <span class="o">=</span> <span class="nx">capturing</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">RIGHT</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span> <span class="o">?</span> <span class="nx">RIGHT</span> <span class="o">:</span>
+							<span class="nx">capturing</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">LEFT</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span> <span class="o">?</span> <span class="nx">LEFT</span> <span class="o">:</span>
+							<span class="kc">false</span><span class="p">;</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span>
+			<span class="nx">resizeVertical</span><span class="o">:</span> <span class="nx">resizeVertical</span><span class="p">,</span>
+			<span class="nx">resizeHorizontal</span><span class="o">:</span> <span class="nx">resizeHorizontal</span><span class="p">,</span>
+			<span class="nx">startX</span><span class="o">:</span> <span class="nx">x</span><span class="p">,</span>
+			<span class="nx">startY</span><span class="o">:</span> <span class="nx">y</span>
+		<span class="p">});</span>
+		
+		<span class="kd">var</span> <span class="nx">screenSize</span> <span class="o">=</span> <span class="nx">DOM</span><span class="p">.</span><span class="nx">screenSize</span><span class="p">();</span>
+		
+		<span class="kd">var</span> <span class="nx">originalWidth</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">width</span><span class="p">();</span>
+		<span class="kd">var</span> <span class="nx">originalHeight</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">height</span><span class="p">();</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span>
+			<span class="nx">currentWidth</span><span class="o">:</span> <span class="nx">originalWidth</span><span class="p">,</span>
+			<span class="nx">currentHeight</span><span class="o">:</span> <span class="nx">originalHeight</span><span class="p">,</span>
+			<span class="nx">originalWidth</span><span class="o">:</span> <span class="nx">originalWidth</span><span class="p">,</span>
+			<span class="nx">originalHeight</span><span class="o">:</span> <span class="nx">originalHeight</span><span class="p">,</span>
+			<span class="nx">screenSize</span><span class="o">:</span> <span class="nx">screenSize</span>
+		<span class="p">});</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">resizeHorizontal</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">node</span><span class="p">.</span><span class="nx">width</span><span class="p">(</span><span class="nx">originalWidth</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">resizeVertical</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">node</span><span class="p">.</span><span class="nx">height</span><span class="p">(</span><span class="nx">originalHeight</span><span class="p">);</span>
+		<span class="p">}</span>
+		
+		<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;reposition&#39;</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">node</span><span class="p">.</span><span class="nx">css</span><span class="p">({</span>
+				<span class="nx">top</span><span class="o">:</span>	<span class="nx">resizeVertical</span> <span class="o">==</span> <span class="nx">TOP</span> <span class="o">?</span> <span class="nx">AUTO</span> <span class="o">:</span> <span class="nx">top</span> <span class="o">+</span> <span class="nx">PX</span><span class="p">,</span>
+				<span class="nx">bottom</span><span class="o">:</span>	<span class="nx">resizeVertical</span> <span class="o">==</span> <span class="nx">BOTTOM</span> <span class="o">?</span> <span class="nx">AUTO</span> <span class="o">:</span> <span class="p">(</span><span class="nx">screenSize</span><span class="p">.</span><span class="nx">height</span> <span class="o">-</span> <span class="nx">top</span> <span class="o">-</span> <span class="nx">originalHeight</span><span class="p">)</span> <span class="o">+</span> <span class="nx">PX</span><span class="p">,</span>
+				<span class="nx">left</span><span class="o">:</span>	<span class="nx">resizeHorizontal</span> <span class="o">==</span> <span class="nx">LEFT</span> <span class="o">?</span> <span class="nx">AUTO</span> <span class="o">:</span> <span class="nx">left</span> <span class="o">+</span> <span class="nx">PX</span><span class="p">,</span>
+				<span class="nx">right</span><span class="o">:</span>	<span class="nx">resizeHorizontal</span> <span class="o">==</span> <span class="nx">RIGHT</span> <span class="o">?</span> <span class="nx">AUTO</span> <span class="o">:</span> <span class="p">(</span><span class="nx">screenSize</span><span class="p">.</span><span class="nx">width</span> <span class="o">-</span> <span class="nx">left</span> <span class="o">-</span> <span class="nx">originalWidth</span><span class="p">)</span> <span class="o">+</span> <span class="nx">PX</span>
+			<span class="p">});</span>
+		<span class="p">}</span>
+		
+		<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;useProxy&#39;</span><span class="p">))</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;proxy&#39;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="nx">VISIBILITY</span><span class="p">,</span> <span class="s1">&#39;visible&#39;</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	
+	<span class="nx">_during</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span>
+			<span class="nx">lastX</span><span class="o">:</span> <span class="nx">x</span><span class="p">,</span>
+			<span class="nx">lastY</span><span class="o">:</span> <span class="nx">y</span>
+		<span class="p">});</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;capturing&#39;</span><span class="p">))</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">proxy</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;proxy&#39;</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">offset</span> <span class="o">=</span> <span class="nx">proxy</span><span class="p">.</span><span class="nx">offset</span><span class="p">();</span>
+			<span class="kd">var</span> <span class="nx">currentWidth</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;currentWidth&#39;</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">currentHeight</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;currentHeight&#39;</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">resizeHorizontal</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;resizeHorizontal&#39;</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">resizeVertical</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;resizeVertical&#39;</span><span class="p">);</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @event beforeResize</span>
+<span class="cm">			 * @description Fires before the resize action starts. If prevented, the resize action doesn&#39;t start</span>
+<span class="cm">			 * @param {Number} currentWith</span>
+<span class="cm">			 * @param {Number} currentHeight</span>
+<span class="cm">			 * @param {Number} offsetLeft</span>
+<span class="cm">			 * @param {Number} offsetTop </span>
+<span class="cm">			 */</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s1">&#39;beforeResize&#39;</span><span class="p">,</span> <span class="nx">currentWidth</span><span class="p">,</span> <span class="nx">currentHeight</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span><span class="p">))</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">screenSize</span> <span class="o">=</span> <span class="nx">DOM</span><span class="p">.</span><span class="nx">screenSize</span><span class="p">();</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">resizeVertical</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;currentHeight&#39;</span><span class="p">,</span> <span class="nx">currentHeight</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_getNew</span><span class="p">(</span><span class="nx">HEIGHT</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">));</span>
+				<span class="p">}</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">resizeHorizontal</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;currentWidth&#39;</span><span class="p">,</span> <span class="nx">currentWidth</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_getNew</span><span class="p">(</span><span class="nx">WIDTH</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">));</span>
+				<span class="p">}</span>
 				<span class="cm">/**</span>
-<span class="cm">				 * @event beforeResize</span>
-<span class="cm">				 * @description Fires before the resize action starts. If prevented, the resize action doesn&#39;t start</span>
+<span class="cm">				 * @event resize</span>
+<span class="cm">				 * @description Fires during the resize action</span>
 <span class="cm">				 * @param {Number} currentWith</span>
 <span class="cm">				 * @param {Number} currentHeight</span>
 <span class="cm">				 * @param {Number} offsetLeft</span>
 <span class="cm">				 * @param {Number} offsetTop </span>
 <span class="cm">				 */</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;beforeResize&quot;</span><span class="p">,</span> <span class="nx">currentWidth</span><span class="p">,</span> <span class="nx">currentHeight</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span><span class="p">))</span> <span class="p">{</span>
-					<span class="nx">screenSize</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">screenSize</span><span class="p">();</span>
+				<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s1">&#39;resize&#39;</span><span class="p">,</span> <span class="nx">currentWidth</span><span class="p">,</span> <span class="nx">currentHeight</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span><span class="p">))</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">resizeVertical</span> <span class="o">&amp;&amp;</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">currentHeight</span><span class="p">))</span> <span class="p">{</span>
+						<span class="nx">proxy</span><span class="p">.</span><span class="nx">height</span><span class="p">(</span><span class="nx">currentHeight</span><span class="p">);</span>
+					<span class="p">}</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">resizeHorizontal</span> <span class="o">&amp;&amp;</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">currentWidth</span><span class="p">))</span> <span class="p">{</span>
+						<span class="nx">proxy</span><span class="p">.</span><span class="nx">width</span><span class="p">(</span><span class="nx">currentWidth</span><span class="p">);</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">_stop</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	
+	<span class="nx">_stop</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">))</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">currentWidth</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_getNew</span><span class="p">(</span><span class="nx">WIDTH</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">currentHeight</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_getNew</span><span class="p">(</span><span class="nx">HEIGHT</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;capturing&#39;</span><span class="p">))</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">screenSize</span> <span class="o">=</span> <span class="nx">DOM</span><span class="p">.</span><span class="nx">screenSize</span><span class="p">();</span>
+				<span class="kd">var</span> <span class="nx">resizeVertical</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;resizeVertical&#39;</span><span class="p">);</span>
+				<span class="kd">var</span> <span class="nx">resizeHorizontal</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;resizeHorizontal&#39;</span><span class="p">);</span>
+				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;animate&#39;</span><span class="p">))</span> <span class="p">{</span>
 					<span class="k">if</span> <span class="p">(</span><span class="nx">resizeVertical</span><span class="p">)</span> <span class="p">{</span>
-						<span class="nx">currentHeight</span> <span class="o">=</span> <span class="nx">getNew</span><span class="p">(</span><span class="nx">HEIGHT</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>
+						<span class="nx">node</span><span class="p">.</span><span class="nx">height</span><span class="p">(</span><span class="nx">currentHeight</span><span class="p">);</span>
 					<span class="p">}</span>
 					<span class="k">if</span> <span class="p">(</span><span class="nx">resizeHorizontal</span><span class="p">)</span> <span class="p">{</span>
-						<span class="nx">currentWidth</span> <span class="o">=</span> <span class="nx">getNew</span><span class="p">(</span><span class="nx">WIDTH</span><span class="p">,</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>
+						<span class="nx">node</span><span class="p">.</span><span class="nx">width</span><span class="p">(</span><span class="nx">currentWidth</span><span class="p">);</span>
 					<span class="p">}</span>
-					<span class="nx">offset</span> <span class="o">=</span> <span class="nx">proxy</span><span class="p">.</span><span class="nx">offset</span><span class="p">();</span>
-					<span class="cm">/**</span>
-<span class="cm">					 * @event resize</span>
-<span class="cm">					 * @description Fires during the resize action</span>
-<span class="cm">					 * @param {Number} currentWith</span>
-<span class="cm">					 * @param {Number} currentHeight</span>
-<span class="cm">					 * @param {Number} offsetLeft</span>
-<span class="cm">					 * @param {Number} offsetTop </span>
-<span class="cm">					 */</span>
-					<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;resize&quot;</span><span class="p">,</span> <span class="nx">currentWidth</span><span class="p">,</span> <span class="nx">currentHeight</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span><span class="p">))</span> <span class="p">{</span>
-						<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">currentHeight</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">currentWidth</span><span class="p">))</span> <span class="p">{</span>
-							<span class="nx">proxy</span><span class="p">.</span><span class="nx">height</span><span class="p">(</span><span class="nx">currentHeight</span><span class="p">).</span><span class="nx">width</span><span class="p">(</span><span class="nx">currentWidth</span><span class="p">);</span>
-						<span class="p">}</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">Tween</span><span class="p">)</span> <span class="p">{</span>
+					<span class="kd">var</span> <span class="nx">to</span> <span class="o">=</span> <span class="p">{};</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">resizeVertical</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">to</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nx">currentHeight</span><span class="p">;</span>
 					<span class="p">}</span>
-				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-					<span class="nx">stopResize</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">);</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">resizeHorizontal</span><span class="p">)</span> <span class="p">{</span>
+						<span class="nx">to</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">currentWidth</span><span class="p">;</span>
+					<span class="p">}</span>
+					<span class="p">(</span><span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Tween</span><span class="p">({</span>
+						<span class="nx">node</span><span class="o">:</span> <span class="nx">node</span><span class="p">,</span>
+						<span class="nx">to</span><span class="o">:</span> <span class="nx">to</span><span class="p">,</span>
+						<span class="nx">duration</span><span class="o">:</span> <span class="s1">&#39;fast&#39;</span>
+					<span class="p">})).</span><span class="nx">start</span><span class="p">();</span>
 				<span class="p">}</span>
 			<span class="p">}</span>
-		<span class="p">};</span>
-		
-		<span class="kd">var</span> <span class="nx">resizeClass</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;prefix&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-resize&quot;</span><span class="p">;</span>
-		<span class="kd">var</span> <span class="nx">hoverClass</span> <span class="o">=</span> <span class="nx">resizeClass</span> <span class="o">+</span> <span class="s2">&quot;-hover&quot;</span><span class="p">;</span>
-		<span class="kd">var</span> <span class="nx">handleClass</span> <span class="o">=</span> <span class="nx">resizeClass</span> <span class="o">+</span> <span class="s2">&quot;-handle&quot;</span><span class="p">;</span>
-		<span class="kd">var</span> <span class="nx">handleClassActive</span> <span class="o">=</span> <span class="s2">&quot;-active&quot;</span><span class="p">;</span>
-		<span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;handles&quot;</span><span class="p">),</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">type</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">handle</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">NEW_DIV</span><span class="p">);</span>
-			<span class="nx">handle</span><span class="p">.</span><span class="nx">addClass</span><span class="p">([</span><span class="nx">handleClass</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="nx">handleClass</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="nx">type</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">));</span>
-			<span class="nx">handle</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mousedown&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
-				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">))</span> <span class="p">{</span>
-					<span class="kd">var</span> <span class="nx">offset</span> <span class="o">=</span> <span class="nx">proxy</span><span class="p">.</span><span class="nx">offset</span><span class="p">();</span>
-					<span class="nx">capturing</span> <span class="o">=</span> <span class="nx">type</span><span class="p">;</span>
-					<span class="nx">tracker</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;shim&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;cursor&quot;</span><span class="p">,</span> <span class="nx">handle</span><span class="p">.</span><span class="nx">currentStyle</span><span class="p">().</span><span class="nx">cursor</span><span class="p">);</span>
-					<span class="nx">tracker</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;tracking&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
-					<span class="nx">startResize</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">clientX</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">clientY</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span><span class="p">,</span> <span class="nx">type</span><span class="p">);</span>
-					<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;startResize&quot;</span><span class="p">,</span> <span class="nx">currentWidth</span><span class="p">,</span> <span class="nx">currentHeight</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span><span class="p">,</span> <span class="nx">type</span><span class="p">);</span>
-				<span class="p">}</span>
-			<span class="p">}).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mouseover&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
-				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">capturing</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">handle</span><span class="p">.</span><span class="nx">addClass</span><span class="p">([</span><span class="nx">handleClass</span><span class="p">,</span> <span class="nx">handleClassActive</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="nx">handleClass</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">handleClassActive</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">));</span>
-					<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">HOVER</span><span class="p">))</span> <span class="p">{</span>
-						<span class="nx">node</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="nx">hoverClass</span><span class="p">);</span>
-					<span class="p">}</span>
-				<span class="p">}</span>
-			<span class="p">}).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mouseout&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
-				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">))</span> <span class="p">{</span>
-					<span class="nx">handle</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="nx">handleClass</span> <span class="o">+</span> <span class="nx">handleClassActive</span><span class="p">).</span><span class="nx">removeClass</span><span class="p">(</span><span class="nx">handleClass</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nx">type</span> <span class="o">+</span> <span class="nx">handleClassActive</span><span class="p">);</span>
-					<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">HOVER</span><span class="p">))</span> <span class="p">{</span>
-						<span class="nx">node</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">hoverClass</span><span class="p">);</span>
-					<span class="p">}</span>
-				<span class="p">}</span>
-			<span class="p">}).</span><span class="nx">append</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="nx">NEW_DIV</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">handleClass</span> <span class="o">+</span> <span class="s2">&quot;-inner-&quot;</span> <span class="o">+</span> <span class="nx">type</span><span class="p">)).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">node</span><span class="p">);</span>
-		<span class="p">});</span>
-		<span class="nx">node</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">resizeClass</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;display&quot;</span><span class="p">,</span> <span class="s2">&quot;block&quot;</span><span class="p">);</span>
-		<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;hiddenHandles&quot;</span><span class="p">))</span> <span class="p">{</span>
-			<span class="nx">node</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">resizeClass</span> <span class="o">+</span> <span class="s2">&quot;-hidden&quot;</span><span class="p">);</span>
-		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">HOVER</span><span class="p">))</span> <span class="p">{</span>
-			<span class="nx">node</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">hoverClass</span><span class="p">);</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;capturing&#39;</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">offset</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">proxy</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;proxy&#39;</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;useProxy&#39;</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">proxy</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="s1">&#39;visibility&#39;</span><span class="p">,</span> <span class="s1">&#39;hidden&#39;</span><span class="p">);</span>
+				<span class="nx">offset</span> <span class="o">=</span> <span class="nx">proxy</span><span class="p">.</span><span class="nx">offset</span><span class="p">();</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">offset</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">offset</span><span class="p">();</span>
+			<span class="p">}</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * @event endResize</span>
+<span class="cm">			 * @description Fires when the resize action ends</span>
+<span class="cm">			 */</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s1">&#39;resize:end&#39;</span><span class="p">,</span> <span class="nx">currentWidth</span><span class="p">,</span> <span class="nx">currentHeight</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span><span class="p">);</span>
 		<span class="p">}</span>
-		<span class="nx">tracker</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mouseup&quot;</span><span class="p">,</span> <span class="nx">stopResize</span><span class="p">);</span>
-		<span class="nx">tracker</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mousemove&quot;</span><span class="p">,</span> <span class="nx">duringResize</span><span class="p">);</span>
-		
-		<span class="cm">/**</span>
-<span class="cm">		 * @method stop</span>
-<span class="cm">		 * @description Makes the resize action end prematurely</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="k">this</span><span class="p">.</span><span class="nx">stop</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="nx">stopResize</span><span class="p">(</span><span class="nx">lastX</span><span class="p">,</span> <span class="nx">lastY</span><span class="p">);</span>
-			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-		<span class="p">};</span>
-	<span class="p">};</span>
-	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Resize</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Utility</span><span class="p">,</span> <span class="p">{</span>
-		<span class="cm">/**</span>
-<span class="cm">		 * @method lock</span>
-<span class="cm">		 * @description Makes the handles non interactive</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="nx">lock</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
-		<span class="p">},</span>
-		<span class="cm">/**</span>
-<span class="cm">		 * @method unlock</span>
-<span class="cm">		 * @description Makes the handles interactive</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="nx">unlock</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
-		<span class="p">}</span>
-	<span class="p">});</span>
+	<span class="p">},</span>
 	
-	<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">({</span>
-		<span class="nx">Top</span><span class="o">:</span> <span class="nx">TOP</span><span class="p">,</span>
-		<span class="nx">Bottom</span><span class="o">:</span> <span class="nx">BOTTOM</span><span class="p">,</span>
-		<span class="nx">Left</span><span class="o">:</span> <span class="nx">LEFT</span><span class="p">,</span>
-		<span class="nx">Right</span><span class="o">:</span> <span class="nx">RIGHT</span><span class="p">,</span>
-		<span class="nx">TopLeft</span><span class="o">:</span> <span class="nx">TOP</span> <span class="o">+</span> <span class="nx">LEFT</span><span class="p">,</span>
-		<span class="nx">TopRight</span><span class="o">:</span> <span class="nx">TOP</span> <span class="o">*</span> <span class="nx">RIGHT</span><span class="p">,</span>
-		<span class="nx">BottomLeft</span><span class="o">:</span> <span class="nx">BOTTOM</span> <span class="o">+</span> <span class="nx">LEFT</span><span class="p">,</span>
-		<span class="nx">BottomRight</span><span class="o">:</span> <span class="nx">BOTTOM</span> <span class="o">+</span> <span class="nx">RIGHT</span>
-	<span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">Resize</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
-	<span class="p">});</span>
-	<span class="nx">$</span><span class="p">.</span><span class="nx">Resize</span> <span class="o">=</span> <span class="nx">Resize</span><span class="p">;</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * @method stop</span>
+<span class="cm">	 * @description Makes the resize action end prematurely</span>
+<span class="cm">	 * @chainable</span>
+<span class="cm">	 */</span>
+	<span class="nx">stop</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">_stop</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;lastX&#39;</span><span class="p">),</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;lastY&#39;</span><span class="p">));</span>
+		<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+	<span class="p">},</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * @method lock</span>
+<span class="cm">	 * @description Makes the handles non interactive</span>
+<span class="cm">	 * @chainable</span>
+<span class="cm">	 */</span>
+	<span class="nx">lock</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+	<span class="p">},</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * @method unlock</span>
+<span class="cm">	 * @description Makes the handles interactive</span>
+<span class="cm">	 * @chainable</span>
+<span class="cm">	 */</span>
+	<span class="nx">unlock</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">LOCKED</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+	<span class="p">}</span>
+
+<span class="p">});</span>
+
+<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">({</span>
+	<span class="nx">Top</span><span class="o">:</span> <span class="nx">TOP</span><span class="p">,</span>
+	<span class="nx">Bottom</span><span class="o">:</span> <span class="nx">BOTTOM</span><span class="p">,</span>
+	<span class="nx">Left</span><span class="o">:</span> <span class="nx">LEFT</span><span class="p">,</span>
+	<span class="nx">Right</span><span class="o">:</span> <span class="nx">RIGHT</span><span class="p">,</span>
+	<span class="nx">TopLeft</span><span class="o">:</span> <span class="nx">TOP</span> <span class="o">+</span> <span class="nx">LEFT</span><span class="p">,</span>
+	<span class="nx">TopRight</span><span class="o">:</span> <span class="nx">TOP</span> <span class="o">*</span> <span class="nx">RIGHT</span><span class="p">,</span>
+	<span class="nx">BottomLeft</span><span class="o">:</span> <span class="nx">BOTTOM</span> <span class="o">+</span> <span class="nx">LEFT</span><span class="p">,</span>
+	<span class="nx">BottomRight</span><span class="o">:</span> <span class="nx">BOTTOM</span> <span class="o">+</span> <span class="nx">RIGHT</span>
+<span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">Resize</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+<span class="p">});</span>
+			
 <span class="p">});</span>
 </pre></div>
 
@@ -497,32 +567,30 @@
                                 <li class=""><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
-                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
                                 <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
-                                <li class="selected"><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class="selected"><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
-                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
                         </ul>
                     </div>
 
                     <div id="classList" class="module">
                         <h4>Classes</h4>
                         <ul class="content">
-                                <li class=""><a href="Paginator.html" title="Paginator">Paginator</a></li>
-                        </ul>
-                    </div>
-
-                    <div id="fileList" class="module">
-                        <h4>Files</h4>
-                        <ul class="content">        
-                                <li class="selected"><a href="resize.js.html" title="resize.js">resize.js</a></li>
+                                <li class=""><a href="ProgressBar.html" title="ProgressBar">ProgressBar</a></li>
                         </ul>
                     </div>
 
@@ -535,12 +603,12 @@
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Paginator.html#config_currentPage", "access": "", "host": "Paginator", "type": "config", "name": "currentPage"}, {"url": "Paginator.html#config_firstLast", "access": "", "host": "Paginator", "type": "config", "name": "firstLast"}, {"url": "Paginator.html#config_firstText", "access": "", "host": "Paginator", "type": "config", "name": "firstText"}, {"url": "Paginator.html#method_goTo", "access": "", "host": "Paginator", "type": "method", "name": "goTo"}, {"url": "Paginator.html#config_lastText", "access": "", "host": "Paginator", "type": "config", "name": "lastText"}, {"url": "Paginator.html#config_nextText", "access": "", "host": "Paginator", "type": "config", "name": "nextText"}, {"url": "Paginator.html#config_pageCount", "access": "", "host": "Paginator", "type": "config", "name": "pageCount"}, {"url": "Paginator.html#config_pagesShown", "access": "", "host": "Paginator", "type": "config", "name": "pagesShown"}, {"url": "Paginator.html#config_prevNext", "access": "", "host": "Paginator", "type": "config", "name": "prevNext"}, {"url": "Paginator.html#config_prevText", "access": "", "host": "Paginator", "type": "config", "name": "prevText"}, {"url": "Paginator.html#config_recordSet", "access": "", "host": "Paginator", "type": "config", "name": "recordSet"}, {"url": "Paginator.html#config_recordsPerPage", "access": "", "host": "Paginator", "type": "config", "name": "recordsPerPage"}];
+    var ALL_YUI_PROPS = [{"url": "ProgressBar.html#config_animate", "access": "", "host": "ProgressBar", "type": "config", "name": "animate"}, {"url": "ProgressBar.html#config_bar", "access": "", "host": "ProgressBar", "type": "config", "name": "bar"}, {"url": "ProgressBar.html#config_direction", "access": "", "host": "ProgressBar", "type": "config", "name": "direction"}, {"url": "ProgressBar.html#config_duration", "access": "", "host": "ProgressBar", "type": "config", "name": "duration"}, {"url": "ProgressBar.html#config_easing", "access": "", "host": "ProgressBar", "type": "config", "name": "easing"}, {"url": "ProgressBar.html#config_maxMvalue", "access": "", "host": "ProgressBar", "type": "config", "name": "maxMvalue"}, {"url": "ProgressBar.html#config_minMvalue", "access": "", "host": "ProgressBar", "type": "config", "name": "minMvalue"}, {"url": "ProgressBar.html#config_value", "access": "", "host": "ProgressBar", "type": "config", "name": "value"}];
 </script>
 </body>
 </html>

@@ -1,0 +1,288 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: widget-sandbox   widget-stack.js  (Jet Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body>
+
+<div id="doc4" class="yui-t2">
+	<div id="hd">
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>widget-sandbox&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
+            &gt; <a href="./module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a>
+                
+                 &gt; widget-stack.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * Provides a WidgetStack extension for Widget that controls zIndex and provides support for overlaying on top of windowed elements</span>
+<span class="cm"> * @module widget-stack</span>
+<span class="cm"> * @requires base</span>
+<span class="cm"> * </span>
+<span class="cm"> * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.</span>
+<span class="cm"> * Code licensed under the BSD License</span>
+<span class="cm"> * https://github.com/juandopazo/jet/blob/master/LICENSE.md</span>
+<span class="cm">*/</span>
+<span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;widget-stack&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
+
+
+			
+<span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
+	<span class="nx">A</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">,</span>
+	<span class="nx">layers</span><span class="p">,</span>
+	
+	<span class="nx">ZINDEX</span> <span class="o">=</span> <span class="s1">&#39;zIndex&#39;</span><span class="p">,</span>
+	<span class="nx">RESIZE</span> <span class="o">=</span> <span class="s1">&#39;resize&#39;</span><span class="p">,</span>
+	<span class="nx">SHIM</span> <span class="o">=</span> <span class="s1">&#39;shim&#39;</span><span class="p">,</span>
+	<span class="nx">BOUNDING_BOX</span> <span class="o">=</span> <span class="s1">&#39;boundingBox&#39;</span><span class="p">;</span>
+	
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">layers</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">jet</span><span class="p">.</span><span class="nx">layers</span> <span class="o">=</span> <span class="p">[];</span>
+<span class="p">}</span>
+<span class="nx">layers</span> <span class="o">=</span> <span class="nx">jet</span><span class="p">.</span><span class="nx">layers</span><span class="p">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Provides stacking support via zIndex and shimming support with iframes</span>
+<span class="cm"> * @class WidgetStack</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> */</span>
+<span class="kd">function</span> <span class="nx">WidgetStack</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">zIndex</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">ZINDEX</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">zIndex</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">layers</span><span class="p">[</span><span class="nx">zIndex</span> <span class="o">=</span> <span class="nx">layers</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">ZINDEX</span><span class="p">,</span> <span class="nx">zIndex</span><span class="p">);</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nx">layers</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">zIndex</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">_refreshZIndex</span><span class="p">();</span>
+	<span class="p">}</span>
+	
+	<span class="k">this</span><span class="p">.</span><span class="nx">_shim</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;iframe/&gt;&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">({</span>
+		<span class="nx">src</span><span class="o">:</span> <span class="s1">&#39;javascript:false&#39;</span><span class="p">,</span>
+		<span class="nx">frameborder</span><span class="o">:</span> <span class="mi">0</span>
+	<span class="p">}).</span><span class="nx">addClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="nx">SHIM</span><span class="p">)).</span><span class="nx">css</span><span class="p">({</span>
+		<span class="nx">zIndex</span><span class="o">:</span> <span class="nx">zIndex</span>
+	<span class="p">});</span>
+<span class="p">}</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">WidgetStack</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">mix</span><span class="p">(</span><span class="nx">WidgetStack</span><span class="p">,</span> <span class="p">{</span>
+	
+	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config shim</span>
+<span class="cm">		 * @description Whether the widget should use shimming or not</span>
+<span class="cm">		 * @type Boolean</span>
+<span class="cm">		 * @default true If browser is IE 6. Otherwise, false by default</span>
+<span class="cm">		 */</span>
+		<span class="nx">shim</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span> <span class="o">==</span> <span class="mi">6</span><span class="p">),</span>
+			<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isBoolean</span>
+		<span class="p">},</span>
+		
+		<span class="cm">/**</span>
+<span class="cm">		 * @config zIndex</span>
+<span class="cm">		 * @description The current zIndex value of the widget</span>
+<span class="cm">		 * @default 0</span>
+<span class="cm">		 */</span>
+		<span class="nx">zIndex</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+			<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">val</span><span class="p">))</span> <span class="p">{</span>
+					<span class="nx">val</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">val</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+				<span class="p">}</span>
+				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">val</span><span class="p">))</span> <span class="p">{</span>
+					<span class="nx">val</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+				<span class="p">}</span>
+				<span class="k">return</span> <span class="nx">val</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	
+	<span class="nx">EVENTS</span><span class="o">:</span> <span class="p">{</span>
+		
+		<span class="nx">afterRender</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">SHIM</span><span class="p">))</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">_shim</span><span class="p">.</span><span class="nx">insertBefore</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">));</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">syncShim</span><span class="p">();</span>
+				<span class="nx">$</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">RESIZE</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">syncShim</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		
+		<span class="nx">afterShimChange</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">newVal</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">shim</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_shim</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">newVal</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">shim</span><span class="p">.</span><span class="nx">insertBefore</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">));</span>
+				<span class="nx">$</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">RESIZE</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">syncShim</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">shim</span><span class="p">.</span><span class="nx">remove</span><span class="p">();</span>
+				<span class="nx">$</span><span class="p">.</span><span class="nx">unbind</span><span class="p">(</span><span class="nx">RESIZE</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">syncShim</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		
+		<span class="nx">afterZIndexChange</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">newVal</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="nx">ZINDEX</span><span class="p">,</span> <span class="nx">newVal</span><span class="p">);</span>
+		<span class="p">},</span>
+		
+		<span class="nx">focus</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">bringToFront</span><span class="p">();</span>
+		<span class="p">},</span>
+		
+		<span class="nx">blur</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">sendToBack</span><span class="p">();</span>
+		<span class="p">},</span>
+		
+		<span class="nx">destroy</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="nx">$</span><span class="p">.</span><span class="nx">unbind</span><span class="p">(</span><span class="nx">RESIZE</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">syncShim</span><span class="p">);</span>
+		<span class="p">}</span>
+		
+	<span class="p">},</span>
+	
+	<span class="nx">HTML_PARSER</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">zIndex</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">boundingBox</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">boundingBox</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="nx">ZINDEX</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	
+<span class="p">});</span>
+<span class="nx">WidgetStack</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="p">{</span>
+	
+	<span class="nx">_refreshZIndex</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">length</span> <span class="o">=</span> <span class="nx">layers</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">layers</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">set</span><span class="p">(</span><span class="nx">ZINDEX</span><span class="p">,</span> <span class="nx">i</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+	<span class="p">},</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * @method syncShim</span>
+<span class="cm">	 * @description Syncs the position of the shimming iframe with the position of the boundingBox</span>
+<span class="cm">	 * @chainable</span>
+<span class="cm">	 */</span>
+	<span class="nx">syncShim</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">position</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">offset</span><span class="p">();</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">_shim</span><span class="p">.</span><span class="nx">setPosition</span><span class="p">(</span><span class="nx">position</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="nx">position</span><span class="p">.</span><span class="nx">top</span><span class="p">).</span><span class="nx">width</span><span class="p">(</span><span class="nx">position</span><span class="p">.</span><span class="nx">width</span><span class="p">).</span><span class="nx">height</span><span class="p">(</span><span class="nx">position</span><span class="p">.</span><span class="nx">height</span><span class="p">);</span>
+		<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+	<span class="p">},</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * @method bringToFront</span>
+<span class="cm">	 * @description Brings the widget to the front of the stack</span>
+<span class="cm">	 * @chainable</span>
+<span class="cm">	 */</span>
+	<span class="nx">bringToFront</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="nx">A</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">layers</span><span class="p">).</span><span class="nx">push</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+		<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_refreshZIndex</span><span class="p">();</span>
+	<span class="p">},</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * @method sendToBack</span>
+<span class="cm">	 * @description Sends the widget to the back of the stack</span>
+<span class="cm">	 * @chainable</span>
+<span class="cm">	 */</span>
+	<span class="nx">sendToBack</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="nx">A</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">layers</span><span class="p">).</span><span class="nx">unshift</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+		<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_refreshZIndex</span><span class="p">();</span>
+	<span class="p">}</span>
+	
+<span class="p">};</span>
+			
+<span class="p">});</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_anim.html" title="anim">anim</a></li>
+                                <li class=""><a href="module_base.html" title="base">base</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_io.html" title="io">io</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_node.html" title="node">node</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class="selected"><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="Frame.html" title="Frame">Frame</a></li>
+                                <li class=""><a href="Sandbox.html" title="Sandbox">Sandbox</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+
+    var ALL_YUI_PROPS = [{"url": "Frame.html#config_container", "access": "", "host": "Frame", "type": "config", "name": "container"}, {"url": "Frame.html#config_content", "access": "", "host": "Frame", "type": "config", "name": "content"}, {"url": "Frame.html#event_contentready", "access": "", "host": "Frame", "type": "event", "name": "contentready"}, {"url": "Frame.html#property_DEFAULT_CSS", "access": "", "host": "Frame", "type": "property", "name": "DEFAULT_CSS"}, {"url": "Frame.html#config_dir", "access": "", "host": "Frame", "type": "config", "name": "dir"}, {"url": "Frame.html#property_DOC_TYPE", "access": "", "host": "Frame", "type": "property", "name": "DOC_TYPE"}, {"url": "Frame.html#config_extracss", "access": "", "host": "Frame", "type": "config", "name": "extracss"}, {"url": "Frame.html#method_getDocType", "access": "", "host": "Frame", "type": "method", "name": "getDocType"}, {"url": "Frame.html#method_getInstance", "access": "", "host": "Frame", "type": "method", "name": "getInstance"}, {"url": "Sandbox.html#method_getInstance", "access": "", "host": "Sandbox", "type": "method", "name": "getInstance"}, {"url": "Frame.html#property_HTML", "access": "", "host": "Frame", "type": "property", "name": "HTML"}, {"url": "Frame.html#config_id", "access": "", "host": "Frame", "type": "config", "name": "id"}, {"url": "Frame.html#config_lang", "access": "", "host": "Frame", "type": "config", "name": "lang"}, {"url": "Frame.html#config_linkedcss", "access": "", "host": "Frame", "type": "config", "name": "linkedcss"}, {"url": "Frame.html#property_META", "access": "", "host": "Frame", "type": "property", "name": "META"}, {"url": "Frame.html#property_NAME", "access": "", "host": "Frame", "type": "property", "name": "NAME"}, {"url": "Frame.html#config_node", "access": "", "host": "Frame", "type": "config", "name": "node"}, {"url": "Frame.html#property_PAGE_HTML", "access": "", "host": "Frame", "type": "property", "name": "PAGE_HTML"}, {"url": "Frame.html#method_render", "access": "", "host": "Frame", "type": "method", "name": "render"}, {"url": "Frame.html#config_src", "access": "", "host": "Frame", "type": "config", "name": "src"}, {"url": "Frame.html#config_title", "access": "", "host": "Frame", "type": "config", "name": "title"}, {"url": "Frame.html#config_use", "access": "", "host": "Frame", "type": "config", "name": "use"}];
+</script>
+</body>
+</html>

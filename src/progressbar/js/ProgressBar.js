@@ -52,17 +52,21 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 		 * @config direction
 		 * @description Direction in which the progressbar increases its size. May be "ltr", "ttb" or "btt"
 		 * @default "ltr"
+		 * @writeOnce
 		 */
 		direction: {
-			value: "ltr"
+			value: "ltr",
+			writeOnce: true
 		},
 		/**
 		 * @config animate
 		 * @description Whether to animate the progressbar progress. The Anim module must be present
 		 * @default false
+		 * @writeOnce
 		 */
 		animate: {
 			value: false,
+			writeOnce: true,
 			validator: function () {
 				return !!$.Tween;
 			}

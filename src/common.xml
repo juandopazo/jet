@@ -24,15 +24,14 @@
 	
 	<target name="generatejs" depends="setup">
 		<concat destfile="${tmpdir}/${filename}">
-			<header trimleading="yes">
-jet.add('${ant.project.name}', function ($) {
-			
+			<header>jet.add('${ant.project.name}', function ($) {
+
+
 			</header>
 			<filelist dir="./js" files="${build.jsfiles}"/>
-			<footer trimleading="yes">
+			<footer>
 			
-			});
-			</footer>
+});</footer>
 		</concat>
 	</target>
 	

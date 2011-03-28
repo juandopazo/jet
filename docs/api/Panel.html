@@ -11,13 +11,13 @@
     <script type="text/javascript" src="assets/ac-js"></script>
 </head>
 
-<body id="yahoo-com">
+<body>
 
-<div id="doc3" class="yui-t2">
+<div id="doc4" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
-        <h3>container&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>container&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
             &gt; <a href="./module_container.html" title="container">container</a>
                  &gt; Panel 
                 
@@ -53,6 +53,15 @@
                            - extends <a href="Overlay.html" title="Overlay">Overlay</a>
                         </span>
 
+                            <span class="extends" rel="yui:extends">
+                          - uses 
+                            
+                                <span rel="extend" resource="PanelBase.html">
+                                <a href="PanelBase.html" property="yui:name" title="PanelBase">PanelBase</a>
+                                </span>
+                            
+                            
+                        </span>
                     </h2>
                     <!-- class tree goes here -->
                     
@@ -104,6 +113,16 @@ to the problems they have (stop javascript execution, etc)
                     
                     <div rel="yui:properties" resource="#properties">
 
+                        <div rel="yui:inheritance">
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Widget.html">
+                            <h4>Properties inherited from <a href="Widget.html" property="yui:name" title="Widget">Widget</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
                     </div>
 
                     <div rel="yui:methods" resource="#methods">
@@ -119,11 +138,11 @@ to the problems they have (stop javascript execution, etc)
                                             <span rel="yui:method" resource="EventTarget.html#method_on">                                        
                                             <a class="" href="EventTarget.html#method_on" property="yui:name" title="on">on</a><span class="">,</span>
                                             </span>
-                                            <span rel="yui:method" resource="EventTarget.html#method_unbind">                                        
-                                            <a class="" href="EventTarget.html#method_unbind" property="yui:name" title="unbind">unbind</a><span class="">,</span>
+                                            <span rel="yui:method" resource="EventTarget.html#method_once">                                        
+                                            <a class="" href="EventTarget.html#method_once" property="yui:name" title="once">once</a><span class="">,</span>
                                             </span>
-                                            <span rel="yui:method" resource="EventTarget.html#method_unbindAll">                                        
-                                            <a class="" href="EventTarget.html#method_unbindAll" property="yui:name" title="unbindAll">unbindAll</a>
+                                            <span rel="yui:method" resource="EventTarget.html#method_unbind">                                        
+                                            <a class="" href="EventTarget.html#method_unbind" property="yui:name" title="unbind">unbind</a>
                                             </span>
                                     </code>
                                 </div>
@@ -143,9 +162,6 @@ to the problems they have (stop javascript execution, etc)
                                             </span>
                                             <span rel="yui:method" resource="Attribute.html#method_getAttrs">                                        
                                             <a class="" href="Attribute.html#method_getAttrs" property="yui:name" title="getAttrs">getAttrs</a><span class="">,</span>
-                                            </span>
-                                            <span rel="yui:method" resource="Attribute.html#method_isSet">                                        
-                                            <a class="" href="Attribute.html#method_isSet" property="yui:name" title="isSet">isSet</a><span class="">,</span>
                                             </span>
                                             <span rel="yui:method" resource="Attribute.html#method_set">                                        
                                             <a class="" href="Attribute.html#method_set" property="yui:name" title="set">set</a><span class="">,</span>
@@ -181,6 +197,29 @@ to the problems they have (stop javascript execution, etc)
                                     </code>
                                 </div>
                             </div>
+                            <div class="section field inheritance" rel="yui:superclass"  resource="Base.html">
+                                <h4>Methods inherited from <a href="Base.html" property="yui:name" title="Base">Base</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="section field inheritance" rel="yui:superclass"  resource="WidgetStack.html">
+                                <h4>Methods inherited from <a href="WidgetStack.html" property="yui:name" title="WidgetStack">WidgetStack</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="WidgetStack.html#method_bringToFront">                                        
+                                            <a class="" href="WidgetStack.html#method_bringToFront" property="yui:name" title="bringToFront">bringToFront</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="WidgetStack.html#method_sendToBack">                                        
+                                            <a class="" href="WidgetStack.html#method_sendToBack" property="yui:name" title="sendToBack">sendToBack</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="WidgetStack.html#method_syncShim">                                        
+                                            <a class="" href="WidgetStack.html#method_syncShim" property="yui:name" title="syncShim">syncShim</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -192,14 +231,32 @@ to the problems they have (stop javascript execution, etc)
                             <h4>Events inherited from <a href="Widget.html" property="yui:name" title="Widget">Widget</a>:</h4>
                             <div class="content" rel="yui:events">
                                 <code>
-                                        <span rel="yui:event" resource="Widget.html#event_afterRender">
+                                        <span rel="yui:event" resource="Widget.html#event_afterHide">
+                                        <a class="" href="Widget.html#event_afterHide" property="yui:name" title="afterHide">afterHide</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_afterRender">
                                         <a class="" href="Widget.html#event_afterRender" property="yui:name" title="afterRender">afterRender</a><span class="">,</span>
                                         </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_afterShow">
+                                        <a class="" href="Widget.html#event_afterShow" property="yui:name" title="afterShow">afterShow</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_blur">
+                                        <a class="" href="Widget.html#event_blur" property="yui:name" title="blur">blur</a>
+                                        </span>
                                                                             <span rel="yui:event" resource="Widget.html#event_destroy">
-                                        <a class="" href="Widget.html#event_destroy" property="yui:name" title="destroy">destroy</a><span class="">,</span>
+                                        <a class="" href="Widget.html#event_destroy" property="yui:name" title="destroy">destroy</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_focus">
+                                        <a class="" href="Widget.html#event_focus" property="yui:name" title="focus">focus</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_hide">
+                                        <a class="" href="Widget.html#event_hide" property="yui:name" title="hide">hide</a>
                                         </span>
                                                                             <span rel="yui:event" resource="Widget.html#event_render">
                                         <a class="" href="Widget.html#event_render" property="yui:name" title="render">render</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_show">
+                                        <a class="" href="Widget.html#event_show" property="yui:name" title="show">show</a>
                                         </span>
                                     
                                 </code>
@@ -209,75 +266,6 @@ to the problems they have (stop javascript execution, etc)
                     </div>
 
                     <div rel="yui:attributes" resource="#configattributes">
-                        <div class="section field details">
-                            <h3 id="configattributes">Configuration Attributes</h3>
-                            <div class="content">
-                                    <div class="" rel="yui:attribute" resource="#config_close">
-                                    <h4><a name="config_close">close</a>
-                                        <code>- <span property="yui:type">Boolean</span></code>
-                                    </h4>
-                                    <div class="detail">
-                                        <div class="description" property="yui:description">
-                                            If true, a close button is added to the panel that hides it when clicked
-                                        </div>
-                                    </div>
- 
-     
-                                    <div class="default">
-                                        Default Value: true
-                                    </div>        
-
-                                    <hr />
-                                    </div>        
-                                    <div class="" rel="yui:attribute" resource="#config_contentBox">
-                                    <h4><a name="config_contentBox">contentBox</a>
-                                        <code>- <span property="yui:type">object</span></code>
-                                    </h4>
-                                    <div class="detail">
-                                        <div class="description" property="yui:description">
-                                            A panel uses another container inside the boundingBox 
-in order to have a more complex design (ie: shadow)
-                                        </div>
-                                    </div>
- 
-     
-
-                                    <hr />
-                                    </div>        
-                                    <div class="" rel="yui:attribute" resource="#config_shadow">
-                                    <h4><a name="config_shadow">shadow</a>
-                                        <code>- <span property="yui:type">object</span></code>
-                                    </h4>
-                                    <div class="detail">
-                                        <div class="description" property="yui:description">
-                                            If true, the panel shows a shadow
-                                        </div>
-                                    </div>
- 
-     
-                                    <div class="default">
-                                        Default Value: true
-                                    </div>        
-
-                                    <hr />
-                                    </div>        
-                                    <div class="" rel="yui:attribute" resource="#config_underlay">
-                                    <h4><a name="config_underlay">underlay</a>
-                                        <code>- <span property="yui:type">object</span></code>
-                                    </h4>
-                                    <div class="detail">
-                                        <div class="description" property="yui:description">
-                                            The underlay is inserted after the contentBox to allow for a more complex design
-                                        </div>
-                                    </div>
- 
-     
-
-                                    <hr />
-                                    </div>        
-
-                            </div>
-                        </div>
 
                         <div rel="yui:inheritance">                    
                         <div class="section field inheritance" rel="yui:superclass"  resource="Widget.html">
@@ -288,17 +276,86 @@ in order to have a more complex design (ie: shadow)
                                         <span rel="yui:attribute" resource="Widget.html#config_boundingBox">                                        
                                         <a class="" href="Widget.html#config_boundingBox" property="yui:name" title="boundingBox">boundingBox</a><span class="">,</span>
                                         </span>
-                                                                                <span rel="yui:attribute" resource="Widget.html#config_className">                                        
-                                        <a class="" href="Widget.html#config_className" property="yui:name" title="className">className</a><span class="">,</span>
-                                        </span>
                                                                                 <span rel="yui:attribute" resource="Widget.html#config_classPrefix">                                        
-                                        <a class="" href="Widget.html#config_classPrefix" property="yui:name" title="classPrefix">classPrefix</a>
+                                        <a class="" href="Widget.html#config_classPrefix" property="yui:name" title="classPrefix">classPrefix</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_contentBox">                                        
+                                        <a class="" href="Widget.html#config_contentBox" property="yui:name" title="contentBox">contentBox</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_height">                                        
+                                        <a class="" href="Widget.html#config_height" property="yui:name" title="height">height</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_id">                                        
+                                        <a class="" href="Widget.html#config_id" property="yui:name" title="id">id</a>
                                         </span>
                                                                                 <span rel="yui:attribute" resource="Widget.html#config_rendered">                                        
                                         <a class="" href="Widget.html#config_rendered" property="yui:name" title="rendered">rendered</a>
                                         </span>
                                                                                 <span rel="yui:attribute" resource="Widget.html#config_srcNode">                                        
                                         <a class="" href="Widget.html#config_srcNode" property="yui:name" title="srcNode">srcNode</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_width">                                        
+                                        <a class="" href="Widget.html#config_width" property="yui:name" title="width">width</a>
+                                        </span>
+                                        
+                                </code>
+                            </div>
+                        </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="WidgetStack.html">
+                            <h4>Configuration attributes inherited from <a href="WidgetStack.html" property="yui:name" title="WidgetStack">WidgetStack</a>:</h4>
+                            <div class="content" rel="yui:attributes">
+                                <code>
+                                    <h2>WidgetStack</h2>
+                                        <span rel="yui:attribute" resource="WidgetStack.html#config_shim">                                        
+                                        <a class="" href="WidgetStack.html#config_shim" property="yui:name" title="shim">shim</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="WidgetStack.html#config_zIndex">                                        
+                                        <a class="" href="WidgetStack.html#config_zIndex" property="yui:name" title="zIndex">zIndex</a>
+                                        </span>
+                                        
+                                </code>
+                            </div>
+                        </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Overlay.html">
+                            <h4>Configuration attributes inherited from <a href="Overlay.html" property="yui:name" title="Overlay">Overlay</a>:</h4>
+                            <div class="content" rel="yui:attributes">
+                                <code>
+                                    <h2>Overlay</h2>
+                                        <span rel="yui:attribute" resource="Overlay.html#config_draggable">                                        
+                                        <a class="" href="Overlay.html#config_draggable" property="yui:name" title="draggable">draggable</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Overlay.html#config_modal">                                        
+                                        <a class="" href="Overlay.html#config_modal" property="yui:name" title="modal">modal</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Overlay.html#config_modalBox">                                        
+                                        <a class="" href="Overlay.html#config_modalBox" property="yui:name" title="modalBox">modalBox</a>
+                                        </span>
+                                        
+                                </code>
+                            </div>
+                        </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Module.html">
+                            <h4>Configuration attributes inherited from <a href="Module.html" property="yui:name" title="Module">Module</a>:</h4>
+                            <div class="content" rel="yui:attributes">
+                                <code>
+                                    <h2>Module</h2>
+                                        <span rel="yui:attribute" resource="Module.html#config_body">                                        
+                                        <a class="" href="Module.html#config_body" property="yui:name" title="body">body</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Module.html#config_bodyContent">                                        
+                                        <a class="" href="Module.html#config_bodyContent" property="yui:name" title="bodyContent">bodyContent</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Module.html#config_footer">                                        
+                                        <a class="" href="Module.html#config_footer" property="yui:name" title="footer">footer</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Module.html#config_footerContent">                                        
+                                        <a class="" href="Module.html#config_footerContent" property="yui:name" title="footerContent">footerContent</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Module.html#config_header">                                        
+                                        <a class="" href="Module.html#config_header" property="yui:name" title="header">header</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Module.html#config_headerContent">                                        
+                                        <a class="" href="Module.html#config_headerContent" property="yui:name" title="headerContent">headerContent</a>
                                         </span>
                                         
                                 </code>
@@ -316,58 +373,37 @@ in order to have a more complex design (ie: shadow)
                                 </code>
                             </div>
                         </div>
-                        <div class="section field inheritance" rel="yui:superclass"  resource="Module.html">
-                            <h4>Configuration attributes inherited from <a href="Module.html" property="yui:name" title="Module">Module</a>:</h4>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="WidgetAlignment.html">
+                            <h4>Configuration attributes inherited from <a href="WidgetAlignment.html" property="yui:name" title="WidgetAlignment">WidgetAlignment</a>:</h4>
                             <div class="content" rel="yui:attributes">
                                 <code>
-                                    <h2>Module</h2>
-                                        <span rel="yui:attribute" resource="Module.html#config_body">                                        
-                                        <a class="" href="Module.html#config_body" property="yui:name" title="body">body</a><span class="">,</span>
+                                    <h2>WidgetAlignment</h2>
+                                        <span rel="yui:attribute" resource="WidgetAlignment.html#config_align">                                        
+                                        <a class="" href="WidgetAlignment.html#config_align" property="yui:name" title="align">align</a><span class="">,</span>
                                         </span>
-                                                                                <span rel="yui:attribute" resource="Module.html#config_footer">                                        
-                                        <a class="" href="Module.html#config_footer" property="yui:name" title="footer">footer</a>
+                                                                                <span rel="yui:attribute" resource="WidgetAlignment.html#config_constrain">                                        
+                                        <a class="" href="WidgetAlignment.html#config_constrain" property="yui:name" title="constrain">constrain</a>
                                         </span>
-                                                                                <span rel="yui:attribute" resource="Module.html#config_header">                                        
-                                        <a class="" href="Module.html#config_header" property="yui:name" title="header">header</a>
+                                                                                <span rel="yui:attribute" resource="WidgetAlignment.html#config_fixed">                                        
+                                        <a class="" href="WidgetAlignment.html#config_fixed" property="yui:name" title="fixed">fixed</a>
                                         </span>
                                         
                                 </code>
                             </div>
                         </div>
-                        <div class="section field inheritance" rel="yui:superclass"  resource="Overlay.html">
-                            <h4>Configuration attributes inherited from <a href="Overlay.html" property="yui:name" title="Overlay">Overlay</a>:</h4>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="PanelBase.html">
+                            <h4>Configuration attributes inherited from <a href="PanelBase.html" property="yui:name" title="PanelBase">PanelBase</a>:</h4>
                             <div class="content" rel="yui:attributes">
                                 <code>
-                                    <h2>Overlay</h2>
-                                        <span rel="yui:attribute" resource="Overlay.html#config_bottom">                                        
-                                        <a class="" href="Overlay.html#config_bottom" property="yui:name" title="bottom">bottom</a><span class="">,</span>
+                                    <h2>PanelBase</h2>
+                                        <span rel="yui:attribute" resource="PanelBase.html#config_close">                                        
+                                        <a class="" href="PanelBase.html#config_close" property="yui:name" title="close">close</a><span class="">,</span>
                                         </span>
-                                                                                <span rel="yui:attribute" resource="Overlay.html#config_center">                                        
-                                        <a class="" href="Overlay.html#config_center" property="yui:name" title="center">center</a><span class="">,</span>
+                                                                                <span rel="yui:attribute" resource="PanelBase.html#config_shadow">                                        
+                                        <a class="" href="PanelBase.html#config_shadow" property="yui:name" title="shadow">shadow</a>
                                         </span>
-                                                                                <span rel="yui:attribute" resource="Overlay.html#config_draggable">                                        
-                                        <a class="" href="Overlay.html#config_draggable" property="yui:name" title="draggable">draggable</a><span class="">,</span>
-                                        </span>
-                                                                                <span rel="yui:attribute" resource="Overlay.html#config_fixed">                                        
-                                        <a class="" href="Overlay.html#config_fixed" property="yui:name" title="fixed">fixed</a><span class="">,</span>
-                                        </span>
-                                                                                <span rel="yui:attribute" resource="Overlay.html#config_height">                                        
-                                        <a class="" href="Overlay.html#config_height" property="yui:name" title="height">height</a>
-                                        </span>
-                                                                                <span rel="yui:attribute" resource="Overlay.html#config_left">                                        
-                                        <a class="" href="Overlay.html#config_left" property="yui:name" title="left">left</a>
-                                        </span>
-                                                                                <span rel="yui:attribute" resource="Overlay.html#config_right">                                        
-                                        <a class="" href="Overlay.html#config_right" property="yui:name" title="right">right</a>
-                                        </span>
-                                                                                <span rel="yui:attribute" resource="Overlay.html#config_top">                                        
-                                        <a class="" href="Overlay.html#config_top" property="yui:name" title="top">top</a>
-                                        </span>
-                                                                                <span rel="yui:attribute" resource="Overlay.html#config_width">                                        
-                                        <a class="" href="Overlay.html#config_width" property="yui:name" title="width">width</a>
-                                        </span>
-                                                                                <span rel="yui:attribute" resource="Overlay.html#config_zIndex">                                        
-                                        <a class="" href="Overlay.html#config_zIndex" property="yui:name" title="zIndex">zIndex</a>
+                                                                                <span rel="yui:attribute" resource="PanelBase.html#config_underlay">                                        
+                                        <a class="" href="PanelBase.html#config_underlay" property="yui:name" title="underlay">underlay</a>
                                         </span>
                                         
                                 </code>
@@ -395,18 +431,23 @@ in order to have a more complex design (ie: shadow)
                                 <li class=""><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
-                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
                                 <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
-                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
                         </ul>
                     </div>
 
@@ -416,41 +457,28 @@ in order to have a more complex design (ie: shadow)
                                 <li class=""><a href="Module.html" title="Module">Module</a></li>
                                 <li class=""><a href="Overlay.html" title="Overlay">Overlay</a></li>
                                 <li class="selected"><a href="Panel.html" title="Panel">Panel</a></li>
+                                <li class=""><a href="PanelBase.html" title="PanelBase">PanelBase</a></li>
                                 <li class=""><a href="SimpleDialog.html" title="SimpleDialog">SimpleDialog</a></li>
-                        </ul>
-                    </div>
-
-                    <div id="fileList" class="module">
-                        <h4>Files</h4>
-                        <ul class="content">        
-                                <li class=""><a href="cookie.js.html" title="cookie.js">cookie.js</a></li>
+                                <li class=""><a href="StaticPanel.html" title="StaticPanel">StaticPanel</a></li>
+                                <li class=""><a href="Tooltip.html" title="Tooltip">Tooltip</a></li>
                         </ul>
                     </div>
 
 
 
 
-                    <div id="configList" class="module">
-                        <h4>Configuration Attributes</h4>
-                        <ul class="content">        
-                                <li class=""><a href="#config_close" title="close">close</a></li>
-                                <li class=""><a href="#config_contentBox" title="contentBox">contentBox</a></li>
-                                <li class=""><a href="#config_shadow" title="shadow">shadow</a></li>
-                                <li class=""><a href="#config_underlay" title="underlay">underlay</a></li>
-                        </ul>
-                    </div>
 
             </div>
 		</div>
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Module.html#config_body", "access": "", "host": "Module", "type": "config", "name": "body"}, {"url": "Overlay.html#config_bottom", "access": "", "host": "Overlay", "type": "config", "name": "bottom"}, {"url": "Overlay.html#config_center", "access": "", "host": "Overlay", "type": "config", "name": "center"}, {"url": "Panel.html#config_close", "access": "", "host": "Panel", "type": "config", "name": "close"}, {"url": "Panel.html#config_contentBox", "access": "", "host": "Panel", "type": "config", "name": "contentBox"}, {"url": "Overlay.html#config_draggable", "access": "", "host": "Overlay", "type": "config", "name": "draggable"}, {"url": "Overlay.html#config_fixed", "access": "", "host": "Overlay", "type": "config", "name": "fixed"}, {"url": "Module.html#config_footer", "access": "", "host": "Module", "type": "config", "name": "footer"}, {"url": "Module.html#config_header", "access": "", "host": "Module", "type": "config", "name": "header"}, {"url": "Overlay.html#config_height", "access": "", "host": "Overlay", "type": "config", "name": "height"}, {"url": "Overlay.html#config_left", "access": "", "host": "Overlay", "type": "config", "name": "left"}, {"url": "Overlay.html#config_right", "access": "", "host": "Overlay", "type": "config", "name": "right"}, {"url": "Panel.html#config_shadow", "access": "", "host": "Panel", "type": "config", "name": "shadow"}, {"url": "Overlay.html#config_top", "access": "", "host": "Overlay", "type": "config", "name": "top"}, {"url": "Panel.html#config_underlay", "access": "", "host": "Panel", "type": "config", "name": "underlay"}, {"url": "Overlay.html#config_width", "access": "", "host": "Overlay", "type": "config", "name": "width"}, {"url": "Overlay.html#config_zIndex", "access": "", "host": "Overlay", "type": "config", "name": "zIndex"}];
+    var ALL_YUI_PROPS = [{"url": "Module.html#config_body", "access": "", "host": "Module", "type": "config", "name": "body"}, {"url": "Module.html#config_bodyContent", "access": "", "host": "Module", "type": "config", "name": "bodyContent"}, {"url": "PanelBase.html#config_close", "access": "", "host": "PanelBase", "type": "config", "name": "close"}, {"url": "Overlay.html#config_draggable", "access": "", "host": "Overlay", "type": "config", "name": "draggable"}, {"url": "Tooltip.html#config_fadeIn", "access": "", "host": "Tooltip", "type": "config", "name": "fadeIn"}, {"url": "Module.html#config_footer", "access": "", "host": "Module", "type": "config", "name": "footer"}, {"url": "Module.html#config_footerContent", "access": "", "host": "Module", "type": "config", "name": "footerContent"}, {"url": "Module.html#config_header", "access": "", "host": "Module", "type": "config", "name": "header"}, {"url": "Module.html#config_headerContent", "access": "", "host": "Module", "type": "config", "name": "headerContent"}, {"url": "Overlay.html#config_modal", "access": "", "host": "Overlay", "type": "config", "name": "modal"}, {"url": "Overlay.html#config_modalBox", "access": "", "host": "Overlay", "type": "config", "name": "modalBox"}, {"url": "PanelBase.html#config_shadow", "access": "", "host": "PanelBase", "type": "config", "name": "shadow"}, {"url": "PanelBase.html#config_underlay", "access": "", "host": "PanelBase", "type": "config", "name": "underlay"}];
 </script>
 </body>
 </html>

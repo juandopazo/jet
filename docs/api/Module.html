@@ -11,13 +11,13 @@
     <script type="text/javascript" src="assets/ac-js"></script>
 </head>
 
-<body id="yahoo-com">
+<body>
 
-<div id="doc3" class="yui-t2">
+<div id="doc4" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
-        <h3>container&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>container&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
             &gt; <a href="./module_container.html" title="container">container</a>
                  &gt; Module 
                 
@@ -62,6 +62,9 @@
                                     <span rel="yui:subclass" resource="Overlay.html">
                                     <a href="Overlay.html" property="yui:name" title="Overlay">Overlay</a>
                                     </span>
+                                    <span rel="yui:subclass" resource="StaticPanel.html">
+                                    <a href="StaticPanel.html" property="yui:name" title="StaticPanel">StaticPanel</a>
+                                    </span>
                             </dd>
                        </dl>
                 
@@ -103,6 +106,16 @@
                     
                     <div rel="yui:properties" resource="#properties">
 
+                        <div rel="yui:inheritance">
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Widget.html">
+                            <h4>Properties inherited from <a href="Widget.html" property="yui:name" title="Widget">Widget</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
                     </div>
 
                     <div rel="yui:methods" resource="#methods">
@@ -118,11 +131,11 @@
                                             <span rel="yui:method" resource="EventTarget.html#method_on">                                        
                                             <a class="" href="EventTarget.html#method_on" property="yui:name" title="on">on</a><span class="">,</span>
                                             </span>
-                                            <span rel="yui:method" resource="EventTarget.html#method_unbind">                                        
-                                            <a class="" href="EventTarget.html#method_unbind" property="yui:name" title="unbind">unbind</a><span class="">,</span>
+                                            <span rel="yui:method" resource="EventTarget.html#method_once">                                        
+                                            <a class="" href="EventTarget.html#method_once" property="yui:name" title="once">once</a><span class="">,</span>
                                             </span>
-                                            <span rel="yui:method" resource="EventTarget.html#method_unbindAll">                                        
-                                            <a class="" href="EventTarget.html#method_unbindAll" property="yui:name" title="unbindAll">unbindAll</a>
+                                            <span rel="yui:method" resource="EventTarget.html#method_unbind">                                        
+                                            <a class="" href="EventTarget.html#method_unbind" property="yui:name" title="unbind">unbind</a>
                                             </span>
                                     </code>
                                 </div>
@@ -142,9 +155,6 @@
                                             </span>
                                             <span rel="yui:method" resource="Attribute.html#method_getAttrs">                                        
                                             <a class="" href="Attribute.html#method_getAttrs" property="yui:name" title="getAttrs">getAttrs</a><span class="">,</span>
-                                            </span>
-                                            <span rel="yui:method" resource="Attribute.html#method_isSet">                                        
-                                            <a class="" href="Attribute.html#method_isSet" property="yui:name" title="isSet">isSet</a><span class="">,</span>
                                             </span>
                                             <span rel="yui:method" resource="Attribute.html#method_set">                                        
                                             <a class="" href="Attribute.html#method_set" property="yui:name" title="set">set</a><span class="">,</span>
@@ -180,6 +190,13 @@
                                     </code>
                                 </div>
                             </div>
+                            <div class="section field inheritance" rel="yui:superclass"  resource="Base.html">
+                                <h4>Methods inherited from <a href="Base.html" property="yui:name" title="Base">Base</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                    </code>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -191,14 +208,32 @@
                             <h4>Events inherited from <a href="Widget.html" property="yui:name" title="Widget">Widget</a>:</h4>
                             <div class="content" rel="yui:events">
                                 <code>
-                                        <span rel="yui:event" resource="Widget.html#event_afterRender">
+                                        <span rel="yui:event" resource="Widget.html#event_afterHide">
+                                        <a class="" href="Widget.html#event_afterHide" property="yui:name" title="afterHide">afterHide</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_afterRender">
                                         <a class="" href="Widget.html#event_afterRender" property="yui:name" title="afterRender">afterRender</a><span class="">,</span>
                                         </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_afterShow">
+                                        <a class="" href="Widget.html#event_afterShow" property="yui:name" title="afterShow">afterShow</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_blur">
+                                        <a class="" href="Widget.html#event_blur" property="yui:name" title="blur">blur</a>
+                                        </span>
                                                                             <span rel="yui:event" resource="Widget.html#event_destroy">
-                                        <a class="" href="Widget.html#event_destroy" property="yui:name" title="destroy">destroy</a><span class="">,</span>
+                                        <a class="" href="Widget.html#event_destroy" property="yui:name" title="destroy">destroy</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_focus">
+                                        <a class="" href="Widget.html#event_focus" property="yui:name" title="focus">focus</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_hide">
+                                        <a class="" href="Widget.html#event_hide" property="yui:name" title="hide">hide</a>
                                         </span>
                                                                             <span rel="yui:event" resource="Widget.html#event_render">
                                         <a class="" href="Widget.html#event_render" property="yui:name" title="render">render</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_show">
+                                        <a class="" href="Widget.html#event_show" property="yui:name" title="show">show</a>
                                         </span>
                                     
                                 </code>
@@ -213,7 +248,21 @@
                             <div class="content">
                                     <div class="" rel="yui:attribute" resource="#config_body">
                                     <h4><a name="config_body">body</a>
-                                        <code>- <span property="yui:type">DOM Node | String | NodeList</span></code>
+                                        <code>- writeonce <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            A pointer to the body node
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_bodyContent">
+                                    <h4><a name="config_bodyContent">bodyContent</a>
+                                        <code>- <span property="yui:type">object</span></code>
                                     </h4>
                                     <div class="detail">
                                         <div class="description" property="yui:description">
@@ -232,7 +281,21 @@ A body is always present in a Module
                                     </div>        
                                     <div class="" rel="yui:attribute" resource="#config_footer">
                                     <h4><a name="config_footer">footer</a>
-                                        <code>- <span property="yui:type">DOM Node | String | NodeList</span></code>
+                                        <code>- writeonce <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            A pointer to the footer node
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_footerContent">
+                                    <h4><a name="config_footerContent">footerContent</a>
+                                        <code>- <span property="yui:type">object</span></code>
                                     </h4>
                                     <div class="detail">
                                         <div class="description" property="yui:description">
@@ -247,7 +310,21 @@ If set to a string a node is creating and the string is set to its innerHTML
                                     </div>        
                                     <div class="" rel="yui:attribute" resource="#config_header">
                                     <h4><a name="config_header">header</a>
-                                        <code>- <span property="yui:type">DOM Node | String | NodeList</span></code>
+                                        <code>- writeonce <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            A pointer to the header node
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_headerContent">
+                                    <h4><a name="config_headerContent">headerContent</a>
+                                        <code>- <span property="yui:type">object</span></code>
                                     </h4>
                                     <div class="detail">
                                         <div class="description" property="yui:description">
@@ -273,17 +350,26 @@ If set to a string a node is creating and the string is set to its innerHTML
                                         <span rel="yui:attribute" resource="Widget.html#config_boundingBox">                                        
                                         <a class="" href="Widget.html#config_boundingBox" property="yui:name" title="boundingBox">boundingBox</a><span class="">,</span>
                                         </span>
-                                                                                <span rel="yui:attribute" resource="Widget.html#config_className">                                        
-                                        <a class="" href="Widget.html#config_className" property="yui:name" title="className">className</a><span class="">,</span>
-                                        </span>
                                                                                 <span rel="yui:attribute" resource="Widget.html#config_classPrefix">                                        
-                                        <a class="" href="Widget.html#config_classPrefix" property="yui:name" title="classPrefix">classPrefix</a>
+                                        <a class="" href="Widget.html#config_classPrefix" property="yui:name" title="classPrefix">classPrefix</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_contentBox">                                        
+                                        <a class="" href="Widget.html#config_contentBox" property="yui:name" title="contentBox">contentBox</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_height">                                        
+                                        <a class="" href="Widget.html#config_height" property="yui:name" title="height">height</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_id">                                        
+                                        <a class="" href="Widget.html#config_id" property="yui:name" title="id">id</a>
                                         </span>
                                                                                 <span rel="yui:attribute" resource="Widget.html#config_rendered">                                        
                                         <a class="" href="Widget.html#config_rendered" property="yui:name" title="rendered">rendered</a>
                                         </span>
                                                                                 <span rel="yui:attribute" resource="Widget.html#config_srcNode">                                        
                                         <a class="" href="Widget.html#config_srcNode" property="yui:name" title="srcNode">srcNode</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_width">                                        
+                                        <a class="" href="Widget.html#config_width" property="yui:name" title="width">width</a>
                                         </span>
                                         
                                 </code>
@@ -323,18 +409,23 @@ If set to a string a node is creating and the string is set to its innerHTML
                                 <li class=""><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
-                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
                                 <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
-                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
                         </ul>
                     </div>
 
@@ -344,14 +435,10 @@ If set to a string a node is creating and the string is set to its innerHTML
                                 <li class="selected"><a href="Module.html" title="Module">Module</a></li>
                                 <li class=""><a href="Overlay.html" title="Overlay">Overlay</a></li>
                                 <li class=""><a href="Panel.html" title="Panel">Panel</a></li>
+                                <li class=""><a href="PanelBase.html" title="PanelBase">PanelBase</a></li>
                                 <li class=""><a href="SimpleDialog.html" title="SimpleDialog">SimpleDialog</a></li>
-                        </ul>
-                    </div>
-
-                    <div id="fileList" class="module">
-                        <h4>Files</h4>
-                        <ul class="content">        
-                                <li class=""><a href="cookie.js.html" title="cookie.js">cookie.js</a></li>
+                                <li class=""><a href="StaticPanel.html" title="StaticPanel">StaticPanel</a></li>
+                                <li class=""><a href="Tooltip.html" title="Tooltip">Tooltip</a></li>
                         </ul>
                     </div>
 
@@ -362,8 +449,11 @@ If set to a string a node is creating and the string is set to its innerHTML
                         <h4>Configuration Attributes</h4>
                         <ul class="content">        
                                 <li class=""><a href="#config_body" title="body">body</a></li>
+                                <li class=""><a href="#config_bodyContent" title="bodyContent">bodyContent</a></li>
                                 <li class=""><a href="#config_footer" title="footer">footer</a></li>
+                                <li class=""><a href="#config_footerContent" title="footerContent">footerContent</a></li>
                                 <li class=""><a href="#config_header" title="header">header</a></li>
+                                <li class=""><a href="#config_headerContent" title="headerContent">headerContent</a></li>
                         </ul>
                     </div>
 
@@ -372,12 +462,12 @@ If set to a string a node is creating and the string is set to its innerHTML
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Module.html#config_body", "access": "", "host": "Module", "type": "config", "name": "body"}, {"url": "Module.html#config_footer", "access": "", "host": "Module", "type": "config", "name": "footer"}, {"url": "Module.html#config_header", "access": "", "host": "Module", "type": "config", "name": "header"}];
+    var ALL_YUI_PROPS = [{"url": "Module.html#config_body", "access": "", "host": "Module", "type": "config", "name": "body"}, {"url": "Module.html#config_bodyContent", "access": "", "host": "Module", "type": "config", "name": "bodyContent"}, {"url": "Module.html#config_footer", "access": "", "host": "Module", "type": "config", "name": "footer"}, {"url": "Module.html#config_footerContent", "access": "", "host": "Module", "type": "config", "name": "footerContent"}, {"url": "Module.html#config_header", "access": "", "host": "Module", "type": "config", "name": "header"}, {"url": "Module.html#config_headerContent", "access": "", "host": "Module", "type": "config", "name": "headerContent"}];
 </script>
 </body>
 </html>

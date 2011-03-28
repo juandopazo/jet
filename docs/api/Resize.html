@@ -11,13 +11,13 @@
     <script type="text/javascript" src="assets/ac-js"></script>
 </head>
 
-<body id="yahoo-com">
+<body>
 
-<div id="doc3" class="yui-t2">
+<div id="doc4" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
-        <h3>resize&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>resize&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
             &gt; <a href="./module_resize.html" title="resize">resize</a>
                  &gt; Resize 
                 
@@ -80,7 +80,7 @@
      
                                         
                                     <div class="default" property="yui:defaultValue">
-                                        Default Value: ["b", "r", "br"]
+                                        Default Value: ['b', 'r', 'br']
                                     </div>        
 
 
@@ -227,11 +227,11 @@ node so that is stays in place when resizing it in any direction
                                             <span rel="yui:method" resource="EventTarget.html#method_on">                                        
                                             <a class="" href="EventTarget.html#method_on" property="yui:name" title="on">on</a><span class="">,</span>
                                             </span>
-                                            <span rel="yui:method" resource="EventTarget.html#method_unbind">                                        
-                                            <a class="" href="EventTarget.html#method_unbind" property="yui:name" title="unbind">unbind</a><span class="">,</span>
+                                            <span rel="yui:method" resource="EventTarget.html#method_once">                                        
+                                            <a class="" href="EventTarget.html#method_once" property="yui:name" title="once">once</a><span class="">,</span>
                                             </span>
-                                            <span rel="yui:method" resource="EventTarget.html#method_unbindAll">                                        
-                                            <a class="" href="EventTarget.html#method_unbindAll" property="yui:name" title="unbindAll">unbindAll</a>
+                                            <span rel="yui:method" resource="EventTarget.html#method_unbind">                                        
+                                            <a class="" href="EventTarget.html#method_unbind" property="yui:name" title="unbind">unbind</a>
                                             </span>
                                     </code>
                                 </div>
@@ -252,15 +252,19 @@ node so that is stays in place when resizing it in any direction
                                             <span rel="yui:method" resource="Attribute.html#method_getAttrs">                                        
                                             <a class="" href="Attribute.html#method_getAttrs" property="yui:name" title="getAttrs">getAttrs</a><span class="">,</span>
                                             </span>
-                                            <span rel="yui:method" resource="Attribute.html#method_isSet">                                        
-                                            <a class="" href="Attribute.html#method_isSet" property="yui:name" title="isSet">isSet</a><span class="">,</span>
-                                            </span>
                                             <span rel="yui:method" resource="Attribute.html#method_set">                                        
                                             <a class="" href="Attribute.html#method_set" property="yui:name" title="set">set</a><span class="">,</span>
                                             </span>
                                             <span rel="yui:method" resource="Attribute.html#method_unset">                                        
                                             <a class="" href="Attribute.html#method_unset" property="yui:name" title="unset">unset</a>
                                             </span>
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="section field inheritance" rel="yui:superclass"  resource="Base.html">
+                                <h4>Methods inherited from <a href="Base.html" property="yui:name" title="Base">Base</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
                                     </code>
                                 </div>
                             </div>
@@ -468,6 +472,19 @@ node so that is stays in place when resizing it in any direction
                         </div>
 
 
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Utility.html">
+                            <h4>Events inherited from <a href="Utility.html" property="yui:name" title="Utility">Utility</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="Utility.html#event_destroy">
+                                        <a class="" href="Utility.html#event_destroy" property="yui:name" title="destroy">destroy</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
                     </div>
 
                     <div rel="yui:attributes" resource="#configattributes">
@@ -481,7 +498,7 @@ node so that is stays in place when resizing it in any direction
                                     <div class="detail">
                                         <div class="description" property="yui:description">
                                             Creates an animation when the resize handle is released. Can only be set to true
-if "proxy" is set to true. <strong>Requires the Anim module.</strong>
+if 'proxy' is set to true. <strong>Requires the Anim module.</strong>
                                         </div>
                                     </div>
  
@@ -591,14 +608,13 @@ if "proxy" is set to true. <strong>Requires the Anim module.</strong>
 
                                     <hr />
                                     </div>        
-                                    <div class="" rel="yui:attribute" resource="#config_proxy">
-                                    <h4><a name="config_proxy">proxy</a>
-                                        <code>- <span property="yui:type">Boolean | String</span></code>
+                                    <div class="" rel="yui:attribute" resource="#config_shim">
+                                    <h4><a name="config_shim">shim</a>
+                                        <code>- <span property="yui:type">Boolean</span></code>
                                     </h4>
                                     <div class="detail">
                                         <div class="description" property="yui:description">
-                                            Whether to use a copy of the node while resizing or not.
-Possible values: false, true, "clone"
+                                            Uses invisible elements to be able to resize the node over iframes
                                         </div>
                                     </div>
  
@@ -609,13 +625,14 @@ Possible values: false, true, "clone"
 
                                     <hr />
                                     </div>        
-                                    <div class="" rel="yui:attribute" resource="#config_shim">
-                                    <h4><a name="config_shim">shim</a>
-                                        <code>- <span property="yui:type">Boolean</span></code>
+                                    <div class="" rel="yui:attribute" resource="#config_useProxy">
+                                    <h4><a name="config_useProxy">useProxy</a>
+                                        <code>- writeonce <span property="yui:type">Boolean | String</span></code>
                                     </h4>
                                     <div class="detail">
                                         <div class="description" property="yui:description">
-                                            Uses invisible elements to be able to resize the node over iframes
+                                            Whether to use a copy of the node while resizing or not.
+Possible values: false, true, 'clone'
                                         </div>
                                     </div>
  
@@ -643,6 +660,18 @@ Possible values: false, true, "clone"
                                 </code>
                             </div>
                         </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Utility.html">
+                            <h4>Configuration attributes inherited from <a href="Utility.html" property="yui:name" title="Utility">Utility</a>:</h4>
+                            <div class="content" rel="yui:attributes">
+                                <code>
+                                    <h2>Utility</h2>
+                                        <span rel="yui:attribute" resource="Utility.html#config_cssPrefix">                                        
+                                        <a class="" href="Utility.html#config_cssPrefix" property="yui:name" title="cssPrefix">cssPrefix</a>
+                                        </span>
+                                        
+                                </code>
+                            </div>
+                        </div>
                         </div>
                     </div>
 
@@ -665,18 +694,23 @@ Possible values: false, true, "clone"
                                 <li class=""><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
-                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
                                 <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class="selected"><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
-                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
                         </ul>
                     </div>
 
@@ -684,14 +718,6 @@ Possible values: false, true, "clone"
                         <h4>Classes</h4>
                         <ul class="content">
                                 <li class="selected"><a href="Resize.html" title="Resize">Resize</a></li>
-                        </ul>
-                    </div>
-
-                    <div id="fileList" class="module">
-                        <h4>Files</h4>
-                        <ul class="content">        
-                                <li class=""><a href="sizzle.js.html" title="sizzle.js">sizzle.js</a></li>
-                                <li class=""><a href="spbar.js.html" title="spbar.js">spbar.js</a></li>
                         </ul>
                     </div>
 
@@ -731,8 +757,8 @@ Possible values: false, true, "clone"
                                 <li class=""><a href="#config_minHeight" title="minHeight">minHeight</a></li>
                                 <li class=""><a href="#config_minWidth" title="minWidth">minWidth</a></li>
                                 <li class=""><a href="#config_node" title="node">node</a></li>
-                                <li class=""><a href="#config_proxy" title="proxy">proxy</a></li>
                                 <li class=""><a href="#config_shim" title="shim">shim</a></li>
+                                <li class=""><a href="#config_useProxy" title="useProxy">useProxy</a></li>
                         </ul>
                     </div>
 
@@ -741,12 +767,12 @@ Possible values: false, true, "clone"
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Resize.html#config_animate", "access": "", "host": "Resize", "type": "config", "name": "animate"}, {"url": "Resize.html#event_beforeResize", "access": "", "host": "Resize", "type": "event", "name": "beforeResize"}, {"url": "Resize.html#config_constrain", "access": "", "host": "Resize", "type": "config", "name": "constrain"}, {"url": "Resize.html#event_endResize", "access": "", "host": "Resize", "type": "event", "name": "endResize"}, {"url": "Resize.html#property_handles", "access": "", "host": "Resize", "type": "property", "name": "handles"}, {"url": "Resize.html#config_hiddenHandles", "access": "", "host": "Resize", "type": "config", "name": "hiddenHandles"}, {"url": "Resize.html#method_lock", "access": "", "host": "Resize", "type": "method", "name": "lock"}, {"url": "Resize.html#config_locked", "access": "", "host": "Resize", "type": "config", "name": "locked"}, {"url": "Resize.html#config_minHeight", "access": "", "host": "Resize", "type": "config", "name": "minHeight"}, {"url": "Resize.html#config_minWidth", "access": "", "host": "Resize", "type": "config", "name": "minWidth"}, {"url": "Resize.html#config_node", "access": "", "host": "Resize", "type": "config", "name": "node"}, {"url": "Resize.html#config_proxy", "access": "", "host": "Resize", "type": "config", "name": "proxy"}, {"url": "Resize.html#property_reposition", "access": "", "host": "Resize", "type": "property", "name": "reposition"}, {"url": "Resize.html#event_resize", "access": "", "host": "Resize", "type": "event", "name": "resize"}, {"url": "Resize.html#config_shim", "access": "", "host": "Resize", "type": "config", "name": "shim"}, {"url": "Resize.html#method_stop", "access": "", "host": "Resize", "type": "method", "name": "stop"}, {"url": "Resize.html#method_unlock", "access": "", "host": "Resize", "type": "method", "name": "unlock"}];
+    var ALL_YUI_PROPS = [{"url": "Resize.html#config_animate", "access": "", "host": "Resize", "type": "config", "name": "animate"}, {"url": "Resize.html#event_beforeResize", "access": "", "host": "Resize", "type": "event", "name": "beforeResize"}, {"url": "Resize.html#config_constrain", "access": "", "host": "Resize", "type": "config", "name": "constrain"}, {"url": "Resize.html#event_endResize", "access": "", "host": "Resize", "type": "event", "name": "endResize"}, {"url": "Resize.html#property_handles", "access": "", "host": "Resize", "type": "property", "name": "handles"}, {"url": "Resize.html#config_hiddenHandles", "access": "", "host": "Resize", "type": "config", "name": "hiddenHandles"}, {"url": "Resize.html#method_lock", "access": "", "host": "Resize", "type": "method", "name": "lock"}, {"url": "Resize.html#config_locked", "access": "", "host": "Resize", "type": "config", "name": "locked"}, {"url": "Resize.html#config_minHeight", "access": "", "host": "Resize", "type": "config", "name": "minHeight"}, {"url": "Resize.html#config_minWidth", "access": "", "host": "Resize", "type": "config", "name": "minWidth"}, {"url": "Resize.html#config_node", "access": "", "host": "Resize", "type": "config", "name": "node"}, {"url": "Resize.html#property_reposition", "access": "", "host": "Resize", "type": "property", "name": "reposition"}, {"url": "Resize.html#event_resize", "access": "", "host": "Resize", "type": "event", "name": "resize"}, {"url": "Resize.html#config_shim", "access": "", "host": "Resize", "type": "config", "name": "shim"}, {"url": "Resize.html#method_stop", "access": "", "host": "Resize", "type": "method", "name": "stop"}, {"url": "Resize.html#method_unlock", "access": "", "host": "Resize", "type": "method", "name": "unlock"}, {"url": "Resize.html#config_useProxy", "access": "", "host": "Resize", "type": "config", "name": "useProxy"}];
 </script>
 </body>
 </html>

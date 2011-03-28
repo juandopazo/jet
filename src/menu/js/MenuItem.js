@@ -23,10 +23,19 @@ var BOUNDING_BOX = 'boundingBox',
 $.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 	
 	ATTRS: {
+		/**
+		 * @config labelNode
+		 * @description A pointer to the node containing the label
+		 * @default <span/>
+		 */
 		labelNode: {
 			value: '<span/>',
 			setter: $
 		},
+		/**
+		 * @config labelContent
+		 * @description The content of the Menu's label
+		 */
 		labelContent: {
 			value: ''
 		},

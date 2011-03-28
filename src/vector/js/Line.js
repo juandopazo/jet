@@ -1,10 +1,9 @@
 
 /**
  * A line vector
- * @class Line
+ * @class Vector.Line
  * @extends Vector
  * @constructor
- * @namespace Vector
  * @param {Object} config
  */
 var Line = Base.create('line', Vector, [], {

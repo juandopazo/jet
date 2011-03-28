@@ -11,13 +11,13 @@
     <script type="text/javascript" src="assets/ac-js"></script>
 </head>
 
-<body id="yahoo-com">
+<body>
 
-<div id="doc3" class="yui-t2">
+<div id="doc4" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
-        <h3>treeview&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>treeview&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
             &gt; <a href="./module_treeview.html" title="treeview">treeview</a>
                  &gt; TreeView 
                 
@@ -53,6 +53,15 @@
                            - extends <a href="Widget.html" title="Widget">Widget</a>
                         </span>
 
+                            <span class="extends" rel="yui:extends">
+                          - uses 
+                            
+                                <span rel="extend" resource="WidgetParent.html">
+                                <a href="WidgetParent.html" property="yui:name" title="WidgetParent">WidgetParent</a>
+                                </span>
+                            
+                            
+                        </span>
                     </h2>
                     <!-- class tree goes here -->
                     
@@ -95,6 +104,16 @@
                     
                     <div rel="yui:properties" resource="#properties">
 
+                        <div rel="yui:inheritance">
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Widget.html">
+                            <h4>Properties inherited from <a href="Widget.html" property="yui:name" title="Widget">Widget</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
                     </div>
 
                     <div rel="yui:methods" resource="#methods">
@@ -110,11 +129,11 @@
                                             <span rel="yui:method" resource="EventTarget.html#method_on">                                        
                                             <a class="" href="EventTarget.html#method_on" property="yui:name" title="on">on</a><span class="">,</span>
                                             </span>
-                                            <span rel="yui:method" resource="EventTarget.html#method_unbind">                                        
-                                            <a class="" href="EventTarget.html#method_unbind" property="yui:name" title="unbind">unbind</a><span class="">,</span>
+                                            <span rel="yui:method" resource="EventTarget.html#method_once">                                        
+                                            <a class="" href="EventTarget.html#method_once" property="yui:name" title="once">once</a><span class="">,</span>
                                             </span>
-                                            <span rel="yui:method" resource="EventTarget.html#method_unbindAll">                                        
-                                            <a class="" href="EventTarget.html#method_unbindAll" property="yui:name" title="unbindAll">unbindAll</a>
+                                            <span rel="yui:method" resource="EventTarget.html#method_unbind">                                        
+                                            <a class="" href="EventTarget.html#method_unbind" property="yui:name" title="unbind">unbind</a>
                                             </span>
                                     </code>
                                 </div>
@@ -134,9 +153,6 @@
                                             </span>
                                             <span rel="yui:method" resource="Attribute.html#method_getAttrs">                                        
                                             <a class="" href="Attribute.html#method_getAttrs" property="yui:name" title="getAttrs">getAttrs</a><span class="">,</span>
-                                            </span>
-                                            <span rel="yui:method" resource="Attribute.html#method_isSet">                                        
-                                            <a class="" href="Attribute.html#method_isSet" property="yui:name" title="isSet">isSet</a><span class="">,</span>
                                             </span>
                                             <span rel="yui:method" resource="Attribute.html#method_set">                                        
                                             <a class="" href="Attribute.html#method_set" property="yui:name" title="set">set</a><span class="">,</span>
@@ -168,6 +184,32 @@
                                             </span>
                                             <span rel="yui:method" resource="Widget.html#method_show">                                        
                                             <a class="" href="Widget.html#method_show" property="yui:name" title="show">show</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="section field inheritance" rel="yui:superclass"  resource="Base.html">
+                                <h4>Methods inherited from <a href="Base.html" property="yui:name" title="Base">Base</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="section field inheritance" rel="yui:superclass"  resource="WidgetParent.html">
+                                <h4>Methods inherited from <a href="WidgetParent.html" property="yui:name" title="WidgetParent">WidgetParent</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="WidgetParent.html#method_add">                                        
+                                            <a class="" href="WidgetParent.html#method_add" property="yui:name" title="add">add</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="WidgetParent.html#method_each">                                        
+                                            <a class="" href="WidgetParent.html#method_each" property="yui:name" title="each">each</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="WidgetParent.html#method_item">                                        
+                                            <a class="" href="WidgetParent.html#method_item" property="yui:name" title="item">item</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="WidgetParent.html#method_remove">                                        
+                                            <a class="" href="WidgetParent.html#method_remove" property="yui:name" title="remove">remove</a>
                                             </span>
                                     </code>
                                 </div>
@@ -278,14 +320,32 @@ stop the node from expanding
                             <h4>Events inherited from <a href="Widget.html" property="yui:name" title="Widget">Widget</a>:</h4>
                             <div class="content" rel="yui:events">
                                 <code>
-                                        <span rel="yui:event" resource="Widget.html#event_afterRender">
+                                        <span rel="yui:event" resource="Widget.html#event_afterHide">
+                                        <a class="" href="Widget.html#event_afterHide" property="yui:name" title="afterHide">afterHide</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_afterRender">
                                         <a class="" href="Widget.html#event_afterRender" property="yui:name" title="afterRender">afterRender</a><span class="">,</span>
                                         </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_afterShow">
+                                        <a class="" href="Widget.html#event_afterShow" property="yui:name" title="afterShow">afterShow</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_blur">
+                                        <a class="" href="Widget.html#event_blur" property="yui:name" title="blur">blur</a>
+                                        </span>
                                                                             <span rel="yui:event" resource="Widget.html#event_destroy">
-                                        <a class="" href="Widget.html#event_destroy" property="yui:name" title="destroy">destroy</a><span class="">,</span>
+                                        <a class="" href="Widget.html#event_destroy" property="yui:name" title="destroy">destroy</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_focus">
+                                        <a class="" href="Widget.html#event_focus" property="yui:name" title="focus">focus</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_hide">
+                                        <a class="" href="Widget.html#event_hide" property="yui:name" title="hide">hide</a>
                                         </span>
                                                                             <span rel="yui:event" resource="Widget.html#event_render">
                                         <a class="" href="Widget.html#event_render" property="yui:name" title="render">render</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_show">
+                                        <a class="" href="Widget.html#event_show" property="yui:name" title="show">show</a>
                                         </span>
                                     
                                 </code>
@@ -295,28 +355,38 @@ stop the node from expanding
                     </div>
 
                     <div rel="yui:attributes" resource="#configattributes">
-                        <div class="section field details">
-                            <h3 id="configattributes">Configuration Attributes</h3>
-                            <div class="content">
-                                    <div class="" rel="yui:attribute" resource="#config_branches">
-                                    <h4><a name="config_branches">branches</a>
-                                        <code>- <span property="yui:type">Array</span></code>
-                                    </h4>
-                                    <div class="detail">
-                                        <div class="description" property="yui:description">
-                                            An array containing the data to populate the tree
-                                        </div>
-                                    </div>
- 
-     
-
-                                    <hr />
-                                    </div>        
-
-                            </div>
-                        </div>
 
                         <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="WidgetParent.html">
+                            <h4>Configuration attributes inherited from <a href="WidgetParent.html" property="yui:name" title="WidgetParent">WidgetParent</a>:</h4>
+                            <div class="content" rel="yui:attributes">
+                                <code>
+                                    <h2>WidgetParent</h2>
+                                        <span rel="yui:attribute" resource="WidgetParent.html#config_children">                                        
+                                        <a class="" href="WidgetParent.html#config_children" property="yui:name" title="children">children</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="WidgetParent.html#config_childrenContainer">                                        
+                                        <a class="" href="WidgetParent.html#config_childrenContainer" property="yui:name" title="childrenContainer">childrenContainer</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="WidgetParent.html#config_childType">                                        
+                                        <a class="" href="WidgetParent.html#config_childType" property="yui:name" title="childType">childType</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="WidgetParent.html#config_defaultChildType">                                        
+                                        <a class="" href="WidgetParent.html#config_defaultChildType" property="yui:name" title="defaultChildType">defaultChildType</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="WidgetParent.html#config_multiple">                                        
+                                        <a class="" href="WidgetParent.html#config_multiple" property="yui:name" title="multiple">multiple</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="WidgetParent.html#config_selectedIndex">                                        
+                                        <a class="" href="WidgetParent.html#config_selectedIndex" property="yui:name" title="selectedIndex">selectedIndex</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="WidgetParent.html#config_selection">                                        
+                                        <a class="" href="WidgetParent.html#config_selection" property="yui:name" title="selection">selection</a>
+                                        </span>
+                                        
+                                </code>
+                            </div>
+                        </div>
                         <div class="section field inheritance" rel="yui:superclass"  resource="Widget.html">
                             <h4>Configuration attributes inherited from <a href="Widget.html" property="yui:name" title="Widget">Widget</a>:</h4>
                             <div class="content" rel="yui:attributes">
@@ -325,17 +395,26 @@ stop the node from expanding
                                         <span rel="yui:attribute" resource="Widget.html#config_boundingBox">                                        
                                         <a class="" href="Widget.html#config_boundingBox" property="yui:name" title="boundingBox">boundingBox</a><span class="">,</span>
                                         </span>
-                                                                                <span rel="yui:attribute" resource="Widget.html#config_className">                                        
-                                        <a class="" href="Widget.html#config_className" property="yui:name" title="className">className</a><span class="">,</span>
-                                        </span>
                                                                                 <span rel="yui:attribute" resource="Widget.html#config_classPrefix">                                        
-                                        <a class="" href="Widget.html#config_classPrefix" property="yui:name" title="classPrefix">classPrefix</a>
+                                        <a class="" href="Widget.html#config_classPrefix" property="yui:name" title="classPrefix">classPrefix</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_contentBox">                                        
+                                        <a class="" href="Widget.html#config_contentBox" property="yui:name" title="contentBox">contentBox</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_height">                                        
+                                        <a class="" href="Widget.html#config_height" property="yui:name" title="height">height</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_id">                                        
+                                        <a class="" href="Widget.html#config_id" property="yui:name" title="id">id</a>
                                         </span>
                                                                                 <span rel="yui:attribute" resource="Widget.html#config_rendered">                                        
                                         <a class="" href="Widget.html#config_rendered" property="yui:name" title="rendered">rendered</a>
                                         </span>
                                                                                 <span rel="yui:attribute" resource="Widget.html#config_srcNode">                                        
                                         <a class="" href="Widget.html#config_srcNode" property="yui:name" title="srcNode">srcNode</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_width">                                        
+                                        <a class="" href="Widget.html#config_width" property="yui:name" title="width">width</a>
                                         </span>
                                         
                                 </code>
@@ -375,33 +454,31 @@ stop the node from expanding
                                 <li class=""><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
-                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
                                 <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class="selected"><a href="module_treeview.html" title="treeview">treeview</a></li>
-                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
                         </ul>
                     </div>
 
                     <div id="classList" class="module">
                         <h4>Classes</h4>
                         <ul class="content">
-                                <li class=""><a href="Node.html" title="Node">Node</a></li>
+                                <li class=""><a href="TreeNode.html" title="TreeNode">TreeNode</a></li>
                                 <li class="selected"><a href="TreeView.html" title="TreeView">TreeView</a></li>
-                        </ul>
-                    </div>
-
-                    <div id="fileList" class="module">
-                        <h4>Files</h4>
-                        <ul class="content">        
-                                <li class=""><a href="ua.js.html" title="ua.js">ua.js</a></li>
                         </ul>
                     </div>
 
@@ -415,24 +492,18 @@ stop the node from expanding
                         </ul>
                     </div>
 
-                    <div id="configList" class="module">
-                        <h4>Configuration Attributes</h4>
-                        <ul class="content">        
-                                <li class=""><a href="#config_branches" title="branches">branches</a></li>
-                        </ul>
-                    </div>
 
             </div>
 		</div>
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "TreeView.html#config_branches", "access": "", "host": "TreeView", "type": "config", "name": "branches"}, {"url": "Node.html#config_children", "access": "", "host": "Node", "type": "config", "name": "children"}, {"url": "Node.html#event_click", "access": "", "host": "Node", "type": "event", "name": "click"}, {"url": "Node.html#method_collapse", "access": "", "host": "Node", "type": "method", "name": "collapse"}, {"url": "Node.html#config_editable", "access": "", "host": "Node", "type": "config", "name": "editable"}, {"url": "Node.html#method_expand", "access": "", "host": "Node", "type": "method", "name": "expand"}, {"url": "Node.html#config_expanded", "access": "", "host": "Node", "type": "config", "name": "expanded"}, {"url": "Node.html#config_label", "access": "", "host": "Node", "type": "config", "name": "label"}, {"url": "TreeView.html#event_node:collapse", "access": "", "host": "TreeView", "type": "event", "name": "node:collapse"}, {"url": "TreeView.html#event_node:expand", "access": "", "host": "TreeView", "type": "event", "name": "node:expand"}, {"url": "Node.html#config_parent", "access": "", "host": "Node", "type": "config", "name": "parent"}, {"url": "Node.html#config_title", "access": "", "host": "Node", "type": "config", "name": "title"}, {"url": "Node.html#method_toggle", "access": "", "host": "Node", "type": "method", "name": "toggle"}, {"url": "Node.html#config_treeview", "access": "", "host": "Node", "type": "config", "name": "treeview"}, {"url": "Node.html#config_type", "access": "", "host": "Node", "type": "config", "name": "type"}];
+    var ALL_YUI_PROPS = [{"url": "TreeNode.html#config_controlNode", "access": "", "host": "TreeNode", "type": "config", "name": "controlNode"}, {"url": "TreeNode.html#config_label", "access": "", "host": "TreeNode", "type": "config", "name": "label"}, {"url": "TreeNode.html#config_labelNode", "access": "", "host": "TreeNode", "type": "config", "name": "labelNode"}, {"url": "TreeView.html#event_node:collapse", "access": "", "host": "TreeView", "type": "event", "name": "node:collapse"}, {"url": "TreeView.html#event_node:expand", "access": "", "host": "TreeView", "type": "event", "name": "node:expand"}, {"url": "TreeNode.html#config_title", "access": "", "host": "TreeNode", "type": "config", "name": "title"}, {"url": "TreeNode.html#config_type", "access": "", "host": "TreeNode", "type": "config", "name": "type"}];
 </script>
 </body>
 </html>

@@ -4,7 +4,6 @@
  * @class Tween
  * @extends Base
  * @constructor
- * @namespace
  * @param {Object} config Object literal specifying configuration properties
  */
 var Tween = Base.create('tween', Base, [], {
@@ -24,7 +23,7 @@ var Tween = Base.create('tween', Base, [], {
 		 * @type Object
 		 */
 		from: {
-			value: false
+			attribute: false
 		},
 		/**
 		 * @config to
@@ -73,10 +72,22 @@ var Tween = Base.create('tween', Base, [], {
 					   1000; 
 			}
 		},
+		/**
+		 * @config playing
+		 * @description Whether the animation is playing or not
+		 * @readOnly
+		 * @type Boolean
+		 */
 		playing: {
 			value: false,
 			validator: Lang.isBoolean
 		},
+		/**
+		 * @config startTime
+		 * @description Start time is used to calculate the elapsed time of the animation
+		 * @default 0
+		 * @private
+		 */
 		startTime: {
 			value: 0
 		},

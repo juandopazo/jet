@@ -2,7 +2,7 @@
 /**
  * Returns if an object is a Record
  * @method hasInstance
- * @statoc
+ * @static
  * @param {Object} o The object to check
  */
 Record.hasInstance = function (o) {

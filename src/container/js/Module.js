@@ -87,7 +87,7 @@ $.Module = Base.create('module', Widget, [], {
 			setter: $
 		},
 		/**
-		 * @config header
+		 * @config headerContent
 		 * @description The header of the module.
 		 * If set to a string a node is creating and the string is set to its innerHTML
 		 * @type DOM Node | String | NodeList
@@ -96,7 +96,7 @@ $.Module = Base.create('module', Widget, [], {
 			validator: Lang.isValue
 		},
 		/**
-		 * @config body
+		 * @config bodyContent
 		 * @description The body of the module.
 		 * If set to a string a node is creating and the string is set to its innerHTML
 		 * A body is always present in a Module
@@ -108,7 +108,7 @@ $.Module = Base.create('module', Widget, [], {
 			validator: Lang.isValue
 		},
 		/**
-		 * @config footer
+		 * @config footerContent
 		 * @description The footer of the module.
 		 * If set to a string a node is creating and the string is set to its innerHTML
 		 * @type DOM Node | String | NodeList

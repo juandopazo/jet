@@ -11,13 +11,13 @@
     <script type="text/javascript" src="assets/ac-js"></script>
 </head>
 
-<body id="yahoo-com">
+<body>
 
-<div id="doc3" class="yui-t2">
+<div id="doc4" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
-        <h3>dragdrop&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>dragdrop&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
             &gt; <a href="./module_dragdrop.html" title="dragdrop">dragdrop</a>
                 
                  &gt; history.js (source view) 
@@ -47,755 +47,760 @@
                         <style>
                             #doc3 .classopts { display:none; }
                         </style>
-                        <div class="highlight"><pre><span class="cm">/*</span>
+                        <div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * The History module provides the hability to use the browser&#39;s back and forward button</span>
+<span class="cm"> * @module history</span>
+<span class="cm"> * @requires base</span>
+<span class="cm"> * </span>
+<span class="cm"> * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.</span>
+<span class="cm"> * Code licensed under the BSD License</span>
+<span class="cm"> * https://github.com/juandopazo/jet/blob/master/LICENSE.md</span>
+<span class="cm">*/</span>
+<span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;history&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
+
+
+			
+<span class="cm">/*</span>
 <span class="cm"> * History handling adapted from http://code.google.com/p/reallysimplehistory/</span>
 <span class="cm"> * </span>
 <span class="cm"> * Really simple History Copyright (c) 2007 Brian Dillard and Brad Neuberg:</span>
 <span class="cm"> * Brian Dillard | Project Lead | bdillard@pathf.com | http://blogs.pathf.com/agileajax/</span>
 <span class="cm"> * Brad Neuberg | Original Project Creator | http://codinginparadise.org</span>
 <span class="cm"> */</span>
+
+<span class="kd">var</span> <span class="nx">UA</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">UA</span><span class="p">,</span>
+	<span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
+	<span class="nx">A</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">,</span>
+	<span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">;</span>
+	
+<span class="kd">var</span> <span class="nx">body</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">body</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">safari</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+	
+<span class="cm">/*Private - CSS strings utilized by both objects to hide or show behind-the-scenes DOM elements*/</span>
+<span class="kd">var</span> <span class="nx">showStyles</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="nx">border</span><span class="o">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+	<span class="nx">margin</span><span class="o">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+	<span class="nx">padding</span><span class="o">:</span> <span class="s2">&quot;0&quot;</span>
+<span class="p">};</span>
+<span class="kd">var</span> <span class="nx">hideStyles</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="nx">left</span><span class="o">:</span> <span class="s2">&quot;-1000px&quot;</span><span class="p">,</span>
+	<span class="nx">top</span><span class="o">:</span> <span class="s2">&quot;-1000px&quot;</span><span class="p">,</span>
+	<span class="nx">width</span><span class="o">:</span> <span class="s2">&quot;1px&quot;</span><span class="p">,</span>
+	<span class="nx">height</span><span class="o">:</span> <span class="s2">&quot;1px&quot;</span><span class="p">,</span>
+	<span class="nx">position</span><span class="o">:</span> <span class="s2">&quot;absolute&quot;</span>
+<span class="p">};</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">History</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">jet</span><span class="p">.</span><span class="nx">History</span> <span class="o">=</span> <span class="p">{};</span>
+<span class="p">}</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">History</span><span class="p">.</span><span class="nx">iframe</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">jet</span><span class="p">.</span><span class="nx">History</span><span class="p">.</span><span class="nx">iframe</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">EventTarget</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="cm">/*</span>
+<span class="cm">	historyStorage: An object that uses a hidden form to store history state across page loads. The mechanism for doing so relies on</span>
+<span class="cm">	the fact that browsers save the text in form data for the life of the browser session, which means the text is still there when</span>
+<span class="cm">	the user navigates back to the page. This object can be used independently of the dhtmlHistory object for caching of Ajax</span>
+<span class="cm">	session information.</span>
+<span class="cm">*/</span>
+<span class="kd">var</span> <span class="nx">historyStorage</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+	
+	<span class="cm">/*Private - debug mode flag*/</span>
+	<span class="kd">var</span> <span class="nx">debugMode</span><span class="p">;</span>
+	
+	<span class="kd">var</span> <span class="nx">fake</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">a</span><span class="p">;</span>
+	<span class="p">};</span>
+	<span class="kd">var</span> <span class="nx">encode</span><span class="p">,</span> <span class="nx">decode</span><span class="p">;</span>
+
+	<span class="cm">/*Private: Our hash of key name/values.*/</span>
+	<span class="kd">var</span> <span class="nx">storageHash</span> <span class="o">=</span> <span class="p">{};</span>
+
+	<span class="cm">/*Private: If true, we have loaded our hash table out of the storage form.*/</span>
+	<span class="kd">var</span> <span class="nx">hashLoaded</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+
+	<span class="cm">/*Private: DOM reference to our history field*/</span>
+	<span class="kd">var</span> <span class="nx">storageField</span><span class="p">;</span>
+
+	<span class="kd">var</span> <span class="nx">isValidKey</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+		<span class="c1">//TODO - should we ban hash signs and other special characters?</span>
+	<span class="p">};</span>
+
+	<span class="cm">/*Private: Assert that a key is valid; throw an exception if it not.*/</span>
+	<span class="kd">var</span> <span class="nx">assertValidKey</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">isValid</span> <span class="o">=</span> <span class="nx">isValidKey</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isValid</span> <span class="o">&amp;&amp;</span> <span class="nx">debugMode</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Please provide a valid key for window.historyStorage. Invalid key = &quot;</span> <span class="o">+</span> <span class="nx">key</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">};</span>
+
+	<span class="cm">/*Private: Load the hash table up from the form.*/</span>
+	<span class="kd">var</span> <span class="nx">loadHashTable</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hashLoaded</span><span class="p">)</span> <span class="p">{</span>	
+			<span class="kd">var</span> <span class="nx">serializedHashTable</span> <span class="o">=</span> <span class="nx">storageField</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">serializedHashTable</span> <span class="o">!==</span> <span class="s2">&quot;&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">serializedHashTable</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">storageHash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">serializedHashTable</span><span class="p">);</span>
+				<span class="nx">hashLoaded</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">};</span>
+	<span class="cm">/*Private: Save the hash table into the form.*/</span>
+	<span class="kd">var</span> <span class="nx">saveHashTable</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="nx">loadHashTable</span><span class="p">();</span>
+		<span class="nx">storageField</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">storageHash</span><span class="p">);</span>
+	<span class="p">};</span>
+	
+	<span class="k">return</span> <span class="p">{</span>
+		<span class="cm">/*Public: Set up our historyStorage object for use by dhtmlHistory or other objects*/</span>
+		<span class="nx">setup</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">options</span> <span class="o">=</span> <span class="nx">options</span> <span class="o">||</span> <span class="p">{};</span>
+			<span class="nx">debugMode</span> <span class="o">=</span> <span class="o">!!</span><span class="nx">options</span><span class="p">.</span><span class="nx">debugMode</span><span class="p">;</span>
+			<span class="nx">encode</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nb">encodeURI</span> <span class="o">?</span> <span class="nb">encodeURIComponent</span> <span class="o">:</span> <span class="nx">fake</span><span class="p">;</span>
+			<span class="nx">decode</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nb">encodeURI</span> <span class="o">?</span> <span class="nb">decodeURIComponent</span> <span class="o">:</span> <span class="nx">fake</span><span class="p">;</span>
+						
+			<span class="cm">/*write a hidden form and textarea into the page; we&#39;ll stow our history stack here*/</span>
+			<span class="kd">var</span> <span class="nx">formStyles</span> <span class="o">=</span> <span class="nx">debugMode</span> <span class="o">?</span> <span class="nx">showStyles</span> <span class="o">:</span> <span class="nx">hideStyles</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">textareaStyles</span> <span class="o">=</span> <span class="nx">debugMode</span>	<span class="o">?</span> <span class="p">{</span>
+				<span class="nx">width</span><span class="o">:</span> <span class="s2">&quot;800px&quot;</span><span class="p">,</span>
+				<span class="nx">height</span><span class="o">:</span> <span class="s2">&quot;80px&quot;</span><span class="p">,</span>
+				<span class="nx">border</span><span class="o">:</span> <span class="s2">&quot;1px solid black&quot;</span>
+			<span class="p">}</span> <span class="o">:</span> <span class="nx">hideStyles</span><span class="p">;</span>
+			
+			<span class="kd">var</span> <span class="nx">form</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;form&gt;&lt;textarea id=&quot;jet-storage-field&quot;&gt;&lt;/textarea&gt;&lt;/form&gt;&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;jet-storage-form&quot;</span><span class="p">);</span>
+			<span class="nx">storageField</span> <span class="o">=</span> <span class="nx">form</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="nx">formStyles</span><span class="p">).</span><span class="nx">first</span><span class="p">().</span><span class="nx">css</span><span class="p">(</span><span class="nx">textareaStyles</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">opera</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">storageField</span><span class="p">.</span><span class="nx">focus</span><span class="p">();</span><span class="cm">/*Opera needs to focus this element before persisting values in it*/</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+		<span class="p">},</span>
+		
+		<span class="cm">/*Public*/</span>
+		<span class="nx">put</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+			
+			<span class="kd">var</span> <span class="nx">encodedKey</span> <span class="o">=</span> <span class="nx">encode</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+			
+			<span class="nx">assertValidKey</span><span class="p">(</span><span class="nx">encodedKey</span><span class="p">);</span>
+			<span class="cm">/*if we already have a value for this, remove the value before adding the new one*/</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">hasKey</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="cm">/*store this new key*/</span>
+			<span class="nx">storageHash</span><span class="p">[</span><span class="nx">encodedKey</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+			<span class="cm">/*save and serialize the hashtable into the form*/</span>
+			<span class="nx">saveHashTable</span><span class="p">();</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+		<span class="p">},</span>
+	
+		<span class="cm">/*Public*/</span>
+		<span class="nx">get</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+	
+			<span class="kd">var</span> <span class="nx">encodedKey</span> <span class="o">=</span> <span class="nx">encode</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+			
+			<span class="nx">assertValidKey</span><span class="p">(</span><span class="nx">encodedKey</span><span class="p">);</span>
+			<span class="cm">/*make sure the hash table has been loaded from the form*/</span>
+			<span class="nx">loadHashTable</span><span class="p">();</span>
+			<span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">storageHash</span><span class="p">[</span><span class="nx">encodedKey</span><span class="p">];</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">value</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">value</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
+		<span class="p">},</span>
+	
+		<span class="cm">/*Public*/</span>
+		<span class="nx">remove</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+			
+			<span class="kd">var</span> <span class="nx">encodedKey</span> <span class="o">=</span> <span class="nx">encode</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+	
+			<span class="nx">assertValidKey</span><span class="p">(</span><span class="nx">encodedKey</span><span class="p">);</span>
+			<span class="cm">/*make sure the hash table has been loaded from the form*/</span>
+			<span class="nx">loadHashTable</span><span class="p">();</span>
+			<span class="cm">/*delete the value*/</span>
+			<span class="k">delete</span> <span class="nx">storageHash</span><span class="p">[</span><span class="nx">encodedKey</span><span class="p">];</span>
+			<span class="cm">/*serialize and save the hash table into the form*/</span>
+			<span class="nx">saveHashTable</span><span class="p">();</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+		<span class="p">},</span>
+	
+		<span class="cm">/*Public: Clears out all saved data.*/</span>
+		<span class="nx">reset</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="nx">storageField</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+			<span class="nx">storageHash</span> <span class="o">=</span> <span class="p">{};</span>
+			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+		<span class="p">},</span>
+	
+		<span class="cm">/*Public*/</span>
+		<span class="nx">hasKey</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+			
+			<span class="kd">var</span> <span class="nx">encodedKey</span> <span class="o">=</span> <span class="nx">encode</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
+	
+			<span class="nx">assertValidKey</span><span class="p">(</span><span class="nx">encodedKey</span><span class="p">);</span>
+			<span class="cm">/*make sure the hash table has been loaded from the form*/</span>
+			<span class="nx">loadHashTable</span><span class="p">();</span>
+			<span class="k">return</span> <span class="o">!</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isUndefined</span><span class="p">(</span><span class="nx">storageHash</span><span class="p">[</span><span class="nx">encodedKey</span><span class="p">]);</span>
+		<span class="p">},</span>
+	
+		<span class="cm">/*Public*/</span>
+		<span class="nx">isValidKey</span><span class="o">:</span> <span class="nx">isValidKey</span>
+	<span class="p">};</span>
+<span class="p">}());</span>
+
 <span class="cm">/**</span>
-<span class="cm"> * The History module provides the hability to use the browser&#39;s back and forward button</span>
-<span class="cm"> * without refreshing the page.</span>
-<span class="cm"> * @module history</span>
-<span class="cm"> * @uses jet, ua, json, base</span>
+<span class="cm"> * History management class</span>
+<span class="cm"> * @class History</span>
+<span class="cm"> * @extends Base</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying configuration properties</span>
 <span class="cm"> */</span>
-<span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;history&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">var</span> <span class="nx">History</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+	<span class="nx">History</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+
+	<span class="kd">var</span> <span class="nx">isSupported</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
 	
-	<span class="kd">var</span> <span class="nx">UA</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">UA</span><span class="p">,</span>
-		<span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
-		<span class="nx">A</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">;</span>
-		
-	<span class="kd">var</span> <span class="nx">body</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">body</span><span class="p">;</span>
+	<span class="cm">/*Private: A variable that indicates whether this is the first time this page has been loaded. If you go to a web page, leave it</span>
+<span class="cm">	for another one, and then return, the page&#39;s onload listener fires again. We need a way to differentiate between the first page</span>
+<span class="cm">	load and subsequent ones. This variable works hand in hand with the pageLoaded variable we store into historyStorage.*/</span>
+	<span class="kd">var</span> <span class="nx">firstLoad</span><span class="p">;</span>
 	
-	<span class="kd">var</span> <span class="nx">safari</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-		
-	<span class="cm">/*Private - CSS strings utilized by both objects to hide or show behind-the-scenes DOM elements*/</span>
-	<span class="kd">var</span> <span class="nx">showStyles</span> <span class="o">=</span> <span class="p">{</span>
-		<span class="nx">border</span><span class="o">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
-		<span class="nx">margin</span><span class="o">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
-		<span class="nx">padding</span><span class="o">:</span> <span class="s2">&quot;0&quot;</span>
+	<span class="kd">var</span> <span class="nx">fake</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">a</span><span class="p">;</span>
 	<span class="p">};</span>
-	<span class="kd">var</span> <span class="nx">hideStyles</span> <span class="o">=</span> <span class="p">{</span>
-		<span class="nx">left</span><span class="o">:</span> <span class="s2">&quot;-1000px&quot;</span><span class="p">,</span>
-		<span class="nx">top</span><span class="o">:</span> <span class="s2">&quot;-1000px&quot;</span><span class="p">,</span>
-		<span class="nx">width</span><span class="o">:</span> <span class="s2">&quot;1px&quot;</span><span class="p">,</span>
-		<span class="nx">height</span><span class="o">:</span> <span class="s2">&quot;1px&quot;</span><span class="p">,</span>
-		<span class="nx">position</span><span class="o">:</span> <span class="s2">&quot;absolute&quot;</span>
-	<span class="p">};</span>
+	<span class="kd">var</span> <span class="nx">encode</span> <span class="o">=</span> <span class="nx">fake</span><span class="p">,</span>
+		<span class="nx">decode</span> <span class="o">=</span> <span class="nx">fake</span><span class="p">;</span>
+
+	<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config firstLoad</span>
+<span class="cm">		 * @description Whether this is the first time the History loaded or not</span>
+<span class="cm">		 * @type Boolean</span>
+<span class="cm">		 * @readOnly</span>
+<span class="cm">		 */</span>
+		<span class="nx">firstLoad</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">readOnly</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="nx">firstLoad</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config baseTitle</span>
+<span class="cm">		 * @description pattern for title changes. Example: &quot;Armchair DJ [@@@]&quot; - @@@ will be replaced</span>
+<span class="cm">		 * @type String</span>
+<span class="cm">		 */</span>
+		<span class="nx">baseTitle</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">validator</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">ok</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;@@@&quot;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span>
+				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">ok</span> <span class="o">&amp;&amp;</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;debugMode&quot;</span><span class="p">))</span> <span class="p">{</span>
+					<span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Programmer error: options.baseTitle must contain the replacement parameter &#39;@@@&#39; to be useful.&quot;</span><span class="p">);</span>
+				<span class="p">}</span>
+				<span class="k">return</span> <span class="nx">ok</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config blankURL</span>
+<span class="cm">		 * @description URL for the blank html file we use for IE; can be overridden via the options bundle. </span>
+<span class="cm">		 * Otherwise it must be served in same directory as this library</span>
+<span class="cm">		 * @type String</span>
+<span class="cm">		 * @default &quot;blank.html?&quot;</span>
+<span class="cm">		 */</span>
+		<span class="nx">blankURL</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">value</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;?&quot;</span> <span class="o">?</span> <span class="nx">value</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span> <span class="o">:</span> <span class="nx">value</span><span class="p">;</span>
+			<span class="p">},</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;blank.html?&quot;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config encodeURI</span>
+<span class="cm">		 * @description Whether to encode the URI or not</span>
+<span class="cm">		 * @type Boolean</span>
+<span class="cm">		 */</span>
+		<span class="nb">encodeURI</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">encode</span> <span class="o">=</span> <span class="nx">value</span> <span class="o">?</span> <span class="nb">encodeURIComponent</span> <span class="o">:</span> <span class="nx">fake</span><span class="p">;</span>
+				<span class="nx">decode</span> <span class="o">=</span> <span class="nx">value</span> <span class="o">?</span> <span class="nb">decodeURIComponent</span> <span class="o">:</span> <span class="nx">fake</span><span class="p">;</span>
+			<span class="p">},</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
+		<span class="p">}</span>
+	<span class="p">});</span>
 	
-	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">History</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">jet</span><span class="p">.</span><span class="nx">History</span> <span class="o">=</span> <span class="p">{};</span>
-	<span class="p">}</span>
-	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">History</span><span class="p">.</span><span class="nx">iframe</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">jet</span><span class="p">.</span><span class="nx">History</span><span class="p">.</span><span class="nx">iframe</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">EventTarget</span><span class="p">();</span>
-	<span class="p">}</span>
+	<span class="cm">/*Private: Constant for our own internal history event called when the page is loaded*/</span>
+	<span class="kd">var</span> <span class="nx">PAGELOADEDSTRING</span> <span class="o">=</span> <span class="s2">&quot;DhtmlHistory_pageLoaded&quot;</span><span class="p">;</span>
 	
 	<span class="cm">/*</span>
-<span class="cm">		historyStorage: An object that uses a hidden form to store history state across page loads. The mechanism for doing so relies on</span>
-<span class="cm">		the fact that browsers save the text in form data for the life of the browser session, which means the text is still there when</span>
-<span class="cm">		the user navigates back to the page. This object can be used independently of the dhtmlHistory object for caching of Ajax</span>
-<span class="cm">		session information.</span>
+<span class="cm">		Private: Pattern for title changes. Example: &quot;Armchair DJ [@@@]&quot; where @@@ will be relaced by values passed to add();</span>
+<span class="cm">		Default is just the title itself, hence &quot;@@@&quot;</span>
 <span class="cm">	*/</span>
-	<span class="kd">var</span> <span class="nx">historyStorage</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">baseTitle</span> <span class="o">=</span> <span class="s2">&quot;@@@&quot;</span><span class="p">;</span>
+	
+	<span class="cm">/*Private: Placeholder variable for the original document title; will be set in ititialize()*/</span>
+	<span class="kd">var</span> <span class="nx">originalTitle</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">title</span><span class="p">;</span>
+	
+	<span class="cm">/*Private: MS to wait between add requests - will be reset for certain browsers*/</span>
+	<span class="kd">var</span> <span class="nx">waitTime</span> <span class="o">=</span> <span class="mi">200</span><span class="p">;</span>
+	
+	<span class="cm">/*Private: MS before an add request can execute*/</span>
+	<span class="kd">var</span> <span class="nx">currentWaitTime</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+	<span class="cm">/*Private: Our current hash location, without the &quot;#&quot; symbol.*/</span>
+	<span class="kd">var</span> <span class="nx">currentLocation</span><span class="p">;</span>
+
+	<span class="cm">/*Private: Hidden iframe used to IE to detect history changes*/</span>
+	<span class="kd">var</span> <span class="nx">iframe</span><span class="p">;</span>
+
+	<span class="cm">/*Private: Flags and DOM references used only by Safari*/</span>
+	<span class="kd">var</span> <span class="nx">safariHistoryStartPoint</span><span class="p">,</span> <span class="nx">safariStack</span><span class="p">,</span> <span class="nx">safariLength</span><span class="p">;</span>
+
+	<span class="cm">/*Private: Flag used to keep checkLocation() from doing anything when it discovers location changes we&#39;ve made ourselves</span>
+<span class="cm">	programmatically with the add() method. Basically, add() sets this to true. When checkLocation() discovers it&#39;s true,</span>
+<span class="cm">	it refrains from firing our listener, then resets the flag to false for next cycle. That way, our listener only gets fired on</span>
+<span class="cm">	history change events triggered by the user via back/forward buttons and manual hash changes. This flag also helps us set up</span>
+<span class="cm">	IE&#39;s special iframe-based method of handling history changes.*/</span>
+	<span class="kd">var</span> <span class="nx">ignoreLocationChange</span><span class="p">;</span>
+
+	<span class="cm">/*Private: A flag that indicates that we should fire a history change event when we are ready, i.e. after we are initialized and</span>
+<span class="cm">	we have a history change listener. This is needed due to an edge case in browsers other than IE; if you leave a page entirely</span>
+<span class="cm">	then return, we must fire this as a history change event. Unfortunately, we have lost all references to listeners from earlier,</span>
+<span class="cm">	because JavaScript clears out.*/</span>
+	<span class="kd">var</span> <span class="nx">fireOnNewListener</span><span class="p">;</span>
+
+	<span class="cm">/*Private: A variable to handle an important edge case in IE. In IE, if a user manually types an address into their browser&#39;s</span>
+<span class="cm">	location bar, we must intercept this by calling checkLocation() at regular intervals. However, if we are programmatically</span>
+<span class="cm">	changing the location bar ourselves using the add() method, we need to ignore these changes in checkLocation(). Unfortunately,</span>
+<span class="cm">	these changes take several lines of code to complete, so for the duration of those lines of code, we set this variable to true.</span>
+<span class="cm">	That signals to checkLocation() to ignore the change-in-progress. Once we&#39;re done with our chunk of location-change code in</span>
+<span class="cm">	add(), we set this back to false. We&#39;ll do the same thing when capturing user-entered address changes in checkLocation itself.*/</span>
+	<span class="kd">var</span> <span class="nx">ieAtomicLocationChange</span><span class="p">;</span>
+	
+	<span class="cm">/*Private: Create IE-specific DOM nodes and overrides*/</span>
+	<span class="kd">var</span> <span class="nx">createIE</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">initialHash</span><span class="p">)</span> <span class="p">{</span>
+		<span class="cm">/*write out a hidden iframe for IE and set the amount of time to wait between add() requests*/</span>
+		<span class="nx">waitTime</span> <span class="o">=</span> <span class="mi">400</span><span class="p">;</span><span class="cm">/*IE needs longer between history updates*/</span>
+		<span class="kd">var</span> <span class="nx">styles</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;debugMode&quot;</span><span class="p">)</span> <span class="o">?</span> <span class="p">{</span>
+			<span class="nx">width</span><span class="o">:</span> <span class="s2">&quot;800px&quot;</span><span class="p">,</span>
+			<span class="nx">height</span><span class="o">:</span> <span class="s2">&quot;80px&quot;</span><span class="p">,</span>
+			<span class="nx">border</span><span class="o">:</span> <span class="s2">&quot;1px solid black&quot;</span>
+		<span class="p">}</span> <span class="o">:</span> <span class="nx">hideStyles</span><span class="p">;</span>
+		<span class="nx">iframe</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;iframe/&gt;&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="nx">styles</span><span class="p">).</span><span class="nx">attr</span><span class="p">({</span>
+			<span class="nx">frameborder</span><span class="o">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+			<span class="nx">id</span><span class="o">:</span> <span class="s2">&quot;jet-history-frame&quot;</span><span class="p">,</span>
+			<span class="nx">src</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;blankURL&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="nx">initialHash</span>
+		<span class="p">}).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">body</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+	<span class="p">};</span>
+	
+	<span class="cm">/*Private: Create Opera-specific DOM nodes and overrides*/</span>
+	<span class="kd">var</span> <span class="nx">createOpera</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="nx">waitTime</span> <span class="o">=</span> <span class="mi">400</span><span class="p">;</span><span class="cm">/*Opera needs longer between history updates*/</span>
+		<span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;img/&gt;&quot;</span><span class="p">).</span><span class="nx">style</span><span class="p">(</span><span class="nx">hideStyles</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="s2">&quot;javascript:location.href=\&#39;javascript:dhtmlHistory.checkLocation();\&#39;;&quot;</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+	<span class="p">};</span>
+	
+	<span class="cm">/*Private: Create Safari-specific DOM nodes and overrides*/</span>
+	<span class="kd">var</span> <span class="nx">createSafari</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">debugMode</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;debugMode&quot;</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">formStyles</span> <span class="o">=</span> <span class="nx">debugMode</span> <span class="o">?</span> <span class="nx">showStyles</span> <span class="o">:</span> <span class="nx">hideStyles</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">stackStyles</span> <span class="o">=</span> <span class="nx">debugMode</span> <span class="o">?</span> <span class="p">{</span>
+			<span class="nx">width</span><span class="o">:</span> <span class="s2">&quot;800px&quot;</span><span class="p">,</span>
+			<span class="nx">height</span><span class="o">:</span> <span class="s2">&quot;80px&quot;</span><span class="p">,</span>
+			<span class="nx">border</span><span class="o">:</span> <span class="s2">&quot;1px solid black&quot;</span>
+		<span class="p">}</span> <span class="o">:</span> <span class="nx">hideStyles</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">lengthStyles</span> <span class="o">=</span> <span class="nx">debugMode</span> <span class="o">?</span> <span class="p">{</span>
+			<span class="nx">width</span><span class="o">:</span> <span class="s2">&quot;800px&quot;</span><span class="p">,</span>
+			<span class="nx">height</span><span class="o">:</span> <span class="s2">&quot;20px&quot;</span><span class="p">,</span>
+			<span class="nx">border</span><span class="o">:</span> <span class="s2">&quot;1px solid black&quot;</span><span class="p">,</span>
+			<span class="nx">margin</span><span class="o">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
+			<span class="nx">padding</span><span class="o">:</span> <span class="s2">&quot;0&quot;</span>
+		<span class="p">}</span> <span class="o">:</span> <span class="nx">hideStyles</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">form</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;form&gt;&lt;textarea id=&quot;jet-webkit-stack&quot;&gt;[]&lt;/textarea&gt;&lt;input type=&quot;text&quot; id=&quot;jet-webkit-length&quot; value=&quot;&quot; /&gt;&lt;/form&gt;&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="nx">formStyles</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+		<span class="nx">safariStack</span> <span class="o">=</span> <span class="nx">form</span><span class="p">.</span><span class="nx">first</span><span class="p">().</span><span class="nx">css</span><span class="p">(</span><span class="nx">stackStyles</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+		<span class="nx">safariLength</span> <span class="o">=</span> <span class="nx">form</span><span class="p">.</span><span class="nx">last</span><span class="p">().</span><span class="nx">css</span><span class="p">(</span><span class="nx">lengthStyles</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">historyStorage</span><span class="p">.</span><span class="nx">hasKey</span><span class="p">(</span><span class="nx">PAGELOADEDSTRING</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">safariHistoryStartPoint</span> <span class="o">=</span> <span class="nx">history</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+			<span class="nx">safariLength</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">safariHistoryStartPoint</span><span class="p">;</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="nx">safariHistoryStartPoint</span> <span class="o">=</span> <span class="nx">safariLength</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">};</span>
+	
+	<span class="cm">/*TODO: make this public again?*/</span>
+	<span class="cm">/*Private: Manually parse the current url for a hash; tip of the hat to YUI*/</span>
+    <span class="kd">var</span> <span class="nx">getCurrentHash</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">r</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">);</span>
+		<span class="k">return</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">?</span> <span class="nx">r</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+    <span class="p">};</span>
+    
+	<span class="cm">/*Private: Safari method to read the history stack from a hidden form field*/</span>
+	<span class="kd">var</span> <span class="nx">getSafariStack</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">$</span><span class="p">.</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">safariStack</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+	<span class="p">};</span>
+	
+	<span class="cm">/*Private: Safari method to read from the history stack*/</span>
+	<span class="kd">var</span> <span class="nx">getSafariState</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">stack</span> <span class="o">=</span> <span class="nx">getSafariStack</span><span class="p">();</span>
+		<span class="k">return</span> <span class="nx">stack</span><span class="p">[</span><span class="nx">history</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">safariHistoryStartPoint</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+	<span class="p">};</span>
 		
-		<span class="cm">/*Private - debug mode flag*/</span>
-		<span class="kd">var</span> <span class="nx">debugMode</span><span class="p">;</span>
+	<span class="cm">/*TODO: make this public again?*/</span>
+	<span class="cm">/*Private: Get browser&#39;s current hash location; for Safari, read value from a hidden form field*/</span>
+	<span class="kd">var</span> <span class="nx">getCurrentLocation</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">safari</span> <span class="o">?</span> <span class="nx">getSafariState</span><span class="p">()</span> <span class="o">:</span> <span class="nx">getCurrentHash</span><span class="p">();</span>
+	<span class="p">};</span>
+	
+	<span class="cm">/*Private: Safari method to write the history stack to a hidden form field*/</span>
+	<span class="kd">var</span> <span class="nx">putSafariState</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">newLocation</span><span class="p">)</span> <span class="p">{</span>
+	    <span class="kd">var</span> <span class="nx">stack</span> <span class="o">=</span> <span class="nx">getSafariStack</span><span class="p">();</span>
+	    <span class="nx">stack</span><span class="p">[</span><span class="nx">history</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">safariHistoryStartPoint</span><span class="p">]</span> <span class="o">=</span> <span class="nx">newLocation</span><span class="p">;</span>
+	    <span class="nx">safariStack</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">historyStorage</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">(</span><span class="nx">stack</span><span class="p">);</span>
+	<span class="p">};</span>
+
+	<span class="cm">/*Private: Remove any leading hash that might be on a location.*/</span>
+	<span class="kd">var</span> <span class="nx">removeHash</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">hashValue</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">r</span><span class="p">;</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">hashValue</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">hashValue</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">r</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">hashValue</span> <span class="o">===</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">r</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">hashValue</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">hashValue</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;#&quot;</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">r</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">hashValue</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">hashValue</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;#&quot;</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">r</span> <span class="o">=</span> <span class="nx">hashValue</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="p">{</span>
+			<span class="nx">r</span> <span class="o">=</span> <span class="nx">hashValue</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nx">r</span><span class="p">;</span>
+	<span class="p">};</span>
+
+	<span class="cm">/*Private: Notify the listener of new history changes.*/</span>
+	<span class="kd">var</span> <span class="nx">fireHistoryEvent</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">newHash</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">decodedHash</span> <span class="o">=</span> <span class="nx">removeHash</span><span class="p">(</span><span class="nx">decode</span><span class="p">(</span><span class="nx">newHash</span><span class="p">));</span>
+		<span class="cm">/*extract the value from our history storage for this hash*/</span>
+		<span class="kd">var</span> <span class="nx">historyData</span> <span class="o">=</span> <span class="nx">historyStorage</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">decodedHash</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">hashData</span> <span class="o">=</span> <span class="p">{};</span>
+		<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">decodedHash</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">),</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">parts</span> <span class="o">=</span> <span class="nx">val</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">);</span>
+			<span class="nx">hashData</span><span class="p">[</span><span class="nx">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="nx">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+		<span class="p">});</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Fires when the history changes</span>
+<span class="cm">		 * @event change</span>
+<span class="cm">		 * @param {Hash} hashData A hash with the URI data</span>
+<span class="cm">		 * @param {Object} Additional data associated with the current state</span>
+<span class="cm">		 */</span>
+		<span class="nx">myself</span><span class="p">.</span><span class="nx">changeTitle</span><span class="p">(</span><span class="nx">historyData</span><span class="p">).</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;change&quot;</span><span class="p">,</span> <span class="nx">hashData</span><span class="p">,</span> <span class="nx">historyData</span><span class="p">);</span>
+	<span class="p">};</span>
+	
+	<span class="cm">/*Private: Get the current location of IE&#39;s hidden iframe.*/</span>
+	<span class="kd">var</span> <span class="nx">getIframeHash</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">doc</span> <span class="o">=</span> <span class="nx">iframe</span><span class="p">.</span><span class="nx">contentWindow</span><span class="p">.</span><span class="nb">document</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">hash</span> <span class="o">=</span> <span class="nb">String</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">hash</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">hash</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">hash</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">hash</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="nx">hash</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">hash</span> <span class="o">=</span> <span class="nx">hash</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nx">hash</span><span class="p">;</span>
+	<span class="p">};</span>
+
+	<span class="cm">/*Private: See if the browser has changed location. This is the primary history mechanism for Firefox. For IE, we use this to</span>
+<span class="cm">	handle an important edge case: if a user manually types in a new hash value into their IE location bar and press enter, we want to</span>
+<span class="cm">	to intercept this and notify any history listener.*/</span>
+	<span class="kd">var</span> <span class="nx">checkLocation</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
 		
-		<span class="kd">var</span> <span class="nx">fake</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">a</span><span class="p">;</span>
-		<span class="p">};</span>
-		<span class="kd">var</span> <span class="nx">encode</span><span class="p">,</span> <span class="nx">decode</span><span class="p">;</span>
+		<span class="cm">/*Ignore any location changes that we made ourselves for browsers other than IE*/</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">ignoreLocationChange</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">ignoreLocationChange</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+			<span class="k">return</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="cm">/*If we are dealing with IE and we are in the middle of making a location change from an iframe, ignore it*/</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">ieAtomicLocationChange</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span><span class="p">;</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/*Get hash location*/</span>
+		<span class="kd">var</span> <span class="nx">hash</span> <span class="o">=</span> <span class="nx">getCurrentLocation</span><span class="p">();</span>
+		<span class="cm">/*Do nothing if there&#39;s been no change*/</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">hash</span> <span class="o">==</span> <span class="nx">currentLocation</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span><span class="p">;</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/*In IE, users manually entering locations into the browser; we do this by comparing the browser&#39;s location against the</span>
+<span class="cm">		iframe&#39;s location; if they differ, we are dealing with a manual event and need to place it inside our history, otherwise</span>
+<span class="cm">		we can return*/</span>
+		<span class="nx">ieAtomicLocationChange</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+		<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&lt;</span> <span class="mi">8</span> <span class="o">&amp;&amp;</span> <span class="nx">getIframeHash</span><span class="p">()</span> <span class="o">!=</span> <span class="nx">hash</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">iframe</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;blankURL&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="nx">hash</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="p">{</span>
+			<span class="cm">/*the iframe is unchanged*/</span>
+			<span class="k">return</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="cm">/*Save this new location*/</span>
+		<span class="nx">currentLocation</span> <span class="o">=</span> <span class="nx">hash</span><span class="p">;</span>
+
+		<span class="nx">ieAtomicLocationChange</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+
+		<span class="cm">/*Notify listeners of the change*/</span>
+		<span class="nx">fireHistoryEvent</span><span class="p">(</span><span class="nx">hash</span><span class="p">);</span>
+	<span class="p">};</span>
+
+	<span class="kd">var</span> <span class="nx">useHashEvent</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="nx">$</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">win</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;hashchange&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="nx">fireHistoryEvent</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">win</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">hash</span><span class="p">);</span>
+		<span class="p">});</span>
+	<span class="p">};</span>
 	
-		<span class="cm">/*Private: Our hash of key name/values.*/</span>
-		<span class="kd">var</span> <span class="nx">storageHash</span> <span class="o">=</span> <span class="p">{};</span>
-	
-		<span class="cm">/*Private: If true, we have loaded our hash table out of the storage form.*/</span>
-		<span class="kd">var</span> <span class="nx">hashLoaded</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-	
-		<span class="cm">/*Private: DOM reference to our history field*/</span>
-		<span class="kd">var</span> <span class="nx">storageField</span><span class="p">;</span>
-	
-		<span class="kd">var</span> <span class="nx">isValidKey</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
-			<span class="c1">//TODO - should we ban hash signs and other special characters?</span>
-		<span class="p">};</span>
-	
-		<span class="cm">/*Private: Assert that a key is valid; throw an exception if it not.*/</span>
-		<span class="kd">var</span> <span class="nx">assertValidKey</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">isValid</span> <span class="o">=</span> <span class="nx">isValidKey</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
-			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isValid</span> <span class="o">&amp;&amp;</span> <span class="nx">debugMode</span><span class="p">)</span> <span class="p">{</span>
-				<span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Please provide a valid key for window.historyStorage. Invalid key = &quot;</span> <span class="o">+</span> <span class="nx">key</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span><span class="p">);</span>
+	<span class="cm">/*Private: For IE, tell when the hidden iframe has finished loading.*/</span>
+	<span class="nx">jet</span><span class="p">.</span><span class="nx">History</span><span class="p">.</span><span class="nx">iframe</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;load&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">newLocation</span><span class="p">)</span> <span class="p">{</span>
+		<span class="cm">/*ignore any location changes that we made ourselves*/</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">ignoreLocationChange</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">ignoreLocationChange</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+			<span class="k">return</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="cm">/*Get the new location*/</span>
+		<span class="kd">var</span> <span class="nx">hash</span> <span class="o">=</span> <span class="nb">String</span><span class="p">(</span><span class="nx">newLocation</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">hash</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">hash</span> <span class="o">=</span> <span class="nx">hash</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">?</span> <span class="s2">&quot;&quot;</span> <span class="o">:</span> <span class="nx">hash</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="cm">/*Keep the browser location bar in sync with the iframe hash*/</span>
+		<span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">hash</span> <span class="o">=</span> <span class="nx">hash</span><span class="p">;</span>
+
+		<span class="cm">/*Notify listeners of the change*/</span>
+		<span class="nx">fireHistoryEvent</span><span class="p">(</span><span class="nx">hash</span><span class="p">);</span>
+	<span class="p">});</span>
+
+	<span class="cm">/**</span>
+<span class="cm">	 * @method initialize</span>
+<span class="cm">	 * @description Initialize our DHTML history. You must call this after the page is finished loading</span>
+<span class="cm">	 * @chainable</span>
+<span class="cm">	 */</span>
+	<span class="k">this</span><span class="p">.</span><span class="nx">initialize</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+
+		<span class="cm">/*save original document title to plug in when we hit a null-key history point*/</span>
+		<span class="nx">originalTitle</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">title</span><span class="p">;</span>
+		
+		<span class="cm">/*IE needs to be explicitly initialized. IE doesn&#39;t autofill form data until the page is finished loading, so we have to wait*/</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="p">{</span>
+			<span class="cm">/*If this is the first time this page has loaded*/</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">historyStorage</span><span class="p">.</span><span class="nx">hasKey</span><span class="p">(</span><span class="nx">PAGELOADEDSTRING</span><span class="p">))</span> <span class="p">{</span>
+				<span class="cm">/*For IE, we do this in initialize(); for other browsers, we do it in create()*/</span>
+				<span class="nx">fireOnNewListener</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+				<span class="nx">firstLoad</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+				<span class="nx">historyStorage</span><span class="p">.</span><span class="nx">put</span><span class="p">(</span><span class="nx">PAGELOADEDSTRING</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
 			<span class="p">}</span>
-		<span class="p">};</span>
-	
-		<span class="cm">/*Private: Load the hash table up from the form.*/</span>
-		<span class="kd">var</span> <span class="nx">loadHashTable</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hashLoaded</span><span class="p">)</span> <span class="p">{</span>	
-				<span class="kd">var</span> <span class="nx">serializedHashTable</span> <span class="o">=</span> <span class="nx">storageField</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">serializedHashTable</span> <span class="o">!==</span> <span class="s2">&quot;&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">serializedHashTable</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">storageHash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">serializedHashTable</span><span class="p">);</span>
-					<span class="nx">hashLoaded</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-				<span class="p">}</span>
+			<span class="cm">/*Else if this is a fake onload event*/</span>
+			<span class="k">else</span> <span class="p">{</span>
+				<span class="nx">fireOnNewListener</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+				<span class="nx">firstLoad</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>   
 			<span class="p">}</span>
-		<span class="p">};</span>
-		<span class="cm">/*Private: Save the hash table into the form.*/</span>
-		<span class="kd">var</span> <span class="nx">saveHashTable</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="nx">loadHashTable</span><span class="p">();</span>
-			<span class="nx">storageField</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">storageHash</span><span class="p">);</span>
-		<span class="p">};</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+	<span class="p">};</span>
+
+	<span class="cm">/**</span>
+<span class="cm">	 * @method changeTitle</span>
+<span class="cm">	 * @description Change the current HTML title</span>
+<span class="cm">	 * @chainable</span>
+<span class="cm">	 */</span>
+	<span class="k">this</span><span class="p">.</span><span class="nx">changeTitle</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">historyData</span><span class="p">)</span> <span class="p">{</span>
+		<span class="cm">/*Plug the new title into the pattern*/</span>
+		<span class="cm">/*Otherwise, if there is no new title, use the original document title. This is useful when some</span>
+<span class="cm">		history changes have title changes and some don&#39;t; we can automatically return to the original</span>
+<span class="cm">		title rather than leaving a misleading title in the title bar. The same goes for our &quot;virgin&quot;</span>
+<span class="cm">		(hashless) page state.*/</span>
+		<span class="kd">var</span> <span class="nx">winTitle</span> <span class="o">=</span> <span class="nx">historyData</span> <span class="o">&amp;&amp;</span> <span class="nx">historyData</span><span class="p">.</span><span class="nx">newTitle</span> <span class="o">?</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;baseTitle&quot;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;@@@&#39;</span><span class="p">,</span> <span class="nx">historyData</span><span class="p">.</span><span class="nx">newTitle</span><span class="p">)</span> <span class="o">:</span> <span class="nx">originalTitle</span><span class="p">;</span>
+		<span class="cm">/*No need to do anything if the title isn&#39;t changing*/</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">title</span> <span class="o">==</span> <span class="nx">winTitle</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="cm">/*Now change the DOM*/</span>
+		<span class="nb">document</span><span class="p">.</span><span class="nx">title</span> <span class="o">=</span> <span class="nx">winTitle</span><span class="p">;</span>
+		<span class="cm">/*Change it in the iframe, too, for IE*/</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">iframe</span><span class="p">.</span><span class="nx">contentWindow</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">title</span> <span class="o">=</span> <span class="nx">winTitle</span><span class="p">;</span>
+		<span class="p">}</span>
 		
-		<span class="k">return</span> <span class="p">{</span>
-			<span class="cm">/*Public: Set up our historyStorage object for use by dhtmlHistory or other objects*/</span>
-			<span class="nx">setup</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">options</span> <span class="o">=</span> <span class="nx">options</span> <span class="o">||</span> <span class="p">{};</span>
-				<span class="nx">debugMode</span> <span class="o">=</span> <span class="o">!!</span><span class="nx">options</span><span class="p">.</span><span class="nx">debugMode</span><span class="p">;</span>
-				<span class="nx">encode</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nb">encodeURI</span> <span class="o">?</span> <span class="nb">encodeURIComponent</span> <span class="o">:</span> <span class="nx">fake</span><span class="p">;</span>
-				<span class="nx">decode</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nb">encodeURI</span> <span class="o">?</span> <span class="nb">decodeURIComponent</span> <span class="o">:</span> <span class="nx">fake</span><span class="p">;</span>
-							
-				<span class="cm">/*write a hidden form and textarea into the page; we&#39;ll stow our history stack here*/</span>
-				<span class="kd">var</span> <span class="nx">formStyles</span> <span class="o">=</span> <span class="nx">debugMode</span> <span class="o">?</span> <span class="nx">showStyles</span> <span class="o">:</span> <span class="nx">hideStyles</span><span class="p">;</span>
-				<span class="kd">var</span> <span class="nx">textareaStyles</span> <span class="o">=</span> <span class="nx">debugMode</span>	<span class="o">?</span> <span class="p">{</span>
-					<span class="nx">width</span><span class="o">:</span> <span class="s2">&quot;800px&quot;</span><span class="p">,</span>
-					<span class="nx">height</span><span class="o">:</span> <span class="s2">&quot;80px&quot;</span><span class="p">,</span>
-					<span class="nx">border</span><span class="o">:</span> <span class="s2">&quot;1px solid black&quot;</span>
-				<span class="p">}</span> <span class="o">:</span> <span class="nx">hideStyles</span><span class="p">;</span>
-				
-				<span class="kd">var</span> <span class="nx">form</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;form&gt;&lt;textarea id=&quot;jet-storage-field&quot;&gt;&lt;/textarea&gt;&lt;/form&gt;&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;jet-storage-form&quot;</span><span class="p">);</span>
-				<span class="nx">storageField</span> <span class="o">=</span> <span class="nx">form</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="nx">formStyles</span><span class="p">).</span><span class="nx">first</span><span class="p">().</span><span class="nx">css</span><span class="p">(</span><span class="nx">textareaStyles</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">opera</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">storageField</span><span class="p">.</span><span class="nx">focus</span><span class="p">();</span><span class="cm">/*Opera needs to focus this element before persisting values in it*/</span>
-				<span class="p">}</span>
-				<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-			<span class="p">},</span>
-			
-			<span class="cm">/*Public*/</span>
-			<span class="nx">put</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-				
-				<span class="kd">var</span> <span class="nx">encodedKey</span> <span class="o">=</span> <span class="nx">encode</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
-				
-				<span class="nx">assertValidKey</span><span class="p">(</span><span class="nx">encodedKey</span><span class="p">);</span>
-				<span class="cm">/*if we already have a value for this, remove the value before adding the new one*/</span>
-				<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">hasKey</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
-					<span class="k">this</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
-				<span class="p">}</span>
-				<span class="cm">/*store this new key*/</span>
-				<span class="nx">storageHash</span><span class="p">[</span><span class="nx">encodedKey</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
-				<span class="cm">/*save and serialize the hashtable into the form*/</span>
-				<span class="nx">saveHashTable</span><span class="p">();</span>
-				<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-			<span class="p">},</span>
-		
-			<span class="cm">/*Public*/</span>
-			<span class="nx">get</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-		
-				<span class="kd">var</span> <span class="nx">encodedKey</span> <span class="o">=</span> <span class="nx">encode</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
-				
-				<span class="nx">assertValidKey</span><span class="p">(</span><span class="nx">encodedKey</span><span class="p">);</span>
-				<span class="cm">/*make sure the hash table has been loaded from the form*/</span>
-				<span class="nx">loadHashTable</span><span class="p">();</span>
-				<span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">storageHash</span><span class="p">[</span><span class="nx">encodedKey</span><span class="p">];</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">value</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">value</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-				<span class="p">}</span>
-				<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
-			<span class="p">},</span>
-		
-			<span class="cm">/*Public*/</span>
-			<span class="nx">remove</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-				
-				<span class="kd">var</span> <span class="nx">encodedKey</span> <span class="o">=</span> <span class="nx">encode</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
-		
-				<span class="nx">assertValidKey</span><span class="p">(</span><span class="nx">encodedKey</span><span class="p">);</span>
-				<span class="cm">/*make sure the hash table has been loaded from the form*/</span>
-				<span class="nx">loadHashTable</span><span class="p">();</span>
-				<span class="cm">/*delete the value*/</span>
-				<span class="k">delete</span> <span class="nx">storageHash</span><span class="p">[</span><span class="nx">encodedKey</span><span class="p">];</span>
-				<span class="cm">/*serialize and save the hash table into the form*/</span>
-				<span class="nx">saveHashTable</span><span class="p">();</span>
-				<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-			<span class="p">},</span>
-		
-			<span class="cm">/*Public: Clears out all saved data.*/</span>
-			<span class="nx">reset</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-				<span class="nx">storageField</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
-				<span class="nx">storageHash</span> <span class="o">=</span> <span class="p">{};</span>
-				<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-			<span class="p">},</span>
-		
-			<span class="cm">/*Public*/</span>
-			<span class="nx">hasKey</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-				
-				<span class="kd">var</span> <span class="nx">encodedKey</span> <span class="o">=</span> <span class="nx">encode</span><span class="p">(</span><span class="nx">key</span><span class="p">);</span>
-		
-				<span class="nx">assertValidKey</span><span class="p">(</span><span class="nx">encodedKey</span><span class="p">);</span>
-				<span class="cm">/*make sure the hash table has been loaded from the form*/</span>
-				<span class="nx">loadHashTable</span><span class="p">();</span>
-				<span class="k">return</span> <span class="o">!</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isUndefined</span><span class="p">(</span><span class="nx">storageHash</span><span class="p">[</span><span class="nx">encodedKey</span><span class="p">]);</span>
-			<span class="p">},</span>
-		
-			<span class="cm">/*Public*/</span>
-			<span class="nx">isValidKey</span><span class="o">:</span> <span class="nx">isValidKey</span>
-		<span class="p">};</span>
-	<span class="p">}());</span>
+		<span class="cm">/*If non-IE, reload the hash so the new title &quot;sticks&quot; in the browser history object*/</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">UA</span><span class="p">.</span><span class="nx">opera</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">hash</span> <span class="o">=</span> <span class="nx">decode</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">hash</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">hash</span> <span class="o">!==</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">encodedHash</span> <span class="o">=</span> <span class="nx">encode</span><span class="p">(</span><span class="nx">removeHash</span><span class="p">(</span><span class="nx">hash</span><span class="p">));</span>
+				<span class="nb">document</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">hash</span> <span class="o">=</span> <span class="nx">encodedHash</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+	<span class="p">};</span>
 	
 	<span class="cm">/**</span>
-<span class="cm">	 * History management class</span>
-<span class="cm">	 * @class History</span>
-<span class="cm">	 * @extends Base</span>
-<span class="cm">	 * @constructor</span>
-<span class="cm">	 * @param {Object} config Object literal specifying configuration properties</span>
+<span class="cm">	 * @method go</span>
+<span class="cm">	 * @description Add a history point</span>
+<span class="cm">	 * @param {String} newLocation required - This will be the #hash value in the URL. Users can bookmark it. It will persist across sessions, so</span>
+<span class="cm">	 * your application should be able to restore itself to a specific state based on just this value. It</span>
+<span class="cm">	 * should be either a simple keyword for a viewstate or else a pseudo-querystring.</span>
+<span class="cm">	 * @param {Hash} historyData optional - This is for complex data that is relevant only to the current browsing session. It will be available</span>
+<span class="cm">	 * to your application until the browser is closed. If the user comes back to a bookmarked history point</span>
+<span class="cm">	 * during a later session, this data will no longer be available. Don&#39;t rely on it for application</span>
+<span class="cm">	 * re-initialization from a bookmark.</span>
+<span class="cm">	 * @param {String} historyData.newTitle optional - This will swap out the html &lt;code&gt;&lt;title&gt;&lt;/code&gt; attribute with a new value. </span>
+<span class="cm">	 * If you have set a baseTitle using the options bundle, the value will be plugged into the baseTitle by swapping out the @@@ replacement param.</span>
+<span class="cm">	 * @chainable</span>
 <span class="cm">	 */</span>
-	<span class="kd">var</span> <span class="nx">History</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-		<span class="nx">History</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
-	
-		<span class="kd">var</span> <span class="nx">isSupported</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+	<span class="k">this</span><span class="p">.</span><span class="nx">go</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">newLocation</span><span class="p">,</span> <span class="nx">historyData</span><span class="p">)</span> <span class="p">{</span>
 		
-		<span class="cm">/*Private: A variable that indicates whether this is the first time this page has been loaded. If you go to a web page, leave it</span>
-<span class="cm">		for another one, and then return, the page&#39;s onload listener fires again. We need a way to differentiate between the first page</span>
-<span class="cm">		load and subsequent ones. This variable works hand in hand with the pageLoaded variable we store into historyStorage.*/</span>
-		<span class="kd">var</span> <span class="nx">firstLoad</span><span class="p">;</span>
-		
-		<span class="kd">var</span> <span class="nx">fake</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">a</span><span class="p">;</span>
-		<span class="p">};</span>
-		<span class="kd">var</span> <span class="nx">encode</span> <span class="o">=</span> <span class="nx">fake</span><span class="p">,</span>
-			<span class="nx">decode</span> <span class="o">=</span> <span class="nx">fake</span><span class="p">;</span>
-	
-		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config firstLoad</span>
-<span class="cm">			 * @description Whether this is the first time the History loaded or not</span>
-<span class="cm">			 * @type Boolean</span>
-<span class="cm">			 * @readOnly</span>
-<span class="cm">			 */</span>
-			<span class="nx">firstLoad</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">readOnly</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="nx">firstLoad</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config baseTitle</span>
-<span class="cm">			 * @description pattern for title changes. Example: &quot;Armchair DJ [@@@]&quot; - @@@ will be replaced</span>
-<span class="cm">			 * @type String</span>
-<span class="cm">			 */</span>
-			<span class="nx">baseTitle</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">validator</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="kd">var</span> <span class="nx">ok</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;@@@&quot;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span>
-					<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">ok</span> <span class="o">&amp;&amp;</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;debugMode&quot;</span><span class="p">))</span> <span class="p">{</span>
-						<span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">&quot;Programmer error: options.baseTitle must contain the replacement parameter &#39;@@@&#39; to be useful.&quot;</span><span class="p">);</span>
-					<span class="p">}</span>
-					<span class="k">return</span> <span class="nx">ok</span><span class="p">;</span>
-				<span class="p">}</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config blankURL</span>
-<span class="cm">			 * @description URL for the blank html file we use for IE; can be overridden via the options bundle. </span>
-<span class="cm">			 * Otherwise it must be served in same directory as this library</span>
-<span class="cm">			 * @type String</span>
-<span class="cm">			 * @default &quot;blank.html?&quot;</span>
-<span class="cm">			 */</span>
-			<span class="nx">blankURL</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="nx">value</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;?&quot;</span> <span class="o">?</span> <span class="nx">value</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span> <span class="o">:</span> <span class="nx">value</span><span class="p">;</span>
-				<span class="p">},</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;blank.html?&quot;</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config encodeURI</span>
-<span class="cm">			 * @description Whether to encode the URI or not</span>
-<span class="cm">			 * @type Boolean</span>
-<span class="cm">			 */</span>
-			<span class="nb">encodeURI</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">encode</span> <span class="o">=</span> <span class="nx">value</span> <span class="o">?</span> <span class="nb">encodeURIComponent</span> <span class="o">:</span> <span class="nx">fake</span><span class="p">;</span>
-					<span class="nx">decode</span> <span class="o">=</span> <span class="nx">value</span> <span class="o">?</span> <span class="nb">decodeURIComponent</span> <span class="o">:</span> <span class="nx">fake</span><span class="p">;</span>
-				<span class="p">},</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
-			<span class="p">}</span>
-		<span class="p">});</span>
-		
-		<span class="cm">/*Private: Constant for our own internal history event called when the page is loaded*/</span>
-		<span class="kd">var</span> <span class="nx">PAGELOADEDSTRING</span> <span class="o">=</span> <span class="s2">&quot;DhtmlHistory_pageLoaded&quot;</span><span class="p">;</span>
-		
-		<span class="cm">/*</span>
-<span class="cm">			Private: Pattern for title changes. Example: &quot;Armchair DJ [@@@]&quot; where @@@ will be relaced by values passed to add();</span>
-<span class="cm">			Default is just the title itself, hence &quot;@@@&quot;</span>
-<span class="cm">		*/</span>
-		<span class="kd">var</span> <span class="nx">baseTitle</span> <span class="o">=</span> <span class="s2">&quot;@@@&quot;</span><span class="p">;</span>
-		
-		<span class="cm">/*Private: Placeholder variable for the original document title; will be set in ititialize()*/</span>
-		<span class="kd">var</span> <span class="nx">originalTitle</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">title</span><span class="p">;</span>
-		
-		<span class="cm">/*Private: MS to wait between add requests - will be reset for certain browsers*/</span>
-		<span class="kd">var</span> <span class="nx">waitTime</span> <span class="o">=</span> <span class="mi">200</span><span class="p">;</span>
-		
-		<span class="cm">/*Private: MS before an add request can execute*/</span>
-		<span class="kd">var</span> <span class="nx">currentWaitTime</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-	
-		<span class="cm">/*Private: Our current hash location, without the &quot;#&quot; symbol.*/</span>
-		<span class="kd">var</span> <span class="nx">currentLocation</span><span class="p">;</span>
-	
-		<span class="cm">/*Private: Hidden iframe used to IE to detect history changes*/</span>
-		<span class="kd">var</span> <span class="nx">iframe</span><span class="p">;</span>
-	
-		<span class="cm">/*Private: Flags and DOM references used only by Safari*/</span>
-		<span class="kd">var</span> <span class="nx">safariHistoryStartPoint</span><span class="p">,</span> <span class="nx">safariStack</span><span class="p">,</span> <span class="nx">safariLength</span><span class="p">;</span>
-	
-		<span class="cm">/*Private: Flag used to keep checkLocation() from doing anything when it discovers location changes we&#39;ve made ourselves</span>
-<span class="cm">		programmatically with the add() method. Basically, add() sets this to true. When checkLocation() discovers it&#39;s true,</span>
-<span class="cm">		it refrains from firing our listener, then resets the flag to false for next cycle. That way, our listener only gets fired on</span>
-<span class="cm">		history change events triggered by the user via back/forward buttons and manual hash changes. This flag also helps us set up</span>
-<span class="cm">		IE&#39;s special iframe-based method of handling history changes.*/</span>
-		<span class="kd">var</span> <span class="nx">ignoreLocationChange</span><span class="p">;</span>
-	
-		<span class="cm">/*Private: A flag that indicates that we should fire a history change event when we are ready, i.e. after we are initialized and</span>
-<span class="cm">		we have a history change listener. This is needed due to an edge case in browsers other than IE; if you leave a page entirely</span>
-<span class="cm">		then return, we must fire this as a history change event. Unfortunately, we have lost all references to listeners from earlier,</span>
-<span class="cm">		because JavaScript clears out.*/</span>
-		<span class="kd">var</span> <span class="nx">fireOnNewListener</span><span class="p">;</span>
-	
-		<span class="cm">/*Private: A variable to handle an important edge case in IE. In IE, if a user manually types an address into their browser&#39;s</span>
-<span class="cm">		location bar, we must intercept this by calling checkLocation() at regular intervals. However, if we are programmatically</span>
-<span class="cm">		changing the location bar ourselves using the add() method, we need to ignore these changes in checkLocation(). Unfortunately,</span>
-<span class="cm">		these changes take several lines of code to complete, so for the duration of those lines of code, we set this variable to true.</span>
-<span class="cm">		That signals to checkLocation() to ignore the change-in-progress. Once we&#39;re done with our chunk of location-change code in</span>
-<span class="cm">		add(), we set this back to false. We&#39;ll do the same thing when capturing user-entered address changes in checkLocation itself.*/</span>
-		<span class="kd">var</span> <span class="nx">ieAtomicLocationChange</span><span class="p">;</span>
-		
-		<span class="cm">/*Private: Create IE-specific DOM nodes and overrides*/</span>
-		<span class="kd">var</span> <span class="nx">createIE</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">initialHash</span><span class="p">)</span> <span class="p">{</span>
-			<span class="cm">/*write out a hidden iframe for IE and set the amount of time to wait between add() requests*/</span>
-			<span class="nx">waitTime</span> <span class="o">=</span> <span class="mi">400</span><span class="p">;</span><span class="cm">/*IE needs longer between history updates*/</span>
-			<span class="kd">var</span> <span class="nx">styles</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;debugMode&quot;</span><span class="p">)</span> <span class="o">?</span> <span class="p">{</span>
-				<span class="nx">width</span><span class="o">:</span> <span class="s2">&quot;800px&quot;</span><span class="p">,</span>
-				<span class="nx">height</span><span class="o">:</span> <span class="s2">&quot;80px&quot;</span><span class="p">,</span>
-				<span class="nx">border</span><span class="o">:</span> <span class="s2">&quot;1px solid black&quot;</span>
-			<span class="p">}</span> <span class="o">:</span> <span class="nx">hideStyles</span><span class="p">;</span>
-			<span class="nx">iframe</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;iframe/&gt;&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="nx">styles</span><span class="p">).</span><span class="nx">attr</span><span class="p">({</span>
-				<span class="nx">frameborder</span><span class="o">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
-				<span class="nx">id</span><span class="o">:</span> <span class="s2">&quot;jet-history-frame&quot;</span><span class="p">,</span>
-				<span class="nx">src</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;blankURL&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="nx">initialHash</span>
-			<span class="p">}).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">body</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
-		<span class="p">};</span>
-		
-		<span class="cm">/*Private: Create Opera-specific DOM nodes and overrides*/</span>
-		<span class="kd">var</span> <span class="nx">createOpera</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="nx">waitTime</span> <span class="o">=</span> <span class="mi">400</span><span class="p">;</span><span class="cm">/*Opera needs longer between history updates*/</span>
-			<span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;img/&gt;&quot;</span><span class="p">).</span><span class="nx">style</span><span class="p">(</span><span class="nx">hideStyles</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;src&quot;</span><span class="p">,</span> <span class="s2">&quot;javascript:location.href=\&#39;javascript:dhtmlHistory.checkLocation();\&#39;;&quot;</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
-		<span class="p">};</span>
-		
-		<span class="cm">/*Private: Create Safari-specific DOM nodes and overrides*/</span>
-		<span class="kd">var</span> <span class="nx">createSafari</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">debugMode</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;debugMode&quot;</span><span class="p">);</span>
-			<span class="kd">var</span> <span class="nx">formStyles</span> <span class="o">=</span> <span class="nx">debugMode</span> <span class="o">?</span> <span class="nx">showStyles</span> <span class="o">:</span> <span class="nx">hideStyles</span><span class="p">;</span>
-			<span class="kd">var</span> <span class="nx">stackStyles</span> <span class="o">=</span> <span class="nx">debugMode</span> <span class="o">?</span> <span class="p">{</span>
-				<span class="nx">width</span><span class="o">:</span> <span class="s2">&quot;800px&quot;</span><span class="p">,</span>
-				<span class="nx">height</span><span class="o">:</span> <span class="s2">&quot;80px&quot;</span><span class="p">,</span>
-				<span class="nx">border</span><span class="o">:</span> <span class="s2">&quot;1px solid black&quot;</span>
-			<span class="p">}</span> <span class="o">:</span> <span class="nx">hideStyles</span><span class="p">;</span>
-			<span class="kd">var</span> <span class="nx">lengthStyles</span> <span class="o">=</span> <span class="nx">debugMode</span> <span class="o">?</span> <span class="p">{</span>
-				<span class="nx">width</span><span class="o">:</span> <span class="s2">&quot;800px&quot;</span><span class="p">,</span>
-				<span class="nx">height</span><span class="o">:</span> <span class="s2">&quot;20px&quot;</span><span class="p">,</span>
-				<span class="nx">border</span><span class="o">:</span> <span class="s2">&quot;1px solid black&quot;</span><span class="p">,</span>
-				<span class="nx">margin</span><span class="o">:</span> <span class="s2">&quot;0&quot;</span><span class="p">,</span>
-				<span class="nx">padding</span><span class="o">:</span> <span class="s2">&quot;0&quot;</span>
-			<span class="p">}</span> <span class="o">:</span> <span class="nx">hideStyles</span><span class="p">;</span>
-			<span class="kd">var</span> <span class="nx">form</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;form&gt;&lt;textarea id=&quot;jet-webkit-stack&quot;&gt;[]&lt;/textarea&gt;&lt;input type=&quot;text&quot; id=&quot;jet-webkit-length&quot; value=&quot;&quot; /&gt;&lt;/form&gt;&#39;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="nx">formStyles</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
-			<span class="nx">safariStack</span> <span class="o">=</span> <span class="nx">form</span><span class="p">.</span><span class="nx">first</span><span class="p">().</span><span class="nx">css</span><span class="p">(</span><span class="nx">stackStyles</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
-			<span class="nx">safariLength</span> <span class="o">=</span> <span class="nx">form</span><span class="p">.</span><span class="nx">last</span><span class="p">().</span><span class="nx">css</span><span class="p">(</span><span class="nx">lengthStyles</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
-			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">historyStorage</span><span class="p">.</span><span class="nx">hasKey</span><span class="p">(</span><span class="nx">PAGELOADEDSTRING</span><span class="p">))</span> <span class="p">{</span>
-				<span class="nx">safariHistoryStartPoint</span> <span class="o">=</span> <span class="nx">history</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
-				<span class="nx">safariLength</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">safariHistoryStartPoint</span><span class="p">;</span>
-			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-				<span class="nx">safariHistoryStartPoint</span> <span class="o">=</span> <span class="nx">safariLength</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
-			<span class="p">}</span>
-		<span class="p">};</span>
-		
-		<span class="cm">/*TODO: make this public again?*/</span>
-		<span class="cm">/*Private: Manually parse the current url for a hash; tip of the hat to YUI*/</span>
-	    <span class="kd">var</span> <span class="nx">getCurrentHash</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">r</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">href</span><span class="p">;</span>
-			<span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">r</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">);</span>
-			<span class="k">return</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">?</span> <span class="nx">r</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
-	    <span class="p">};</span>
-	    
-		<span class="cm">/*Private: Safari method to read the history stack from a hidden form field*/</span>
-		<span class="kd">var</span> <span class="nx">getSafariStack</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">$</span><span class="p">.</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">safariStack</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
-		<span class="p">};</span>
-		
-		<span class="cm">/*Private: Safari method to read from the history stack*/</span>
-		<span class="kd">var</span> <span class="nx">getSafariState</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">stack</span> <span class="o">=</span> <span class="nx">getSafariStack</span><span class="p">();</span>
-			<span class="k">return</span> <span class="nx">stack</span><span class="p">[</span><span class="nx">history</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">safariHistoryStartPoint</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
-		<span class="p">};</span>
-			
-		<span class="cm">/*TODO: make this public again?*/</span>
-		<span class="cm">/*Private: Get browser&#39;s current hash location; for Safari, read value from a hidden form field*/</span>
-		<span class="kd">var</span> <span class="nx">getCurrentLocation</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">safari</span> <span class="o">?</span> <span class="nx">getSafariState</span><span class="p">()</span> <span class="o">:</span> <span class="nx">getCurrentHash</span><span class="p">();</span>
-		<span class="p">};</span>
-		
-		<span class="cm">/*Private: Safari method to write the history stack to a hidden form field*/</span>
-		<span class="kd">var</span> <span class="nx">putSafariState</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">newLocation</span><span class="p">)</span> <span class="p">{</span>
-		    <span class="kd">var</span> <span class="nx">stack</span> <span class="o">=</span> <span class="nx">getSafariStack</span><span class="p">();</span>
-		    <span class="nx">stack</span><span class="p">[</span><span class="nx">history</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">safariHistoryStartPoint</span><span class="p">]</span> <span class="o">=</span> <span class="nx">newLocation</span><span class="p">;</span>
-		    <span class="nx">safariStack</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">historyStorage</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">(</span><span class="nx">stack</span><span class="p">);</span>
-		<span class="p">};</span>
-	
-		<span class="cm">/*Private: Notify the listener of new history changes.*/</span>
-		<span class="kd">var</span> <span class="nx">fireHistoryEvent</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">newHash</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">decodedHash</span> <span class="o">=</span> <span class="nx">removeHash</span><span class="p">(</span><span class="nx">decode</span><span class="p">(</span><span class="nx">newHash</span><span class="p">));</span>
-			<span class="cm">/*extract the value from our history storage for this hash*/</span>
-			<span class="kd">var</span> <span class="nx">historyData</span> <span class="o">=</span> <span class="nx">historyStorage</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">decodedHash</span><span class="p">);</span>
-			<span class="kd">var</span> <span class="nx">hashData</span> <span class="o">=</span> <span class="p">{};</span>
-			<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">decodedHash</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">),</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
-				<span class="kd">var</span> <span class="nx">parts</span> <span class="o">=</span> <span class="nx">val</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">);</span>
-				<span class="nx">hashData</span><span class="p">[</span><span class="nx">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="nx">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+		<span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">,</span> <span class="nx">newData</span> <span class="o">=</span> <span class="p">[];</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isHash</span><span class="p">(</span><span class="nx">newLocation</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">newLocation</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">newData</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">key</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="nx">val</span><span class="p">);</span>
 			<span class="p">});</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * Fires when the history changes</span>
-<span class="cm">			 * @event change</span>
-<span class="cm">			 * @param {Hash} hashData A hash with the URI data</span>
-<span class="cm">			 * @param {Object} Additional data associated with the current state</span>
-<span class="cm">			 */</span>
-			<span class="nx">myself</span><span class="p">.</span><span class="nx">changeTitle</span><span class="p">(</span><span class="nx">historyData</span><span class="p">).</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;change&quot;</span><span class="p">,</span> <span class="nx">hashData</span><span class="p">,</span> <span class="nx">historyData</span><span class="p">);</span>
-		<span class="p">};</span>
+			<span class="nx">newLocation</span> <span class="o">=</span> <span class="nx">newData</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="cm">/*Escape the location and remove any leading hash symbols*/</span>
+		<span class="kd">var</span> <span class="nx">encodedLocation</span> <span class="o">=</span> <span class="nx">encode</span><span class="p">(</span><span class="nx">removeHash</span><span class="p">(</span><span class="nx">newLocation</span><span class="p">));</span>
 		
-		<span class="cm">/*Private: Get the current location of IE&#39;s hidden iframe.*/</span>
-		<span class="kd">var</span> <span class="nx">getIframeHash</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">doc</span> <span class="o">=</span> <span class="nx">iframe</span><span class="p">.</span><span class="nx">contentWindow</span><span class="p">.</span><span class="nb">document</span><span class="p">;</span>
-			<span class="kd">var</span> <span class="nx">hash</span> <span class="o">=</span> <span class="nb">String</span><span class="p">(</span><span class="nx">doc</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">hash</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">hash</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">hash</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
-			<span class="p">}</span>
-			<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">hash</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="nx">hash</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">hash</span> <span class="o">=</span> <span class="nx">hash</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-			<span class="p">}</span>
-			<span class="k">return</span> <span class="nx">hash</span><span class="p">;</span>
-		<span class="p">};</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">safari</span><span class="p">)</span> <span class="p">{</span>
+
+			<span class="cm">/*Store the history data into history storage - pass in unencoded newLocation since</span>
+<span class="cm">			historyStorage does its own encoding*/</span>
+			<span class="nx">historyStorage</span><span class="p">.</span><span class="nx">put</span><span class="p">(</span><span class="nx">newLocation</span><span class="p">,</span> <span class="nx">historyData</span><span class="p">);</span>
+
+			<span class="cm">/*Save this as our current location*/</span>
+			<span class="nx">currentLocation</span> <span class="o">=</span> <span class="nx">encodedLocation</span><span class="p">;</span>
 	
-		<span class="cm">/*Private: See if the browser has changed location. This is the primary history mechanism for Firefox. For IE, we use this to</span>
-<span class="cm">		handle an important edge case: if a user manually types in a new hash value into their IE location bar and press enter, we want to</span>
-<span class="cm">		to intercept this and notify any history listener.*/</span>
-		<span class="kd">var</span> <span class="nx">checkLocation</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			
-			<span class="cm">/*Ignore any location changes that we made ourselves for browsers other than IE*/</span>
-			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">ignoreLocationChange</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">ignoreLocationChange</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-				<span class="k">return</span><span class="p">;</span>
-			<span class="p">}</span>
-	
-			<span class="cm">/*If we are dealing with IE and we are in the middle of making a location change from an iframe, ignore it*/</span>
-			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">ieAtomicLocationChange</span><span class="p">)</span> <span class="p">{</span>
-				<span class="k">return</span><span class="p">;</span>
-			<span class="p">}</span>
-			
-			<span class="cm">/*Get hash location*/</span>
-			<span class="kd">var</span> <span class="nx">hash</span> <span class="o">=</span> <span class="nx">getCurrentLocation</span><span class="p">();</span>
-			<span class="cm">/*Do nothing if there&#39;s been no change*/</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">hash</span> <span class="o">==</span> <span class="nx">currentLocation</span><span class="p">)</span> <span class="p">{</span>
-				<span class="k">return</span><span class="p">;</span>
-			<span class="p">}</span>
-			
-			<span class="cm">/*In IE, users manually entering locations into the browser; we do this by comparing the browser&#39;s location against the</span>
-<span class="cm">			iframe&#39;s location; if they differ, we are dealing with a manual event and need to place it inside our history, otherwise</span>
-<span class="cm">			we can return*/</span>
-			<span class="nx">ieAtomicLocationChange</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-	
-			<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&lt;</span> <span class="mi">8</span> <span class="o">&amp;&amp;</span> <span class="nx">getIframeHash</span><span class="p">()</span> <span class="o">!=</span> <span class="nx">hash</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">iframe</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;blankURL&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="nx">hash</span><span class="p">;</span>
-			<span class="p">}</span>
-			<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="p">{</span>
-				<span class="cm">/*the iframe is unchanged*/</span>
-				<span class="k">return</span><span class="p">;</span>
-			<span class="p">}</span>
-	
-			<span class="cm">/*Save this new location*/</span>
-			<span class="nx">currentLocation</span> <span class="o">=</span> <span class="nx">hash</span><span class="p">;</span>
-	
-			<span class="nx">ieAtomicLocationChange</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-	
-			<span class="cm">/*Notify listeners of the change*/</span>
-			<span class="nx">fireHistoryEvent</span><span class="p">(</span><span class="nx">hash</span><span class="p">);</span>
-		<span class="p">};</span>
-	
-		<span class="cm">/*Private: Remove any leading hash that might be on a location.*/</span>
-		<span class="kd">var</span> <span class="nx">removeHash</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">hashValue</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">r</span><span class="p">;</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">hashValue</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="nx">hashValue</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">r</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-			<span class="p">}</span>
-			<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">hashValue</span> <span class="o">===</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">r</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
-			<span class="p">}</span>
-			<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">hashValue</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">hashValue</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;#&quot;</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">r</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
-			<span class="p">}</span>
-			<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">hashValue</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">hashValue</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;#&quot;</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">r</span> <span class="o">=</span> <span class="nx">hashValue</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-			<span class="p">}</span>
-			<span class="k">else</span> <span class="p">{</span>
-				<span class="nx">r</span> <span class="o">=</span> <span class="nx">hashValue</span><span class="p">;</span>
-			<span class="p">}</span>
-			<span class="k">return</span> <span class="nx">r</span><span class="p">;</span>
-		<span class="p">};</span>
-	
-		<span class="kd">var</span> <span class="nx">useHashEvent</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="nx">$</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">win</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;hashchange&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-				<span class="nx">fireHistoryEvent</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">win</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">hash</span><span class="p">);</span>
-			<span class="p">});</span>
-		<span class="p">};</span>
+			<span class="cm">/*Change the browser location*/</span>
+			<span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">hash</span> <span class="o">=</span> <span class="nx">encodedLocation</span><span class="p">;</span>
 		
-		<span class="cm">/*Private: For IE, tell when the hidden iframe has finished loading.*/</span>
-		<span class="nx">jet</span><span class="p">.</span><span class="nx">History</span><span class="p">.</span><span class="nx">iframe</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;load&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">newLocation</span><span class="p">)</span> <span class="p">{</span>
-			<span class="cm">/*ignore any location changes that we made ourselves*/</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">ignoreLocationChange</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">ignoreLocationChange</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-				<span class="k">return</span><span class="p">;</span>
-			<span class="p">}</span>
-	
-			<span class="cm">/*Get the new location*/</span>
-			<span class="kd">var</span> <span class="nx">hash</span> <span class="o">=</span> <span class="nb">String</span><span class="p">(</span><span class="nx">newLocation</span><span class="p">.</span><span class="nx">search</span><span class="p">);</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">hash</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">hash</span> <span class="o">=</span> <span class="nx">hash</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">?</span> <span class="s2">&quot;&quot;</span> <span class="o">:</span> <span class="nx">hash</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-			<span class="p">}</span>
-			<span class="cm">/*Keep the browser location bar in sync with the iframe hash*/</span>
-			<span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">hash</span> <span class="o">=</span> <span class="nx">hash</span><span class="p">;</span>
-	
-			<span class="cm">/*Notify listeners of the change*/</span>
-			<span class="nx">fireHistoryEvent</span><span class="p">(</span><span class="nx">hash</span><span class="p">);</span>
-		<span class="p">});</span>
-	
-		<span class="cm">/**</span>
-<span class="cm">		 * @method initialize</span>
-<span class="cm">		 * @description Initialize our DHTML history. You must call this after the page is finished loading</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="k">this</span><span class="p">.</span><span class="nx">initialize</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-	
-			<span class="cm">/*save original document title to plug in when we hit a null-key history point*/</span>
-			<span class="nx">originalTitle</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">title</span><span class="p">;</span>
+			<span class="cm">/*Save this to the Safari form field*/</span>
+			<span class="nx">putSafariState</span><span class="p">(</span><span class="nx">encodedLocation</span><span class="p">);</span>
+			<span class="nx">myself</span><span class="p">.</span><span class="nx">changeTitle</span><span class="p">(</span><span class="nx">historyData</span><span class="p">);</span>
+
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 			
-			<span class="cm">/*IE needs to be explicitly initialized. IE doesn&#39;t autofill form data until the page is finished loading, so we have to wait*/</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="p">{</span>
-				<span class="cm">/*If this is the first time this page has loaded*/</span>
-				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">historyStorage</span><span class="p">.</span><span class="nx">hasKey</span><span class="p">(</span><span class="nx">PAGELOADEDSTRING</span><span class="p">))</span> <span class="p">{</span>
-					<span class="cm">/*For IE, we do this in initialize(); for other browsers, we do it in create()*/</span>
-					<span class="nx">fireOnNewListener</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-					<span class="nx">firstLoad</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-					<span class="nx">historyStorage</span><span class="p">.</span><span class="nx">put</span><span class="p">(</span><span class="nx">PAGELOADEDSTRING</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+			<span class="cm">/*Most browsers require that we wait a certain amount of time before changing the location, such</span>
+<span class="cm">			as 200 MS; rather than forcing external callers to use window.setTimeout to account for this,</span>
+<span class="cm">			we internally handle it by putting requests in a queue.*/</span>
+			<span class="kd">var</span> <span class="nx">addImpl</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+				
+				<span class="cm">/*Indicate that the current wait time is now less*/</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">currentWaitTime</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">currentWaitTime</span> <span class="o">=</span> <span class="nx">currentWaitTime</span> <span class="o">-</span> <span class="nx">waitTime</span><span class="p">;</span>
 				<span class="p">}</span>
-				<span class="cm">/*Else if this is a fake onload event*/</span>
-				<span class="k">else</span> <span class="p">{</span>
-					<span class="nx">fireOnNewListener</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-					<span class="nx">firstLoad</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>   
+
+				<span class="cm">/*IE has a strange bug; if the encodedLocation is the same as _any_ preexisting id in the</span>
+<span class="cm">				document, then the history action gets recorded twice; throw a programmer exception if</span>
+<span class="cm">				there is an element with this ID*/</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">encodedLocation</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;debugMode&quot;</span><span class="p">))</span> <span class="p">{</span>
+					<span class="kd">var</span> <span class="nx">e</span> <span class="o">=</span> <span class="s2">&quot;Exception: History locations can not have the same value as _any_ IDs that might be in the document,&quot;</span><span class="p">;</span>
+					<span class="nx">e</span> <span class="o">+=</span> <span class="s2">&quot; due to a bug in IE; please ask the developer to choose a history location that does not match any HTML&quot;</span><span class="p">;</span>
+					<span class="nx">e</span> <span class="o">+=</span> <span class="s2">&quot; IDs in this document. The following ID is already taken and cannot be a location: &quot;</span> <span class="o">+</span> <span class="nx">newLocation</span><span class="p">;</span>
+					<span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span> 
 				<span class="p">}</span>
-			<span class="p">}</span>
-			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
-		<span class="p">};</span>
-	
-		<span class="cm">/**</span>
-<span class="cm">		 * @method changeTitle</span>
-<span class="cm">		 * @description Change the current HTML title</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="k">this</span><span class="p">.</span><span class="nx">changeTitle</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">historyData</span><span class="p">)</span> <span class="p">{</span>
-			<span class="cm">/*Plug the new title into the pattern*/</span>
-			<span class="cm">/*Otherwise, if there is no new title, use the original document title. This is useful when some</span>
-<span class="cm">			history changes have title changes and some don&#39;t; we can automatically return to the original</span>
-<span class="cm">			title rather than leaving a misleading title in the title bar. The same goes for our &quot;virgin&quot;</span>
-<span class="cm">			(hashless) page state.*/</span>
-			<span class="kd">var</span> <span class="nx">winTitle</span> <span class="o">=</span> <span class="nx">historyData</span> <span class="o">&amp;&amp;</span> <span class="nx">historyData</span><span class="p">.</span><span class="nx">newTitle</span> <span class="o">?</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;baseTitle&quot;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="s1">&#39;@@@&#39;</span><span class="p">,</span> <span class="nx">historyData</span><span class="p">.</span><span class="nx">newTitle</span><span class="p">)</span> <span class="o">:</span> <span class="nx">originalTitle</span><span class="p">;</span>
-			<span class="cm">/*No need to do anything if the title isn&#39;t changing*/</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">title</span> <span class="o">==</span> <span class="nx">winTitle</span><span class="p">)</span> <span class="p">{</span>
-				<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
-			<span class="p">}</span>
-			<span class="cm">/*Now change the DOM*/</span>
-			<span class="nb">document</span><span class="p">.</span><span class="nx">title</span> <span class="o">=</span> <span class="nx">winTitle</span><span class="p">;</span>
-			<span class="cm">/*Change it in the iframe, too, for IE*/</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">iframe</span><span class="p">.</span><span class="nx">contentWindow</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">title</span> <span class="o">=</span> <span class="nx">winTitle</span><span class="p">;</span>
-			<span class="p">}</span>
-			
-			<span class="cm">/*If non-IE, reload the hash so the new title &quot;sticks&quot; in the browser history object*/</span>
-			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">UA</span><span class="p">.</span><span class="nx">opera</span><span class="p">)</span> <span class="p">{</span>
-				<span class="kd">var</span> <span class="nx">hash</span> <span class="o">=</span> <span class="nx">decode</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">hash</span><span class="p">);</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">hash</span> <span class="o">!==</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="p">{</span>
-					<span class="kd">var</span> <span class="nx">encodedHash</span> <span class="o">=</span> <span class="nx">encode</span><span class="p">(</span><span class="nx">removeHash</span><span class="p">(</span><span class="nx">hash</span><span class="p">));</span>
-					<span class="nb">document</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">hash</span> <span class="o">=</span> <span class="nx">encodedHash</span><span class="p">;</span>
-				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-					<span class="c1">//document.location.hash = &quot;#&quot;;</span>
-				<span class="p">}</span>
-			<span class="p">}</span>
-			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
-		<span class="p">};</span>
-		
-		<span class="cm">/**</span>
-<span class="cm">		 * @method go</span>
-<span class="cm">		 * @description Add a history point</span>
-<span class="cm">		 * @param {String} newLocation required - This will be the #hash value in the URL. Users can bookmark it. It will persist across sessions, so</span>
-<span class="cm">		 * your application should be able to restore itself to a specific state based on just this value. It</span>
-<span class="cm">		 * should be either a simple keyword for a viewstate or else a pseudo-querystring.</span>
-<span class="cm">		 * @param {Hash} historyData optional - This is for complex data that is relevant only to the current browsing session. It will be available</span>
-<span class="cm">		 * to your application until the browser is closed. If the user comes back to a bookmarked history point</span>
-<span class="cm">		 * during a later session, this data will no longer be available. Don&#39;t rely on it for application</span>
-<span class="cm">		 * re-initialization from a bookmark.</span>
-<span class="cm">		 * @param {String} historyData.newTitle optional - This will swap out the html &lt;code&gt;&lt;title&gt;&lt;/code&gt; attribute with a new value. </span>
-<span class="cm">		 * If you have set a baseTitle using the options bundle, the value will be plugged into the baseTitle by swapping out the @@@ replacement param.</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="k">this</span><span class="p">.</span><span class="nx">go</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">newLocation</span><span class="p">,</span> <span class="nx">historyData</span><span class="p">)</span> <span class="p">{</span>
-			
-			<span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">,</span> <span class="nx">newData</span> <span class="o">=</span> <span class="p">[];</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isHash</span><span class="p">(</span><span class="nx">newLocation</span><span class="p">))</span> <span class="p">{</span>
-				<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">newLocation</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">newData</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">key</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="nx">val</span><span class="p">);</span>
-				<span class="p">});</span>
-				<span class="nx">newLocation</span> <span class="o">=</span> <span class="nx">newData</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">);</span>
-			<span class="p">}</span>
-			<span class="cm">/*Escape the location and remove any leading hash symbols*/</span>
-			<span class="kd">var</span> <span class="nx">encodedLocation</span> <span class="o">=</span> <span class="nx">encode</span><span class="p">(</span><span class="nx">removeHash</span><span class="p">(</span><span class="nx">newLocation</span><span class="p">));</span>
-			
-			<span class="k">if</span> <span class="p">(</span><span class="nx">safari</span><span class="p">)</span> <span class="p">{</span>
-	
+
 				<span class="cm">/*Store the history data into history storage - pass in unencoded newLocation since</span>
 <span class="cm">				historyStorage does its own encoding*/</span>
 				<span class="nx">historyStorage</span><span class="p">.</span><span class="nx">put</span><span class="p">(</span><span class="nx">newLocation</span><span class="p">,</span> <span class="nx">historyData</span><span class="p">);</span>
-	
+
+				<span class="cm">/*Indicate to the browser to ignore this upcomming location change since we&#39;re making it programmatically*/</span>
+				<span class="nx">ignoreLocationChange</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+				<span class="cm">/*Indicate to IE that this is an atomic location change block*/</span>
+				<span class="nx">ieAtomicLocationChange</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
 				<span class="cm">/*Save this as our current location*/</span>
 				<span class="nx">currentLocation</span> <span class="o">=</span> <span class="nx">encodedLocation</span><span class="p">;</span>
-		
+				
 				<span class="cm">/*Change the browser location*/</span>
 				<span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">hash</span> <span class="o">=</span> <span class="nx">encodedLocation</span><span class="p">;</span>
-			
-				<span class="cm">/*Save this to the Safari form field*/</span>
-				<span class="nx">putSafariState</span><span class="p">(</span><span class="nx">encodedLocation</span><span class="p">);</span>
-				<span class="nx">myself</span><span class="p">.</span><span class="nx">changeTitle</span><span class="p">(</span><span class="nx">historyData</span><span class="p">);</span>
-	
-			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-				
-				<span class="cm">/*Most browsers require that we wait a certain amount of time before changing the location, such</span>
-<span class="cm">				as 200 MS; rather than forcing external callers to use window.setTimeout to account for this,</span>
-<span class="cm">				we internally handle it by putting requests in a queue.*/</span>
-				<span class="kd">var</span> <span class="nx">addImpl</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-					
-					<span class="cm">/*Indicate that the current wait time is now less*/</span>
-					<span class="k">if</span> <span class="p">(</span><span class="nx">currentWaitTime</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-						<span class="nx">currentWaitTime</span> <span class="o">=</span> <span class="nx">currentWaitTime</span> <span class="o">-</span> <span class="nx">waitTime</span><span class="p">;</span>
-					<span class="p">}</span>
-	
-					<span class="cm">/*IE has a strange bug; if the encodedLocation is the same as _any_ preexisting id in the</span>
-<span class="cm">					document, then the history action gets recorded twice; throw a programmer exception if</span>
-<span class="cm">					there is an element with this ID*/</span>
-					<span class="k">if</span> <span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">encodedLocation</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;debugMode&quot;</span><span class="p">))</span> <span class="p">{</span>
-						<span class="kd">var</span> <span class="nx">e</span> <span class="o">=</span> <span class="s2">&quot;Exception: History locations can not have the same value as _any_ IDs that might be in the document,&quot;</span><span class="p">;</span>
-						<span class="nx">e</span> <span class="o">+=</span> <span class="s2">&quot; due to a bug in IE; please ask the developer to choose a history location that does not match any HTML&quot;</span><span class="p">;</span>
-						<span class="nx">e</span> <span class="o">+=</span> <span class="s2">&quot; IDs in this document. The following ID is already taken and cannot be a location: &quot;</span> <span class="o">+</span> <span class="nx">newLocation</span><span class="p">;</span>
-						<span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="nx">e</span><span class="p">);</span> 
-					<span class="p">}</span>
-	
-					<span class="cm">/*Store the history data into history storage - pass in unencoded newLocation since</span>
-<span class="cm">					historyStorage does its own encoding*/</span>
-					<span class="nx">historyStorage</span><span class="p">.</span><span class="nx">put</span><span class="p">(</span><span class="nx">newLocation</span><span class="p">,</span> <span class="nx">historyData</span><span class="p">);</span>
-	
-					<span class="cm">/*Indicate to the browser to ignore this upcomming location change since we&#39;re making it programmatically*/</span>
-					<span class="nx">ignoreLocationChange</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-	
-					<span class="cm">/*Indicate to IE that this is an atomic location change block*/</span>
-					<span class="nx">ieAtomicLocationChange</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-	
-					<span class="cm">/*Save this as our current location*/</span>
-					<span class="nx">currentLocation</span> <span class="o">=</span> <span class="nx">encodedLocation</span><span class="p">;</span>
-					
-					<span class="cm">/*Change the browser location*/</span>
-					<span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">hash</span> <span class="o">=</span> <span class="nx">encodedLocation</span><span class="p">;</span>
-	
-					<span class="cm">/*Change the hidden iframe&#39;s location if on IE*/</span>
-					<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="p">{</span>
-						<span class="nx">iframe</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;blankURL&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="nx">encodedLocation</span><span class="p">;</span>
-					<span class="p">}</span>
-	
-					<span class="cm">/*End of atomic location change block for IE*/</span>
-					<span class="nx">ieAtomicLocationChange</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-					
-					<span class="nx">myself</span><span class="p">.</span><span class="nx">changeTitle</span><span class="p">(</span><span class="nx">historyData</span><span class="p">);</span>
-					
-				<span class="p">};</span>
-	
-				<span class="cm">/*Now queue up this add request*/</span>
-				<span class="nb">window</span><span class="p">.</span><span class="nx">setTimeout</span><span class="p">(</span><span class="nx">addImpl</span><span class="p">,</span> <span class="nx">currentWaitTime</span><span class="p">);</span>
-	
-				<span class="cm">/*Indicate that the next request will have to wait for awhile*/</span>
-				<span class="nx">currentWaitTime</span> <span class="o">=</span> <span class="nx">currentWaitTime</span> <span class="o">+</span> <span class="nx">waitTime</span><span class="p">;</span>
-			<span class="p">}</span>
-			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
-		<span class="p">};</span>
-					
-		<span class="cm">/*Set up the historyStorage object; pass in options bundle*/</span>
-		<span class="nx">historyStorage</span><span class="p">.</span><span class="nx">setup</span><span class="p">({</span>
-			<span class="nx">debugMode</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;debugMode&quot;</span><span class="p">)</span>
-		<span class="p">});</span>
-		
-		<span class="cm">/*Get our initial location*/</span>
-		<span class="kd">var</span> <span class="nx">initialHash</span> <span class="o">=</span> <span class="nx">getCurrentLocation</span><span class="p">();</span>
 
-		<span class="cm">/*Save it as our current location*/</span>
-		<span class="nx">currentLocation</span> <span class="o">=</span> <span class="nx">initialHash</span><span class="p">;</span>
-
-		<span class="k">if</span> <span class="p">(</span><span class="s2">&quot;onhashchange&quot;</span> <span class="k">in</span> <span class="nx">$</span><span class="p">.</span><span class="nx">win</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">useHashEvent</span><span class="p">();</span>
-		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-			<span class="cm">/*Create Safari/Opera-specific code*/</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">safari</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">createSafari</span><span class="p">();</span>
-			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">opera</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">createOpera</span><span class="p">();</span>
-			<span class="p">}</span>
-			
-			<span class="cm">/*Now that we have a hash, create IE-specific code*/</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">createIE</span><span class="p">(</span><span class="nx">initialHash</span><span class="p">);</span>
-			<span class="p">}</span>
-			<span class="cm">/*Add an unload listener for the page; this is needed for FF 1.5+ because this browser caches all dynamic updates to the</span>
-<span class="cm">			page, which can break some of our logic related to testing whether this is the first instance a page has loaded or whether</span>
-<span class="cm">			it is being pulled from the cache*/</span>
-	
-			<span class="nx">$</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">win</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;unload&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-				<span class="nx">firstLoad</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-			<span class="p">});</span>
-	
-			<span class="cm">/*Determine if this is our first page load; for IE, we do this in this.iframeLoaded(), which is fired on pageload. We do it</span>
-<span class="cm">			there because we have no historyStorage at this point, which only exists after the page is finished loading in IE*/</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="p">{</span>
-				<span class="cm">/*The iframe will get loaded on page load, and we want to ignore this fact*/</span>
-				<span class="nx">ignoreLocationChange</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">historyStorage</span><span class="p">.</span><span class="nx">hasKey</span><span class="p">(</span><span class="nx">PAGELOADEDSTRING</span><span class="p">))</span> <span class="p">{</span>
-					<span class="cm">/*This is our first page load, so ignore the location change and add our special history entry*/</span>
-					<span class="nx">ignoreLocationChange</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-					<span class="nx">firstLoad</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-					<span class="nx">historyStorage</span><span class="p">.</span><span class="nx">put</span><span class="p">(</span><span class="nx">PAGELOADEDSTRING</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
-				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-					<span class="cm">/*This isn&#39;t our first page load, so indicate that we want to pay attention to this location change*/</span>
-					<span class="nx">ignoreLocationChange</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-					<span class="nx">firstLoad</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-					<span class="cm">/*For browsers other than IE, fire a history change event; on IE, the event will be thrown automatically when its</span>
-<span class="cm">					hidden iframe reloads on page load. Unfortunately, we don&#39;t have any listeners yet; indicate that we want to fire</span>
-<span class="cm">					an event when a listener is added.*/</span>
-					<span class="nx">fireOnNewListener</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+				<span class="cm">/*Change the hidden iframe&#39;s location if on IE*/</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">iframe</span><span class="p">.</span><span class="nx">src</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;blankURL&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="nx">encodedLocation</span><span class="p">;</span>
 				<span class="p">}</span>
-			<span class="p">}</span>
-	
-			<span class="cm">/*Other browsers can use a location handler that checks at regular intervals as their primary mechanism; we use it for IE as</span>
-<span class="cm">			well to handle an important edge case; see checkLocation() for details*/</span>
-			<span class="nx">setInterval</span><span class="p">(</span><span class="nx">checkLocation</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
-		<span class="p">}</span>
-	<span class="p">};</span>
-	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">History</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">);</span>
-	
-	<span class="nx">$</span><span class="p">.</span><span class="nx">History</span> <span class="o">=</span> <span class="nx">History</span><span class="p">;</span>
 
+				<span class="cm">/*End of atomic location change block for IE*/</span>
+				<span class="nx">ieAtomicLocationChange</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+				
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">changeTitle</span><span class="p">(</span><span class="nx">historyData</span><span class="p">);</span>
+				
+			<span class="p">};</span>
+
+			<span class="cm">/*Now queue up this add request*/</span>
+			<span class="nb">window</span><span class="p">.</span><span class="nx">setTimeout</span><span class="p">(</span><span class="nx">addImpl</span><span class="p">,</span> <span class="nx">currentWaitTime</span><span class="p">);</span>
+
+			<span class="cm">/*Indicate that the next request will have to wait for awhile*/</span>
+			<span class="nx">currentWaitTime</span> <span class="o">=</span> <span class="nx">currentWaitTime</span> <span class="o">+</span> <span class="nx">waitTime</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+	<span class="p">};</span>
+				
+	<span class="cm">/*Set up the historyStorage object; pass in options bundle*/</span>
+	<span class="nx">historyStorage</span><span class="p">.</span><span class="nx">setup</span><span class="p">({</span>
+		<span class="nx">debugMode</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;debugMode&quot;</span><span class="p">)</span>
+	<span class="p">});</span>
+	
+	<span class="cm">/*Get our initial location*/</span>
+	<span class="kd">var</span> <span class="nx">initialHash</span> <span class="o">=</span> <span class="nx">getCurrentLocation</span><span class="p">();</span>
+
+	<span class="cm">/*Save it as our current location*/</span>
+	<span class="nx">currentLocation</span> <span class="o">=</span> <span class="nx">initialHash</span><span class="p">;</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="s2">&quot;onhashchange&quot;</span> <span class="k">in</span> <span class="nx">$</span><span class="p">.</span><span class="nx">win</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">useHashEvent</span><span class="p">();</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="cm">/*Create Safari/Opera-specific code*/</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">safari</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">createSafari</span><span class="p">();</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">opera</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">createOpera</span><span class="p">();</span>
+		<span class="p">}</span>
+		
+		<span class="cm">/*Now that we have a hash, create IE-specific code*/</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">createIE</span><span class="p">(</span><span class="nx">initialHash</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="cm">/*Add an unload listener for the page; this is needed for FF 1.5+ because this browser caches all dynamic updates to the</span>
+<span class="cm">		page, which can break some of our logic related to testing whether this is the first instance a page has loaded or whether</span>
+<span class="cm">		it is being pulled from the cache*/</span>
+
+		<span class="nx">$</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">win</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;unload&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="nx">firstLoad</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+		<span class="p">});</span>
+
+		<span class="cm">/*Determine if this is our first page load; for IE, we do this in this.iframeLoaded(), which is fired on pageload. We do it</span>
+<span class="cm">		there because we have no historyStorage at this point, which only exists after the page is finished loading in IE*/</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="p">{</span>
+			<span class="cm">/*The iframe will get loaded on page load, and we want to ignore this fact*/</span>
+			<span class="nx">ignoreLocationChange</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">historyStorage</span><span class="p">.</span><span class="nx">hasKey</span><span class="p">(</span><span class="nx">PAGELOADEDSTRING</span><span class="p">))</span> <span class="p">{</span>
+				<span class="cm">/*This is our first page load, so ignore the location change and add our special history entry*/</span>
+				<span class="nx">ignoreLocationChange</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+				<span class="nx">firstLoad</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+				<span class="nx">historyStorage</span><span class="p">.</span><span class="nx">put</span><span class="p">(</span><span class="nx">PAGELOADEDSTRING</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="cm">/*This isn&#39;t our first page load, so indicate that we want to pay attention to this location change*/</span>
+				<span class="nx">ignoreLocationChange</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+				<span class="nx">firstLoad</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+				<span class="cm">/*For browsers other than IE, fire a history change event; on IE, the event will be thrown automatically when its</span>
+<span class="cm">				hidden iframe reloads on page load. Unfortunately, we don&#39;t have any listeners yet; indicate that we want to fire</span>
+<span class="cm">				an event when a listener is added.*/</span>
+				<span class="nx">fireOnNewListener</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+
+		<span class="cm">/*Other browsers can use a location handler that checks at regular intervals as their primary mechanism; we use it for IE as</span>
+<span class="cm">		well to handle an important edge case; see checkLocation() for details*/</span>
+		<span class="nx">setInterval</span><span class="p">(</span><span class="nx">checkLocation</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
+	<span class="p">}</span>
+<span class="p">};</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">History</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">);</span>
+
+<span class="nx">$</span><span class="p">.</span><span class="nx">History</span> <span class="o">=</span> <span class="nx">History</span><span class="p">;</span>
+			
 <span class="p">});</span>
 </pre></div>
 
@@ -819,18 +824,23 @@
                                 <li class=""><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
-                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
                                 <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
-                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
                         </ul>
                     </div>
 
@@ -839,13 +849,6 @@
                         <ul class="content">
                                 <li class=""><a href="Drag.html" title="Drag">Drag</a></li>
                                 <li class=""><a href="DragDrop.html" title="DragDrop">DragDrop</a></li>
-                        </ul>
-                    </div>
-
-                    <div id="fileList" class="module">
-                        <h4>Files</h4>
-                        <ul class="content">        
-                                <li class="selected"><a href="history.js.html" title="history.js">history.js</a></li>
                         </ul>
                     </div>
 
@@ -858,7 +861,7 @@
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
 <script type="text/javascript">

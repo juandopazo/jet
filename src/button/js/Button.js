@@ -58,12 +58,12 @@ var Button = Base.create('button', Widget, [WidgetChild], {
 			setter: $
 		},
 		/**
-		 * @config label
+		 * @config labelContent
 		 * @description Text of this button's label
 		 * @type String
 		 * @default null
 		 */
-		label: {
+		labelContent: {
 			value: null,
 			validator: Lang.isString
 		},
@@ -89,7 +89,7 @@ var Button = Base.create('button', Widget, [WidgetChild], {
 			this.get(CONTENT_BOX)._nodes[0].disabled = !val;
 		},
 		
-		labelChange: function (e, val) {
+		labelContentChange: function (e, val) {
 			var labelNode = this.get(LABEL_NODE);
 			if (Lang.isString(val)) {
 				labelNode.html(val);
@@ -127,7 +127,7 @@ var Button = Base.create('button', Widget, [WidgetChild], {
 			var id = this.getClassName('content', this._uid);
 			var contentBox = this.get(CONTENT_BOX).attr(ID, id).html(this.get('text'));
 			var labelNode = this.get(LABEL_NODE);
-			var label = this.get('label');
+			var label = this.get('labelContent');
 			labelNode._nodes[0].setAttribute('for', id);
 			if (Lang.isString(label)) {
 				this.get(BOUNDING_BOX).prepend(labelNode.html(label));
@@ -164,14 +164,9 @@ var Button = Base.create('button', Widget, [WidgetChild], {
 	},
 	
 	initializer: function () {
-		var self = this;
-		this.set(LABEL_NODE, this.LABEL_TEMPLATE);
-		this._onDomFocus = function (e) {
-			self.focus();
-		};
-		this._onDomBlur = function (e) {
-			self.blur();
-		};
+		this.set(LABEL_NODE, this.get(LABEL_NODE) || this.LABEL_TEMPLATE);
+		this._onDomFocus = $.bind(this.focus, this);
+		this._onDomBlur = $.bind(this.blur, this);
 	}
 	
 });

@@ -1,0 +1,321 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: log   menu.js  (Jet Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+    <script type="text/javascript" src="assets/api-js"></script>
+    <script type="text/javascript" src="assets/ac-js"></script>
+</head>
+
+<body>
+
+<div id="doc4" class="yui-t2">
+	<div id="hd">
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>log&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
+            &gt; <a href="./module_log.html" title="log">log</a>
+                
+                 &gt; menu.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight"><pre><span class="cm">/**</span>
+<span class="cm"> * OS-like menus for navigation</span>
+<span class="cm"> * @module menu</span>
+<span class="cm"> * @requires base,container</span>
+<span class="cm"> * </span>
+<span class="cm"> * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.</span>
+<span class="cm"> * Code licensed under the BSD License</span>
+<span class="cm"> * https://github.com/juandopazo/jet/blob/master/LICENSE.md</span>
+<span class="cm">*/</span>
+<span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;menu&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
+
+
+			
+<span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
+	<span class="nx">A</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">,</span>
+	<span class="nx">Base</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">,</span>
+	<span class="nx">Widget</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Widget</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">BOUNDING_BOX</span> <span class="o">=</span> <span class="s1">&#39;boundingBox&#39;</span><span class="p">,</span>
+	<span class="nx">CONTENT_BOX</span> <span class="o">=</span> <span class="s1">&#39;contentBox&#39;</span><span class="p">,</span>
+	<span class="nx">HOVER</span> <span class="o">=</span> <span class="s1">&#39;hover&#39;</span><span class="p">,</span>
+	<span class="nx">CHILDREN</span> <span class="o">=</span> <span class="s1">&#39;children&#39;</span><span class="p">,</span>
+	<span class="nx">LABEL_NODE</span> <span class="o">=</span> <span class="s1">&#39;labelNode&#39;</span><span class="p">,</span>
+	
+	<span class="nx">OS_INTERACTION</span> <span class="o">=</span> <span class="s1">&#39;os&#39;</span><span class="p">;</span>
+	
+<span class="cm">/**</span>
+<span class="cm"> * A menu item</span>
+<span class="cm"> * @class MenuItem</span>
+<span class="cm"> * @extends Widget</span>
+<span class="cm"> * @uses WidgetParent, WidgetChild</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying configuration properties</span>
+<span class="cm"> */</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">MenuItem</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;menuitem&#39;</span><span class="p">,</span> <span class="nx">Widget</span><span class="p">,</span> <span class="p">[</span><span class="nx">$</span><span class="p">.</span><span class="nx">WidgetParent</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">WidgetChild</span><span class="p">],</span> <span class="p">{</span>
+	
+	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config labelNode</span>
+<span class="cm">		 * @description A pointer to the node containing the label</span>
+<span class="cm">		 * @default &lt;span/&gt;</span>
+<span class="cm">		 */</span>
+		<span class="nx">labelNode</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;&lt;span/&gt;&#39;</span><span class="p">,</span>
+			<span class="nx">setter</span><span class="o">:</span> <span class="nx">$</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @config labelContent</span>
+<span class="cm">		 * @description The content of the Menu&#39;s label</span>
+<span class="cm">		 */</span>
+		<span class="nx">labelContent</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;&#39;</span>
+		<span class="p">},</span>
+		<span class="nx">defaultChildType</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;MenuItem&#39;</span>
+		<span class="p">},</span>
+		<span class="nx">align</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="p">[</span><span class="nx">$</span><span class="p">.</span><span class="nx">WidgetAlignment</span><span class="p">.</span><span class="nx">TopLeft</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">WidgetAlignment</span><span class="p">.</span><span class="nx">TopRight</span><span class="p">]</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	
+	<span class="nx">EVENTS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">render</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">boundingBox</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">contentBox</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CONTENT_BOX</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;href&#39;</span><span class="p">,</span> <span class="s1">&#39;#&#39;</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">olay</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_olay</span> <span class="o">=</span>  <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Overlay</span><span class="p">({</span>
+				<span class="nx">align</span><span class="o">:</span> <span class="p">{</span>
+					<span class="nx">node</span><span class="o">:</span> <span class="nx">boundingBox</span><span class="p">,</span>
+					<span class="nx">points</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;align&#39;</span><span class="p">)</span>
+				<span class="p">}</span>
+			<span class="p">});</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LABEL_NODE</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="s1">&#39;label&#39;</span><span class="p">)).</span><span class="nx">html</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;labelContent&#39;</span><span class="p">)).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">contentBox</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CHILDREN</span><span class="p">).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">olay</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">boundingBox</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;childrenContainer&#39;</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">olay</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">));</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CHILDREN</span><span class="p">).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="s1">&#39;submenu&#39;</span><span class="p">));</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;selected&#39;</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">olay</span><span class="p">.</span><span class="nx">hide</span><span class="p">();</span>
+			<span class="p">}</span>
+			<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_toggleSelected</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+		<span class="p">},</span>
+		<span class="nx">mouseover</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">parent</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;parent&#39;</span><span class="p">);</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="nx">HOVER</span><span class="p">));</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">parent</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;interaction&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="nx">OS_INTERACTION</span> <span class="o">&amp;&amp;</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;selection&#39;</span><span class="p">))</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">select</span><span class="p">();</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		<span class="nx">mouseout</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">removeClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="nx">HOVER</span><span class="p">));</span>
+		<span class="p">},</span>
+		<span class="nx">afterLabelContentChange</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">newVal</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LABEL_NODE</span><span class="p">).</span><span class="nx">setContent</span><span class="p">(</span><span class="nx">newVal</span><span class="p">);</span>
+		<span class="p">},</span>
+		<span class="nx">afterSelectedChange</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">newVal</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">olay</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_olay</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">newVal</span> <span class="o">&amp;&amp;</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CHILDREN</span><span class="p">).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">olay</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;rendered&#39;</span><span class="p">))</span> <span class="p">{</span>
+					<span class="nx">olay</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">));</span>
+				<span class="p">}</span>
+				<span class="nx">olay</span><span class="p">.</span><span class="nx">show</span><span class="p">();</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">olay</span><span class="p">.</span><span class="nx">hide</span><span class="p">();</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	
+<span class="p">},</span> <span class="p">{</span>
+	<span class="nx">BOUNDING_TEMPLATE</span><span class="o">:</span> <span class="s1">&#39;&lt;li/&gt;&#39;</span><span class="p">,</span>
+	<span class="nx">CONTENT_TEMPLATE</span><span class="o">:</span> <span class="s1">&#39;&lt;a/&gt;&#39;</span><span class="p">,</span>
+	
+	<span class="nx">initializer</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;childrenContainer&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;ul/&gt;&#39;</span><span class="p">);</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">LABEL_NODE</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LABEL_NODE</span><span class="p">));</span>
+	<span class="p">},</span>
+	
+	<span class="nx">_toggleSelected</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span> <span class="o">==</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LABEL_NODE</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="p">{</span>
+			<span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">toggle</span><span class="p">();</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">});</span>
+<span class="cm">/**</span>
+<span class="cm"> * A navigation menu</span>
+<span class="cm"> * @class Menu</span>
+<span class="cm"> * @extends Widget</span>
+<span class="cm"> * @uses WidgetParent</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying configuration properties</span>
+<span class="cm"> */</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">Menu</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;menu&#39;</span><span class="p">,</span> <span class="nx">Widget</span><span class="p">,</span> <span class="p">[</span><span class="nx">$</span><span class="p">.</span><span class="nx">WidgetParent</span><span class="p">],</span> <span class="p">{</span>
+	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">defaultChildType</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;MenuItem&#39;</span>
+		<span class="p">},</span>
+		<span class="nx">align</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="p">[</span><span class="nx">$</span><span class="p">.</span><span class="nx">WidgetAlignment</span><span class="p">.</span><span class="nx">TopLeft</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">WidgetAlignment</span><span class="p">.</span><span class="nx">BottomLeft</span><span class="p">]</span>
+		<span class="p">},</span>
+		<span class="nx">multiple</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+			<span class="nx">readOnly</span><span class="o">:</span> <span class="kc">true</span>
+		<span class="p">},</span>
+		<span class="nx">interaction</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="nx">OS_INTERACTION</span><span class="p">,</span>
+			<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	
+	<span class="nx">EVENTS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">addChild</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">child</span> <span class="k">instanceof</span> <span class="nx">$</span><span class="p">.</span><span class="nx">MenuItem</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">child</span><span class="p">.</span><span class="nx">align</span> <span class="o">=</span> <span class="nx">child</span><span class="p">.</span><span class="nx">align</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;align&#39;</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		<span class="nx">afterAddChild</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;interaction&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="nx">OS_INTERACTION</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">child</span><span class="p">.</span><span class="nx">_handlers</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">child</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mouseover&#39;</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_onMenuMouseOver</span><span class="p">,</span> <span class="k">this</span><span class="p">)));</span>
+				<span class="nx">child</span><span class="p">.</span><span class="nx">_handlers</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">child</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mouseout&#39;</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_onMenuMouseOut</span><span class="p">,</span> <span class="k">this</span><span class="p">)));</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		<span class="nx">click</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">domEvent</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">target</span> <span class="o">=</span> <span class="nx">domEvent</span><span class="p">.</span><span class="nx">target</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">selection</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;multiple&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">target</span> <span class="o">==</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">||</span> <span class="nx">target</span> <span class="o">==</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CONTENT_BOX</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="p">{</span>
+				<span class="nx">selection</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;selection&#39;</span><span class="p">);</span>
+				<span class="k">if</span> <span class="p">(</span><span class="nx">selection</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">selection</span><span class="p">.</span><span class="nx">unselect</span><span class="p">();</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">},</span> <span class="p">{</span>
+	<span class="nx">CONTENT_TEMPLATE</span><span class="o">:</span> <span class="s1">&#39;&lt;ul/&gt;&#39;</span><span class="p">,</span>
+	
+	<span class="nx">_onMenuMouseOver</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_menuTimeout</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">clearTimeout</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_menuTimeout</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	
+	<span class="nx">_onMenuMouseOut</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+		<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_menuTimeout</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">clearTimeout</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_menuTimeout</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">_menuTimeout</span> <span class="o">=</span> <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">selection</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;selection&#39;</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">selection</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">selection</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">child</span><span class="p">.</span><span class="nx">unselect</span><span class="p">();</span>
+				<span class="p">});</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">selection</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">selection</span><span class="p">.</span><span class="nx">unselect</span><span class="p">();</span>
+			<span class="p">}</span>
+		<span class="p">},</span> <span class="mi">1000</span><span class="p">);</span>
+	<span class="p">},</span>
+	
+	<span class="nx">initializer</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;interaction&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="nx">OS_INTERACTION</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mouseout&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_onMenuMouseOut</span><span class="p">);</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;mouseover&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_onMenuMouseOver</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	
+<span class="p">});</span>
+			
+<span class="p">});</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_anim.html" title="anim">anim</a></li>
+                                <li class=""><a href="module_base.html" title="base">base</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_io.html" title="io">io</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class="selected"><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_node.html" title="node">node</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
+	</div>
+</div>
+<script type="text/javascript">
+
+    var ALL_YUI_PROPS = [];
+</script>
+</body>
+</html>

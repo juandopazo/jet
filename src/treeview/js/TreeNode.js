@@ -34,7 +34,8 @@ var EXPAND = "expand",
  * A node in a TreeView
  * @class TreeNode
  * @extends Widget
- * @uses WidgetParent, WidgetChild
+ * @uses WidgetParent
+ * @uses WidgetChild
  * @constructor
  * @param {Object} config Object literal specifying configuration properties
  */

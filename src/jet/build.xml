@@ -9,6 +9,11 @@
 	<property name="filename" value="${ant.project.name}.js"/>
 	
 	<target name="init">
+		<subant target="init" inheritAll="false" inheritrefs="false">
+	    	<fileset dir="../base/" includes="build.xml"/>
+	    	<fileset dir="../log/" includes="build.xml"/>
+	    	<fileset dir="../node/" includes="build.xml"/>
+	    </subant>
 		<!-- Create the time stamp -->
 		<tstamp>
 			<format property="TODAY" pattern="dd-MM-yyyy"/>
@@ -76,5 +81,9 @@
 			<filelist dir="${tmpdir}" files="${ant.project.name}.min.js"/>
 			<filelist dir="${builddir}" files="log.min.js,node.min.js,base.min.js"/>
 		</concat>
+		<delete>
+			<filelist dir="${builddir}" files="log.js,node.js,base.js"/>
+			<filelist dir="${builddir}" files="log.min.js,node.min.js,base.min.js"/>
+		</delete>
 	</target>
 </project>

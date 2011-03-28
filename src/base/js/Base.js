@@ -38,6 +38,7 @@ extend(Base, Attribute, {}, {
 		/**
 		 * Allows quick setting of custom events in the constructor
 		 * @config on
+		 * @writeOnce
 		 */
 		on: {
 			writeOnce: true,

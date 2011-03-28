@@ -1,10 +1,9 @@
 
 /**
  * An Image vector
- * @class Image
+ * @class Vector.Image
  * @extends Vector
  * @constructor
- * @namespace Vector
  * @param {Object} config
  */
 var ImageVector = Base.create('image', Vector, [], {}, {

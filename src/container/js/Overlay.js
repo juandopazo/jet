@@ -6,12 +6,11 @@ if (!Lang.isNumber(Global.ovZindex)) {
 	Global.ovZindex = 10;
 }
 /**
+ * An Overlay is a Module that floats in the page (doesn't have position static)
  * @class Overlay
- * @description An Overlay is a Module that floats in the page (doesn't have position static)
- * @extends Module
- * @uses WidgetAlignment
- * @uses WidgetStack
  * @constructor
+ * @extends Module
+ * @uses WidgetStack
  * @param {Object} config Object literal specifying widget configuration properties
  */
 $.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment, $.WidgetStack], {
@@ -22,21 +21,25 @@ $.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment, $.WidgetStack],
 		 * @description If true, the overlay can be dragged. Requires $.Drag
 		 * @default false
 		 * @type Boolean
+		 * @writeOnce
 		 */
 		draggable: {
 			validator: function () {
 				return !!$.Drag;
 			},
-			value: false
+			value: false,
+			writeOnce: true
 		},
 		/**
 		 * @config modal
 		 * @description Whether this overlay should stop the user from interacting with the rest of the page
-		 * @default faulse
+		 * @default false
 		 * @type Boolean
+		 * @writeOnce
 		 */
 		modal: {
-			value: false
+			value: false,
+			writeOnce: true
 		},
 		
 		startZIndex: {

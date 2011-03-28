@@ -8,7 +8,6 @@ var PX = 'px';
  * A widget extension that provides alignment support
  * @class WidgetAlignment
  * @constructor
- * @param {Object} config Object literal specifying widget configuration properties
  */
 function WidgetAlignment() {};
 $.mix(WidgetAlignment, {

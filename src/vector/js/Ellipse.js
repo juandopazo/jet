@@ -1,9 +1,9 @@
 
 /**
  * An ellipse
- * @class Ellipse
+ * @class Vector.Ellipse
  * @extends Vector
- * @namespace Vector
+ * @constructor
  * @param {Object} config
  */
 var Ellipse = Base.create('ellipse', Vector, [], {
