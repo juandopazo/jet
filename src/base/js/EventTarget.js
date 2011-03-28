@@ -11,7 +11,7 @@ var TRACKING = "tracking",
 
 
 /**
- * <p>A class designed to be inherited or extended by other classes and provide custom events.</p>
+ * <p>A class designed to be inherited or used by other classes to provide custom events.</p>
  * <p>Custom events work by attaching event listeners to a class that extends EventTarget.
  * An event listener can be a function or an object with a method called "handleEvent".
  * If it is a function, when fired the context will be the firing object. In the case of an object, the 
@@ -76,8 +76,8 @@ EventTarget.prototype = {
 	},
 	
 	/**
-	 * Listens to an 'after' event. This is a shortcut for writing on('afterEvent), callback)
-	 * @method once
+	 * Listens to an 'after' event. This is a shortcut for writing on('afterEvent'), callback)
+	 * @method fire
 	 * @param {String} eventType Name of the event to listen to
 	 * @param {Function} callback Callback to execute when the event fires
 	 * @param {Object} thisp Optional. Context on which the callback will run

@@ -26,7 +26,6 @@
 		<concat destfile="${tmpdir}/${filename}">
 			<header>jet.add('${ant.project.name}', function ($) {
 
-
 			</header>
 			<filelist dir="./js" files="${build.jsfiles}"/>
 			<footer>
