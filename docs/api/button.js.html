@@ -56,7 +56,6 @@
 <span class="cm">*/</span>
 <span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 
-
 			
 <span class="kd">var</span> <span class="nx">A</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">,</span>
 	<span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span>
@@ -97,7 +96,7 @@
 	
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config enabled</span>
+<span class="cm">		 * @attribute enabled</span>
 <span class="cm">		 * @description Enabled status of the button</span>
 <span class="cm">		 * @type Boolean</span>
 <span class="cm">		 * @default true</span>
@@ -107,7 +106,7 @@
 			<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isBoolean</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config labelNode</span>
+<span class="cm">		 * @attribute labelNode</span>
 <span class="cm">		 * @description Pointer to the &lt;label&gt; node related to this button</span>
 <span class="cm">		 * @type NodeList</span>
 <span class="cm">		 * @readOnly</span>
@@ -117,7 +116,7 @@
 			<span class="nx">setter</span><span class="o">:</span> <span class="nx">$</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config labelContent</span>
+<span class="cm">		 * @attribute labelContent</span>
 <span class="cm">		 * @description Text of this button&#39;s label</span>
 <span class="cm">		 * @type String</span>
 <span class="cm">		 * @default null</span>
@@ -127,7 +126,7 @@
 			<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config text</span>
+<span class="cm">		 * @attribute text</span>
 <span class="cm">		 * @description Text inside the button</span>
 <span class="cm">		 * @default &#39;&#39;</span>
 <span class="cm">		 */</span>
@@ -257,7 +256,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Button</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config pill</span>
+<span class="cm">		 * @attribute pill</span>
 <span class="cm">		 * @description Whether this button group should be styled as a pill</span>
 <span class="cm">		 * @type Boolean</span>
 <span class="cm">		 * @default false</span>
@@ -301,7 +300,7 @@
 <span class="nx">$</span><span class="p">.</span><span class="nx">ComboOption</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;combo-option&#39;</span><span class="p">,</span> <span class="nx">Widget</span><span class="p">,</span> <span class="p">[</span><span class="nx">WidgetChild</span><span class="p">],</span> <span class="p">{</span>
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config value</span>
+<span class="cm">		 * @attribute value</span>
 <span class="cm">		 * @description Sets/returns the value of the option</span>
 <span class="cm">		 */</span>
 		<span class="nx">value</span><span class="o">:</span> <span class="p">{</span>
@@ -314,7 +313,7 @@
 			<span class="p">}</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config text</span>
+<span class="cm">		 * @attribute text</span>
 <span class="cm">		 * @description Sets/returns the text of the option</span>
 <span class="cm">		 */</span>
 		<span class="nx">text</span><span class="o">:</span> <span class="p">{</span>
@@ -396,7 +395,7 @@
 <span class="nx">$</span><span class="p">.</span><span class="nx">RadioGroup</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;radio-group&#39;</span><span class="p">,</span> <span class="nx">Widget</span><span class="p">,</span> <span class="p">[</span><span class="nx">WidgetParent</span><span class="p">],</span> <span class="p">{</span>
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config multiple</span>
+<span class="cm">		 * @attribute multiple</span>
 <span class="cm">		 * @description Boolean indicating if multiple children can be selected at once. Whether or not multiple selection is enabled is always delegated to the value of the multiple attribute of the root widget in the object hierarchy</span>
 <span class="cm">		 * @default false</span>
 <span class="cm">		 * @readOnly</span>
@@ -406,7 +405,7 @@
 			<span class="nx">readOnly</span><span class="o">:</span> <span class="kc">true</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config name</span>
+<span class="cm">		 * @attribute name</span>
 <span class="cm">		 * @description Name attribute of all radio buttons in the group</span>
 <span class="cm">		 * @readOnly</span>
 <span class="cm">		 */</span>
@@ -460,7 +459,7 @@
 <span class="nx">$</span><span class="p">.</span><span class="nx">CheckBoxGroup</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;checkbox-group&#39;</span><span class="p">,</span> <span class="nx">Widget</span><span class="p">,</span> <span class="p">[</span><span class="nx">WidgetParent</span><span class="p">],</span> <span class="p">{</span>
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config name</span>
+<span class="cm">		 * @attribute name</span>
 <span class="cm">		 * @description Name attribute of all checkboxes in the group</span>
 <span class="cm">		 * @readOnly</span>
 <span class="cm">		 */</span>
@@ -510,7 +509,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
@@ -545,7 +543,7 @@
 <script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "TimeFrame.html#method_addTween", "access": "", "host": "TimeFrame", "type": "method", "name": "addTween"}, {"url": "Tween.html#config_duration", "access": "", "host": "Tween", "type": "config", "name": "duration"}, {"url": "Easing.html#method_easein", "access": "", "host": "Easing", "type": "method", "name": "easein"}, {"url": "Easing.html#method_easeout", "access": "", "host": "Easing", "type": "method", "name": "easeout"}, {"url": "Tween.html#config_easing", "access": "", "host": "Tween", "type": "config", "name": "easing"}, {"url": "Tween.html#config_easingStrength", "access": "", "host": "Tween", "type": "config", "name": "easingStrength"}, {"url": "TimeFrame.html#property_fps", "access": "", "host": "TimeFrame", "type": "property", "name": "fps"}, {"url": "Tween.html#config_from", "access": "", "host": "Tween", "type": "config", "name": "from"}, {"url": "Easing.html#method_linear", "access": "", "host": "Easing", "type": "method", "name": "linear"}, {"url": "Tween.html#config_node", "access": "", "host": "Tween", "type": "config", "name": "node"}, {"url": "Tween.html#method_pause", "access": "", "host": "Tween", "type": "method", "name": "pause"}, {"url": "TimeFrame.html#method_play", "access": "", "host": "TimeFrame", "type": "method", "name": "play"}, {"url": "Tween.html#method_play", "access": "", "host": "Tween", "type": "method", "name": "play"}, {"url": "Tween.html#config_playing", "access": "", "host": "Tween", "type": "config", "name": "playing"}, {"url": "TimeFrame.html#method_removeTween", "access": "", "host": "TimeFrame", "type": "method", "name": "removeTween"}, {"url": "Tween.html#method_reverse", "access": "", "host": "Tween", "type": "method", "name": "reverse"}, {"url": "Easing.html#method_sling", "access": "", "host": "Easing", "type": "method", "name": "sling"}, {"url": "TimeFrame.html#method_stop", "access": "", "host": "TimeFrame", "type": "method", "name": "stop"}, {"url": "Tween.html#method_stop", "access": "", "host": "Tween", "type": "method", "name": "stop"}, {"url": "Tween.html#config_to", "access": "", "host": "Tween", "type": "config", "name": "to"}];
+    var ALL_YUI_PROPS = [{"url": "TimeFrame.html#method_addTween", "access": "", "host": "TimeFrame", "type": "method", "name": "addTween"}, {"url": "Tween.html#config_duration", "access": "", "host": "Tween", "type": "config", "name": "duration"}, {"url": "Tween.html#event_durationChange", "access": "", "host": "Tween", "type": "event", "name": "durationChange"}, {"url": "Easing.html#method_easein", "access": "", "host": "Easing", "type": "method", "name": "easein"}, {"url": "Easing.html#method_easeout", "access": "", "host": "Easing", "type": "method", "name": "easeout"}, {"url": "Tween.html#config_easing", "access": "", "host": "Tween", "type": "config", "name": "easing"}, {"url": "Tween.html#event_easingChange", "access": "", "host": "Tween", "type": "event", "name": "easingChange"}, {"url": "Tween.html#config_easingStrength", "access": "", "host": "Tween", "type": "config", "name": "easingStrength"}, {"url": "Tween.html#event_easingStrengthChange", "access": "", "host": "Tween", "type": "event", "name": "easingStrengthChange"}, {"url": "TimeFrame.html#property_fps", "access": "", "host": "TimeFrame", "type": "property", "name": "fps"}, {"url": "Tween.html#config_from", "access": "", "host": "Tween", "type": "config", "name": "from"}, {"url": "Tween.html#event_fromChange", "access": "", "host": "Tween", "type": "event", "name": "fromChange"}, {"url": "Easing.html#method_linear", "access": "", "host": "Easing", "type": "method", "name": "linear"}, {"url": "Tween.html#config_node", "access": "", "host": "Tween", "type": "config", "name": "node"}, {"url": "Tween.html#event_nodeChange", "access": "", "host": "Tween", "type": "event", "name": "nodeChange"}, {"url": "Tween.html#method_pause", "access": "", "host": "Tween", "type": "method", "name": "pause"}, {"url": "TimeFrame.html#method_play", "access": "", "host": "TimeFrame", "type": "method", "name": "play"}, {"url": "Tween.html#method_play", "access": "", "host": "Tween", "type": "method", "name": "play"}, {"url": "Tween.html#config_playing", "access": "", "host": "Tween", "type": "config", "name": "playing"}, {"url": "Tween.html#event_playingChange", "access": "", "host": "Tween", "type": "event", "name": "playingChange"}, {"url": "Tween.html#event_previousTimeChange", "access": "", "host": "Tween", "type": "event", "name": "previousTimeChange"}, {"url": "TimeFrame.html#method_removeTween", "access": "", "host": "TimeFrame", "type": "method", "name": "removeTween"}, {"url": "Tween.html#method_reverse", "access": "", "host": "Tween", "type": "method", "name": "reverse"}, {"url": "Easing.html#method_sling", "access": "", "host": "Easing", "type": "method", "name": "sling"}, {"url": "Tween.html#event_startTimeChange", "access": "", "host": "Tween", "type": "event", "name": "startTimeChange"}, {"url": "TimeFrame.html#method_stop", "access": "", "host": "TimeFrame", "type": "method", "name": "stop"}, {"url": "Tween.html#method_stop", "access": "", "host": "Tween", "type": "method", "name": "stop"}, {"url": "Tween.html#config_to", "access": "", "host": "Tween", "type": "config", "name": "to"}, {"url": "Tween.html#event_toChange", "access": "", "host": "Tween", "type": "event", "name": "toChange"}];
 </script>
 </body>
 </html>

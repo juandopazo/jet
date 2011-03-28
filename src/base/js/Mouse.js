@@ -36,7 +36,7 @@ var Mouse = function () {
 	var self = this.addAttrs({
 		/**
 		 * Frequency at which the tracker updates
-		 * @config frequency
+		 * @attribute frequency
 		 * @default 20 (ms)
 		 * @type Number
 		 */
@@ -53,7 +53,7 @@ var Mouse = function () {
 	
 	/**
 	 * Tracking status. Set it to true to start tracking
-	 * @config tracking
+	 * @attribute tracking
 	 * @type Boolean
 	 * @default false
 	 */

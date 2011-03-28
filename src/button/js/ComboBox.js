@@ -10,7 +10,7 @@
 $.ComboOption = Base.create('combo-option', Widget, [WidgetChild], {
 	ATTRS: {
 		/**
-		 * @config value
+		 * @attribute value
 		 * @description Sets/returns the value of the option
 		 */
 		value: {
@@ -23,7 +23,7 @@ $.ComboOption = Base.create('combo-option', Widget, [WidgetChild], {
 			}
 		},
 		/**
-		 * @config text
+		 * @attribute text
 		 * @description Sets/returns the text of the option
 		 */
 		text: {

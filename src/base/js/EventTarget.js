@@ -77,7 +77,7 @@ EventTarget.prototype = {
 	
 	/**
 	 * Listens to an 'after' event. This is a shortcut for writing on('afterEvent'), callback)
-	 * @method fire
+	 * @method after
 	 * @param {String} eventType Name of the event to listen to
 	 * @param {Function} callback Callback to execute when the event fires
 	 * @param {Object} thisp Optional. Context on which the callback will run

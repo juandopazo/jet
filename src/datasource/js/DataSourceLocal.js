@@ -9,7 +9,7 @@
 DataSource.Local = Base.create('datasource-local', DataSource, [], {
 	ATTRS: {
 		/**
-		 * @config localData
+		 * @attribute localData
 		 * @description The object to use as a datasource
 		 * @required
 		 */

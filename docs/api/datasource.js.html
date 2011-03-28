@@ -56,7 +56,6 @@
 <span class="cm">*/</span>
 <span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;datasource&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 
-
 			
 <span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
 	<span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span>
@@ -279,7 +278,7 @@
 <span class="kd">var</span> <span class="nx">DataSource</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;datasource&#39;</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Utility</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span>
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config recordSet</span>
+<span class="cm">		 * @attribute recordSet</span>
 <span class="cm">		 * @description This datasource&#39;s associated recordset</span>
 <span class="cm">		 * @type RecordSet</span>
 <span class="cm">		 * @writeOnce</span>
@@ -288,7 +287,7 @@
 			<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config responseType</span>
+<span class="cm">		 * @attribute responseType</span>
 <span class="cm">		 * @description The expected response type (&#39;xml&#39;, &#39;jsarray&#39;, &#39;json&#39;, &#39;text&#39;)</span>
 <span class="cm">		 * @required</span>
 <span class="cm">		 */</span>
@@ -296,7 +295,7 @@
 			<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config responseSchema</span>
+<span class="cm">		 * @attribute responseSchema</span>
 <span class="cm">		 * @description &lt;p&gt;The schema by which to parse the response data. May be:&lt;/p&gt;</span>
 <span class="cm">		 * &lt;p&gt;&lt;strong&gt;DataSource.responseType.JSARRAY schema&lt;/strong&gt;&lt;br/&gt;</span>
 <span class="cm">		 * A JSARRAY response type assumes the following response shape:&lt;/p&gt;</span>
@@ -342,7 +341,7 @@
 			<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config initialRequest</span>
+<span class="cm">		 * @attribute initialRequest</span>
 <span class="cm">		 * @description Data to send in the automatic initial request</span>
 <span class="cm">		 * @type Object</span>
 <span class="cm">		 */</span>
@@ -564,7 +563,7 @@
 <span class="nx">DataSource</span><span class="p">.</span><span class="nx">Get</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;datasource-get&#39;</span><span class="p">,</span> <span class="nx">DataSource</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span>
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config jsonCallbackParam</span>
+<span class="cm">		 * @attribute jsonCallbackParam</span>
 <span class="cm">		 * @description Name of the URL parameter that defines the name of the JSONP callback</span>
 <span class="cm">		 * @type String</span>
 <span class="cm">		 * @default &quot;p&quot;</span>
@@ -573,7 +572,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;p&quot;</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config timeout</span>
+<span class="cm">		 * @attribute timeout</span>
 <span class="cm">		 * @description Ms after which the request is considered to have timed out</span>
 <span class="cm">		 * @type Number</span>
 <span class="cm">		 * @default 10000</span>
@@ -582,7 +581,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="mi">10000</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config url</span>
+<span class="cm">		 * @attribute url</span>
 <span class="cm">		 * @description Url from which to fetch the data</span>
 <span class="cm">		 * @type String</span>
 <span class="cm">		 * @required</span>
@@ -616,7 +615,7 @@
 <span class="nx">DataSource</span><span class="p">.</span><span class="nx">Ajax</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;datasource-ajax&#39;</span><span class="p">,</span> <span class="nx">DataSource</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span>
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config url</span>
+<span class="cm">		 * @attribute url</span>
 <span class="cm">		 * @description Url from which to fetch the data</span>
 <span class="cm">		 * @type String</span>
 <span class="cm">		 * @required</span>
@@ -646,7 +645,7 @@
 <span class="nx">DataSource</span><span class="p">.</span><span class="nx">XDR</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;datasource-xdr&#39;</span><span class="p">,</span> <span class="nx">DataSource</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span>
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config url</span>
+<span class="cm">		 * @attribute url</span>
 <span class="cm">		 * @description Url from which to fetch the data</span>
 <span class="cm">		 * @type String</span>
 <span class="cm">		 * @required</span>
@@ -677,7 +676,7 @@
 <span class="nx">DataSource</span><span class="p">.</span><span class="nx">Local</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;datasource-local&#39;</span><span class="p">,</span> <span class="nx">DataSource</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span>
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config localData</span>
+<span class="cm">		 * @attribute localData</span>
 <span class="cm">		 * @description The object to use as a datasource</span>
 <span class="cm">		 * @required</span>
 <span class="cm">		 */</span>
@@ -744,7 +743,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>

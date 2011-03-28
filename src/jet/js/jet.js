@@ -243,51 +243,51 @@ window.jet = function (o) {
 	config = buildConfig(config, o);
 	var base = config.base;
 	/**
-	 * @config base
+	 * @attribute base
 	 * @description prefix for all script and css urls
 	 * @type String
 	 * @default "//jet-js.googlecode.com/svn/trunk/src/"
 	 */
 	base = config.base = base.substr(base.length - 1, 1) == "/" ? base : base + "/";
 	/**
-	 * @config base
+	 * @attribute base
 	 * @description defines whether predefined modules should be minified or not
 	 * @type Boolean
 	 * @default true
 	 */
 	config.minify = Lang.isBoolean(config.minify) ? config.minify : false;
 	/**
-	 * @config loadCss
+	 * @attribute loadCss
 	 * @description If true, css modules are loaded
 	 * @type Boolean
 	 * @default true
 	 */
 	config.loadCss = Lang.isBoolean(config.loadCss) ? config.loadCss : true;
 	/**
-	 * @config modules
+	 * @attribute modules
 	 * @description Allows to define your own modules. Currently the same as using object literals in the use() method
 	 * @type Array
 	 */
 	
 	/**
-	 * @config win
+	 * @attribute win
 	 * @description A reference to the global object that is accesible later with $.win
 	 */
 	config.win = config.win || window;
 	/**
-	 * @config doc
+	 * @attribute doc
 	 * @description A reference to the document that is accesible later with $.doc
 	 */
 	config.doc = config.doc || config.win.document;
 	
 	/**
-	 * @config before
+	 * @attribute before
 	 * @description id of a node before which to insert all scripts and css files
 	 */
 	
 	var get = new Get(config);
 	
-	/**
+	/*
 	 * Allows for the following pattern:
 	 * jet(function ($) {
 	 *	...

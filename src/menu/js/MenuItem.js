@@ -24,7 +24,7 @@ $.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 	
 	ATTRS: {
 		/**
-		 * @config labelNode
+		 * @attribute labelNode
 		 * @description A pointer to the node containing the label
 		 * @default <span/>
 		 */
@@ -33,7 +33,7 @@ $.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 			setter: $
 		},
 		/**
-		 * @config labelContent
+		 * @attribute labelContent
 		 * @description The content of the Menu's label
 		 */
 		labelContent: {

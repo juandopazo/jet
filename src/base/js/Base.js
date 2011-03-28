@@ -37,7 +37,7 @@ extend(Base, Attribute, {}, {
 	ATTRS: {
 		/**
 		 * Allows quick setting of custom events in the constructor
-		 * @config on
+		 * @attribute on
 		 * @writeOnce
 		 */
 		on: {

@@ -43,7 +43,7 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 	
 	ATTRS: {
 		/**
-		 * @config type
+		 * @attribute type
 		 * @description Type of the node. Available types are 'text'
 		 * @default "text"
 		 */
@@ -51,7 +51,7 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 			value: "text"
 		},
 		/**
-		 * @config title
+		 * @attribute title
 		 * @description Title attribute for the node
 		 * @type String
 		 */
@@ -59,7 +59,7 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 			value: ''
 		},
 		/**
-		 * @config label
+		 * @attribute label
 		 * @description This node's label or title
 		 * @type String|HTMLElement
 		 */
@@ -67,7 +67,7 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 			value: ''
 		},
 		/**
-		 * @config controlNode
+		 * @attribute controlNode
 		 * @description Node that expands/collapses this TreeNode
 		 * @writeOnce
 		 */
@@ -75,7 +75,7 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 			setter: $
 		},
 		/**
-		 * @config labelNode
+		 * @attribute labelNode
 		 * @description Node that holds this TreeNode's title/label
 		 * @writeOnce
 		 */

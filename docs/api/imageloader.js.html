@@ -56,7 +56,6 @@
 <span class="cm">*/</span>
 <span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;imageloader&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 
-
 			
 <span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
 	<span class="nx">Base</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">,</span>
@@ -78,7 +77,7 @@
 <span class="kd">var</span> <span class="nx">Img</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Img</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;image&#39;</span><span class="p">,</span> <span class="nx">Base</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span>
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config src</span>
+<span class="cm">		 * @attribute src</span>
 <span class="cm">		 * @description URI of the image to load</span>
 <span class="cm">		 * @required</span>
 <span class="cm">		 * @writeOnce</span>
@@ -90,14 +89,14 @@
 			<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config image</span>
+<span class="cm">		 * @attribute image</span>
 <span class="cm">		 * @description A pointer to the actual Image object</span>
 <span class="cm">		 */</span>
 		<span class="nx">image</span><span class="o">:</span> <span class="p">{</span>
 			<span class="nx">value</span><span class="o">:</span> <span class="kc">null</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config node</span>
+<span class="cm">		 * @attribute node</span>
 <span class="cm">		 * @description A NodeList with the image node</span>
 <span class="cm">		 * @readOnly</span>
 <span class="cm">		 * @type NodeList</span>
@@ -106,7 +105,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="kc">null</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config timeout</span>
+<span class="cm">		 * @attribute timeout</span>
 <span class="cm">		 * @description Time the image can spend loading before firing the timeout event</span>
 <span class="cm">		 * @default 5000</span>
 <span class="cm">		 * @type Number (ms)</span>
@@ -115,7 +114,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="mi">5000</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config type</span>
+<span class="cm">		 * @attribute type</span>
 <span class="cm">		 * @description The image type. Used to specify if an image is PNG</span>
 <span class="cm">		 * @type String</span>
 <span class="cm">		 */</span>
@@ -127,7 +126,7 @@
 			<span class="p">}</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config loaded</span>
+<span class="cm">		 * @attribute loaded</span>
 <span class="cm">		 * @description Specifies if the image has finished loading or not</span>
 <span class="cm">		 * @type Boolean</span>
 <span class="cm">		 */</span>
@@ -232,7 +231,7 @@
 <span class="nx">$</span><span class="p">.</span><span class="nx">ImageLoader</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;imageloader&#39;</span><span class="p">,</span> <span class="nx">Base</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span>
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config srcs</span>
+<span class="cm">		 * @attribute srcs</span>
 <span class="cm">		 * @description An array of image URIs</span>
 <span class="cm">		 * @type Array</span>
 <span class="cm">		 */</span>
@@ -342,7 +341,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
@@ -375,7 +373,7 @@
 <script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "History.html#config_baseTitle", "access": "", "host": "History", "type": "config", "name": "baseTitle"}, {"url": "History.html#config_blankURL", "access": "", "host": "History", "type": "config", "name": "blankURL"}, {"url": "History.html#event_change", "access": "", "host": "History", "type": "event", "name": "change"}, {"url": "History.html#method_changeTitle", "access": "", "host": "History", "type": "method", "name": "changeTitle"}, {"url": "History.html#config_encodeURI", "access": "", "host": "History", "type": "config", "name": "encodeURI"}, {"url": "History.html#config_firstLoad", "access": "", "host": "History", "type": "config", "name": "firstLoad"}, {"url": "History.html#method_go", "access": "", "host": "History", "type": "method", "name": "go"}, {"url": "History.html#method_initialize", "access": "", "host": "History", "type": "method", "name": "initialize"}];
+    var ALL_YUI_PROPS = [{"url": "History.html#config_baseTitle", "access": "", "host": "History", "type": "config", "name": "baseTitle"}, {"url": "History.html#event_baseTitleChange", "access": "", "host": "History", "type": "event", "name": "baseTitleChange"}, {"url": "History.html#config_blankURL", "access": "", "host": "History", "type": "config", "name": "blankURL"}, {"url": "History.html#event_blankURLChange", "access": "", "host": "History", "type": "event", "name": "blankURLChange"}, {"url": "History.html#event_change", "access": "", "host": "History", "type": "event", "name": "change"}, {"url": "History.html#method_changeTitle", "access": "", "host": "History", "type": "method", "name": "changeTitle"}, {"url": "History.html#config_encodeURI", "access": "", "host": "History", "type": "config", "name": "encodeURI"}, {"url": "History.html#event_encodeURIChange", "access": "", "host": "History", "type": "event", "name": "encodeURIChange"}, {"url": "History.html#config_firstLoad", "access": "", "host": "History", "type": "config", "name": "firstLoad"}, {"url": "History.html#event_firstLoadChange", "access": "", "host": "History", "type": "event", "name": "firstLoadChange"}, {"url": "History.html#method_go", "access": "", "host": "History", "type": "method", "name": "go"}, {"url": "History.html#method_initialize", "access": "", "host": "History", "type": "method", "name": "initialize"}];
 </script>
 </body>
 </html>

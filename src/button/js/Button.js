@@ -38,7 +38,7 @@ var Button = Base.create('button', Widget, [WidgetChild], {
 	
 	ATTRS: {
 		/**
-		 * @config enabled
+		 * @attribute enabled
 		 * @description Enabled status of the button
 		 * @type Boolean
 		 * @default true
@@ -48,7 +48,7 @@ var Button = Base.create('button', Widget, [WidgetChild], {
 			validator: Lang.isBoolean
 		},
 		/**
-		 * @config labelNode
+		 * @attribute labelNode
 		 * @description Pointer to the <label> node related to this button
 		 * @type NodeList
 		 * @readOnly
@@ -58,7 +58,7 @@ var Button = Base.create('button', Widget, [WidgetChild], {
 			setter: $
 		},
 		/**
-		 * @config labelContent
+		 * @attribute labelContent
 		 * @description Text of this button's label
 		 * @type String
 		 * @default null
@@ -68,7 +68,7 @@ var Button = Base.create('button', Widget, [WidgetChild], {
 			validator: Lang.isString
 		},
 		/**
-		 * @config text
+		 * @attribute text
 		 * @description Text inside the button
 		 * @default ''
 		 */

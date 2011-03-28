@@ -9,7 +9,7 @@
 var Line = Base.create('line', Vector, [], {
 	ATTRS: {
 		/**
-		 * @config x1
+		 * @attribute x1
 		 * @description X coordinate of the line's starting point
 		 */
 		x1: {
@@ -17,7 +17,7 @@ var Line = Base.create('line', Vector, [], {
 			setter: getDefaultSetter("x1")
 		},
 		/**
-		 * @config x2
+		 * @attribute x2
 		 * @description X coordinate of the line's ending point
 		 */
 		x2: {
@@ -25,7 +25,7 @@ var Line = Base.create('line', Vector, [], {
 			setter: getDefaultSetter("x2")
 		},
 		/**
-		 * @config y1
+		 * @attribute y1
 		 * @description Y coordinate of the line's starting point
 		 */
 		y1: {
@@ -33,7 +33,7 @@ var Line = Base.create('line', Vector, [], {
 			setter: getDefaultSetter("y1")
 		},
 		/**
-		 * @config y2
+		 * @attribute y2
 		 * @description Y coordinate of the line's ending point
 		 */
 		y2: {

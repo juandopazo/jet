@@ -477,7 +477,7 @@ Takes multiple string parameters
                                                         <code><span property="yui:name">deep</span>
                                                         &lt;<span property="yui:type">Boolean</span>&gt;
                                                         </code>
-                                                        <span property="yui:description"> If true, all nodes in the brach are cloned. If not, only the ones in the collection</span>
+                                                        <span property="yui:description"> If true all nodes in the brach are cloned. If not, only the ones in the collection</span>
                                                         </dd>
                                                 </dl>
 
@@ -1283,6 +1283,11 @@ The "this" keyword also refers to the node. ie:<br/>
                                         
                                             <strong property="yui:name">inDoc</strong>
                                            (
+                                                
+                                                        
+                                                         doc
+                                                    
+                                                
                                             )
                                         </code>
                                         
@@ -1292,6 +1297,15 @@ The "this" keyword also refers to the node. ie:<br/>
 
                                         <div class="description">
 
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">doc</span>
+                                                        &lt;<span property="yui:type">Document</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"></span>
+                                                        </dd>
+                                                </dl>
 
                                                 <dl>
                                                     <dt>Returns:
@@ -1573,6 +1587,10 @@ return by the callback function
                                                          callback
                                                     
                                                 
+                                                        , 
+                                                         thisp
+                                                    
+                                                
                                             )
                                         </code>
                                         
@@ -1593,6 +1611,12 @@ return by the callback function
                                                         <dd rel="yui:parameter">
                                                         <code><span property="yui:name">callback</span>
                                                         &lt;<span property="yui:type">Function</span>&gt;
+                                                        </code>
+                                                        <span property="yui:description"></span>
+                                                        </dd>
+                                                        <dd rel="yui:parameter">
+                                                        <code><span property="yui:name">thisp</span>
+                                                        &lt;<span property="yui:type">Object</span>&gt;
                                                         </code>
                                                         <span property="yui:description"></span>
                                                         </dd>
@@ -2485,7 +2509,6 @@ If "crawl" is true, it also removes them from all the nodes in the branches defi
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>

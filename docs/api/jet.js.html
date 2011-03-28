@@ -1080,51 +1080,51 @@
 	<span class="nx">config</span> <span class="o">=</span> <span class="nx">buildConfig</span><span class="p">(</span><span class="nx">config</span><span class="p">,</span> <span class="nx">o</span><span class="p">);</span>
 	<span class="kd">var</span> <span class="nx">base</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">base</span><span class="p">;</span>
 	<span class="cm">/**</span>
-<span class="cm">	 * @config base</span>
+<span class="cm">	 * @attribute base</span>
 <span class="cm">	 * @description prefix for all script and css urls</span>
 <span class="cm">	 * @type String</span>
 <span class="cm">	 * @default &quot;//jet-js.googlecode.com/svn/trunk/src/&quot;</span>
 <span class="cm">	 */</span>
 	<span class="nx">base</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">base</span> <span class="o">=</span> <span class="nx">base</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="nx">base</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;/&quot;</span> <span class="o">?</span> <span class="nx">base</span> <span class="o">:</span> <span class="nx">base</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span><span class="p">;</span>
 	<span class="cm">/**</span>
-<span class="cm">	 * @config base</span>
+<span class="cm">	 * @attribute base</span>
 <span class="cm">	 * @description defines whether predefined modules should be minified or not</span>
 <span class="cm">	 * @type Boolean</span>
 <span class="cm">	 * @default true</span>
 <span class="cm">	 */</span>
 	<span class="nx">config</span><span class="p">.</span><span class="nx">minify</span> <span class="o">=</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isBoolean</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">minify</span><span class="p">)</span> <span class="o">?</span> <span class="nx">config</span><span class="p">.</span><span class="nx">minify</span> <span class="o">:</span> <span class="kc">false</span><span class="p">;</span>
 	<span class="cm">/**</span>
-<span class="cm">	 * @config loadCss</span>
+<span class="cm">	 * @attribute loadCss</span>
 <span class="cm">	 * @description If true, css modules are loaded</span>
 <span class="cm">	 * @type Boolean</span>
 <span class="cm">	 * @default true</span>
 <span class="cm">	 */</span>
 	<span class="nx">config</span><span class="p">.</span><span class="nx">loadCss</span> <span class="o">=</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isBoolean</span><span class="p">(</span><span class="nx">config</span><span class="p">.</span><span class="nx">loadCss</span><span class="p">)</span> <span class="o">?</span> <span class="nx">config</span><span class="p">.</span><span class="nx">loadCss</span> <span class="o">:</span> <span class="kc">true</span><span class="p">;</span>
 	<span class="cm">/**</span>
-<span class="cm">	 * @config modules</span>
+<span class="cm">	 * @attribute modules</span>
 <span class="cm">	 * @description Allows to define your own modules. Currently the same as using object literals in the use() method</span>
 <span class="cm">	 * @type Array</span>
 <span class="cm">	 */</span>
 	
 	<span class="cm">/**</span>
-<span class="cm">	 * @config win</span>
+<span class="cm">	 * @attribute win</span>
 <span class="cm">	 * @description A reference to the global object that is accesible later with $.win</span>
 <span class="cm">	 */</span>
 	<span class="nx">config</span><span class="p">.</span><span class="nx">win</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">win</span> <span class="o">||</span> <span class="nb">window</span><span class="p">;</span>
 	<span class="cm">/**</span>
-<span class="cm">	 * @config doc</span>
+<span class="cm">	 * @attribute doc</span>
 <span class="cm">	 * @description A reference to the document that is accesible later with $.doc</span>
 <span class="cm">	 */</span>
 	<span class="nx">config</span><span class="p">.</span><span class="nx">doc</span> <span class="o">=</span> <span class="nx">config</span><span class="p">.</span><span class="nx">doc</span> <span class="o">||</span> <span class="nx">config</span><span class="p">.</span><span class="nx">win</span><span class="p">.</span><span class="nb">document</span><span class="p">;</span>
 	
 	<span class="cm">/**</span>
-<span class="cm">	 * @config before</span>
+<span class="cm">	 * @attribute before</span>
 <span class="cm">	 * @description id of a node before which to insert all scripts and css files</span>
 <span class="cm">	 */</span>
 	
 	<span class="kd">var</span> <span class="nx">get</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Get</span><span class="p">(</span><span class="nx">config</span><span class="p">);</span>
 	
-	<span class="cm">/**</span>
+	<span class="cm">/*</span>
 <span class="cm">	 * Allows for the following pattern:</span>
 <span class="cm">	 * jet(function ($) {</span>
 <span class="cm">	 *	...</span>
@@ -1177,8 +1177,12 @@
 <span class="cm">*/</span>
 <span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 
-
 			
+<span class="cm">/**</span>
+<span class="cm"> * Adds the following methods to the $ object</span>
+<span class="cm"> * @class Log</span>
+<span class="cm"> * @static</span>
+<span class="cm"> */</span>
 <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">Log</span><span class="p">)</span> <span class="p">{</span>
 	<span class="nx">jet</span><span class="p">.</span><span class="nx">Log</span> <span class="o">=</span> <span class="p">{};</span>
 <span class="p">}</span>
@@ -1194,12 +1198,24 @@
 <span class="p">}</span>
 
 <span class="nx">$</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * @method error</span>
+<span class="cm">	 * @description Logs an error</span>
+<span class="cm">	 */</span>
 	<span class="nx">error</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
 		<span class="nx">Log</span><span class="p">.</span><span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
 	<span class="p">},</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * @method warning</span>
+<span class="cm">	 * @description Logs a warning</span>
+<span class="cm">	 */</span>
 	<span class="nx">warning</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
 		<span class="nx">Log</span><span class="p">.</span><span class="nx">warnings</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
 	<span class="p">},</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * @method log</span>
+<span class="cm">	 * @description Logs a message</span>
+<span class="cm">	 */</span>
 	<span class="nx">log</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
 		<span class="nx">Log</span><span class="p">.</span><span class="nx">logs</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
 	<span class="p">}</span>
@@ -1215,7 +1231,6 @@
 <span class="cm"> * https://github.com/juandopazo/jet/blob/master/LICENSE.md</span>
 <span class="cm">*/</span>
 <span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;node&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
-
 
 			
 <span class="kd">var</span> <span class="nx">NONE</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
@@ -1810,7 +1825,7 @@
 	<span class="cm">/**</span>
 <span class="cm">	 * Returns a new NodeList with all nodes cloned from the current one</span>
 <span class="cm">	 * @method clone</span>
-<span class="cm">	 * @param {Boolean} deep If true, all nodes in the brach are cloned. If not, only the ones in the collection</span>
+<span class="cm">	 * @param {Boolean} deep If true all nodes in the brach are cloned. If not, only the ones in the collection</span>
 <span class="cm">	 * @return {NodeList}</span>
 <span class="cm">	 */</span>
 	<span class="nx">clone</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">deep</span><span class="p">)</span> <span class="p">{</span>
@@ -1894,7 +1909,7 @@
 	<span class="cm">/**</span>
 <span class="cm">	 * Returns whether the first node in this NodeList is inserted in the document</span>
 <span class="cm">	 * @method inDoc</span>
-<span class="cm">	 * @param [Document] doc</span>
+<span class="cm">	 * @param {Document} doc</span>
 <span class="cm">	 * @return Boolean</span>
 <span class="cm">	 */</span>
 	<span class="nx">inDoc</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
@@ -2086,7 +2101,7 @@
 <span class="cm">	 * @method on</span>
 <span class="cm">	 * @param {String} type</span>
 <span class="cm">	 * @param {Function} callback</span>
-<span class="cm">	 * @chainable</span>
+<span class="cm">	 * @param {Object} thisp</span>
 <span class="cm">	 */</span>
 	<span class="nx">on</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">callback</span><span class="p">,</span> <span class="nx">thisp</span><span class="p">)</span> <span class="p">{</span>
 		<span class="kd">var</span> <span class="nx">handlers</span> <span class="o">=</span> <span class="p">[];</span>
@@ -2299,7 +2314,6 @@
 <span class="cm">*/</span>
 <span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;base&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 
-
 			
 <span class="kd">var</span> <span class="nx">OP</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">prototype</span><span class="p">;</span>
 
@@ -2379,7 +2393,7 @@
 
 
 <span class="cm">/**</span>
-<span class="cm"> * &lt;p&gt;A class designed to be inherited or extended by other classes and provide custom events.&lt;/p&gt;</span>
+<span class="cm"> * &lt;p&gt;A class designed to be inherited or used by other classes to provide custom events.&lt;/p&gt;</span>
 <span class="cm"> * &lt;p&gt;Custom events work by attaching event listeners to a class that extends EventTarget.</span>
 <span class="cm"> * An event listener can be a function or an object with a method called &quot;handleEvent&quot;.</span>
 <span class="cm"> * If it is a function, when fired the context will be the firing object. In the case of an object, the </span>
@@ -2444,8 +2458,8 @@
 	<span class="p">},</span>
 	
 	<span class="cm">/**</span>
-<span class="cm">	 * Listens to an &#39;after&#39; event. This is a shortcut for writing on(&#39;afterEvent), callback)</span>
-<span class="cm">	 * @method once</span>
+<span class="cm">	 * Listens to an &#39;after&#39; event. This is a shortcut for writing on(&#39;afterEvent&#39;), callback)</span>
+<span class="cm">	 * @method after</span>
 <span class="cm">	 * @param {String} eventType Name of the event to listen to</span>
 <span class="cm">	 * @param {Function} callback Callback to execute when the event fires</span>
 <span class="cm">	 * @param {Object} thisp Optional. Context on which the callback will run</span>
@@ -2702,7 +2716,7 @@
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
 <span class="cm">		 * Allows quick setting of custom events in the constructor</span>
-<span class="cm">		 * @config on</span>
+<span class="cm">		 * @attribute on</span>
 <span class="cm">		 * @writeOnce</span>
 <span class="cm">		 */</span>
 		<span class="nx">on</span><span class="o">:</span> <span class="p">{</span>
@@ -2795,7 +2809,7 @@
 	
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config cssPrefix</span>
+<span class="cm">		 * @attribute cssPrefix</span>
 <span class="cm">		 * @default Utility.CSS_PREFIX</span>
 <span class="cm">		 * @writeOnce</span>
 <span class="cm">		 */</span>
@@ -3090,7 +3104,7 @@
 	
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config srcNode</span>
+<span class="cm">		 * @attribute srcNode</span>
 <span class="cm">		 * @description The node to which the widget will be appended to. May be set as a </span>
 <span class="cm">		 * configuration attribute, with a setter or as the first parameter of the render() method</span>
 <span class="cm">		 * @type DOMNode | NodeList</span>
@@ -3100,7 +3114,7 @@
 			<span class="nx">setter</span><span class="o">:</span> <span class="nx">$</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config classPrefix</span>
+<span class="cm">		 * @attribute classPrefix</span>
 <span class="cm">		 * @description Prefix for all CSS clases. Useful for renaming the project</span>
 <span class="cm">		 * @default Widget.CSS_PREFIX</span>
 <span class="cm">		 * @writeOnce</span>
@@ -3112,7 +3126,7 @@
 			<span class="p">}</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config rendered</span>
+<span class="cm">		 * @attribute rendered</span>
 <span class="cm">		 * @description Rendered status. Shouldn&#39;t be changed by anything appart from the Widget.render() method</span>
 <span class="cm">		 * @writeOnce</span>
 <span class="cm">		 * @default false</span>
@@ -3122,7 +3136,7 @@
 		<span class="p">},</span>
 		<span class="cm">/**</span>
 <span class="cm">		 * The bounding box contains all the parts of the widget</span>
-<span class="cm">		 * @config boundingBox</span>
+<span class="cm">		 * @attribute boundingBox</span>
 <span class="cm">		 * @writeOnce</span>
 <span class="cm">		 * @type NodeList</span>
 <span class="cm">		 * @default uses BOUNDING_TEMPLATE instance property</span>
@@ -3131,7 +3145,7 @@
 			<span class="nx">setter</span><span class="o">:</span> <span class="nx">$</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config contentBox</span>
+<span class="cm">		 * @attribute contentBox</span>
 <span class="cm">		 * @description Another container inside the boundingBox added in order to have a more complex design</span>
 <span class="cm">		 * @writeOnce</span>
 <span class="cm">		 * @type NodeList</span>
@@ -3153,7 +3167,7 @@
 			<span class="p">}</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config width</span>
+<span class="cm">		 * @attribute width</span>
 <span class="cm">		 * @description The width of the overlay</span>
 <span class="cm">		 * @type Number</span>
 <span class="cm">		 */</span>
@@ -3161,7 +3175,7 @@
 			<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config height</span>
+<span class="cm">		 * @attribute height</span>
 <span class="cm">		 * @description The height of the overlay.</span>
 <span class="cm">		 * If set to 0 (zero) the height changes with the content</span>
 <span class="cm">		 * @type Number</span>
@@ -3170,7 +3184,7 @@
 			<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config id</span>
+<span class="cm">		 * @attribute id</span>
 <span class="cm">		 * @description The id of the widget</span>
 <span class="cm">		 * @readOnly</span>
 <span class="cm">		 */</span>
@@ -3246,7 +3260,7 @@
 	<span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
 		<span class="cm">/**</span>
 <span class="cm">		 * Frequency at which the tracker updates</span>
-<span class="cm">		 * @config frequency</span>
+<span class="cm">		 * @attribute frequency</span>
 <span class="cm">		 * @default 20 (ms)</span>
 <span class="cm">		 * @type Number</span>
 <span class="cm">		 */</span>
@@ -3263,7 +3277,7 @@
 	
 	<span class="cm">/**</span>
 <span class="cm">	 * Tracking status. Set it to true to start tracking</span>
-<span class="cm">	 * @config tracking</span>
+<span class="cm">	 * @attribute tracking</span>
 <span class="cm">	 * @type Boolean</span>
 <span class="cm">	 * @default false</span>
 <span class="cm">	 */</span>
@@ -3444,7 +3458,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
@@ -3484,7 +3497,7 @@
 <script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Core.html#method_$", "access": "", "host": "Core", "type": "method", "name": "$"}, {"url": "Core.html#method_add", "access": "", "host": "Core", "type": "method", "name": "add"}, {"url": "jet.html#method_add", "access": "", "host": "jet", "type": "method", "name": "add"}, {"url": "IO.html#method_ajax", "access": "", "host": "IO", "type": "method", "name": "ajax"}, {"url": "jet.html#config_base", "access": "", "host": "jet", "type": "config", "name": "base"}, {"url": "jet.html#config_before", "access": "", "host": "jet", "type": "config", "name": "before"}, {"url": "Lang.html#method_clone", "access": "", "host": "Lang", "type": "method", "name": "clone"}, {"url": "Core.html#property_context", "access": "", "host": "Core", "type": "property", "name": "context"}, {"url": "Get.html#method_css", "access": "", "host": "Get", "type": "method", "name": "css"}, {"url": "jet.html#config_doc", "access": "", "host": "jet", "type": "config", "name": "doc"}, {"url": "Array.html#method_each", "access": "", "host": "Array", "type": "method", "name": "each"}, {"url": "Hash.html#method_each", "access": "", "host": "Hash", "type": "method", "name": "each"}, {"url": "IO.html#method_flajax", "access": "", "host": "IO", "type": "method", "name": "flajax"}, {"url": "UA.html#property_gecko", "access": "", "host": "UA", "type": "property", "name": "gecko"}, {"url": "UA.html#property_ie", "access": "", "host": "UA", "type": "property", "name": "ie"}, {"url": "Array.html#method_inArray", "access": "", "host": "Array", "type": "method", "name": "inArray"}, {"url": "Array.html#method_indexOf", "access": "", "host": "Array", "type": "method", "name": "indexOf"}, {"url": "Lang.html#method_isArray", "access": "", "host": "Lang", "type": "method", "name": "isArray"}, {"url": "Lang.html#method_isBoolean", "access": "", "host": "Lang", "type": "method", "name": "isBoolean"}, {"url": "Lang.html#method_isFunction", "access": "", "host": "Lang", "type": "method", "name": "isFunction"}, {"url": "Lang.html#method_isNative", "access": "", "host": "Lang", "type": "method", "name": "isNative"}, {"url": "Lang.html#method_isNumber", "access": "", "host": "Lang", "type": "method", "name": "isNumber"}, {"url": "Lang.html#method_isString", "access": "", "host": "Lang", "type": "method", "name": "isString"}, {"url": "Lang.html#method_isUndefined", "access": "", "host": "Lang", "type": "method", "name": "isUndefined"}, {"url": "Lang.html#method_isValue", "access": "", "host": "Lang", "type": "method", "name": "isValue"}, {"url": "Hash.html#method_keys", "access": "", "host": "Hash", "type": "method", "name": "keys"}, {"url": "jet.html#config_loadCss", "access": "", "host": "jet", "type": "config", "name": "loadCss"}, {"url": "UA.html#property_mac", "access": "", "host": "UA", "type": "property", "name": "mac"}, {"url": "Core.html#method_mix", "access": "", "host": "Core", "type": "method", "name": "mix"}, {"url": "jet.html#config_modules", "access": "", "host": "jet", "type": "config", "name": "modules"}, {"url": "UA.html#property_opera", "access": "", "host": "UA", "type": "property", "name": "opera"}, {"url": "Core.html#method_parseQuery", "access": "protected", "host": "Core", "type": "method", "name": "parseQuery"}, {"url": "Lang.html#method_random", "access": "", "host": "Lang", "type": "method", "name": "random"}, {"url": "Array.html#method_remove", "access": "", "host": "Array", "type": "method", "name": "remove"}, {"url": "Get.html#method_script", "access": "", "host": "Get", "type": "method", "name": "script"}, {"url": "Lang.html#method_trim", "access": "", "host": "Lang", "type": "method", "name": "trim"}, {"url": "Lang.html#method_type", "access": "", "host": "Lang", "type": "method", "name": "type"}, {"url": "jet.html#method_use", "access": "", "host": "jet", "type": "method", "name": "use"}, {"url": "Hash.html#method_values", "access": "", "host": "Hash", "type": "method", "name": "values"}, {"url": "Core.html#method_walkTheDOM", "access": "", "host": "Core", "type": "method", "name": "walkTheDOM"}, {"url": "UA.html#property_webkit", "access": "", "host": "UA", "type": "property", "name": "webkit"}, {"url": "UA.html#property_win", "access": "", "host": "UA", "type": "property", "name": "win"}, {"url": "Core.html#property_win", "access": "", "host": "Core", "type": "property", "name": "win"}, {"url": "jet.html#config_win", "access": "", "host": "jet", "type": "config", "name": "win"}, {"url": "IO.html#method_xsl", "access": "", "host": "IO", "type": "method", "name": "xsl"}];
+    var ALL_YUI_PROPS = [{"url": "Core.html#method_$", "access": "", "host": "Core", "type": "method", "name": "$"}, {"url": "Core.html#method_add", "access": "", "host": "Core", "type": "method", "name": "add"}, {"url": "jet.html#method_add", "access": "", "host": "jet", "type": "method", "name": "add"}, {"url": "IO.html#method_ajax", "access": "", "host": "IO", "type": "method", "name": "ajax"}, {"url": "jet.html#config_base", "access": "", "host": "jet", "type": "config", "name": "base"}, {"url": "jet.html#event_baseChange", "access": "", "host": "jet", "type": "event", "name": "baseChange"}, {"url": "jet.html#config_before", "access": "", "host": "jet", "type": "config", "name": "before"}, {"url": "jet.html#event_beforeChange", "access": "", "host": "jet", "type": "event", "name": "beforeChange"}, {"url": "Lang.html#method_clone", "access": "", "host": "Lang", "type": "method", "name": "clone"}, {"url": "Core.html#property_context", "access": "", "host": "Core", "type": "property", "name": "context"}, {"url": "Get.html#method_css", "access": "", "host": "Get", "type": "method", "name": "css"}, {"url": "jet.html#config_doc", "access": "", "host": "jet", "type": "config", "name": "doc"}, {"url": "jet.html#event_docChange", "access": "", "host": "jet", "type": "event", "name": "docChange"}, {"url": "Array.html#method_each", "access": "", "host": "Array", "type": "method", "name": "each"}, {"url": "Hash.html#method_each", "access": "", "host": "Hash", "type": "method", "name": "each"}, {"url": "IO.html#method_flajax", "access": "", "host": "IO", "type": "method", "name": "flajax"}, {"url": "UA.html#property_gecko", "access": "", "host": "UA", "type": "property", "name": "gecko"}, {"url": "UA.html#property_ie", "access": "", "host": "UA", "type": "property", "name": "ie"}, {"url": "Array.html#method_inArray", "access": "", "host": "Array", "type": "method", "name": "inArray"}, {"url": "Array.html#method_indexOf", "access": "", "host": "Array", "type": "method", "name": "indexOf"}, {"url": "Lang.html#method_isArray", "access": "", "host": "Lang", "type": "method", "name": "isArray"}, {"url": "Lang.html#method_isBoolean", "access": "", "host": "Lang", "type": "method", "name": "isBoolean"}, {"url": "Lang.html#method_isFunction", "access": "", "host": "Lang", "type": "method", "name": "isFunction"}, {"url": "Lang.html#method_isNative", "access": "", "host": "Lang", "type": "method", "name": "isNative"}, {"url": "Lang.html#method_isNumber", "access": "", "host": "Lang", "type": "method", "name": "isNumber"}, {"url": "Lang.html#method_isString", "access": "", "host": "Lang", "type": "method", "name": "isString"}, {"url": "Lang.html#method_isUndefined", "access": "", "host": "Lang", "type": "method", "name": "isUndefined"}, {"url": "Lang.html#method_isValue", "access": "", "host": "Lang", "type": "method", "name": "isValue"}, {"url": "Hash.html#method_keys", "access": "", "host": "Hash", "type": "method", "name": "keys"}, {"url": "jet.html#config_loadCss", "access": "", "host": "jet", "type": "config", "name": "loadCss"}, {"url": "jet.html#event_loadCssChange", "access": "", "host": "jet", "type": "event", "name": "loadCssChange"}, {"url": "UA.html#property_mac", "access": "", "host": "UA", "type": "property", "name": "mac"}, {"url": "Core.html#method_mix", "access": "", "host": "Core", "type": "method", "name": "mix"}, {"url": "jet.html#config_modules", "access": "", "host": "jet", "type": "config", "name": "modules"}, {"url": "jet.html#event_modulesChange", "access": "", "host": "jet", "type": "event", "name": "modulesChange"}, {"url": "UA.html#property_opera", "access": "", "host": "UA", "type": "property", "name": "opera"}, {"url": "Core.html#method_parseQuery", "access": "protected", "host": "Core", "type": "method", "name": "parseQuery"}, {"url": "Lang.html#method_random", "access": "", "host": "Lang", "type": "method", "name": "random"}, {"url": "Array.html#method_remove", "access": "", "host": "Array", "type": "method", "name": "remove"}, {"url": "Get.html#method_script", "access": "", "host": "Get", "type": "method", "name": "script"}, {"url": "Lang.html#method_trim", "access": "", "host": "Lang", "type": "method", "name": "trim"}, {"url": "Lang.html#method_type", "access": "", "host": "Lang", "type": "method", "name": "type"}, {"url": "jet.html#method_use", "access": "", "host": "jet", "type": "method", "name": "use"}, {"url": "Hash.html#method_values", "access": "", "host": "Hash", "type": "method", "name": "values"}, {"url": "Core.html#method_walkTheDOM", "access": "", "host": "Core", "type": "method", "name": "walkTheDOM"}, {"url": "UA.html#property_webkit", "access": "", "host": "UA", "type": "property", "name": "webkit"}, {"url": "UA.html#property_win", "access": "", "host": "UA", "type": "property", "name": "win"}, {"url": "Core.html#property_win", "access": "", "host": "Core", "type": "property", "name": "win"}, {"url": "jet.html#config_win", "access": "", "host": "jet", "type": "config", "name": "win"}, {"url": "jet.html#event_winChange", "access": "", "host": "jet", "type": "event", "name": "winChange"}, {"url": "IO.html#method_xsl", "access": "", "host": "IO", "type": "method", "name": "xsl"}];
 </script>
 </body>
 </html>

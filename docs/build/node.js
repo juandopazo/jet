@@ -9,7 +9,6 @@
 */
 jet.add('node', function ($) {
 
-
 			
 var NONE = "none",
 	ON = "on",

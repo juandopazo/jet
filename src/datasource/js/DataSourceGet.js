@@ -9,7 +9,7 @@
 DataSource.Get = Base.create('datasource-get', DataSource, [], {
 	ATTRS: {
 		/**
-		 * @config jsonCallbackParam
+		 * @attribute jsonCallbackParam
 		 * @description Name of the URL parameter that defines the name of the JSONP callback
 		 * @type String
 		 * @default "p"
@@ -18,7 +18,7 @@ DataSource.Get = Base.create('datasource-get', DataSource, [], {
 			value: "p"
 		},
 		/**
-		 * @config timeout
+		 * @attribute timeout
 		 * @description Ms after which the request is considered to have timed out
 		 * @type Number
 		 * @default 10000
@@ -27,7 +27,7 @@ DataSource.Get = Base.create('datasource-get', DataSource, [], {
 			value: 10000
 		},
 		/**
-		 * @config url
+		 * @attribute url
 		 * @description Url from which to fetch the data
 		 * @type String
 		 * @required

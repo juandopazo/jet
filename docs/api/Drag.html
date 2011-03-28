@@ -162,6 +162,9 @@
                                 <h4>Methods inherited from <a href="EventTarget.html" property="yui:name" title="EventTarget">EventTarget</a>:</h4>
                                 <div class="content" rel="yui:methods">
                                     <code>
+                                            <span rel="yui:method" resource="EventTarget.html#method_after">                                        
+                                            <a class="" href="EventTarget.html#method_after" property="yui:name" title="after">after</a><span class="">,</span>
+                                            </span>
                                             <span rel="yui:method" resource="EventTarget.html#method_fire">                                        
                                             <a class="" href="EventTarget.html#method_fire" property="yui:name" title="fire">fire</a><span class="">,</span>
                                             </span>
@@ -216,6 +219,50 @@
                         <div class="section method details">
                             <h3 id="events">Events</h3>
                             <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_cursorChange">
+                                    <h4>
+                                        <a name="event_cursorChange">cursorChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">cursorChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'cursor' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
                                     <div class="" rel="yui:event" resource="#event_drag">
                                     <h4>
                                         <a name="event_drag">drag</a></h4>
@@ -303,10 +350,155 @@
                                     </div>
                                     <hr />
                                     </div>
+                                    <div class="" rel="yui:event" resource="#event_handlersChange">
+                                    <h4>
+                                        <a name="event_handlersChange">handlersChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">handlersChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'handlers' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_nodeChange">
+                                    <h4>
+                                        <a name="event_nodeChange">nodeChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">nodeChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'node' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_trackingChange">
+                                    <h4>
+                                        <a name="event_trackingChange">trackingChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">trackingChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'tracking' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
                             </div>
                         </div>
 
 
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Base.html">
+                            <h4>Events inherited from <a href="Base.html" property="yui:name" title="Base">Base</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="Base.html#event_onChange">
+                                        <a class="" href="Base.html#event_onChange" property="yui:name" title="onChange">onChange</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
                     </div>
 
                     <div rel="yui:attributes" resource="#configattributes">
@@ -418,7 +610,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
@@ -448,9 +639,13 @@
                     <div id="eventsList" class="module">
                         <h4>Events</h4>
                         <ul class="content">        
+                                <li class=""><a href="#event_cursorChange" title="cursorChange">cursorChange</a></li>
                                 <li class=""><a href="#event_drag" title="drag">drag</a></li>
                                 <li class=""><a href="#event_drag:end" title="drag:end">drag:end</a></li>
                                 <li class=""><a href="#event_drag:start" title="drag:start">drag:start</a></li>
+                                <li class=""><a href="#event_handlersChange" title="handlersChange">handlersChange</a></li>
+                                <li class=""><a href="#event_nodeChange" title="nodeChange">nodeChange</a></li>
+                                <li class=""><a href="#event_trackingChange" title="trackingChange">trackingChange</a></li>
                         </ul>
                     </div>
 
@@ -475,7 +670,7 @@
 <script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Drag.html#method_addHandler", "access": "", "host": "Drag", "type": "method", "name": "addHandler"}, {"url": "Drag.html#config_cursor", "access": "", "host": "Drag", "type": "config", "name": "cursor"}, {"url": "Drag.html#event_drag", "access": "", "host": "Drag", "type": "event", "name": "drag"}, {"url": "Drag.html#event_drag:end", "access": "", "host": "Drag", "type": "event", "name": "drag:end"}, {"url": "Drag.html#event_drag:start", "access": "", "host": "Drag", "type": "event", "name": "drag:start"}, {"url": "Drag.html#config_handlers", "access": "", "host": "Drag", "type": "config", "name": "handlers"}, {"url": "Drag.html#config_node", "access": "", "host": "Drag", "type": "config", "name": "node"}, {"url": "Drag.html#config_tracking", "access": "", "host": "Drag", "type": "config", "name": "tracking"}];
+    var ALL_YUI_PROPS = [{"url": "Drag.html#method_addHandler", "access": "", "host": "Drag", "type": "method", "name": "addHandler"}, {"url": "Drag.html#config_cursor", "access": "", "host": "Drag", "type": "config", "name": "cursor"}, {"url": "Drag.html#event_cursorChange", "access": "", "host": "Drag", "type": "event", "name": "cursorChange"}, {"url": "Drag.html#event_drag", "access": "", "host": "Drag", "type": "event", "name": "drag"}, {"url": "Drag.html#event_drag:end", "access": "", "host": "Drag", "type": "event", "name": "drag:end"}, {"url": "Drag.html#event_drag:start", "access": "", "host": "Drag", "type": "event", "name": "drag:start"}, {"url": "Drag.html#config_handlers", "access": "", "host": "Drag", "type": "config", "name": "handlers"}, {"url": "Drag.html#event_handlersChange", "access": "", "host": "Drag", "type": "event", "name": "handlersChange"}, {"url": "Drag.html#config_node", "access": "", "host": "Drag", "type": "config", "name": "node"}, {"url": "Drag.html#event_nodeChange", "access": "", "host": "Drag", "type": "event", "name": "nodeChange"}, {"url": "Drag.html#config_tracking", "access": "", "host": "Drag", "type": "config", "name": "tracking"}, {"url": "Drag.html#event_trackingChange", "access": "", "host": "Drag", "type": "event", "name": "trackingChange"}];
 </script>
 </body>
 </html>

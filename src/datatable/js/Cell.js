@@ -15,7 +15,7 @@ var Hash = $.Hash,
 var Cell = Base.create('cell', Base, [], {
 	ATTRS: {
 		/**
-		 * @config value
+		 * @attribute value
 		 * @description The cell's value
 		 * @required
 		 * @writeOnce
@@ -25,7 +25,7 @@ var Cell = Base.create('cell', Base, [], {
 			writeOnce: true
 		},
 		/**
-		 * @config td
+		 * @attribute td
 		 * @description The cell's td
 		 * @required
 		 * @writeOnce
@@ -35,7 +35,7 @@ var Cell = Base.create('cell', Base, [], {
 			writeOnce: true
 		},
 		/**
-		 * @config record
+		 * @attribute record
 		 * @description The cell's record
 		 * @required
 		 * @writeOnce

@@ -60,7 +60,7 @@ var UA_SUPPORTS_FIXED = $.UA.support.fixed;
 $.Module = Base.create('module', Widget, [], {
 	ATTRS: {
 		/**
-		 * @config header
+		 * @attribute header
 		 * @description A pointer to the header node
 		 * @writeOnce
 		 */
@@ -69,7 +69,7 @@ $.Module = Base.create('module', Widget, [], {
 			setter: $
 		},
 		/**
-		 * @config body
+		 * @attribute body
 		 * @description A pointer to the body node
 		 * @writeOnce
 		 */
@@ -78,7 +78,7 @@ $.Module = Base.create('module', Widget, [], {
 			setter: $
 		},
 		/**
-		 * @config footer
+		 * @attribute footer
 		 * @description A pointer to the footer node
 		 * @writeOnce
 		 */
@@ -87,7 +87,7 @@ $.Module = Base.create('module', Widget, [], {
 			setter: $
 		},
 		/**
-		 * @config headerContent
+		 * @attribute headerContent
 		 * @description The header of the module.
 		 * If set to a string a node is creating and the string is set to its innerHTML
 		 * @type DOM Node | String | NodeList
@@ -96,7 +96,7 @@ $.Module = Base.create('module', Widget, [], {
 			validator: Lang.isValue
 		},
 		/**
-		 * @config bodyContent
+		 * @attribute bodyContent
 		 * @description The body of the module.
 		 * If set to a string a node is creating and the string is set to its innerHTML
 		 * A body is always present in a Module
@@ -108,7 +108,7 @@ $.Module = Base.create('module', Widget, [], {
 			validator: Lang.isValue
 		},
 		/**
-		 * @config footerContent
+		 * @attribute footerContent
 		 * @description The footer of the module.
 		 * If set to a string a node is creating and the string is set to its innerHTML
 		 * @type DOM Node | String | NodeList

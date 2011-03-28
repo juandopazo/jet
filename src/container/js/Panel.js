@@ -10,7 +10,7 @@ var PanelBase = $.mix(function () {
 	
 	ATTRS: {
 		/**
-		 * @config close
+		 * @attribute close
 		 * @description If true, a close button is added to the panel that hides it when clicked
 		 * @type Boolean
 		 * @default true
@@ -20,7 +20,7 @@ var PanelBase = $.mix(function () {
 			validator: Lang.isBoolean
 		},
 		/**
-		 * @config underlay
+		 * @attribute underlay
 		 * @description The underlay is inserted after the contentBox to allow for a more complex design
 		 * @readOnly
 		 */
@@ -28,7 +28,7 @@ var PanelBase = $.mix(function () {
 			setter: $
 		},
 		/**
-		 * @config shadow
+		 * @attribute shadow
 		 * @description If true, the panel shows a shadow
 		 * @default true
 		 */

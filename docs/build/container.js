@@ -9,7 +9,7 @@
 */
 jet.add('container', function ($) {
 
-			var Lang = $.Lang,
+	var Lang = $.Lang,
 	Hash = $.Hash,
 	A = $.Array,
 	DOM = $.DOM,
@@ -71,7 +71,7 @@ var UA_SUPPORTS_FIXED = $.UA.support.fixed;
 $.Module = Base.create('module', Widget, [], {
 	ATTRS: {
 		/**
-		 * @attribute header
+		 * @config header
 		 * @description A pointer to the header node
 		 * @writeOnce
 		 */
@@ -80,7 +80,7 @@ $.Module = Base.create('module', Widget, [], {
 			setter: $
 		},
 		/**
-		 * @attribute body
+		 * @config body
 		 * @description A pointer to the body node
 		 * @writeOnce
 		 */
@@ -89,7 +89,7 @@ $.Module = Base.create('module', Widget, [], {
 			setter: $
 		},
 		/**
-		 * @attribute footer
+		 * @config footer
 		 * @description A pointer to the footer node
 		 * @writeOnce
 		 */
@@ -98,7 +98,7 @@ $.Module = Base.create('module', Widget, [], {
 			setter: $
 		},
 		/**
-		 * @attribute headerContent
+		 * @config headerContent
 		 * @description The header of the module.
 		 * If set to a string a node is creating and the string is set to its innerHTML
 		 * @type DOM Node | String | NodeList
@@ -107,7 +107,7 @@ $.Module = Base.create('module', Widget, [], {
 			validator: Lang.isValue
 		},
 		/**
-		 * @attribute bodyContent
+		 * @config bodyContent
 		 * @description The body of the module.
 		 * If set to a string a node is creating and the string is set to its innerHTML
 		 * A body is always present in a Module
@@ -119,7 +119,7 @@ $.Module = Base.create('module', Widget, [], {
 			validator: Lang.isValue
 		},
 		/**
-		 * @attribute footerContent
+		 * @config footerContent
 		 * @description The footer of the module.
 		 * If set to a string a node is creating and the string is set to its innerHTML
 		 * @type DOM Node | String | NodeList
@@ -190,7 +190,7 @@ $.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment, $.WidgetStack],
 	
 	ATTRS: {
 		/**
-		 * @attribute draggable
+		 * @config draggable
 		 * @description If true, the overlay can be dragged. Requires $.Drag
 		 * @default false
 		 * @type Boolean
@@ -204,7 +204,7 @@ $.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment, $.WidgetStack],
 			writeOnce: true
 		},
 		/**
-		 * @attribute modal
+		 * @config modal
 		 * @description Whether this overlay should stop the user from interacting with the rest of the page
 		 * @default false
 		 * @type Boolean
@@ -222,8 +222,8 @@ $.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment, $.WidgetStack],
 			readOnly: true
 		},
 		/**
-		 * @attribute modalBox
-		 * @attribute Node that prevents the user from interacting with the page if 'modal' is set to true
+		 * @config modalBox
+		 * @config Node that prevents the user from interacting with the page if 'modal' is set to true
 		 * @type NodeList
 		 * @readOnly
 		 */
@@ -367,7 +367,7 @@ var PanelBase = $.mix(function () {
 	
 	ATTRS: {
 		/**
-		 * @attribute close
+		 * @config close
 		 * @description If true, a close button is added to the panel that hides it when clicked
 		 * @type Boolean
 		 * @default true
@@ -377,7 +377,7 @@ var PanelBase = $.mix(function () {
 			validator: Lang.isBoolean
 		},
 		/**
-		 * @attribute underlay
+		 * @config underlay
 		 * @description The underlay is inserted after the contentBox to allow for a more complex design
 		 * @readOnly
 		 */
@@ -385,7 +385,7 @@ var PanelBase = $.mix(function () {
 			setter: $
 		},
 		/**
-		 * @attribute shadow
+		 * @config shadow
 		 * @description If true, the panel shows a shadow
 		 * @default true
 		 */

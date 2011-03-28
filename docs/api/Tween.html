@@ -263,6 +263,9 @@
                                 <h4>Methods inherited from <a href="EventTarget.html" property="yui:name" title="EventTarget">EventTarget</a>:</h4>
                                 <div class="content" rel="yui:methods">
                                     <code>
+                                            <span rel="yui:method" resource="EventTarget.html#method_after">                                        
+                                            <a class="" href="EventTarget.html#method_after" property="yui:name" title="after">after</a><span class="">,</span>
+                                            </span>
                                             <span rel="yui:method" resource="EventTarget.html#method_fire">                                        
                                             <a class="" href="EventTarget.html#method_fire" property="yui:name" title="fire">fire</a><span class="">,</span>
                                             </span>
@@ -314,8 +317,422 @@
                     </div>
 
                     <div rel="yui:events" resource="#events">
+                        <div class="section method details">
+                            <h3 id="events">Events</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_durationChange">
+                                    <h4>
+                                        <a name="event_durationChange">durationChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">durationChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'duration' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
 
 
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_easingChange">
+                                    <h4>
+                                        <a name="event_easingChange">easingChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">easingChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'easing' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_easingStrengthChange">
+                                    <h4>
+                                        <a name="event_easingStrengthChange">easingStrengthChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">easingStrengthChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'easingStrength' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_fromChange">
+                                    <h4>
+                                        <a name="event_fromChange">fromChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">fromChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'from' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_nodeChange">
+                                    <h4>
+                                        <a name="event_nodeChange">nodeChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">nodeChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'node' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_playingChange">
+                                    <h4>
+                                        <a name="event_playingChange">playingChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">playingChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'playing' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_previousTimeChange">
+                                    <h4>
+                                        <a name="event_previousTimeChange">previousTimeChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">previousTimeChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'previousTime' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_startTimeChange">
+                                    <h4>
+                                        <a name="event_startTimeChange">startTimeChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">startTimeChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'startTime' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_toChange">
+                                    <h4>
+                                        <a name="event_toChange">toChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">toChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'to' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Base.html">
+                            <h4>Events inherited from <a href="Base.html" property="yui:name" title="Base">Base</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="Base.html#event_onChange">
+                                        <a class="" href="Base.html#event_onChange" property="yui:name" title="onChange">onChange</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
                     </div>
 
                     <div rel="yui:attributes" resource="#configattributes">
@@ -478,7 +895,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
@@ -509,6 +925,20 @@
                         </ul>
                     </div>
 
+                    <div id="eventsList" class="module">
+                        <h4>Events</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#event_durationChange" title="durationChange">durationChange</a></li>
+                                <li class=""><a href="#event_easingChange" title="easingChange">easingChange</a></li>
+                                <li class=""><a href="#event_easingStrengthChange" title="easingStrengthChange">easingStrengthChange</a></li>
+                                <li class=""><a href="#event_fromChange" title="fromChange">fromChange</a></li>
+                                <li class=""><a href="#event_nodeChange" title="nodeChange">nodeChange</a></li>
+                                <li class=""><a href="#event_playingChange" title="playingChange">playingChange</a></li>
+                                <li class=""><a href="#event_previousTimeChange" title="previousTimeChange">previousTimeChange</a></li>
+                                <li class=""><a href="#event_startTimeChange" title="startTimeChange">startTimeChange</a></li>
+                                <li class=""><a href="#event_toChange" title="toChange">toChange</a></li>
+                        </ul>
+                    </div>
 
                     <div id="configList" class="module">
                         <h4>Configuration Attributes</h4>
@@ -534,7 +964,7 @@
 <script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "TimeFrame.html#method_addTween", "access": "", "host": "TimeFrame", "type": "method", "name": "addTween"}, {"url": "Tween.html#config_duration", "access": "", "host": "Tween", "type": "config", "name": "duration"}, {"url": "Easing.html#method_easein", "access": "", "host": "Easing", "type": "method", "name": "easein"}, {"url": "Easing.html#method_easeout", "access": "", "host": "Easing", "type": "method", "name": "easeout"}, {"url": "Tween.html#config_easing", "access": "", "host": "Tween", "type": "config", "name": "easing"}, {"url": "Tween.html#config_easingStrength", "access": "", "host": "Tween", "type": "config", "name": "easingStrength"}, {"url": "TimeFrame.html#property_fps", "access": "", "host": "TimeFrame", "type": "property", "name": "fps"}, {"url": "Tween.html#config_from", "access": "", "host": "Tween", "type": "config", "name": "from"}, {"url": "Easing.html#method_linear", "access": "", "host": "Easing", "type": "method", "name": "linear"}, {"url": "Tween.html#config_node", "access": "", "host": "Tween", "type": "config", "name": "node"}, {"url": "Tween.html#method_pause", "access": "", "host": "Tween", "type": "method", "name": "pause"}, {"url": "TimeFrame.html#method_play", "access": "", "host": "TimeFrame", "type": "method", "name": "play"}, {"url": "Tween.html#method_play", "access": "", "host": "Tween", "type": "method", "name": "play"}, {"url": "Tween.html#config_playing", "access": "", "host": "Tween", "type": "config", "name": "playing"}, {"url": "TimeFrame.html#method_removeTween", "access": "", "host": "TimeFrame", "type": "method", "name": "removeTween"}, {"url": "Tween.html#method_reverse", "access": "", "host": "Tween", "type": "method", "name": "reverse"}, {"url": "Easing.html#method_sling", "access": "", "host": "Easing", "type": "method", "name": "sling"}, {"url": "TimeFrame.html#method_stop", "access": "", "host": "TimeFrame", "type": "method", "name": "stop"}, {"url": "Tween.html#method_stop", "access": "", "host": "Tween", "type": "method", "name": "stop"}, {"url": "Tween.html#config_to", "access": "", "host": "Tween", "type": "config", "name": "to"}];
+    var ALL_YUI_PROPS = [{"url": "TimeFrame.html#method_addTween", "access": "", "host": "TimeFrame", "type": "method", "name": "addTween"}, {"url": "Tween.html#config_duration", "access": "", "host": "Tween", "type": "config", "name": "duration"}, {"url": "Tween.html#event_durationChange", "access": "", "host": "Tween", "type": "event", "name": "durationChange"}, {"url": "Easing.html#method_easein", "access": "", "host": "Easing", "type": "method", "name": "easein"}, {"url": "Easing.html#method_easeout", "access": "", "host": "Easing", "type": "method", "name": "easeout"}, {"url": "Tween.html#config_easing", "access": "", "host": "Tween", "type": "config", "name": "easing"}, {"url": "Tween.html#event_easingChange", "access": "", "host": "Tween", "type": "event", "name": "easingChange"}, {"url": "Tween.html#config_easingStrength", "access": "", "host": "Tween", "type": "config", "name": "easingStrength"}, {"url": "Tween.html#event_easingStrengthChange", "access": "", "host": "Tween", "type": "event", "name": "easingStrengthChange"}, {"url": "TimeFrame.html#property_fps", "access": "", "host": "TimeFrame", "type": "property", "name": "fps"}, {"url": "Tween.html#config_from", "access": "", "host": "Tween", "type": "config", "name": "from"}, {"url": "Tween.html#event_fromChange", "access": "", "host": "Tween", "type": "event", "name": "fromChange"}, {"url": "Easing.html#method_linear", "access": "", "host": "Easing", "type": "method", "name": "linear"}, {"url": "Tween.html#config_node", "access": "", "host": "Tween", "type": "config", "name": "node"}, {"url": "Tween.html#event_nodeChange", "access": "", "host": "Tween", "type": "event", "name": "nodeChange"}, {"url": "Tween.html#method_pause", "access": "", "host": "Tween", "type": "method", "name": "pause"}, {"url": "TimeFrame.html#method_play", "access": "", "host": "TimeFrame", "type": "method", "name": "play"}, {"url": "Tween.html#method_play", "access": "", "host": "Tween", "type": "method", "name": "play"}, {"url": "Tween.html#config_playing", "access": "", "host": "Tween", "type": "config", "name": "playing"}, {"url": "Tween.html#event_playingChange", "access": "", "host": "Tween", "type": "event", "name": "playingChange"}, {"url": "Tween.html#event_previousTimeChange", "access": "", "host": "Tween", "type": "event", "name": "previousTimeChange"}, {"url": "TimeFrame.html#method_removeTween", "access": "", "host": "TimeFrame", "type": "method", "name": "removeTween"}, {"url": "Tween.html#method_reverse", "access": "", "host": "Tween", "type": "method", "name": "reverse"}, {"url": "Easing.html#method_sling", "access": "", "host": "Easing", "type": "method", "name": "sling"}, {"url": "Tween.html#event_startTimeChange", "access": "", "host": "Tween", "type": "event", "name": "startTimeChange"}, {"url": "TimeFrame.html#method_stop", "access": "", "host": "TimeFrame", "type": "method", "name": "stop"}, {"url": "Tween.html#method_stop", "access": "", "host": "Tween", "type": "method", "name": "stop"}, {"url": "Tween.html#config_to", "access": "", "host": "Tween", "type": "config", "name": "to"}, {"url": "Tween.html#event_toChange", "access": "", "host": "Tween", "type": "event", "name": "toChange"}];
 </script>
 </body>
 </html>

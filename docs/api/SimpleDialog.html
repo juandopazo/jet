@@ -112,6 +112,9 @@
                                 <h4>Methods inherited from <a href="EventTarget.html" property="yui:name" title="EventTarget">EventTarget</a>:</h4>
                                 <div class="content" rel="yui:methods">
                                     <code>
+                                            <span rel="yui:method" resource="EventTarget.html#method_after">                                        
+                                            <a class="" href="EventTarget.html#method_after" property="yui:name" title="after">after</a><span class="">,</span>
+                                            </span>
                                             <span rel="yui:method" resource="EventTarget.html#method_fire">                                        
                                             <a class="" href="EventTarget.html#method_fire" property="yui:name" title="fire">fire</a><span class="">,</span>
                                             </span>
@@ -204,6 +207,55 @@
                     </div>
 
                     <div rel="yui:events" resource="#events">
+                        <div class="section method details">
+                            <h3 id="events">Events</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_buttonsChange">
+                                    <h4>
+                                        <a name="event_buttonsChange">buttonsChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">buttonsChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'buttons' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
 
 
                         <div rel="yui:inheritance">                    
@@ -223,20 +275,69 @@
                                                                             <span rel="yui:event" resource="Widget.html#event_blur">
                                         <a class="" href="Widget.html#event_blur" property="yui:name" title="blur">blur</a>
                                         </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_boundingBoxChange">
+                                        <a class="" href="Widget.html#event_boundingBoxChange" property="yui:name" title="boundingBoxChange">boundingBoxChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_classPrefixChange">
+                                        <a class="" href="Widget.html#event_classPrefixChange" property="yui:name" title="classPrefixChange">classPrefixChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_contentBoxChange">
+                                        <a class="" href="Widget.html#event_contentBoxChange" property="yui:name" title="contentBoxChange">contentBoxChange</a>
+                                        </span>
                                                                             <span rel="yui:event" resource="Widget.html#event_destroy">
                                         <a class="" href="Widget.html#event_destroy" property="yui:name" title="destroy">destroy</a>
                                         </span>
                                                                             <span rel="yui:event" resource="Widget.html#event_focus">
                                         <a class="" href="Widget.html#event_focus" property="yui:name" title="focus">focus</a>
                                         </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_heightChange">
+                                        <a class="" href="Widget.html#event_heightChange" property="yui:name" title="heightChange">heightChange</a>
+                                        </span>
                                                                             <span rel="yui:event" resource="Widget.html#event_hide">
                                         <a class="" href="Widget.html#event_hide" property="yui:name" title="hide">hide</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_idChange">
+                                        <a class="" href="Widget.html#event_idChange" property="yui:name" title="idChange">idChange</a>
                                         </span>
                                                                             <span rel="yui:event" resource="Widget.html#event_render">
                                         <a class="" href="Widget.html#event_render" property="yui:name" title="render">render</a>
                                         </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_renderedChange">
+                                        <a class="" href="Widget.html#event_renderedChange" property="yui:name" title="renderedChange">renderedChange</a>
+                                        </span>
                                                                             <span rel="yui:event" resource="Widget.html#event_show">
                                         <a class="" href="Widget.html#event_show" property="yui:name" title="show">show</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_srcNodeChange">
+                                        <a class="" href="Widget.html#event_srcNodeChange" property="yui:name" title="srcNodeChange">srcNodeChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_widthChange">
+                                        <a class="" href="Widget.html#event_widthChange" property="yui:name" title="widthChange">widthChange</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Base.html">
+                            <h4>Events inherited from <a href="Base.html" property="yui:name" title="Base">Base</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="Base.html#event_onChange">
+                                        <a class="" href="Base.html#event_onChange" property="yui:name" title="onChange">onChange</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="WidgetStack.html">
+                            <h4>Events inherited from <a href="WidgetStack.html" property="yui:name" title="WidgetStack">WidgetStack</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="WidgetStack.html#event_shimChange">
+                                        <a class="" href="WidgetStack.html#event_shimChange" property="yui:name" title="shimChange">shimChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="WidgetStack.html#event_zIndexChange">
+                                        <a class="" href="WidgetStack.html#event_zIndexChange" property="yui:name" title="zIndexChange">zIndexChange</a>
                                         </span>
                                     
                                 </code>
@@ -426,7 +527,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
@@ -452,6 +552,12 @@
 
 
 
+                    <div id="eventsList" class="module">
+                        <h4>Events</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#event_buttonsChange" title="buttonsChange">buttonsChange</a></li>
+                        </ul>
+                    </div>
 
                     <div id="configList" class="module">
                         <h4>Configuration Attributes</h4>
@@ -471,7 +577,7 @@
 <script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Module.html#config_body", "access": "", "host": "Module", "type": "config", "name": "body"}, {"url": "Module.html#config_bodyContent", "access": "", "host": "Module", "type": "config", "name": "bodyContent"}, {"url": "SimpleDialog.html#config_buttons", "access": "", "host": "SimpleDialog", "type": "config", "name": "buttons"}, {"url": "PanelBase.html#config_close", "access": "", "host": "PanelBase", "type": "config", "name": "close"}, {"url": "Overlay.html#config_draggable", "access": "", "host": "Overlay", "type": "config", "name": "draggable"}, {"url": "Tooltip.html#config_fadeIn", "access": "", "host": "Tooltip", "type": "config", "name": "fadeIn"}, {"url": "Module.html#config_footer", "access": "", "host": "Module", "type": "config", "name": "footer"}, {"url": "Module.html#config_footerContent", "access": "", "host": "Module", "type": "config", "name": "footerContent"}, {"url": "Module.html#config_header", "access": "", "host": "Module", "type": "config", "name": "header"}, {"url": "Module.html#config_headerContent", "access": "", "host": "Module", "type": "config", "name": "headerContent"}, {"url": "Overlay.html#config_modal", "access": "", "host": "Overlay", "type": "config", "name": "modal"}, {"url": "Overlay.html#config_modalBox", "access": "", "host": "Overlay", "type": "config", "name": "modalBox"}, {"url": "PanelBase.html#config_shadow", "access": "", "host": "PanelBase", "type": "config", "name": "shadow"}, {"url": "PanelBase.html#config_underlay", "access": "", "host": "PanelBase", "type": "config", "name": "underlay"}];
+    var ALL_YUI_PROPS = [{"url": "Module.html#config_body", "access": "", "host": "Module", "type": "config", "name": "body"}, {"url": "Module.html#config_bodyContent", "access": "", "host": "Module", "type": "config", "name": "bodyContent"}, {"url": "SimpleDialog.html#config_buttons", "access": "", "host": "SimpleDialog", "type": "config", "name": "buttons"}, {"url": "SimpleDialog.html#event_buttonsChange", "access": "", "host": "SimpleDialog", "type": "event", "name": "buttonsChange"}, {"url": "PanelBase.html#config_close", "access": "", "host": "PanelBase", "type": "config", "name": "close"}, {"url": "Overlay.html#config_draggable", "access": "", "host": "Overlay", "type": "config", "name": "draggable"}, {"url": "Tooltip.html#config_fadeIn", "access": "", "host": "Tooltip", "type": "config", "name": "fadeIn"}, {"url": "Tooltip.html#event_fadeInChange", "access": "", "host": "Tooltip", "type": "event", "name": "fadeInChange"}, {"url": "Module.html#config_footer", "access": "", "host": "Module", "type": "config", "name": "footer"}, {"url": "Module.html#config_footerContent", "access": "", "host": "Module", "type": "config", "name": "footerContent"}, {"url": "Module.html#config_header", "access": "", "host": "Module", "type": "config", "name": "header"}, {"url": "Module.html#config_headerContent", "access": "", "host": "Module", "type": "config", "name": "headerContent"}, {"url": "Overlay.html#config_modal", "access": "", "host": "Overlay", "type": "config", "name": "modal"}, {"url": "Overlay.html#config_modalBox", "access": "", "host": "Overlay", "type": "config", "name": "modalBox"}, {"url": "PanelBase.html#config_shadow", "access": "", "host": "PanelBase", "type": "config", "name": "shadow"}, {"url": "PanelBase.html#config_underlay", "access": "", "host": "PanelBase", "type": "config", "name": "underlay"}];
 </script>
 </body>
 </html>

@@ -176,6 +176,9 @@ Simulates the mouseup event
                                 <h4>Methods inherited from <a href="EventTarget.html" property="yui:name" title="EventTarget">EventTarget</a>:</h4>
                                 <div class="content" rel="yui:methods">
                                     <code>
+                                            <span rel="yui:method" resource="EventTarget.html#method_after">                                        
+                                            <a class="" href="EventTarget.html#method_after" property="yui:name" title="after">after</a><span class="">,</span>
+                                            </span>
                                             <span rel="yui:method" resource="EventTarget.html#method_fire">                                        
                                             <a class="" href="EventTarget.html#method_fire" property="yui:name" title="fire">fire</a><span class="">,</span>
                                             </span>
@@ -240,6 +243,50 @@ Simulates the mouseup event
                         <div class="section method details">
                             <h3 id="events">Events</h3>
                             <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_frequencyChange">
+                                    <h4>
+                                        <a name="event_frequencyChange">frequencyChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">frequencyChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'frequency' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
                                     <div class="" rel="yui:event" resource="#event_move">
                                     <h4>
                                         <a name="event_move">move</a></h4>
@@ -264,6 +311,50 @@ because the native mousemove event fires too quickly
                                         <div class="description">
 
 
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_trackingChange">
+                                    <h4>
+                                        <a name="event_trackingChange">trackingChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">trackingChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'tracking' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
 
 
                                         </div>
@@ -305,11 +396,25 @@ because the native mousemove event fires too quickly
 
 
                         <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Base.html">
+                            <h4>Events inherited from <a href="Base.html" property="yui:name" title="Base">Base</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="Base.html#event_onChange">
+                                        <a class="" href="Base.html#event_onChange" property="yui:name" title="onChange">onChange</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
                         <div class="section field inheritance" rel="yui:superclass"  resource="Utility.html">
                             <h4>Events inherited from <a href="Utility.html" property="yui:name" title="Utility">Utility</a>:</h4>
                             <div class="content" rel="yui:events">
                                 <code>
-                                        <span rel="yui:event" resource="Utility.html#event_destroy">
+                                        <span rel="yui:event" resource="Utility.html#event_cssPrefixChange">
+                                        <a class="" href="Utility.html#event_cssPrefixChange" property="yui:name" title="cssPrefixChange">cssPrefixChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Utility.html#event_destroy">
                                         <a class="" href="Utility.html#event_destroy" property="yui:name" title="destroy">destroy</a>
                                         </span>
                                     
@@ -418,7 +523,6 @@ because the native mousemove event fires too quickly
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
@@ -454,7 +558,9 @@ because the native mousemove event fires too quickly
                     <div id="eventsList" class="module">
                         <h4>Events</h4>
                         <ul class="content">        
+                                <li class=""><a href="#event_frequencyChange" title="frequencyChange">frequencyChange</a></li>
                                 <li class=""><a href="#event_move" title="move">move</a></li>
+                                <li class=""><a href="#event_trackingChange" title="trackingChange">trackingChange</a></li>
                                 <li class=""><a href="#event_up" title="up">up</a></li>
                         </ul>
                     </div>
@@ -478,7 +584,7 @@ because the native mousemove event fires too quickly
 <script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Attribute.html#method_addAttr", "access": "", "host": "Attribute", "type": "method", "name": "addAttr"}, {"url": "Attribute.html#method_addAttrs", "access": "", "host": "Attribute", "type": "method", "name": "addAttrs"}, {"url": "Widget.html#event_afterHide", "access": "", "host": "Widget", "type": "event", "name": "afterHide"}, {"url": "Widget.html#event_afterRender", "access": "", "host": "Widget", "type": "event", "name": "afterRender"}, {"url": "Widget.html#event_afterShow", "access": "", "host": "Widget", "type": "event", "name": "afterShow"}, {"url": "Widget.html#method_blur", "access": "", "host": "Widget", "type": "method", "name": "blur"}, {"url": "Widget.html#event_blur", "access": "", "host": "Widget", "type": "event", "name": "blur"}, {"url": "Widget.html#config_boundingBox", "access": "", "host": "Widget", "type": "config", "name": "boundingBox"}, {"url": "Widget.html#config_classPrefix", "access": "", "host": "Widget", "type": "config", "name": "classPrefix"}, {"url": "Widget.html#config_contentBox", "access": "", "host": "Widget", "type": "config", "name": "contentBox"}, {"url": "Base.html#method_create", "access": "", "host": "Base", "type": "method", "name": "create"}, {"url": "Utility.html#config_cssPrefix", "access": "", "host": "Utility", "type": "config", "name": "cssPrefix"}, {"url": "Widget.html#property_CSS_PREFIX", "access": "", "host": "Widget", "type": "property", "name": "CSS_PREFIX"}, {"url": "Utility.html#method_destroy", "access": "", "host": "Utility", "type": "method", "name": "destroy"}, {"url": "Utility.html#event_destroy", "access": "", "host": "Utility", "type": "event", "name": "destroy"}, {"url": "Widget.html#method_destroy", "access": "", "host": "Widget", "type": "method", "name": "destroy"}, {"url": "Widget.html#event_destroy", "access": "", "host": "Widget", "type": "event", "name": "destroy"}, {"url": "Widget.html#property_DOM_EVENTS", "access": "", "host": "Widget", "type": "property", "name": "DOM_EVENTS"}, {"url": "Mouse.html#method_down", "access": "", "host": "Mouse", "type": "method", "name": "down"}, {"url": "OOP.html#method_extend", "access": "", "host": "OOP", "type": "method", "name": "extend"}, {"url": "EventTarget.html#method_fire", "access": "", "host": "EventTarget", "type": "method", "name": "fire"}, {"url": "Widget.html#method_focus", "access": "", "host": "Widget", "type": "method", "name": "focus"}, {"url": "Widget.html#event_focus", "access": "", "host": "Widget", "type": "event", "name": "focus"}, {"url": "Mouse.html#config_frequency", "access": "", "host": "Mouse", "type": "config", "name": "frequency"}, {"url": "Attribute.html#method_get", "access": "", "host": "Attribute", "type": "method", "name": "get"}, {"url": "Attribute.html#method_getAttrs", "access": "", "host": "Attribute", "type": "method", "name": "getAttrs"}, {"url": "Widget.html#method_getByNode", "access": "", "host": "Widget", "type": "method", "name": "getByNode"}, {"url": "Widget.html#config_height", "access": "", "host": "Widget", "type": "config", "name": "height"}, {"url": "Widget.html#method_hide", "access": "", "host": "Widget", "type": "method", "name": "hide"}, {"url": "Widget.html#event_hide", "access": "", "host": "Widget", "type": "event", "name": "hide"}, {"url": "Widget.html#config_id", "access": "", "host": "Widget", "type": "config", "name": "id"}, {"url": "Mouse.html#event_move", "access": "", "host": "Mouse", "type": "event", "name": "move"}, {"url": "EventTarget.html#method_on", "access": "", "host": "EventTarget", "type": "method", "name": "on"}, {"url": "Base.html#config_on", "access": "", "host": "Base", "type": "config", "name": "on"}, {"url": "EventTarget.html#method_once", "access": "", "host": "EventTarget", "type": "method", "name": "once"}, {"url": "Widget.html#method_render", "access": "", "host": "Widget", "type": "method", "name": "render"}, {"url": "Widget.html#event_render", "access": "", "host": "Widget", "type": "event", "name": "render"}, {"url": "Widget.html#config_rendered", "access": "", "host": "Widget", "type": "config", "name": "rendered"}, {"url": "Attribute.html#method_set", "access": "", "host": "Attribute", "type": "method", "name": "set"}, {"url": "Widget.html#method_show", "access": "", "host": "Widget", "type": "method", "name": "show"}, {"url": "Widget.html#event_show", "access": "", "host": "Widget", "type": "event", "name": "show"}, {"url": "Widget.html#config_srcNode", "access": "", "host": "Widget", "type": "config", "name": "srcNode"}, {"url": "Mouse.html#config_tracking", "access": "", "host": "Mouse", "type": "config", "name": "tracking"}, {"url": "EventTarget.html#method_unbind", "access": "", "host": "EventTarget", "type": "method", "name": "unbind"}, {"url": "Attribute.html#method_unset", "access": "", "host": "Attribute", "type": "method", "name": "unset"}, {"url": "Mouse.html#method_up", "access": "", "host": "Mouse", "type": "method", "name": "up"}, {"url": "Mouse.html#event_up", "access": "", "host": "Mouse", "type": "event", "name": "up"}, {"url": "Widget.html#config_width", "access": "", "host": "Widget", "type": "config", "name": "width"}];
+    var ALL_YUI_PROPS = [{"url": "Attribute.html#method_addAttr", "access": "", "host": "Attribute", "type": "method", "name": "addAttr"}, {"url": "Attribute.html#method_addAttrs", "access": "", "host": "Attribute", "type": "method", "name": "addAttrs"}, {"url": "EventTarget.html#method_after", "access": "", "host": "EventTarget", "type": "method", "name": "after"}, {"url": "Widget.html#event_afterHide", "access": "", "host": "Widget", "type": "event", "name": "afterHide"}, {"url": "Widget.html#event_afterRender", "access": "", "host": "Widget", "type": "event", "name": "afterRender"}, {"url": "Widget.html#event_afterShow", "access": "", "host": "Widget", "type": "event", "name": "afterShow"}, {"url": "Widget.html#method_blur", "access": "", "host": "Widget", "type": "method", "name": "blur"}, {"url": "Widget.html#event_blur", "access": "", "host": "Widget", "type": "event", "name": "blur"}, {"url": "Widget.html#config_boundingBox", "access": "", "host": "Widget", "type": "config", "name": "boundingBox"}, {"url": "Widget.html#event_boundingBoxChange", "access": "", "host": "Widget", "type": "event", "name": "boundingBoxChange"}, {"url": "Widget.html#config_classPrefix", "access": "", "host": "Widget", "type": "config", "name": "classPrefix"}, {"url": "Widget.html#event_classPrefixChange", "access": "", "host": "Widget", "type": "event", "name": "classPrefixChange"}, {"url": "Widget.html#config_contentBox", "access": "", "host": "Widget", "type": "config", "name": "contentBox"}, {"url": "Widget.html#event_contentBoxChange", "access": "", "host": "Widget", "type": "event", "name": "contentBoxChange"}, {"url": "Base.html#method_create", "access": "", "host": "Base", "type": "method", "name": "create"}, {"url": "Utility.html#config_cssPrefix", "access": "", "host": "Utility", "type": "config", "name": "cssPrefix"}, {"url": "Widget.html#property_CSS_PREFIX", "access": "", "host": "Widget", "type": "property", "name": "CSS_PREFIX"}, {"url": "Utility.html#event_cssPrefixChange", "access": "", "host": "Utility", "type": "event", "name": "cssPrefixChange"}, {"url": "Utility.html#method_destroy", "access": "", "host": "Utility", "type": "method", "name": "destroy"}, {"url": "Utility.html#event_destroy", "access": "", "host": "Utility", "type": "event", "name": "destroy"}, {"url": "Widget.html#method_destroy", "access": "", "host": "Widget", "type": "method", "name": "destroy"}, {"url": "Widget.html#event_destroy", "access": "", "host": "Widget", "type": "event", "name": "destroy"}, {"url": "Widget.html#property_DOM_EVENTS", "access": "", "host": "Widget", "type": "property", "name": "DOM_EVENTS"}, {"url": "Mouse.html#method_down", "access": "", "host": "Mouse", "type": "method", "name": "down"}, {"url": "OOP.html#method_extend", "access": "", "host": "OOP", "type": "method", "name": "extend"}, {"url": "EventTarget.html#method_fire", "access": "", "host": "EventTarget", "type": "method", "name": "fire"}, {"url": "Widget.html#method_focus", "access": "", "host": "Widget", "type": "method", "name": "focus"}, {"url": "Widget.html#event_focus", "access": "", "host": "Widget", "type": "event", "name": "focus"}, {"url": "Mouse.html#config_frequency", "access": "", "host": "Mouse", "type": "config", "name": "frequency"}, {"url": "Mouse.html#event_frequencyChange", "access": "", "host": "Mouse", "type": "event", "name": "frequencyChange"}, {"url": "Attribute.html#method_get", "access": "", "host": "Attribute", "type": "method", "name": "get"}, {"url": "Attribute.html#method_getAttrs", "access": "", "host": "Attribute", "type": "method", "name": "getAttrs"}, {"url": "Widget.html#method_getByNode", "access": "", "host": "Widget", "type": "method", "name": "getByNode"}, {"url": "Widget.html#config_height", "access": "", "host": "Widget", "type": "config", "name": "height"}, {"url": "Widget.html#event_heightChange", "access": "", "host": "Widget", "type": "event", "name": "heightChange"}, {"url": "Widget.html#method_hide", "access": "", "host": "Widget", "type": "method", "name": "hide"}, {"url": "Widget.html#event_hide", "access": "", "host": "Widget", "type": "event", "name": "hide"}, {"url": "Widget.html#config_id", "access": "", "host": "Widget", "type": "config", "name": "id"}, {"url": "Widget.html#event_idChange", "access": "", "host": "Widget", "type": "event", "name": "idChange"}, {"url": "Mouse.html#event_move", "access": "", "host": "Mouse", "type": "event", "name": "move"}, {"url": "EventTarget.html#method_on", "access": "", "host": "EventTarget", "type": "method", "name": "on"}, {"url": "Base.html#config_on", "access": "", "host": "Base", "type": "config", "name": "on"}, {"url": "EventTarget.html#method_once", "access": "", "host": "EventTarget", "type": "method", "name": "once"}, {"url": "Base.html#event_onChange", "access": "", "host": "Base", "type": "event", "name": "onChange"}, {"url": "Widget.html#method_render", "access": "", "host": "Widget", "type": "method", "name": "render"}, {"url": "Widget.html#event_render", "access": "", "host": "Widget", "type": "event", "name": "render"}, {"url": "Widget.html#config_rendered", "access": "", "host": "Widget", "type": "config", "name": "rendered"}, {"url": "Widget.html#event_renderedChange", "access": "", "host": "Widget", "type": "event", "name": "renderedChange"}, {"url": "Attribute.html#method_set", "access": "", "host": "Attribute", "type": "method", "name": "set"}, {"url": "Widget.html#method_show", "access": "", "host": "Widget", "type": "method", "name": "show"}, {"url": "Widget.html#event_show", "access": "", "host": "Widget", "type": "event", "name": "show"}, {"url": "Widget.html#config_srcNode", "access": "", "host": "Widget", "type": "config", "name": "srcNode"}, {"url": "Widget.html#event_srcNodeChange", "access": "", "host": "Widget", "type": "event", "name": "srcNodeChange"}, {"url": "Mouse.html#config_tracking", "access": "", "host": "Mouse", "type": "config", "name": "tracking"}, {"url": "Mouse.html#event_trackingChange", "access": "", "host": "Mouse", "type": "event", "name": "trackingChange"}, {"url": "EventTarget.html#method_unbind", "access": "", "host": "EventTarget", "type": "method", "name": "unbind"}, {"url": "Attribute.html#method_unset", "access": "", "host": "Attribute", "type": "method", "name": "unset"}, {"url": "Mouse.html#method_up", "access": "", "host": "Mouse", "type": "method", "name": "up"}, {"url": "Mouse.html#event_up", "access": "", "host": "Mouse", "type": "event", "name": "up"}, {"url": "Widget.html#config_width", "access": "", "host": "Widget", "type": "config", "name": "width"}, {"url": "Widget.html#event_widthChange", "access": "", "host": "Widget", "type": "event", "name": "widthChange"}];
 </script>
 </body>
 </html>

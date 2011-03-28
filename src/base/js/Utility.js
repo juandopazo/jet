@@ -41,7 +41,7 @@ extend(Utility, Base, {
 	
 	ATTRS: {
 		/**
-		 * @config cssPrefix
+		 * @attribute cssPrefix
 		 * @default Utility.CSS_PREFIX
 		 * @writeOnce
 		 */

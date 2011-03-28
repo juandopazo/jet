@@ -33,7 +33,7 @@ var Paginator = function () {
 	
 	var myself = this.addAttrs({
 		/**
-		 * @config recordSet
+		 * @attribute recordSet
 		 * @description A RecordSet with the data the paginator should handle
 		 * @required
 		 * @type RecordSet
@@ -42,7 +42,7 @@ var Paginator = function () {
 			required: true
 		},
 		/**
-		 * @config recordsPerPage
+		 * @attribute recordsPerPage
 		 * @description Number of records each page should show
 		 * @type Number
 		 * @default 10
@@ -51,7 +51,7 @@ var Paginator = function () {
 			value: 10
 		},
 		/**
-		 * @config firstLast
+		 * @attribute firstLast
 		 * @description Wheter the "First" and "Last" buttons should appear
 		 * @type Boolean
 		 * @default true
@@ -60,7 +60,7 @@ var Paginator = function () {
 			value: true
 		},
 		/**
-		 * @config prevNext
+		 * @attribute prevNext
 		 * @description Wheter the "previous" and "next" buttons should appear
 		 * @type Boolean
 		 * @default true
@@ -69,7 +69,7 @@ var Paginator = function () {
 			value: true
 		},
 		/**
-		 * @config pagesShown
+		 * @attribute pagesShown
 		 * @description Number of pages that should be listed in the paginator (1, 2, 3...)
 		 * @type Number
 		 * @default 5
@@ -78,7 +78,7 @@ var Paginator = function () {
 			value: 5
 		},
 		/**
-		 * @config firstText
+		 * @attribute firstText
 		 * @description The text of the "first" button
 		 * @writeOnce
 		 * @default "<< first"
@@ -89,7 +89,7 @@ var Paginator = function () {
 			value: "<< first"
 		},
 		/**
-		 * @config prevText
+		 * @attribute prevText
 		 * @description The text of the "previous" button
 		 * @writeOnce
 		 * @default "< prev"
@@ -100,7 +100,7 @@ var Paginator = function () {
 			value: "< prev"
 		},
 		/**
-		 * @config nextText
+		 * @attribute nextText
 		 * @description The text of the "next" button
 		 * @writeOnce
 		 * @default "next >"
@@ -111,7 +111,7 @@ var Paginator = function () {
 			value: "next >"
 		},
 		/**
-		 * @config lastText
+		 * @attribute lastText
 		 * @description The text of the "last" button
 		 * @writeOnce
 		 * @default "last >>"
@@ -126,7 +126,7 @@ var Paginator = function () {
 			value: "pg"
 		},
 		/**
-		 * @config currentPage
+		 * @attribute currentPage
 		 * @description The current selected page. If set in the config, 
 		 * the paginator will go directly to that page when rendered
 		 * @writeOnce
@@ -137,7 +137,7 @@ var Paginator = function () {
 			value: currentPage
 		},
 		/**
-		 * @config pageCount
+		 * @attribute pageCount
 		 * @description The number of pages in the paginator
 		 * @readOnly
 		 * @type Number

@@ -283,7 +283,7 @@ extend(Widget, Base, {
 	
 	ATTRS: {
 		/**
-		 * @config srcNode
+		 * @attribute srcNode
 		 * @description The node to which the widget will be appended to. May be set as a 
 		 * configuration attribute, with a setter or as the first parameter of the render() method
 		 * @type DOMNode | NodeList
@@ -293,7 +293,7 @@ extend(Widget, Base, {
 			setter: $
 		},
 		/**
-		 * @config classPrefix
+		 * @attribute classPrefix
 		 * @description Prefix for all CSS clases. Useful for renaming the project
 		 * @default Widget.CSS_PREFIX
 		 * @writeOnce
@@ -305,7 +305,7 @@ extend(Widget, Base, {
 			}
 		},
 		/**
-		 * @config rendered
+		 * @attribute rendered
 		 * @description Rendered status. Shouldn't be changed by anything appart from the Widget.render() method
 		 * @writeOnce
 		 * @default false
@@ -315,7 +315,7 @@ extend(Widget, Base, {
 		},
 		/**
 		 * The bounding box contains all the parts of the widget
-		 * @config boundingBox
+		 * @attribute boundingBox
 		 * @writeOnce
 		 * @type NodeList
 		 * @default uses BOUNDING_TEMPLATE instance property
@@ -324,7 +324,7 @@ extend(Widget, Base, {
 			setter: $
 		},
 		/**
-		 * @config contentBox
+		 * @attribute contentBox
 		 * @description Another container inside the boundingBox added in order to have a more complex design
 		 * @writeOnce
 		 * @type NodeList
@@ -346,7 +346,7 @@ extend(Widget, Base, {
 			}
 		},
 		/**
-		 * @config width
+		 * @attribute width
 		 * @description The width of the overlay
 		 * @type Number
 		 */
@@ -354,7 +354,7 @@ extend(Widget, Base, {
 			validator: Lang.isNumber
 		},
 		/**
-		 * @config height
+		 * @attribute height
 		 * @description The height of the overlay.
 		 * If set to 0 (zero) the height changes with the content
 		 * @type Number
@@ -363,7 +363,7 @@ extend(Widget, Base, {
 			validator: Lang.isNumber
 		},
 		/**
-		 * @config id
+		 * @attribute id
 		 * @description The id of the widget
 		 * @readOnly
 		 */

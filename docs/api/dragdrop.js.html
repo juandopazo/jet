@@ -56,7 +56,6 @@
 <span class="cm">*/</span>
 <span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;dragdrop&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 
-
 			
 <span class="kd">var</span> <span class="nx">ArrayHelper</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">,</span>
 	<span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">;</span>
@@ -78,7 +77,7 @@
 	<span class="nx">Drag</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
 	<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config node</span>
+<span class="cm">		 * @attribute node</span>
 <span class="cm">		 * @description node to be dragged</span>
 <span class="cm">		 * @required</span>
 <span class="cm">		 */</span>
@@ -89,7 +88,7 @@
 			<span class="p">}</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config cursor</span>
+<span class="cm">		 * @attribute cursor</span>
 <span class="cm">		 * @description the type of cursor that will be shown on hover</span>
 <span class="cm">		 * @type String</span>
 <span class="cm">		 */</span>
@@ -97,7 +96,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;move&quot;</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config tracking</span>
+<span class="cm">		 * @attribute tracking</span>
 <span class="cm">		 * @description the tracking status</span>
 <span class="cm">		 * @type Boolean</span>
 <span class="cm">		 */</span>
@@ -109,7 +108,7 @@
 		<span class="p">}</span>
 	<span class="p">});</span>
 	<span class="cm">/**</span>
-<span class="cm">	 * @config handlers</span>
+<span class="cm">	 * @attribute handlers</span>
 <span class="cm">	 * @description A list of elements that will start the dragging</span>
 <span class="cm">	 * @type Array | NodeList </span>
 <span class="cm">	 */</span>
@@ -296,7 +295,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
@@ -331,7 +329,7 @@
 <script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "DataTable.html#method_addRow", "access": "", "host": "DataTable", "type": "method", "name": "addRow"}, {"url": "DataTable.html#method_addRows", "access": "", "host": "DataTable", "type": "method", "name": "addRows"}, {"url": "DataTable.html#config_autoScroll", "access": "", "host": "DataTable", "type": "config", "name": "autoScroll"}, {"url": "Column.html#config_cells", "access": "", "host": "Column", "type": "config", "name": "cells"}, {"url": "DataTable.html#config_columnDefinitions", "access": "", "host": "DataTable", "type": "config", "name": "columnDefinitions"}, {"url": "DataTable.html#method_getColumn", "access": "", "host": "DataTable", "type": "method", "name": "getColumn"}, {"url": "Column.html#method_getFirstCell", "access": "", "host": "Column", "type": "method", "name": "getFirstCell"}, {"url": "Column.html#method_getFirstTd", "access": "", "host": "Column", "type": "method", "name": "getFirstTd"}, {"url": "DataTable.html#method_getFirstTd", "access": "", "host": "DataTable", "type": "method", "name": "getFirstTd"}, {"url": "DataTable.html#method_getFirstTr", "access": "", "host": "DataTable", "type": "method", "name": "getFirstTr"}, {"url": "Column.html#method_getNextCell", "access": "", "host": "Column", "type": "method", "name": "getNextCell"}, {"url": "Column.html#method_getNextTd", "access": "", "host": "Column", "type": "method", "name": "getNextTd"}, {"url": "DataTable.html#method_getNextTd", "access": "", "host": "DataTable", "type": "method", "name": "getNextTd"}, {"url": "DataTable.html#method_getNextTr", "access": "", "host": "DataTable", "type": "method", "name": "getNextTr"}, {"url": "DataTable.html#method_onDataReturnAddRows", "access": "", "host": "DataTable", "type": "method", "name": "onDataReturnAddRows"}, {"url": "DataTable.html#method_onDataReturnReplaceRows", "access": "", "host": "DataTable", "type": "method", "name": "onDataReturnReplaceRows"}, {"url": "Cell.html#config_record", "access": "", "host": "Cell", "type": "config", "name": "record"}, {"url": "DataTable.html#config_recordSet", "access": "", "host": "DataTable", "type": "config", "name": "recordSet"}, {"url": "Cell.html#config_td", "access": "", "host": "Cell", "type": "config", "name": "td"}, {"url": "Cell.html#config_value", "access": "", "host": "Cell", "type": "config", "name": "value"}];
+    var ALL_YUI_PROPS = [{"url": "DataTable.html#method_addRow", "access": "", "host": "DataTable", "type": "method", "name": "addRow"}, {"url": "DataTable.html#method_addRows", "access": "", "host": "DataTable", "type": "method", "name": "addRows"}, {"url": "DataTable.html#config_autoScroll", "access": "", "host": "DataTable", "type": "config", "name": "autoScroll"}, {"url": "DataTable.html#event_autoScrollChange", "access": "", "host": "DataTable", "type": "event", "name": "autoScrollChange"}, {"url": "Column.html#config_cells", "access": "", "host": "Column", "type": "config", "name": "cells"}, {"url": "Column.html#event_cellsChange", "access": "", "host": "Column", "type": "event", "name": "cellsChange"}, {"url": "DataTable.html#config_columnDefinitions", "access": "", "host": "DataTable", "type": "config", "name": "columnDefinitions"}, {"url": "DataTable.html#event_columnDefinitionsChange", "access": "", "host": "DataTable", "type": "event", "name": "columnDefinitionsChange"}, {"url": "DataTable.html#method_getColumn", "access": "", "host": "DataTable", "type": "method", "name": "getColumn"}, {"url": "Column.html#method_getFirstCell", "access": "", "host": "Column", "type": "method", "name": "getFirstCell"}, {"url": "Column.html#method_getFirstTd", "access": "", "host": "Column", "type": "method", "name": "getFirstTd"}, {"url": "DataTable.html#method_getFirstTd", "access": "", "host": "DataTable", "type": "method", "name": "getFirstTd"}, {"url": "DataTable.html#method_getFirstTr", "access": "", "host": "DataTable", "type": "method", "name": "getFirstTr"}, {"url": "Column.html#method_getNextCell", "access": "", "host": "Column", "type": "method", "name": "getNextCell"}, {"url": "Column.html#method_getNextTd", "access": "", "host": "Column", "type": "method", "name": "getNextTd"}, {"url": "DataTable.html#method_getNextTd", "access": "", "host": "DataTable", "type": "method", "name": "getNextTd"}, {"url": "DataTable.html#method_getNextTr", "access": "", "host": "DataTable", "type": "method", "name": "getNextTr"}, {"url": "DataTable.html#method_onDataReturnAddRows", "access": "", "host": "DataTable", "type": "method", "name": "onDataReturnAddRows"}, {"url": "DataTable.html#method_onDataReturnReplaceRows", "access": "", "host": "DataTable", "type": "method", "name": "onDataReturnReplaceRows"}, {"url": "Cell.html#config_record", "access": "", "host": "Cell", "type": "config", "name": "record"}, {"url": "Cell.html#event_recordChange", "access": "", "host": "Cell", "type": "event", "name": "recordChange"}, {"url": "DataTable.html#config_recordSet", "access": "", "host": "DataTable", "type": "config", "name": "recordSet"}, {"url": "DataTable.html#event_recordSetChange", "access": "", "host": "DataTable", "type": "event", "name": "recordSetChange"}, {"url": "Cell.html#config_td", "access": "", "host": "Cell", "type": "config", "name": "td"}, {"url": "Cell.html#event_tdChange", "access": "", "host": "Cell", "type": "event", "name": "tdChange"}, {"url": "Cell.html#config_value", "access": "", "host": "Cell", "type": "config", "name": "value"}, {"url": "Cell.html#event_valueChange", "access": "", "host": "Cell", "type": "event", "name": "valueChange"}];
 </script>
 </body>
 </html>

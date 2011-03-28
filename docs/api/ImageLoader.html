@@ -140,6 +140,9 @@
                                 <h4>Methods inherited from <a href="EventTarget.html" property="yui:name" title="EventTarget">EventTarget</a>:</h4>
                                 <div class="content" rel="yui:methods">
                                     <code>
+                                            <span rel="yui:method" resource="EventTarget.html#method_after">                                        
+                                            <a class="" href="EventTarget.html#method_after" property="yui:name" title="after">after</a><span class="">,</span>
+                                            </span>
                                             <span rel="yui:method" resource="EventTarget.html#method_fire">                                        
                                             <a class="" href="EventTarget.html#method_fire" property="yui:name" title="fire">fire</a><span class="">,</span>
                                             </span>
@@ -443,10 +446,67 @@
                                     </div>
                                     <hr />
                                     </div>
+                                    <div class="" rel="yui:event" resource="#event_srcsChange">
+                                    <h4>
+                                        <a name="event_srcsChange">srcsChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">srcsChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'srcs' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
                             </div>
                         </div>
 
 
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Base.html">
+                            <h4>Events inherited from <a href="Base.html" property="yui:name" title="Base">Base</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="Base.html#event_onChange">
+                                        <a class="" href="Base.html#event_onChange" property="yui:name" title="onChange">onChange</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
                     </div>
 
                     <div rel="yui:attributes" resource="#configattributes">
@@ -516,7 +576,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
@@ -552,6 +611,7 @@
                                 <li class=""><a href="#event_image:load" title="image:load">image:load</a></li>
                                 <li class=""><a href="#event_image:timeout" title="image:timeout">image:timeout</a></li>
                                 <li class=""><a href="#event_progress" title="progress">progress</a></li>
+                                <li class=""><a href="#event_srcsChange" title="srcsChange">srcsChange</a></li>
                         </ul>
                     </div>
 
@@ -573,7 +633,7 @@
 <script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Image.html#event_complete", "access": "", "host": "Image", "type": "event", "name": "complete"}, {"url": "ImageLoader.html#event_complete", "access": "", "host": "ImageLoader", "type": "event", "name": "complete"}, {"url": "Image.html#event_error", "access": "", "host": "Image", "type": "event", "name": "error"}, {"url": "Image.html#config_image", "access": "", "host": "Image", "type": "config", "name": "image"}, {"url": "ImageLoader.html#event_image:complete", "access": "", "host": "ImageLoader", "type": "event", "name": "image:complete"}, {"url": "ImageLoader.html#event_image:error", "access": "", "host": "ImageLoader", "type": "event", "name": "image:error"}, {"url": "ImageLoader.html#event_image:load", "access": "", "host": "ImageLoader", "type": "event", "name": "image:load"}, {"url": "ImageLoader.html#event_image:timeout", "access": "", "host": "ImageLoader", "type": "event", "name": "image:timeout"}, {"url": "Image.html#method_load", "access": "", "host": "Image", "type": "method", "name": "load"}, {"url": "Image.html#event_load", "access": "", "host": "Image", "type": "event", "name": "load"}, {"url": "ImageLoader.html#method_load", "access": "", "host": "ImageLoader", "type": "method", "name": "load"}, {"url": "Image.html#config_loaded", "access": "", "host": "Image", "type": "config", "name": "loaded"}, {"url": "Image.html#config_node", "access": "", "host": "Image", "type": "config", "name": "node"}, {"url": "ImageLoader.html#event_progress", "access": "", "host": "ImageLoader", "type": "event", "name": "progress"}, {"url": "Image.html#method_setAsBackground", "access": "", "host": "Image", "type": "method", "name": "setAsBackground"}, {"url": "Image.html#config_src", "access": "", "host": "Image", "type": "config", "name": "src"}, {"url": "ImageLoader.html#config_srcs", "access": "", "host": "ImageLoader", "type": "config", "name": "srcs"}, {"url": "Image.html#config_timeout", "access": "", "host": "Image", "type": "config", "name": "timeout"}, {"url": "Image.html#config_type", "access": "", "host": "Image", "type": "config", "name": "type"}];
+    var ALL_YUI_PROPS = [{"url": "Image.html#event_complete", "access": "", "host": "Image", "type": "event", "name": "complete"}, {"url": "ImageLoader.html#event_complete", "access": "", "host": "ImageLoader", "type": "event", "name": "complete"}, {"url": "Image.html#event_error", "access": "", "host": "Image", "type": "event", "name": "error"}, {"url": "Image.html#config_image", "access": "", "host": "Image", "type": "config", "name": "image"}, {"url": "ImageLoader.html#event_image:complete", "access": "", "host": "ImageLoader", "type": "event", "name": "image:complete"}, {"url": "ImageLoader.html#event_image:error", "access": "", "host": "ImageLoader", "type": "event", "name": "image:error"}, {"url": "ImageLoader.html#event_image:load", "access": "", "host": "ImageLoader", "type": "event", "name": "image:load"}, {"url": "ImageLoader.html#event_image:timeout", "access": "", "host": "ImageLoader", "type": "event", "name": "image:timeout"}, {"url": "Image.html#event_imageChange", "access": "", "host": "Image", "type": "event", "name": "imageChange"}, {"url": "Image.html#method_load", "access": "", "host": "Image", "type": "method", "name": "load"}, {"url": "Image.html#event_load", "access": "", "host": "Image", "type": "event", "name": "load"}, {"url": "ImageLoader.html#method_load", "access": "", "host": "ImageLoader", "type": "method", "name": "load"}, {"url": "Image.html#config_loaded", "access": "", "host": "Image", "type": "config", "name": "loaded"}, {"url": "Image.html#event_loadedChange", "access": "", "host": "Image", "type": "event", "name": "loadedChange"}, {"url": "Image.html#config_node", "access": "", "host": "Image", "type": "config", "name": "node"}, {"url": "Image.html#event_nodeChange", "access": "", "host": "Image", "type": "event", "name": "nodeChange"}, {"url": "ImageLoader.html#event_progress", "access": "", "host": "ImageLoader", "type": "event", "name": "progress"}, {"url": "Image.html#method_setAsBackground", "access": "", "host": "Image", "type": "method", "name": "setAsBackground"}, {"url": "Image.html#config_src", "access": "", "host": "Image", "type": "config", "name": "src"}, {"url": "Image.html#event_srcChange", "access": "", "host": "Image", "type": "event", "name": "srcChange"}, {"url": "ImageLoader.html#config_srcs", "access": "", "host": "ImageLoader", "type": "config", "name": "srcs"}, {"url": "ImageLoader.html#event_srcsChange", "access": "", "host": "ImageLoader", "type": "event", "name": "srcsChange"}, {"url": "Image.html#config_timeout", "access": "", "host": "Image", "type": "config", "name": "timeout"}, {"url": "Image.html#event_timeoutChange", "access": "", "host": "Image", "type": "event", "name": "timeoutChange"}, {"url": "Image.html#config_type", "access": "", "host": "Image", "type": "config", "name": "type"}, {"url": "Image.html#event_typeChange", "access": "", "host": "Image", "type": "event", "name": "typeChange"}];
 </script>
 </body>
 </html>

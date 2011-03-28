@@ -241,16 +241,16 @@ Vector_ATTRS['fill-opacity'] = {
 
 var Vector = $.Vector = Base.create('vector', $.Attribute, [], {
 	/**
-	 * @config node
+	 * @attribute node
 	 * @description A pointer to the vector node
 	 * @type SVG/VML node
 	 */
 	/**
-	 * @config width
+	 * @attribute width
 	 * @description width
 	 */
 	/**
-	 * @config fill-opacity
+	 * @attribute fill-opacity
 	 * @description Opacity
 	 */
 	ATTRS: Vector_ATTRS

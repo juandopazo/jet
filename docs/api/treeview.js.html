@@ -56,7 +56,6 @@
 <span class="cm">*/</span>
 <span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;treeview&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 
-
 			
 <span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
 	<span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span>
@@ -102,7 +101,7 @@
 	
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config type</span>
+<span class="cm">		 * @attribute type</span>
 <span class="cm">		 * @description Type of the node. Available types are &#39;text&#39;</span>
 <span class="cm">		 * @default &quot;text&quot;</span>
 <span class="cm">		 */</span>
@@ -110,7 +109,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;text&quot;</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config title</span>
+<span class="cm">		 * @attribute title</span>
 <span class="cm">		 * @description Title attribute for the node</span>
 <span class="cm">		 * @type String</span>
 <span class="cm">		 */</span>
@@ -118,7 +117,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;&#39;</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config label</span>
+<span class="cm">		 * @attribute label</span>
 <span class="cm">		 * @description This node&#39;s label or title</span>
 <span class="cm">		 * @type String|HTMLElement</span>
 <span class="cm">		 */</span>
@@ -126,7 +125,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;&#39;</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config controlNode</span>
+<span class="cm">		 * @attribute controlNode</span>
 <span class="cm">		 * @description Node that expands/collapses this TreeNode</span>
 <span class="cm">		 * @writeOnce</span>
 <span class="cm">		 */</span>
@@ -134,7 +133,7 @@
 			<span class="nx">setter</span><span class="o">:</span> <span class="nx">$</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config labelNode</span>
+<span class="cm">		 * @attribute labelNode</span>
 <span class="cm">		 * @description Node that holds this TreeNode&#39;s title/label</span>
 <span class="cm">		 * @writeOnce</span>
 <span class="cm">		 */</span>
@@ -301,7 +300,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class="selected"><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
@@ -335,7 +333,7 @@
 <script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "TabView.html#method_add", "access": "", "host": "TabView", "type": "method", "name": "add"}, {"url": "TabView.html#method_getTab", "access": "", "host": "TabView", "type": "method", "name": "getTab"}, {"url": "Tab.html#config_href", "access": "", "host": "Tab", "type": "config", "name": "href"}, {"url": "Tab.html#config_label", "access": "", "host": "Tab", "type": "config", "name": "label"}, {"url": "Tab.html#config_labelContent", "access": "", "host": "Tab", "type": "config", "name": "labelContent"}, {"url": "Tab.html#config_panel", "access": "", "host": "Tab", "type": "config", "name": "panel"}, {"url": "TabView.html#config_panelContainer", "access": "", "host": "TabView", "type": "config", "name": "panelContainer"}, {"url": "Tab.html#config_panelContent", "access": "", "host": "Tab", "type": "config", "name": "panelContent"}, {"url": "Tab.html#config_panelNode", "access": "", "host": "Tab", "type": "config", "name": "panelNode"}, {"url": "Tab.html#method_remove", "access": "", "host": "Tab", "type": "method", "name": "remove"}, {"url": "TabView.html#method_remove", "access": "", "host": "TabView", "type": "method", "name": "remove"}, {"url": "Tab.html#method_select", "access": "", "host": "Tab", "type": "method", "name": "select"}, {"url": "TabView.html#method_select", "access": "", "host": "TabView", "type": "method", "name": "select"}, {"url": "Tab.html#config_selected", "access": "", "host": "Tab", "type": "config", "name": "selected"}, {"url": "TabView.html#event_tabSelect", "access": "", "host": "TabView", "type": "event", "name": "tabSelect"}, {"url": "Tab.html#config_triggerEvent", "access": "", "host": "Tab", "type": "config", "name": "triggerEvent"}, {"url": "Tab.html#method_unselect", "access": "", "host": "Tab", "type": "method", "name": "unselect"}];
+    var ALL_YUI_PROPS = [{"url": "Tab.html#config_href", "access": "", "host": "Tab", "type": "config", "name": "href"}, {"url": "Tab.html#event_hrefChange", "access": "", "host": "Tab", "type": "event", "name": "hrefChange"}, {"url": "Tab.html#config_labelContent", "access": "", "host": "Tab", "type": "config", "name": "labelContent"}, {"url": "Tab.html#event_labelContentChange", "access": "", "host": "Tab", "type": "event", "name": "labelContentChange"}, {"url": "TabView.html#config_panelContainer", "access": "", "host": "TabView", "type": "config", "name": "panelContainer"}, {"url": "TabView.html#event_panelContainerChange", "access": "", "host": "TabView", "type": "event", "name": "panelContainerChange"}, {"url": "Tab.html#config_panelContent", "access": "", "host": "Tab", "type": "config", "name": "panelContent"}, {"url": "Tab.html#event_panelContentChange", "access": "", "host": "Tab", "type": "event", "name": "panelContentChange"}, {"url": "Tab.html#config_panelNode", "access": "", "host": "Tab", "type": "config", "name": "panelNode"}, {"url": "Tab.html#event_panelNodeChange", "access": "", "host": "Tab", "type": "event", "name": "panelNodeChange"}, {"url": "Tab.html#config_triggerEvent", "access": "", "host": "Tab", "type": "config", "name": "triggerEvent"}, {"url": "Tab.html#event_triggerEventChange", "access": "", "host": "Tab", "type": "event", "name": "triggerEventChange"}];
 </script>
 </body>
 </html>

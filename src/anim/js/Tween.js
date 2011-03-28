@@ -9,7 +9,7 @@
 var Tween = Base.create('tween', Base, [], {
 	ATTRS: {
 		/**
-		 * @config node
+		 * @attribute node
 		 * @description The node that will be animated
 		 * @required
 		 * @writeOnce
@@ -18,7 +18,7 @@ var Tween = Base.create('tween', Base, [], {
 			setter: $
 		},
 		/**
-		 * @config from
+		 * @attribute from
 		 * @description an object literal with properties that will be animated
 		 * @type Object
 		 */
@@ -26,7 +26,7 @@ var Tween = Base.create('tween', Base, [], {
 			attribute: false
 		},
 		/**
-		 * @config to
+		 * @attribute to
 		 * @description an object literal with the target properties for the animation
 		 * @type Object
 		 */
@@ -34,7 +34,7 @@ var Tween = Base.create('tween', Base, [], {
 			required: true
 		},
 		/**
-		 * @config easing
+		 * @attribute easing
 		 * @description The easing used by the animation
 		 * @type Function
 		 * @default Easing.linear
@@ -46,7 +46,7 @@ var Tween = Base.create('tween', Base, [], {
 			}
 		},
 		/**
-		 * @config easingStrength
+		 * @attribute easingStrength
 		 * @description The strength of the easing if applicable. Must be >= 0
 		 * @type Number
 		 * @default 2
@@ -58,7 +58,7 @@ var Tween = Base.create('tween', Base, [], {
 			}
 		},
 		/**
-		 * @config duration
+		 * @attribute duration
 		 * @description The duration of the animation
 		 * @default 1000
 		 * @type {String | Number} Allowd strings: "fast", "slow", "normal". Numbers are milliseconds
@@ -73,7 +73,7 @@ var Tween = Base.create('tween', Base, [], {
 			}
 		},
 		/**
-		 * @config playing
+		 * @attribute playing
 		 * @description Whether the animation is playing or not
 		 * @readOnly
 		 * @type Boolean
@@ -83,7 +83,7 @@ var Tween = Base.create('tween', Base, [], {
 			validator: Lang.isBoolean
 		},
 		/**
-		 * @config startTime
+		 * @attribute startTime
 		 * @description Start time is used to calculate the elapsed time of the animation
 		 * @default 0
 		 * @private
@@ -95,7 +95,7 @@ var Tween = Base.create('tween', Base, [], {
 		 * Previous time is used for pausing. It keeps how much time had
 		 * elapsed in the last run before the tween was _paused_.
 		 * When stopped, "previous" is reset to 0.
-		 * @config previousTime
+		 * @attribute previousTime
 		 * @private
 		 */
 		previousTime: {

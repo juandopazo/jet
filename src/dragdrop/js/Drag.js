@@ -19,7 +19,7 @@ var Drag = function () {
 	Drag.superclass.constructor.apply(this, arguments);
 	var myself = this.addAttrs({
 		/**
-		 * @config node
+		 * @attribute node
 		 * @description node to be dragged
 		 * @required
 		 */
@@ -30,7 +30,7 @@ var Drag = function () {
 			}
 		},
 		/**
-		 * @config cursor
+		 * @attribute cursor
 		 * @description the type of cursor that will be shown on hover
 		 * @type String
 		 */
@@ -38,7 +38,7 @@ var Drag = function () {
 			value: "move"
 		},
 		/**
-		 * @config tracking
+		 * @attribute tracking
 		 * @description the tracking status
 		 * @type Boolean
 		 */
@@ -50,7 +50,7 @@ var Drag = function () {
 		}
 	});
 	/**
-	 * @config handlers
+	 * @attribute handlers
 	 * @description A list of elements that will start the dragging
 	 * @type Array | NodeList 
 	 */

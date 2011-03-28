@@ -56,7 +56,6 @@
 <span class="cm">*/</span>
 <span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;widget-sandbox&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 
-
 			
 <span class="kd">var</span> <span class="nx">A</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">,</span>
 	<span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">;</span>
@@ -152,7 +151,7 @@
 <span class="cm">	*/</span>
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		* @config title</span>
+<span class="cm">		* @attribute title</span>
 <span class="cm">		* @description The title to give the blank page.</span>
 <span class="cm">		* @type String</span>
 <span class="cm">		*/</span>
@@ -160,7 +159,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;Blank Page&#39;</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		* @config dir</span>
+<span class="cm">		* @attribute dir</span>
 <span class="cm">		* @description The default text direction for this new frame. Default: ltr</span>
 <span class="cm">		* @type String</span>
 <span class="cm">		*/</span>
@@ -168,7 +167,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;ltr&#39;</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		* @config lang</span>
+<span class="cm">		* @attribute lang</span>
 <span class="cm">		* @description The default language. Default: en-US</span>
 <span class="cm">		* @type String</span>
 <span class="cm">		*/</span>
@@ -176,7 +175,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;en-US&#39;</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		* @config src</span>
+<span class="cm">		* @attribute src</span>
 <span class="cm">		* @description The src of the iframe/window. Defaults to javascript:;</span>
 <span class="cm">		* @type String</span>
 <span class="cm">		*/</span>
@@ -185,7 +184,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;javascript&#39;</span> <span class="o">+</span> <span class="p">((</span><span class="nx">$</span><span class="p">.</span><span class="nx">UA</span><span class="p">.</span><span class="nx">ie</span><span class="p">)</span> <span class="o">?</span> <span class="s1">&#39;:false&#39;</span> <span class="o">:</span> <span class="s1">&#39;:&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;;&#39;</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		* @config content</span>
+<span class="cm">		* @attribute content</span>
 <span class="cm">		* @description The string to inject into the body of the new frame/window.</span>
 <span class="cm">		* @type String</span>
 <span class="cm">		*/</span>
@@ -195,7 +194,7 @@
 			<span class="nx">getter</span><span class="o">:</span> <span class="s1">&#39;_getHTML&#39;</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		* @config use</span>
+<span class="cm">		* @attribute use</span>
 <span class="cm">		* @description Array of modules to include in the scoped YUI instance at render time. Default: [&#39;none&#39;, &#39;selector-css2&#39;]</span>
 <span class="cm">		* @writeonce</span>
 <span class="cm">		* @type Array</span>
@@ -205,7 +204,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="p">[]</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		* @config container</span>
+<span class="cm">		* @attribute container</span>
 <span class="cm">		* @description The container to append the iFrame to on render.</span>
 <span class="cm">		* @type String/HTMLElement/Node</span>
 <span class="cm">		*/</span>
@@ -216,7 +215,7 @@
 			<span class="p">}</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		* @config node</span>
+<span class="cm">		* @attribute node</span>
 <span class="cm">		* @description The Node instance of the iframe.</span>
 <span class="cm">		* @type Node</span>
 <span class="cm">		*/</span>
@@ -228,7 +227,7 @@
 			<span class="p">}</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		* @config id</span>
+<span class="cm">		* @attribute id</span>
 <span class="cm">		* @description Set the id of the new Node. (optional)</span>
 <span class="cm">		* @type String</span>
 <span class="cm">		* @writeonce</span>
@@ -243,7 +242,7 @@
 			<span class="p">}</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		* @config linkedcss</span>
+<span class="cm">		* @attribute linkedcss</span>
 <span class="cm">		* @description An array of url&#39;s to external linked style sheets</span>
 <span class="cm">		* @type String</span>
 <span class="cm">		*/</span>
@@ -253,7 +252,7 @@
 			<span class="nx">setter</span><span class="o">:</span> <span class="s1">&#39;_setLinkedCSS&#39;</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		* @config extracss</span>
+<span class="cm">		* @attribute extracss</span>
 <span class="cm">		* @description A string of CSS to add to the Head of the Editor</span>
 <span class="cm">		* @type String</span>
 <span class="cm">		*/</span>
@@ -263,7 +262,7 @@
 		<span class="p">},</span>
 		<span class="cm">/**</span>
 <span class="cm">		* @private</span>
-<span class="cm">		* @config rendered</span>
+<span class="cm">		* @attribute rendered</span>
 <span class="cm">		* @description Internal reference set when render is called.</span>
 <span class="cm">		* @type Boolean</span>
 <span class="cm">		*/</span>
@@ -674,7 +673,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
@@ -708,7 +706,7 @@
 <script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "WidgetParent.html#method_add", "access": "", "host": "WidgetParent", "type": "method", "name": "add"}, {"url": "WidgetParent.html#config_children", "access": "", "host": "WidgetParent", "type": "config", "name": "children"}, {"url": "WidgetParent.html#config_childrenContainer", "access": "", "host": "WidgetParent", "type": "config", "name": "childrenContainer"}, {"url": "WidgetParent.html#config_childType", "access": "", "host": "WidgetParent", "type": "config", "name": "childType"}, {"url": "WidgetParent.html#config_defaultChildType", "access": "", "host": "WidgetParent", "type": "config", "name": "defaultChildType"}, {"url": "WidgetParent.html#method_each", "access": "", "host": "WidgetParent", "type": "method", "name": "each"}, {"url": "WidgetChild.html#config_index", "access": "", "host": "WidgetChild", "type": "config", "name": "index"}, {"url": "WidgetParent.html#method_item", "access": "", "host": "WidgetParent", "type": "method", "name": "item"}, {"url": "WidgetParent.html#config_multiple", "access": "", "host": "WidgetParent", "type": "config", "name": "multiple"}, {"url": "WidgetChild.html#method_next", "access": "", "host": "WidgetChild", "type": "method", "name": "next"}, {"url": "WidgetChild.html#config_parent", "access": "", "host": "WidgetChild", "type": "config", "name": "parent"}, {"url": "WidgetChild.html#method_previous", "access": "", "host": "WidgetChild", "type": "method", "name": "previous"}, {"url": "WidgetParent.html#method_remove", "access": "", "host": "WidgetParent", "type": "method", "name": "remove"}, {"url": "WidgetChild.html#method_select", "access": "", "host": "WidgetChild", "type": "method", "name": "select"}, {"url": "WidgetChild.html#config_selected", "access": "", "host": "WidgetChild", "type": "config", "name": "selected"}, {"url": "WidgetParent.html#config_selectedIndex", "access": "", "host": "WidgetParent", "type": "config", "name": "selectedIndex"}, {"url": "WidgetParent.html#config_selection", "access": "", "host": "WidgetParent", "type": "config", "name": "selection"}, {"url": "WidgetChild.html#method_toggle", "access": "", "host": "WidgetChild", "type": "method", "name": "toggle"}];
+    var ALL_YUI_PROPS = [{"url": "WidgetParent.html#method_add", "access": "", "host": "WidgetParent", "type": "method", "name": "add"}, {"url": "WidgetParent.html#config_children", "access": "", "host": "WidgetParent", "type": "config", "name": "children"}, {"url": "WidgetParent.html#event_childrenChange", "access": "", "host": "WidgetParent", "type": "event", "name": "childrenChange"}, {"url": "WidgetParent.html#config_childrenContainer", "access": "", "host": "WidgetParent", "type": "config", "name": "childrenContainer"}, {"url": "WidgetParent.html#event_childrenContainerChange", "access": "", "host": "WidgetParent", "type": "event", "name": "childrenContainerChange"}, {"url": "WidgetParent.html#config_childType", "access": "", "host": "WidgetParent", "type": "config", "name": "childType"}, {"url": "WidgetParent.html#event_childTypeChange", "access": "", "host": "WidgetParent", "type": "event", "name": "childTypeChange"}, {"url": "WidgetParent.html#config_defaultChildType", "access": "", "host": "WidgetParent", "type": "config", "name": "defaultChildType"}, {"url": "WidgetParent.html#event_defaultChildTypeChange", "access": "", "host": "WidgetParent", "type": "event", "name": "defaultChildTypeChange"}, {"url": "WidgetParent.html#method_each", "access": "", "host": "WidgetParent", "type": "method", "name": "each"}, {"url": "WidgetChild.html#config_index", "access": "", "host": "WidgetChild", "type": "config", "name": "index"}, {"url": "WidgetChild.html#event_indexChange", "access": "", "host": "WidgetChild", "type": "event", "name": "indexChange"}, {"url": "WidgetParent.html#method_item", "access": "", "host": "WidgetParent", "type": "method", "name": "item"}, {"url": "WidgetParent.html#config_multiple", "access": "", "host": "WidgetParent", "type": "config", "name": "multiple"}, {"url": "WidgetParent.html#event_multipleChange", "access": "", "host": "WidgetParent", "type": "event", "name": "multipleChange"}, {"url": "WidgetChild.html#method_next", "access": "", "host": "WidgetChild", "type": "method", "name": "next"}, {"url": "WidgetChild.html#config_parent", "access": "", "host": "WidgetChild", "type": "config", "name": "parent"}, {"url": "WidgetChild.html#event_parentChange", "access": "", "host": "WidgetChild", "type": "event", "name": "parentChange"}, {"url": "WidgetChild.html#method_previous", "access": "", "host": "WidgetChild", "type": "method", "name": "previous"}, {"url": "WidgetParent.html#method_remove", "access": "", "host": "WidgetParent", "type": "method", "name": "remove"}, {"url": "WidgetChild.html#method_select", "access": "", "host": "WidgetChild", "type": "method", "name": "select"}, {"url": "WidgetChild.html#config_selected", "access": "", "host": "WidgetChild", "type": "config", "name": "selected"}, {"url": "WidgetChild.html#event_selectedChange", "access": "", "host": "WidgetChild", "type": "event", "name": "selectedChange"}, {"url": "WidgetParent.html#config_selectedIndex", "access": "", "host": "WidgetParent", "type": "config", "name": "selectedIndex"}, {"url": "WidgetParent.html#event_selectedIndexChange", "access": "", "host": "WidgetParent", "type": "event", "name": "selectedIndexChange"}, {"url": "WidgetParent.html#config_selection", "access": "", "host": "WidgetParent", "type": "config", "name": "selection"}, {"url": "WidgetParent.html#event_selectionChange", "access": "", "host": "WidgetParent", "type": "event", "name": "selectionChange"}, {"url": "WidgetChild.html#method_toggle", "access": "", "host": "WidgetChild", "type": "method", "name": "toggle"}];
 </script>
 </body>
 </html>

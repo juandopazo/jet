@@ -39,7 +39,7 @@ $.WidgetStack = $.mix(WidgetStack, {
 	
 	ATTRS: {
 		/**
-		 * @config shim
+		 * @attribute shim
 		 * @description Whether the widget should use shimming or not
 		 * @type Boolean
 		 * @default true If browser is IE 6. Otherwise, false by default
@@ -50,7 +50,7 @@ $.WidgetStack = $.mix(WidgetStack, {
 		},
 		
 		/**
-		 * @config zIndex
+		 * @attribute zIndex
 		 * @description The current zIndex value of the widget
 		 * @default 0
 		 */

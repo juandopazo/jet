@@ -56,7 +56,6 @@
 <span class="cm">*/</span>
 <span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;anim&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 
-
 			
 <span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
 	<span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span>
@@ -233,7 +232,7 @@
 <span class="kd">var</span> <span class="nx">Tween</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;tween&#39;</span><span class="p">,</span> <span class="nx">Base</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span>
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config node</span>
+<span class="cm">		 * @attribute node</span>
 <span class="cm">		 * @description The node that will be animated</span>
 <span class="cm">		 * @required</span>
 <span class="cm">		 * @writeOnce</span>
@@ -242,7 +241,7 @@
 			<span class="nx">setter</span><span class="o">:</span> <span class="nx">$</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config from</span>
+<span class="cm">		 * @attribute from</span>
 <span class="cm">		 * @description an object literal with properties that will be animated</span>
 <span class="cm">		 * @type Object</span>
 <span class="cm">		 */</span>
@@ -250,7 +249,7 @@
 			<span class="nx">attribute</span><span class="o">:</span> <span class="kc">false</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config to</span>
+<span class="cm">		 * @attribute to</span>
 <span class="cm">		 * @description an object literal with the target properties for the animation</span>
 <span class="cm">		 * @type Object</span>
 <span class="cm">		 */</span>
@@ -258,7 +257,7 @@
 			<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config easing</span>
+<span class="cm">		 * @attribute easing</span>
 <span class="cm">		 * @description The easing used by the animation</span>
 <span class="cm">		 * @type Function</span>
 <span class="cm">		 * @default Easing.linear</span>
@@ -270,7 +269,7 @@
 			<span class="p">}</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config easingStrength</span>
+<span class="cm">		 * @attribute easingStrength</span>
 <span class="cm">		 * @description The strength of the easing if applicable. Must be &gt;= 0</span>
 <span class="cm">		 * @type Number</span>
 <span class="cm">		 * @default 2</span>
@@ -282,7 +281,7 @@
 			<span class="p">}</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config duration</span>
+<span class="cm">		 * @attribute duration</span>
 <span class="cm">		 * @description The duration of the animation</span>
 <span class="cm">		 * @default 1000</span>
 <span class="cm">		 * @type {String | Number} Allowd strings: &quot;fast&quot;, &quot;slow&quot;, &quot;normal&quot;. Numbers are milliseconds</span>
@@ -297,7 +296,7 @@
 			<span class="p">}</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config playing</span>
+<span class="cm">		 * @attribute playing</span>
 <span class="cm">		 * @description Whether the animation is playing or not</span>
 <span class="cm">		 * @readOnly</span>
 <span class="cm">		 * @type Boolean</span>
@@ -307,7 +306,7 @@
 			<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isBoolean</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config startTime</span>
+<span class="cm">		 * @attribute startTime</span>
 <span class="cm">		 * @description Start time is used to calculate the elapsed time of the animation</span>
 <span class="cm">		 * @default 0</span>
 <span class="cm">		 * @private</span>
@@ -319,7 +318,7 @@
 <span class="cm">		 * Previous time is used for pausing. It keeps how much time had</span>
 <span class="cm">		 * elapsed in the last run before the tween was _paused_.</span>
 <span class="cm">		 * When stopped, &quot;previous&quot; is reset to 0.</span>
-<span class="cm">		 * @config previousTime</span>
+<span class="cm">		 * @attribute previousTime</span>
 <span class="cm">		 * @private</span>
 <span class="cm">		 */</span>
 		<span class="nx">previousTime</span><span class="o">:</span> <span class="p">{</span>
@@ -604,7 +603,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
@@ -639,7 +637,7 @@
 <script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "TimeFrame.html#method_addTween", "access": "", "host": "TimeFrame", "type": "method", "name": "addTween"}, {"url": "Tween.html#config_duration", "access": "", "host": "Tween", "type": "config", "name": "duration"}, {"url": "Easing.html#method_easein", "access": "", "host": "Easing", "type": "method", "name": "easein"}, {"url": "Easing.html#method_easeout", "access": "", "host": "Easing", "type": "method", "name": "easeout"}, {"url": "Tween.html#config_easing", "access": "", "host": "Tween", "type": "config", "name": "easing"}, {"url": "Tween.html#config_easingStrength", "access": "", "host": "Tween", "type": "config", "name": "easingStrength"}, {"url": "TimeFrame.html#property_fps", "access": "", "host": "TimeFrame", "type": "property", "name": "fps"}, {"url": "Tween.html#config_from", "access": "", "host": "Tween", "type": "config", "name": "from"}, {"url": "Easing.html#method_linear", "access": "", "host": "Easing", "type": "method", "name": "linear"}, {"url": "Tween.html#config_node", "access": "", "host": "Tween", "type": "config", "name": "node"}, {"url": "Tween.html#method_pause", "access": "", "host": "Tween", "type": "method", "name": "pause"}, {"url": "TimeFrame.html#method_play", "access": "", "host": "TimeFrame", "type": "method", "name": "play"}, {"url": "Tween.html#method_play", "access": "", "host": "Tween", "type": "method", "name": "play"}, {"url": "Tween.html#config_playing", "access": "", "host": "Tween", "type": "config", "name": "playing"}, {"url": "TimeFrame.html#method_removeTween", "access": "", "host": "TimeFrame", "type": "method", "name": "removeTween"}, {"url": "Tween.html#method_reverse", "access": "", "host": "Tween", "type": "method", "name": "reverse"}, {"url": "Easing.html#method_sling", "access": "", "host": "Easing", "type": "method", "name": "sling"}, {"url": "TimeFrame.html#method_stop", "access": "", "host": "TimeFrame", "type": "method", "name": "stop"}, {"url": "Tween.html#method_stop", "access": "", "host": "Tween", "type": "method", "name": "stop"}, {"url": "Tween.html#config_to", "access": "", "host": "Tween", "type": "config", "name": "to"}];
+    var ALL_YUI_PROPS = [{"url": "TimeFrame.html#method_addTween", "access": "", "host": "TimeFrame", "type": "method", "name": "addTween"}, {"url": "Tween.html#config_duration", "access": "", "host": "Tween", "type": "config", "name": "duration"}, {"url": "Tween.html#event_durationChange", "access": "", "host": "Tween", "type": "event", "name": "durationChange"}, {"url": "Easing.html#method_easein", "access": "", "host": "Easing", "type": "method", "name": "easein"}, {"url": "Easing.html#method_easeout", "access": "", "host": "Easing", "type": "method", "name": "easeout"}, {"url": "Tween.html#config_easing", "access": "", "host": "Tween", "type": "config", "name": "easing"}, {"url": "Tween.html#event_easingChange", "access": "", "host": "Tween", "type": "event", "name": "easingChange"}, {"url": "Tween.html#config_easingStrength", "access": "", "host": "Tween", "type": "config", "name": "easingStrength"}, {"url": "Tween.html#event_easingStrengthChange", "access": "", "host": "Tween", "type": "event", "name": "easingStrengthChange"}, {"url": "TimeFrame.html#property_fps", "access": "", "host": "TimeFrame", "type": "property", "name": "fps"}, {"url": "Tween.html#config_from", "access": "", "host": "Tween", "type": "config", "name": "from"}, {"url": "Tween.html#event_fromChange", "access": "", "host": "Tween", "type": "event", "name": "fromChange"}, {"url": "Easing.html#method_linear", "access": "", "host": "Easing", "type": "method", "name": "linear"}, {"url": "Tween.html#config_node", "access": "", "host": "Tween", "type": "config", "name": "node"}, {"url": "Tween.html#event_nodeChange", "access": "", "host": "Tween", "type": "event", "name": "nodeChange"}, {"url": "Tween.html#method_pause", "access": "", "host": "Tween", "type": "method", "name": "pause"}, {"url": "TimeFrame.html#method_play", "access": "", "host": "TimeFrame", "type": "method", "name": "play"}, {"url": "Tween.html#method_play", "access": "", "host": "Tween", "type": "method", "name": "play"}, {"url": "Tween.html#config_playing", "access": "", "host": "Tween", "type": "config", "name": "playing"}, {"url": "Tween.html#event_playingChange", "access": "", "host": "Tween", "type": "event", "name": "playingChange"}, {"url": "Tween.html#event_previousTimeChange", "access": "", "host": "Tween", "type": "event", "name": "previousTimeChange"}, {"url": "TimeFrame.html#method_removeTween", "access": "", "host": "TimeFrame", "type": "method", "name": "removeTween"}, {"url": "Tween.html#method_reverse", "access": "", "host": "Tween", "type": "method", "name": "reverse"}, {"url": "Easing.html#method_sling", "access": "", "host": "Easing", "type": "method", "name": "sling"}, {"url": "Tween.html#event_startTimeChange", "access": "", "host": "Tween", "type": "event", "name": "startTimeChange"}, {"url": "TimeFrame.html#method_stop", "access": "", "host": "TimeFrame", "type": "method", "name": "stop"}, {"url": "Tween.html#method_stop", "access": "", "host": "Tween", "type": "method", "name": "stop"}, {"url": "Tween.html#config_to", "access": "", "host": "Tween", "type": "config", "name": "to"}, {"url": "Tween.html#event_toChange", "access": "", "host": "Tween", "type": "event", "name": "toChange"}];
 </script>
 </body>
 </html>

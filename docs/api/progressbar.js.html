@@ -56,7 +56,6 @@
 <span class="cm">*/</span>
 <span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;progressbar&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 
-
 			
 <span class="kd">var</span> <span class="nx">CONTENT_BOX</span> <span class="o">=</span> <span class="s1">&#39;contentBox&#39;</span><span class="p">,</span>
 	<span class="nx">BOUNDING_BOX</span> <span class="o">=</span> <span class="s1">&#39;boundingBox&#39;</span><span class="p">,</span>
@@ -78,7 +77,7 @@
 	
 	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config minMvalue</span>
+<span class="cm">		 * @attribute minMvalue</span>
 <span class="cm">		 * @description Minimum value that the progressbar data will take</span>
 <span class="cm">		 * @default 0</span>
 <span class="cm">		 */</span>
@@ -86,7 +85,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="mi">0</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config maxMvalue</span>
+<span class="cm">		 * @attribute maxMvalue</span>
 <span class="cm">		 * @description Maximum value that the progressbar data will take</span>
 <span class="cm">		 * @default 100</span>
 <span class="cm">		 */</span>
@@ -94,7 +93,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="mi">100</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config value</span>
+<span class="cm">		 * @attribute value</span>
 <span class="cm">		 * @description Current value the progressbar is taking</span>
 <span class="cm">		 * @default 0</span>
 <span class="cm">		 */</span>
@@ -108,7 +107,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="mi">20</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config direction</span>
+<span class="cm">		 * @attribute direction</span>
 <span class="cm">		 * @description Direction in which the progressbar increases its size. May be &quot;ltr&quot;, &quot;ttb&quot; or &quot;btt&quot;</span>
 <span class="cm">		 * @default &quot;ltr&quot;</span>
 <span class="cm">		 * @writeOnce</span>
@@ -118,7 +117,7 @@
 			<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config animate</span>
+<span class="cm">		 * @attribute animate</span>
 <span class="cm">		 * @description Whether to animate the progressbar progress. The Anim module must be present</span>
 <span class="cm">		 * @default false</span>
 <span class="cm">		 * @writeOnce</span>
@@ -131,14 +130,14 @@
 			<span class="p">}</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config easing</span>
+<span class="cm">		 * @attribute easing</span>
 <span class="cm">		 * @description Easing to use when animating</span>
 <span class="cm">		 * @default linear</span>
 <span class="cm">		 */</span>
 		<span class="nx">easing</span><span class="o">:</span> <span class="p">{</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config duration</span>
+<span class="cm">		 * @attribute duration</span>
 <span class="cm">		 * @description Duration of the animation in case it is being used</span>
 <span class="cm">		 * @default 500 ms</span>
 <span class="cm">		 */</span>
@@ -146,7 +145,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="mi">500</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config bar</span>
+<span class="cm">		 * @attribute bar</span>
 <span class="cm">		 * @description The DOM element that represents the bar in the progressbar</span>
 <span class="cm">		 * @readOnly</span>
 <span class="cm">		 */</span>
@@ -272,7 +271,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
@@ -305,7 +303,7 @@
 <script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Paginator.html#config_currentPage", "access": "", "host": "Paginator", "type": "config", "name": "currentPage"}, {"url": "Paginator.html#config_firstLast", "access": "", "host": "Paginator", "type": "config", "name": "firstLast"}, {"url": "Paginator.html#config_firstText", "access": "", "host": "Paginator", "type": "config", "name": "firstText"}, {"url": "Paginator.html#method_goTo", "access": "", "host": "Paginator", "type": "method", "name": "goTo"}, {"url": "Paginator.html#config_lastText", "access": "", "host": "Paginator", "type": "config", "name": "lastText"}, {"url": "Paginator.html#config_nextText", "access": "", "host": "Paginator", "type": "config", "name": "nextText"}, {"url": "Paginator.html#config_pageCount", "access": "", "host": "Paginator", "type": "config", "name": "pageCount"}, {"url": "Paginator.html#config_pagesShown", "access": "", "host": "Paginator", "type": "config", "name": "pagesShown"}, {"url": "Paginator.html#config_prevNext", "access": "", "host": "Paginator", "type": "config", "name": "prevNext"}, {"url": "Paginator.html#config_prevText", "access": "", "host": "Paginator", "type": "config", "name": "prevText"}, {"url": "Paginator.html#config_recordSet", "access": "", "host": "Paginator", "type": "config", "name": "recordSet"}, {"url": "Paginator.html#config_recordsPerPage", "access": "", "host": "Paginator", "type": "config", "name": "recordsPerPage"}];
+    var ALL_YUI_PROPS = [{"url": "Paginator.html#config_currentPage", "access": "", "host": "Paginator", "type": "config", "name": "currentPage"}, {"url": "Paginator.html#event_currentPageChange", "access": "", "host": "Paginator", "type": "event", "name": "currentPageChange"}, {"url": "Paginator.html#config_firstLast", "access": "", "host": "Paginator", "type": "config", "name": "firstLast"}, {"url": "Paginator.html#event_firstLastChange", "access": "", "host": "Paginator", "type": "event", "name": "firstLastChange"}, {"url": "Paginator.html#config_firstText", "access": "", "host": "Paginator", "type": "config", "name": "firstText"}, {"url": "Paginator.html#event_firstTextChange", "access": "", "host": "Paginator", "type": "event", "name": "firstTextChange"}, {"url": "Paginator.html#method_goTo", "access": "", "host": "Paginator", "type": "method", "name": "goTo"}, {"url": "Paginator.html#config_lastText", "access": "", "host": "Paginator", "type": "config", "name": "lastText"}, {"url": "Paginator.html#event_lastTextChange", "access": "", "host": "Paginator", "type": "event", "name": "lastTextChange"}, {"url": "Paginator.html#config_nextText", "access": "", "host": "Paginator", "type": "config", "name": "nextText"}, {"url": "Paginator.html#event_nextTextChange", "access": "", "host": "Paginator", "type": "event", "name": "nextTextChange"}, {"url": "Paginator.html#config_pageCount", "access": "", "host": "Paginator", "type": "config", "name": "pageCount"}, {"url": "Paginator.html#event_pageCountChange", "access": "", "host": "Paginator", "type": "event", "name": "pageCountChange"}, {"url": "Paginator.html#config_pagesShown", "access": "", "host": "Paginator", "type": "config", "name": "pagesShown"}, {"url": "Paginator.html#event_pagesShownChange", "access": "", "host": "Paginator", "type": "event", "name": "pagesShownChange"}, {"url": "Paginator.html#config_prevNext", "access": "", "host": "Paginator", "type": "config", "name": "prevNext"}, {"url": "Paginator.html#event_prevNextChange", "access": "", "host": "Paginator", "type": "event", "name": "prevNextChange"}, {"url": "Paginator.html#config_prevText", "access": "", "host": "Paginator", "type": "config", "name": "prevText"}, {"url": "Paginator.html#event_prevTextChange", "access": "", "host": "Paginator", "type": "event", "name": "prevTextChange"}, {"url": "Paginator.html#config_recordSet", "access": "", "host": "Paginator", "type": "config", "name": "recordSet"}, {"url": "Paginator.html#event_recordSetChange", "access": "", "host": "Paginator", "type": "event", "name": "recordSetChange"}, {"url": "Paginator.html#config_recordsPerPage", "access": "", "host": "Paginator", "type": "config", "name": "recordsPerPage"}, {"url": "Paginator.html#event_recordsPerPageChange", "access": "", "host": "Paginator", "type": "event", "name": "recordsPerPageChange"}];
 </script>
 </body>
 </html>

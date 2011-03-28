@@ -102,6 +102,9 @@
                                 <h4>Methods inherited from <a href="EventTarget.html" property="yui:name" title="EventTarget">EventTarget</a>:</h4>
                                 <div class="content" rel="yui:methods">
                                     <code>
+                                            <span rel="yui:method" resource="EventTarget.html#method_after">                                        
+                                            <a class="" href="EventTarget.html#method_after" property="yui:name" title="after">after</a><span class="">,</span>
+                                            </span>
                                             <span rel="yui:method" resource="EventTarget.html#method_fire">                                        
                                             <a class="" href="EventTarget.html#method_fire" property="yui:name" title="fire">fire</a><span class="">,</span>
                                             </span>
@@ -179,14 +182,97 @@
                     </div>
 
                     <div rel="yui:events" resource="#events">
+                        <div class="section method details">
+                            <h3 id="events">Events</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_urlChange">
+                                    <h4>
+                                        <a name="event_urlChange">urlChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">urlChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'url' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
 
 
                         <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Base.html">
+                            <h4>Events inherited from <a href="Base.html" property="yui:name" title="Base">Base</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="Base.html#event_onChange">
+                                        <a class="" href="Base.html#event_onChange" property="yui:name" title="onChange">onChange</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="DataSource.html">
+                            <h4>Events inherited from <a href="DataSource.html" property="yui:name" title="DataSource">DataSource</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="DataSource.html#event_initialRequestChange">
+                                        <a class="" href="DataSource.html#event_initialRequestChange" property="yui:name" title="initialRequestChange">initialRequestChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="DataSource.html#event_recordSetChange">
+                                        <a class="" href="DataSource.html#event_recordSetChange" property="yui:name" title="recordSetChange">recordSetChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="DataSource.html#event_responseSchemaChange">
+                                        <a class="" href="DataSource.html#event_responseSchemaChange" property="yui:name" title="responseSchemaChange">responseSchemaChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="DataSource.html#event_responseTypeChange">
+                                        <a class="" href="DataSource.html#event_responseTypeChange" property="yui:name" title="responseTypeChange">responseTypeChange</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
                         <div class="section field inheritance" rel="yui:superclass"  resource="Utility.html">
                             <h4>Events inherited from <a href="Utility.html" property="yui:name" title="Utility">Utility</a>:</h4>
                             <div class="content" rel="yui:events">
                                 <code>
-                                        <span rel="yui:event" resource="Utility.html#event_destroy">
+                                        <span rel="yui:event" resource="Utility.html#event_cssPrefixChange">
+                                        <a class="" href="Utility.html#event_cssPrefixChange" property="yui:name" title="cssPrefixChange">cssPrefixChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Utility.html#event_destroy">
                                         <a class="" href="Utility.html#event_destroy" property="yui:name" title="destroy">destroy</a>
                                         </span>
                                     
@@ -296,7 +382,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
@@ -322,6 +407,12 @@
 
 
 
+                    <div id="eventsList" class="module">
+                        <h4>Events</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#event_urlChange" title="urlChange">urlChange</a></li>
+                        </ul>
+                    </div>
 
                     <div id="configList" class="module">
                         <h4>Configuration Attributes</h4>
@@ -341,7 +432,7 @@
 <script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Record.html#method_get", "access": "", "host": "Record", "type": "method", "name": "get"}, {"url": "RecordSet.html#method_getCount", "access": "", "host": "RecordSet", "type": "method", "name": "getCount"}, {"url": "Record.html#method_getData", "access": "", "host": "Record", "type": "method", "name": "getData"}, {"url": "Record.html#method_getId", "access": "", "host": "Record", "type": "method", "name": "getId"}, {"url": "RecordSet.html#method_getRecords", "access": "", "host": "RecordSet", "type": "method", "name": "getRecords"}, {"url": "DataSource.html#method_handleRequest", "access": "", "host": "DataSource", "type": "method", "name": "handleRequest"}, {"url": "Record.html#method_hasInstance", "access": "", "host": "Record", "type": "method", "name": "hasInstance"}, {"url": "RecordSet.html#method_hasInstance", "access": "", "host": "RecordSet", "type": "method", "name": "hasInstance"}, {"url": "DataSource.html#config_initialRequest", "access": "", "host": "DataSource", "type": "config", "name": "initialRequest"}, {"url": "DataSource.Get.html#config_jsonCallbackParam", "access": "", "host": "DataSource.Get", "type": "config", "name": "jsonCallbackParam"}, {"url": "DataSource.html#method_onBeforeParse", "access": "", "host": "DataSource", "type": "method", "name": "onBeforeParse"}, {"url": "RecordSet.html#method_push", "access": "", "host": "RecordSet", "type": "method", "name": "push"}, {"url": "DataSource.html#config_recordSet", "access": "", "host": "DataSource", "type": "config", "name": "recordSet"}, {"url": "RecordSet.html#method_replace", "access": "", "host": "RecordSet", "type": "method", "name": "replace"}, {"url": "DataSource.html#config_responseSchema", "access": "", "host": "DataSource", "type": "config", "name": "responseSchema"}, {"url": "DataSource.html#config_responseType", "access": "", "host": "DataSource", "type": "config", "name": "responseType"}, {"url": "DataSource.html#method_sendRequest", "access": "", "host": "DataSource", "type": "method", "name": "sendRequest"}, {"url": "RecordSet.html#method_sortBy", "access": "", "host": "RecordSet", "type": "method", "name": "sortBy"}, {"url": "DataSource.Get.html#config_timeout", "access": "", "host": "DataSource.Get", "type": "config", "name": "timeout"}, {"url": "DataSource.Get.html#config_url", "access": "", "host": "DataSource.Get", "type": "config", "name": "url"}, {"url": "DataSource.Ajax.html#config_url", "access": "", "host": "DataSource.Ajax", "type": "config", "name": "url"}];
+    var ALL_YUI_PROPS = [{"url": "Record.html#method_get", "access": "", "host": "Record", "type": "method", "name": "get"}, {"url": "RecordSet.html#method_getCount", "access": "", "host": "RecordSet", "type": "method", "name": "getCount"}, {"url": "Record.html#method_getData", "access": "", "host": "Record", "type": "method", "name": "getData"}, {"url": "Record.html#method_getId", "access": "", "host": "Record", "type": "method", "name": "getId"}, {"url": "RecordSet.html#method_getRecords", "access": "", "host": "RecordSet", "type": "method", "name": "getRecords"}, {"url": "DataSource.html#method_handleRequest", "access": "", "host": "DataSource", "type": "method", "name": "handleRequest"}, {"url": "Record.html#method_hasInstance", "access": "", "host": "Record", "type": "method", "name": "hasInstance"}, {"url": "RecordSet.html#method_hasInstance", "access": "", "host": "RecordSet", "type": "method", "name": "hasInstance"}, {"url": "DataSource.html#config_initialRequest", "access": "", "host": "DataSource", "type": "config", "name": "initialRequest"}, {"url": "DataSource.html#event_initialRequestChange", "access": "", "host": "DataSource", "type": "event", "name": "initialRequestChange"}, {"url": "DataSource.Get.html#config_jsonCallbackParam", "access": "", "host": "DataSource.Get", "type": "config", "name": "jsonCallbackParam"}, {"url": "DataSource.Get.html#event_jsonCallbackParamChange", "access": "", "host": "DataSource.Get", "type": "event", "name": "jsonCallbackParamChange"}, {"url": "DataSource.html#method_onBeforeParse", "access": "", "host": "DataSource", "type": "method", "name": "onBeforeParse"}, {"url": "RecordSet.html#method_push", "access": "", "host": "RecordSet", "type": "method", "name": "push"}, {"url": "DataSource.html#config_recordSet", "access": "", "host": "DataSource", "type": "config", "name": "recordSet"}, {"url": "DataSource.html#event_recordSetChange", "access": "", "host": "DataSource", "type": "event", "name": "recordSetChange"}, {"url": "RecordSet.html#method_replace", "access": "", "host": "RecordSet", "type": "method", "name": "replace"}, {"url": "DataSource.html#config_responseSchema", "access": "", "host": "DataSource", "type": "config", "name": "responseSchema"}, {"url": "DataSource.html#event_responseSchemaChange", "access": "", "host": "DataSource", "type": "event", "name": "responseSchemaChange"}, {"url": "DataSource.html#config_responseType", "access": "", "host": "DataSource", "type": "config", "name": "responseType"}, {"url": "DataSource.html#event_responseTypeChange", "access": "", "host": "DataSource", "type": "event", "name": "responseTypeChange"}, {"url": "DataSource.html#method_sendRequest", "access": "", "host": "DataSource", "type": "method", "name": "sendRequest"}, {"url": "RecordSet.html#method_sortBy", "access": "", "host": "RecordSet", "type": "method", "name": "sortBy"}, {"url": "DataSource.Get.html#config_timeout", "access": "", "host": "DataSource.Get", "type": "config", "name": "timeout"}, {"url": "DataSource.Get.html#event_timeoutChange", "access": "", "host": "DataSource.Get", "type": "event", "name": "timeoutChange"}, {"url": "DataSource.Get.html#config_url", "access": "", "host": "DataSource.Get", "type": "config", "name": "url"}, {"url": "DataSource.Ajax.html#config_url", "access": "", "host": "DataSource.Ajax", "type": "config", "name": "url"}, {"url": "DataSource.Get.html#event_urlChange", "access": "", "host": "DataSource.Get", "type": "event", "name": "urlChange"}, {"url": "DataSource.Ajax.html#event_urlChange", "access": "", "host": "DataSource.Ajax", "type": "event", "name": "urlChange"}];
 </script>
 </body>
 </html>

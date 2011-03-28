@@ -57,7 +57,11 @@
 <span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 
 
-			
+<span class="cm">/**</span>
+<span class="cm"> * Adds the following methods to the $ object</span>
+<span class="cm"> * @class Log</span>
+<span class="cm"> * @static</span>
+<span class="cm"> */</span>
 <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">Log</span><span class="p">)</span> <span class="p">{</span>
 	<span class="nx">jet</span><span class="p">.</span><span class="nx">Log</span> <span class="o">=</span> <span class="p">{};</span>
 <span class="p">}</span>
@@ -73,12 +77,24 @@
 <span class="p">}</span>
 
 <span class="nx">$</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * @method error</span>
+<span class="cm">	 * @description Logs an error</span>
+<span class="cm">	 */</span>
 	<span class="nx">error</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
 		<span class="nx">Log</span><span class="p">.</span><span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
 	<span class="p">},</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * @method warning</span>
+<span class="cm">	 * @description Logs a warning</span>
+<span class="cm">	 */</span>
 	<span class="nx">warning</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
 		<span class="nx">Log</span><span class="p">.</span><span class="nx">warnings</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
 	<span class="p">},</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * @method log</span>
+<span class="cm">	 * @description Logs a message</span>
+<span class="cm">	 */</span>
 	<span class="nx">log</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">msg</span><span class="p">)</span> <span class="p">{</span>
 		<span class="nx">Log</span><span class="p">.</span><span class="nx">logs</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">msg</span><span class="p">);</span>
 	<span class="p">}</span>
@@ -117,7 +133,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>

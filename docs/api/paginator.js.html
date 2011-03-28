@@ -56,7 +56,6 @@
 <span class="cm">*/</span>
 <span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;paginator&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 
-
 			
 <span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
 	<span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span>
@@ -92,7 +91,7 @@
 	
 	<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config recordSet</span>
+<span class="cm">		 * @attribute recordSet</span>
 <span class="cm">		 * @description A RecordSet with the data the paginator should handle</span>
 <span class="cm">		 * @required</span>
 <span class="cm">		 * @type RecordSet</span>
@@ -101,7 +100,7 @@
 			<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config recordsPerPage</span>
+<span class="cm">		 * @attribute recordsPerPage</span>
 <span class="cm">		 * @description Number of records each page should show</span>
 <span class="cm">		 * @type Number</span>
 <span class="cm">		 * @default 10</span>
@@ -110,7 +109,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="mi">10</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config firstLast</span>
+<span class="cm">		 * @attribute firstLast</span>
 <span class="cm">		 * @description Wheter the &quot;First&quot; and &quot;Last&quot; buttons should appear</span>
 <span class="cm">		 * @type Boolean</span>
 <span class="cm">		 * @default true</span>
@@ -119,7 +118,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="kc">true</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config prevNext</span>
+<span class="cm">		 * @attribute prevNext</span>
 <span class="cm">		 * @description Wheter the &quot;previous&quot; and &quot;next&quot; buttons should appear</span>
 <span class="cm">		 * @type Boolean</span>
 <span class="cm">		 * @default true</span>
@@ -128,7 +127,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="kc">true</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config pagesShown</span>
+<span class="cm">		 * @attribute pagesShown</span>
 <span class="cm">		 * @description Number of pages that should be listed in the paginator (1, 2, 3...)</span>
 <span class="cm">		 * @type Number</span>
 <span class="cm">		 * @default 5</span>
@@ -137,7 +136,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="mi">5</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config firstText</span>
+<span class="cm">		 * @attribute firstText</span>
 <span class="cm">		 * @description The text of the &quot;first&quot; button</span>
 <span class="cm">		 * @writeOnce</span>
 <span class="cm">		 * @default &quot;&lt;&lt; first&quot;</span>
@@ -148,7 +147,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;&lt;&lt; first&quot;</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config prevText</span>
+<span class="cm">		 * @attribute prevText</span>
 <span class="cm">		 * @description The text of the &quot;previous&quot; button</span>
 <span class="cm">		 * @writeOnce</span>
 <span class="cm">		 * @default &quot;&lt; prev&quot;</span>
@@ -159,7 +158,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;&lt; prev&quot;</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config nextText</span>
+<span class="cm">		 * @attribute nextText</span>
 <span class="cm">		 * @description The text of the &quot;next&quot; button</span>
 <span class="cm">		 * @writeOnce</span>
 <span class="cm">		 * @default &quot;next &gt;&quot;</span>
@@ -170,7 +169,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;next &gt;&quot;</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config lastText</span>
+<span class="cm">		 * @attribute lastText</span>
 <span class="cm">		 * @description The text of the &quot;last&quot; button</span>
 <span class="cm">		 * @writeOnce</span>
 <span class="cm">		 * @default &quot;last &gt;&gt;&quot;</span>
@@ -185,7 +184,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;pg&quot;</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config currentPage</span>
+<span class="cm">		 * @attribute currentPage</span>
 <span class="cm">		 * @description The current selected page. If set in the config, </span>
 <span class="cm">		 * the paginator will go directly to that page when rendered</span>
 <span class="cm">		 * @writeOnce</span>
@@ -196,7 +195,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="nx">currentPage</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config pageCount</span>
+<span class="cm">		 * @attribute pageCount</span>
 <span class="cm">		 * @description The number of pages in the paginator</span>
 <span class="cm">		 * @readOnly</span>
 <span class="cm">		 * @type Number</span>
@@ -317,7 +316,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>

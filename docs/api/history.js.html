@@ -56,7 +56,6 @@
 <span class="cm">*/</span>
 <span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;history&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
 
-
 			
 <span class="cm">/*</span>
 <span class="cm"> * History handling adapted from http://code.google.com/p/reallysimplehistory/</span>
@@ -269,7 +268,7 @@
 
 	<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config firstLoad</span>
+<span class="cm">		 * @attribute firstLoad</span>
 <span class="cm">		 * @description Whether this is the first time the History loaded or not</span>
 <span class="cm">		 * @type Boolean</span>
 <span class="cm">		 * @readOnly</span>
@@ -279,7 +278,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="nx">firstLoad</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config baseTitle</span>
+<span class="cm">		 * @attribute baseTitle</span>
 <span class="cm">		 * @description pattern for title changes. Example: &quot;Armchair DJ [@@@]&quot; - @@@ will be replaced</span>
 <span class="cm">		 * @type String</span>
 <span class="cm">		 */</span>
@@ -293,7 +292,7 @@
 			<span class="p">}</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config blankURL</span>
+<span class="cm">		 * @attribute blankURL</span>
 <span class="cm">		 * @description URL for the blank html file we use for IE; can be overridden via the options bundle. </span>
 <span class="cm">		 * Otherwise it must be served in same directory as this library</span>
 <span class="cm">		 * @type String</span>
@@ -306,7 +305,7 @@
 			<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;blank.html?&quot;</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config encodeURI</span>
+<span class="cm">		 * @attribute encodeURI</span>
 <span class="cm">		 * @description Whether to encode the URI or not</span>
 <span class="cm">		 * @type Boolean</span>
 <span class="cm">		 */</span>
@@ -832,7 +831,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
@@ -866,7 +864,7 @@
 <script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Drag.html#method_addHandler", "access": "", "host": "Drag", "type": "method", "name": "addHandler"}, {"url": "DragDrop.html#method_addTarget", "access": "", "host": "DragDrop", "type": "method", "name": "addTarget"}, {"url": "Drag.html#config_cursor", "access": "", "host": "Drag", "type": "config", "name": "cursor"}, {"url": "Drag.html#event_drag", "access": "", "host": "Drag", "type": "event", "name": "drag"}, {"url": "Drag.html#event_drag:end", "access": "", "host": "Drag", "type": "event", "name": "drag:end"}, {"url": "Drag.html#event_drag:start", "access": "", "host": "Drag", "type": "event", "name": "drag:start"}, {"url": "DragDrop.html#event_drop:hit", "access": "", "host": "DragDrop", "type": "event", "name": "drop:hit"}, {"url": "DragDrop.html#event_drop:miss", "access": "", "host": "DragDrop", "type": "event", "name": "drop:miss"}, {"url": "Drag.html#config_handlers", "access": "", "host": "Drag", "type": "config", "name": "handlers"}, {"url": "Drag.html#config_node", "access": "", "host": "Drag", "type": "config", "name": "node"}, {"url": "Drag.html#config_tracking", "access": "", "host": "Drag", "type": "config", "name": "tracking"}];
+    var ALL_YUI_PROPS = [{"url": "Drag.html#method_addHandler", "access": "", "host": "Drag", "type": "method", "name": "addHandler"}, {"url": "DragDrop.html#method_addTarget", "access": "", "host": "DragDrop", "type": "method", "name": "addTarget"}, {"url": "Drag.html#config_cursor", "access": "", "host": "Drag", "type": "config", "name": "cursor"}, {"url": "Drag.html#event_cursorChange", "access": "", "host": "Drag", "type": "event", "name": "cursorChange"}, {"url": "Drag.html#event_drag", "access": "", "host": "Drag", "type": "event", "name": "drag"}, {"url": "Drag.html#event_drag:end", "access": "", "host": "Drag", "type": "event", "name": "drag:end"}, {"url": "Drag.html#event_drag:start", "access": "", "host": "Drag", "type": "event", "name": "drag:start"}, {"url": "DragDrop.html#event_drop:hit", "access": "", "host": "DragDrop", "type": "event", "name": "drop:hit"}, {"url": "DragDrop.html#event_drop:miss", "access": "", "host": "DragDrop", "type": "event", "name": "drop:miss"}, {"url": "Drag.html#config_handlers", "access": "", "host": "Drag", "type": "config", "name": "handlers"}, {"url": "Drag.html#event_handlersChange", "access": "", "host": "Drag", "type": "event", "name": "handlersChange"}, {"url": "Drag.html#config_node", "access": "", "host": "Drag", "type": "config", "name": "node"}, {"url": "Drag.html#event_nodeChange", "access": "", "host": "Drag", "type": "event", "name": "nodeChange"}, {"url": "Drag.html#config_tracking", "access": "", "host": "Drag", "type": "config", "name": "tracking"}, {"url": "Drag.html#event_trackingChange", "access": "", "host": "Drag", "type": "event", "name": "trackingChange"}];
 </script>
 </body>
 </html>

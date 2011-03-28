@@ -12,7 +12,7 @@ $.Tooltip = Base.create('tooltip', Widget, [$.WidgetAlignment], {
 			points: ['tl', 'bl']
 		},
 		/**
-		 * @config fadeIn
+		 * @attribute fadeIn
 		 * @description Whether to use a fade animation when appearing. Requires Anim module
 		 * @default false
 		 */

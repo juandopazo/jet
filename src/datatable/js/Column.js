@@ -12,7 +12,7 @@ var Column = Base.create('column', Base, [], {
 	
 	ATTRS: {
 		/**
-		 * @config cells
+		 * @attribute cells
 		 * @description A list of cells
 		 * @required true
 		 * @writeOnce

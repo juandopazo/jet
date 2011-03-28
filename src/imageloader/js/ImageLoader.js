@@ -9,7 +9,7 @@
 $.ImageLoader = Base.create('imageloader', Base, [], {
 	ATTRS: {
 		/**
-		 * @config srcs
+		 * @attribute srcs
 		 * @description An array of image URIs
 		 * @type Array
 		 */

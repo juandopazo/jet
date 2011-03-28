@@ -9,7 +9,7 @@
 DataSource.XDR = Base.create('datasource-xdr', DataSource, [], {
 	ATTRS: {
 		/**
-		 * @config url
+		 * @attribute url
 		 * @description Url from which to fetch the data
 		 * @type String
 		 * @required

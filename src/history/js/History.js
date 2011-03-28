@@ -210,7 +210,7 @@ var History = function () {
 
 	var myself = this.addAttrs({
 		/**
-		 * @config firstLoad
+		 * @attribute firstLoad
 		 * @description Whether this is the first time the History loaded or not
 		 * @type Boolean
 		 * @readOnly
@@ -220,7 +220,7 @@ var History = function () {
 			value: firstLoad
 		},
 		/**
-		 * @config baseTitle
+		 * @attribute baseTitle
 		 * @description pattern for title changes. Example: "Armchair DJ [@@@]" - @@@ will be replaced
 		 * @type String
 		 */
@@ -234,7 +234,7 @@ var History = function () {
 			}
 		},
 		/**
-		 * @config blankURL
+		 * @attribute blankURL
 		 * @description URL for the blank html file we use for IE; can be overridden via the options bundle. 
 		 * Otherwise it must be served in same directory as this library
 		 * @type String
@@ -247,7 +247,7 @@ var History = function () {
 			value: "blank.html?"
 		},
 		/**
-		 * @config encodeURI
+		 * @attribute encodeURI
 		 * @description Whether to encode the URI or not
 		 * @type Boolean
 		 */

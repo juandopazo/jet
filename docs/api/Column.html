@@ -266,6 +266,9 @@
                                 <h4>Methods inherited from <a href="EventTarget.html" property="yui:name" title="EventTarget">EventTarget</a>:</h4>
                                 <div class="content" rel="yui:methods">
                                     <code>
+                                            <span rel="yui:method" resource="EventTarget.html#method_after">                                        
+                                            <a class="" href="EventTarget.html#method_after" property="yui:name" title="after">after</a><span class="">,</span>
+                                            </span>
                                             <span rel="yui:method" resource="EventTarget.html#method_fire">                                        
                                             <a class="" href="EventTarget.html#method_fire" property="yui:name" title="fire">fire</a><span class="">,</span>
                                             </span>
@@ -317,8 +320,70 @@
                     </div>
 
                     <div rel="yui:events" resource="#events">
+                        <div class="section method details">
+                            <h3 id="events">Events</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_cellsChange">
+                                    <h4>
+                                        <a name="event_cellsChange">cellsChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">cellsChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'cells' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
 
 
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Base.html">
+                            <h4>Events inherited from <a href="Base.html" property="yui:name" title="Base">Base</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="Base.html#event_onChange">
+                                        <a class="" href="Base.html#event_onChange" property="yui:name" title="onChange">onChange</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
                     </div>
 
                     <div rel="yui:attributes" resource="#configattributes">
@@ -388,7 +453,6 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
@@ -419,6 +483,12 @@
                         </ul>
                     </div>
 
+                    <div id="eventsList" class="module">
+                        <h4>Events</h4>
+                        <ul class="content">        
+                                <li class=""><a href="#event_cellsChange" title="cellsChange">cellsChange</a></li>
+                        </ul>
+                    </div>
 
                     <div id="configList" class="module">
                         <h4>Configuration Attributes</h4>
@@ -438,7 +508,7 @@
 <script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Column.html#config_cells", "access": "", "host": "Column", "type": "config", "name": "cells"}, {"url": "Column.html#method_getFirstCell", "access": "", "host": "Column", "type": "method", "name": "getFirstCell"}, {"url": "Column.html#method_getFirstTd", "access": "", "host": "Column", "type": "method", "name": "getFirstTd"}, {"url": "Column.html#method_getNextCell", "access": "", "host": "Column", "type": "method", "name": "getNextCell"}, {"url": "Column.html#method_getNextTd", "access": "", "host": "Column", "type": "method", "name": "getNextTd"}, {"url": "Cell.html#config_record", "access": "", "host": "Cell", "type": "config", "name": "record"}, {"url": "Cell.html#config_td", "access": "", "host": "Cell", "type": "config", "name": "td"}, {"url": "Cell.html#config_value", "access": "", "host": "Cell", "type": "config", "name": "value"}];
+    var ALL_YUI_PROPS = [{"url": "Column.html#config_cells", "access": "", "host": "Column", "type": "config", "name": "cells"}, {"url": "Column.html#event_cellsChange", "access": "", "host": "Column", "type": "event", "name": "cellsChange"}, {"url": "Column.html#method_getFirstCell", "access": "", "host": "Column", "type": "method", "name": "getFirstCell"}, {"url": "Column.html#method_getFirstTd", "access": "", "host": "Column", "type": "method", "name": "getFirstTd"}, {"url": "Column.html#method_getNextCell", "access": "", "host": "Column", "type": "method", "name": "getNextCell"}, {"url": "Column.html#method_getNextTd", "access": "", "host": "Column", "type": "method", "name": "getNextTd"}, {"url": "Cell.html#config_record", "access": "", "host": "Cell", "type": "config", "name": "record"}, {"url": "Cell.html#event_recordChange", "access": "", "host": "Cell", "type": "event", "name": "recordChange"}, {"url": "Cell.html#config_td", "access": "", "host": "Cell", "type": "config", "name": "td"}, {"url": "Cell.html#event_tdChange", "access": "", "host": "Cell", "type": "event", "name": "tdChange"}, {"url": "Cell.html#config_value", "access": "", "host": "Cell", "type": "config", "name": "value"}, {"url": "Cell.html#event_valueChange", "access": "", "host": "Cell", "type": "event", "name": "valueChange"}];
 </script>
 </body>
 </html>

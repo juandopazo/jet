@@ -10,7 +10,7 @@
 var DataSource = Base.create('datasource', $.Utility, [], {
 	ATTRS: {
 		/**
-		 * @config recordSet
+		 * @attribute recordSet
 		 * @description This datasource's associated recordset
 		 * @type RecordSet
 		 * @writeOnce
@@ -19,7 +19,7 @@ var DataSource = Base.create('datasource', $.Utility, [], {
 			writeOnce: true
 		},
 		/**
-		 * @config responseType
+		 * @attribute responseType
 		 * @description The expected response type ('xml', 'jsarray', 'json', 'text')
 		 * @required
 		 */
@@ -27,7 +27,7 @@ var DataSource = Base.create('datasource', $.Utility, [], {
 			required: true
 		},
 		/**
-		 * @config responseSchema
+		 * @attribute responseSchema
 		 * @description <p>The schema by which to parse the response data. May be:</p>
 		 * <p><strong>DataSource.responseType.JSARRAY schema</strong><br/>
 		 * A JSARRAY response type assumes the following response shape:</p>
@@ -73,7 +73,7 @@ var DataSource = Base.create('datasource', $.Utility, [], {
 			required: true
 		},
 		/**
-		 * @config initialRequest
+		 * @attribute initialRequest
 		 * @description Data to send in the automatic initial request
 		 * @type Object
 		 */
