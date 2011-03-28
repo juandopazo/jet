@@ -24,8 +24,12 @@ Base = function (config) {
 		constrct = constrct.superclass.constructor;
 	}
 	for (i = 0; i < classes.length; i++) {
-		this.addAttrs(classes[i].ATTRS || {});
-		Hash.each(classes[i].EVENTS || {}, attachEvent, this);
+		if (classes[i].ATTRS) {
+			this.addAttrs(classes[i].ATTRS);
+		}
+		if (classes[i].EVENTS) {
+			Hash.each(classes[i].EVENTS, attachEvent, this);
+		}
 		if (classes[i][PROTO].hasOwnProperty('initializer')) {
 			classes[i][PROTO].initializer.call(this, config);
 		}
