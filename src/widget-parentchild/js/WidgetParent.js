@@ -33,7 +33,7 @@ $.mix(WidgetParent, {
 	ATTRS: {
 			
 		/**
-		 * @config childType
+		 * @attribute childType
 		 * @description Constructor reference to the default type of the children managed by this Widget. The default value is taken from defaultChildType
 		 */
 		childType: {
@@ -45,16 +45,16 @@ $.mix(WidgetParent, {
 			}
 		},
 		/**
-		 * @config defaultChildType
+		 * @attribute defaultChildType
 		 * @description default value used when a childType is not provided. This attribute is used mostly by classes using WidgetParent.
-		 * @default
+		 * @default WidgetChild
 		 */
 		defaultChildType: {
 			value: 'WidgetChild'
 		},
 		
 		/**
-		 * @config children
+		 * @attribute children
 		 * @description An array of instances or configuration objects representing the widget's children
 		 * @default []
 		 */
@@ -63,7 +63,7 @@ $.mix(WidgetParent, {
 		},
 		
 		/**
-		 * @config selection
+		 * @attribute selection
 		 * @description Returns the currently selected child Widget. If the mulitple attribte is set to true will return an Y.ArrayList instance containing the currently selected children. If no children are selected, will return null
 		 * @default null
 		 * @type Widget|Array
@@ -73,7 +73,7 @@ $.mix(WidgetParent, {
 		},
 		
 		/**
-		 * @config multiple
+		 * @attribute multiple
 		 * @description Boolean indicating if multiple children can be selected at once. Whether or not multiple selection is enabled is always delegated to the value of the multiple attribute of the root widget in the object hierarchy
 		 * @default false
 		 */
@@ -82,7 +82,7 @@ $.mix(WidgetParent, {
 			wriceOnce: true
 		},
 		/**
-		 * @config selectedIndex
+		 * @attribute selectedIndex
 		 * @description The index of the currently selected item
 		 * @type Number
 		 */
@@ -103,7 +103,7 @@ $.mix(WidgetParent, {
 			}
 		},
 		/**
-		 * @config childrenContainer
+		 * @attribute childrenContainer
 		 * @description The node inside which to insert the children
 		 * @default the content box
 		 */

@@ -1,9 +1,9 @@
 
 /**
  * An ellipse
- * @class Ellipse
+ * @class Vector.Ellipse
  * @extends Vector
- * @namespace Vector
+ * @constructor
  * @param {Object} config
  */
 var Ellipse = Base.create('ellipse', Vector, [], {
@@ -28,7 +28,7 @@ var Ellipse = Base.create('ellipse', Vector, [], {
 			}
 		},
 		/**
-		 * @config ry
+		 * @attribute ry
 		 * @description Vertical radius length
 		 */
 		ry: {
@@ -46,7 +46,7 @@ var Ellipse = Base.create('ellipse', Vector, [], {
 			}
 		},
 		/**
-		 * @config cx
+		 * @attribute cx
 		 * @description X coordinate of the ellipse's center
 		 */
 		cx: {
@@ -60,7 +60,7 @@ var Ellipse = Base.create('ellipse', Vector, [], {
 			}
 		},
 		/**
-		 * @config cy
+		 * @attribute cy
 		 * @description Y coordinate of the ellipse's center
 		 */
 		cy: {

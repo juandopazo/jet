@@ -153,7 +153,9 @@ LayoutPanelBase.prototype = {
 /**
  * A Layout Panel is a resizable block which size is constrained by the other blocks in the same container
  * @class LayoutPanel
- * @uses LayoutPanelBase, WidgetParent, WidgetChild
+ * @uses LayoutPanelBase
+ * @uses WidgetParent
+ * @uses WidgetChild
  * @extends Widget
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
@@ -167,7 +169,8 @@ $.LayoutPanel = $.Base.create('layout-panel', $.Widget, [LayoutPanelBase, $.Widg
 /**
  * A Layout is a container of Layout Panels
  * @class Layout
- * @uses LayoutPanelBase, WidgetParent
+ * @uses LayoutPanelBase
+ * @uses WidgetParent
  * @extends Widget
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties

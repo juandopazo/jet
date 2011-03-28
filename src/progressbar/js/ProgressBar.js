@@ -19,7 +19,7 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 	
 	ATTRS: {
 		/**
-		 * @config minMvalue
+		 * @attribute minMvalue
 		 * @description Minimum value that the progressbar data will take
 		 * @default 0
 		 */
@@ -27,7 +27,7 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 			value: 0
 		},
 		/**
-		 * @config maxMvalue
+		 * @attribute maxMvalue
 		 * @description Maximum value that the progressbar data will take
 		 * @default 100
 		 */
@@ -35,7 +35,7 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 			value: 100
 		},
 		/**
-		 * @config value
+		 * @attribute value
 		 * @description Current value the progressbar is taking
 		 * @default 0
 		 */
@@ -49,33 +49,37 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 			value: 20
 		},
 		/**
-		 * @config direction
+		 * @attribute direction
 		 * @description Direction in which the progressbar increases its size. May be "ltr", "ttb" or "btt"
 		 * @default "ltr"
+		 * @writeOnce
 		 */
 		direction: {
-			value: "ltr"
+			value: "ltr",
+			writeOnce: true
 		},
 		/**
-		 * @config animate
+		 * @attribute animate
 		 * @description Whether to animate the progressbar progress. The Anim module must be present
 		 * @default false
+		 * @writeOnce
 		 */
 		animate: {
 			value: false,
+			writeOnce: true,
 			validator: function () {
 				return !!$.Tween;
 			}
 		},
 		/**
-		 * @config easing
+		 * @attribute easing
 		 * @description Easing to use when animating
 		 * @default linear
 		 */
 		easing: {
 		},
 		/**
-		 * @config duration
+		 * @attribute duration
 		 * @description Duration of the animation in case it is being used
 		 * @default 500 ms
 		 */
@@ -83,7 +87,7 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 			value: 500
 		},
 		/**
-		 * @config bar
+		 * @attribute bar
 		 * @description The DOM element that represents the bar in the progressbar
 		 * @readOnly
 		 */

@@ -31,7 +31,7 @@ var DataTable = Base.create('dt', Widget, [], {
 	
 	ATTRS: {
 		/**
-		 * @config recordSet
+		 * @attribute recordSet
 		 * @description The data table's associated recordSet
 		 * @type RecordSet
 		 */
@@ -39,7 +39,7 @@ var DataTable = Base.create('dt', Widget, [], {
 			value: new $.RecordSet()
 		},
 		/**
-		 * @config columnDefinitions
+		 * @attribute columnDefinitions
 		 * @description An array mapping record keys to columns
 		 * @required
 		 * @type Array

@@ -7,6 +7,11 @@ $.ScrollingDataTable = Base.create('dt', DataTable, [], {
 			setter: $
 		},
 		
+		/**
+		 * @attribute autoScroll
+		 * @description Scroll the datatable automatically to the bottom when the rows change and the scroll was already at the bottom
+		 * @default false
+		 */
 		autoScroll: {
 			value: false
 		},

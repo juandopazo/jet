@@ -7,17 +7,15 @@
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
 
-    <script type="text/javascript" src="assets/api-js"></script>
-    <script type="text/javascript" src="assets/ac-js"></script>
 </head>
 
-<body id="yahoo-com">
+<body>
 
-<div id="doc3" class="yui-t2">
+<div id="doc4" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
-        <h3>datatable&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>datatable&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
             &gt; <a href="./module_datatable.html" title="datatable">datatable</a>
                 
                  &gt; dragdrop.js (source view) 
@@ -47,220 +45,223 @@
                         <style>
                             #doc3 .classopts { display:none; }
                         </style>
-                        <div class="highlight"><pre><span class="cm">/*</span>
-<span class="cm"> Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.</span>
-<span class="cm"> Code licensed under the BSD License</span>
-<span class="cm"> http://code.google.com/p/jet-js/wiki/Licence</span>
-<span class="cm">*/</span>
-<span class="cm">/**</span>
+                        <div class="highlight"><pre><span class="cm">/**</span>
 <span class="cm"> * Provides functionality for dragging and dropping elements</span>
 <span class="cm"> * @module dragdrop</span>
-<span class="cm"> * @requires lang, base, node</span>
+<span class="cm"> * @requires base</span>
+<span class="cm"> * </span>
+<span class="cm"> * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.</span>
+<span class="cm"> * Code licensed under the BSD License</span>
+<span class="cm"> * https://github.com/juandopazo/jet/blob/master/LICENSE.md</span>
+<span class="cm">*/</span>
+<span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;dragdrop&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
+
+			
+<span class="kd">var</span> <span class="nx">ArrayHelper</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">,</span>
+	<span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">;</span>
+	
+<span class="kd">var</span> <span class="nx">TRACKING</span> <span class="o">=</span> <span class="s2">&quot;tracking&quot;</span><span class="p">,</span>
+	<span class="nx">HANDLERS</span> <span class="o">=</span> <span class="s2">&quot;handlers&quot;</span><span class="p">,</span>
+	<span class="nx">NODE</span> <span class="o">=</span> <span class="s2">&quot;node&quot;</span><span class="p">,</span>
+	<span class="nx">CURSOR</span> <span class="o">=</span> <span class="s2">&quot;cursor&quot;</span><span class="p">,</span>
+	<span class="nx">PX</span> <span class="o">=</span> <span class="s2">&quot;px&quot;</span><span class="p">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Makes an element draggable</span>
+<span class="cm"> * @class Drag</span>
+<span class="cm"> * @extends Base</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
 <span class="cm"> */</span>
-<span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;dragdrop&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
-	
-	<span class="kd">var</span> <span class="nx">ArrayHelper</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">,</span>
-		<span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">;</span>
-		
-	<span class="kd">var</span> <span class="nx">TRACKING</span> <span class="o">=</span> <span class="s2">&quot;tracking&quot;</span><span class="p">,</span>
-		<span class="nx">HANDLERS</span> <span class="o">=</span> <span class="s2">&quot;handlers&quot;</span><span class="p">,</span>
-		<span class="nx">NODE</span> <span class="o">=</span> <span class="s2">&quot;node&quot;</span><span class="p">,</span>
-		<span class="nx">CURSOR</span> <span class="o">=</span> <span class="s2">&quot;cursor&quot;</span><span class="p">,</span>
-		<span class="nx">PX</span> <span class="o">=</span> <span class="s2">&quot;px&quot;</span><span class="p">;</span>
-	
-	<span class="cm">/**</span>
-<span class="cm">	 * Makes an element draggable</span>
-<span class="cm">	 * @class Drag</span>
-<span class="cm">	 * @extends Base</span>
-<span class="cm">	 * @constructor</span>
-<span class="cm">	 * @param {Object} config Object literal specifying widget configuration properties</span>
-<span class="cm">	 */</span>
-	<span class="kd">var</span> <span class="nx">Drag</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-		<span class="nx">Drag</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
-		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config node</span>
-<span class="cm">			 * @description node to be dragged</span>
-<span class="cm">			 * @required</span>
-<span class="cm">			 */</span>
-			<span class="nx">node</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
-				<span class="p">}</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config cursor</span>
-<span class="cm">			 * @description the type of cursor that will be shown on hover</span>
-<span class="cm">			 * @type String</span>
-<span class="cm">			 */</span>
-			<span class="nx">cursor</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;move&quot;</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config tracking</span>
-<span class="cm">			 * @description the tracking status</span>
-<span class="cm">			 * @type Boolean</span>
-<span class="cm">			 */</span>
-			<span class="nx">tracking</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
-			<span class="p">}</span>
-		<span class="p">});</span>
+<span class="kd">var</span> <span class="nx">Drag</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+	<span class="nx">Drag</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+	<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config handlers</span>
-<span class="cm">		 * @description A list of elements that will start the dragging</span>
-<span class="cm">		 * @type Array | NodeList </span>
+<span class="cm">		 * @attribute node</span>
+<span class="cm">		 * @description node to be dragged</span>
+<span class="cm">		 * @required</span>
 <span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">addAttr</span><span class="p">(</span><span class="nx">HANDLERS</span><span class="p">,</span> <span class="p">{</span>
+		<span class="nx">node</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
 			<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
 				<span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
 			<span class="p">}</span>
-		<span class="p">});</span>
-		
-		<span class="kd">var</span> <span class="nx">startX</span><span class="p">,</span> <span class="nx">startY</span><span class="p">,</span> <span class="nx">startLeft</span><span class="p">,</span> <span class="nx">startTop</span><span class="p">;</span>
-		<span class="kd">var</span> <span class="nx">currentX</span><span class="p">,</span> <span class="nx">currentY</span><span class="p">;</span>
-		
-		<span class="kd">var</span> <span class="nx">tracker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">utils</span><span class="p">.</span><span class="nx">Mouse</span><span class="p">({</span>
-			<span class="nx">shim</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;shim&quot;</span><span class="p">)</span>
-		<span class="p">});</span>
-		
-		<span class="kd">var</span> <span class="nx">setupHandler</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">list</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">list</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="nx">CURSOR</span><span class="p">,</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CURSOR</span><span class="p">)).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mousedown&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
-				<span class="nx">startX</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">clientX</span><span class="p">;</span>
-				<span class="nx">startY</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">clientY</span><span class="p">;</span>
-				<span class="cm">/**</span>
-<span class="cm">				 * First when the dragging starts</span>
-<span class="cm">				 * @event drag:start</span>
-<span class="cm">				 */</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;drag:start&quot;</span><span class="p">,</span> <span class="nx">startX</span><span class="p">,</span> <span class="nx">startY</span><span class="p">))</span> <span class="p">{</span>
-					<span class="kd">var</span> <span class="nx">offset</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">offset</span><span class="p">();</span>
-					<span class="nx">startLeft</span> <span class="o">=</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">;</span>
-					<span class="nx">startTop</span> <span class="o">=</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span><span class="p">;</span>
-					<span class="nx">tracker</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">TRACKING</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
-				<span class="p">}</span>
-			<span class="p">});</span>
-		<span class="p">};</span>
-		
+		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * Adds a handler to the handler list</span>
-<span class="cm">		 * @mehtod addHandler</span>
-<span class="cm">		 * @param {HTMLElement | NodeList} handler</span>
-<span class="cm">		 * @chainable</span>
+<span class="cm">		 * @attribute cursor</span>
+<span class="cm">		 * @description the type of cursor that will be shown on hover</span>
+<span class="cm">		 * @type String</span>
 <span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">addHandler</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">handler</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">setupHandler</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="nx">handler</span><span class="p">));</span>
-			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
-		<span class="p">};</span>
-		
-		<span class="kd">var</span> <span class="nx">handlers</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">HANDLERS</span><span class="p">);</span>
-		<span class="k">if</span> <span class="p">(</span><span class="nx">handlers</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">setupHandler</span><span class="p">(</span><span class="nx">handlers</span><span class="p">);</span>
-		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-			<span class="nx">setupHandler</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">));</span>
+		<span class="nx">cursor</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;move&quot;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute tracking</span>
+<span class="cm">		 * @description the tracking status</span>
+<span class="cm">		 * @type Boolean</span>
+<span class="cm">		 */</span>
+		<span class="nx">tracking</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
+		<span class="p">},</span>
+		<span class="nx">context</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="nx">$</span><span class="p">.</span><span class="nx">context</span>
 		<span class="p">}</span>
-		
-		<span class="nx">$</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mouseup&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="nx">tracker</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">TRACKING</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
-		<span class="p">});</span>
-		<span class="kd">var</span> <span class="nx">firstTime</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-		<span class="nx">tracker</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;trackingChange&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">firstTime</span> <span class="o">&amp;&amp;</span> <span class="nx">value</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
-				<span class="cm">/**</span>
-<span class="cm">				 * Fires when the drag ends</span>
-<span class="cm">				 * @event drag:end</span>
-<span class="cm">				 */</span>
-				<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;drag:end&quot;</span><span class="p">,</span> <span class="nx">currentX</span><span class="p">,</span> <span class="nx">currentY</span><span class="p">);</span>
-			<span class="p">}</span>
-			<span class="nx">firstTime</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-		<span class="p">});</span>
-		<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">);</span>
-		<span class="nx">tracker</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mousemove&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">clientX</span><span class="p">,</span> <span class="nx">clientY</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">currentX</span> <span class="o">=</span> <span class="nx">startLeft</span> <span class="o">+</span> <span class="nx">clientX</span> <span class="o">-</span> <span class="nx">startX</span><span class="p">;</span>
-			<span class="nx">currentY</span> <span class="o">=</span> <span class="nx">startTop</span> <span class="o">+</span> <span class="nx">clientY</span> <span class="o">-</span> <span class="nx">startY</span><span class="p">;</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * Fires during the drag movement</span>
-<span class="cm">			 * @event drag</span>
-<span class="cm">			 */</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;drag&quot;</span><span class="p">,</span> <span class="nx">currentX</span><span class="p">,</span> <span class="nx">currentY</span><span class="p">))</span> <span class="p">{</span>
-				<span class="nx">node</span><span class="p">.</span><span class="nx">css</span><span class="p">({</span>
-					<span class="nx">left</span><span class="o">:</span> <span class="nx">currentX</span> <span class="o">+</span> <span class="nx">PX</span><span class="p">,</span>
-					<span class="nx">top</span><span class="o">:</span> <span class="nx">currentY</span> <span class="o">+</span> <span class="nx">PX</span>
-				<span class="p">});</span>
-			<span class="p">}</span>
-		<span class="p">});</span>
-	<span class="p">};</span>
-	<span class="nx">Drag</span><span class="p">.</span><span class="nx">NAME</span> <span class="o">=</span> <span class="s2">&quot;drag&quot;</span><span class="p">;</span>
-	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Drag</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">);</span>
-	
+	<span class="p">});</span>
 	<span class="cm">/**</span>
-<span class="cm">	 * DragDrop class</span>
-<span class="cm">	 * @class DragDrop</span>
-<span class="cm">	 * @extends Drag</span>
-<span class="cm">	 * @constructor</span>
-<span class="cm">	 * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm">	 * @attribute handlers</span>
+<span class="cm">	 * @description A list of elements that will start the dragging</span>
+<span class="cm">	 * @type Array | NodeList </span>
 <span class="cm">	 */</span>
-	<span class="kd">var</span> <span class="nx">DragDrop</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-		<span class="nx">DragDrop</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
-		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
-			<span class="nx">targets</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isArray</span><span class="p">,</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="p">[],</span>
-				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">ArrayHelper</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">target</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
-						<span class="nx">value</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">target</span><span class="p">);</span>
-					<span class="p">});</span>
-					<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
-				<span class="p">}</span>
-			<span class="p">}</span>
-		<span class="p">});</span>
-		
-		<span class="kd">var</span> <span class="nx">insideOffset</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">offset</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">x</span> <span class="o">&gt;</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span> <span class="o">&amp;&amp;</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="p">(</span><span class="nx">offset</span><span class="p">.</span><span class="nx">left</span> <span class="o">+</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">width</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">y</span> <span class="o">&gt;</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span> <span class="o">&amp;&amp;</span> <span class="nx">y</span> <span class="o">&lt;</span> <span class="p">(</span><span class="nx">offset</span><span class="p">.</span><span class="nx">top</span> <span class="o">+</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">height</span><span class="p">);</span>
-		<span class="p">};</span>
-		
-		<span class="kd">var</span> <span class="nx">myTargets</span> <span class="o">=</span> <span class="p">[];</span>
-		
-		<span class="cm">/**</span>
-<span class="cm">		 * Adds a drop target</span>
-<span class="cm">		 * @method addTarget</span>
-<span class="cm">		 * @param {HTMLElement | NodeList} target</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">addTarget</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">myTargets</span><span class="p">[</span><span class="nx">myTargets</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">target</span><span class="p">);</span>
-			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
-		<span class="p">};</span>
-		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">clientX</span><span class="p">,</span> <span class="nx">clientY</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">targets</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;targets&quot;</span><span class="p">).</span><span class="nx">concat</span><span class="p">(</span><span class="nx">myTargets</span><span class="p">);</span>
-			<span class="kd">var</span> <span class="nx">hit</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-			<span class="nx">ArrayHelper</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">targets</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">insideOffset</span><span class="p">(</span><span class="nx">clientX</span><span class="p">,</span> <span class="nx">clientY</span><span class="p">,</span> <span class="nx">target</span><span class="p">.</span><span class="nx">offset</span><span class="p">()))</span> <span class="p">{</span>
-					<span class="cm">/**</span>
-<span class="cm">					 * Fires when a draggable object is drop into a target</span>
-<span class="cm">					 * @event drop:hit</span>
-<span class="cm">					 */</span>
-					<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;drop:hit&quot;</span><span class="p">,</span> <span class="nx">target</span><span class="p">);</span>
-					<span class="nx">hit</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-				<span class="p">}</span>
-			<span class="p">});</span>
-			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hit</span><span class="p">)</span> <span class="p">{</span>
-				<span class="cm">/**</span>
-<span class="cm">				 * Fires when a draggable object is release but not over any target</span>
-<span class="cm">				 * @event drop:miss</span>
-<span class="cm">				 */</span>
-				<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;drop:miss&quot;</span><span class="p">);</span>
-			<span class="p">}</span>
-		<span class="p">});</span>
-	<span class="p">};</span>
-	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">DragDrop</span><span class="p">,</span> <span class="nx">Drag</span><span class="p">);</span>
-	
-	<span class="nx">$</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span>
-		<span class="nx">Drag</span><span class="o">:</span> <span class="nx">Drag</span><span class="p">,</span>
-		<span class="nx">DragDrop</span><span class="o">:</span> <span class="nx">DragDrop</span>
+	<span class="nx">myself</span><span class="p">.</span><span class="nx">addAttr</span><span class="p">(</span><span class="nx">HANDLERS</span><span class="p">,</span> <span class="p">{</span>
+		<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+		<span class="p">}</span>
 	<span class="p">});</span>
 	
+	<span class="kd">var</span> <span class="nx">startX</span><span class="p">,</span> <span class="nx">startY</span><span class="p">,</span> <span class="nx">startLeft</span><span class="p">,</span> <span class="nx">startTop</span><span class="p">;</span>
+	<span class="kd">var</span> <span class="nx">currentX</span><span class="p">,</span> <span class="nx">currentY</span><span class="p">;</span>
+	
+	<span class="kd">var</span> <span class="nx">tracker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Mouse</span><span class="p">({</span>
+		<span class="nx">shim</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;shim&quot;</span><span class="p">),</span>
+		<span class="nx">context</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;context&quot;</span><span class="p">)</span>
+	<span class="p">});</span>
+	
+	<span class="kd">var</span> <span class="nx">setupHandler</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">list</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">list</span><span class="p">.</span><span class="nx">css</span><span class="p">(</span><span class="nx">CURSOR</span><span class="p">,</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CURSOR</span><span class="p">)).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mousedown&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+			<span class="nx">startX</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">clientX</span><span class="p">;</span>
+			<span class="nx">startY</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">clientY</span><span class="p">;</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * First when the dragging starts</span>
+<span class="cm">			 * @event drag:start</span>
+<span class="cm">			 */</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;drag:start&quot;</span><span class="p">,</span> <span class="nx">startX</span><span class="p">,</span> <span class="nx">startY</span><span class="p">))</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">offset</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">offset</span><span class="p">();</span>
+				<span class="nx">startLeft</span> <span class="o">=</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span><span class="p">;</span>
+				<span class="nx">startTop</span> <span class="o">=</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span><span class="p">;</span>
+				<span class="nx">tracker</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">TRACKING</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">});</span>
+	<span class="p">};</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Adds a handler to the handler list</span>
+<span class="cm">	 * @mehtod addHandler</span>
+<span class="cm">	 * @param {HTMLElement | NodeList} handler</span>
+<span class="cm">	 * @chainable</span>
+<span class="cm">	 */</span>
+	<span class="nx">myself</span><span class="p">.</span><span class="nx">addHandler</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">handler</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">setupHandler</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="nx">handler</span><span class="p">));</span>
+		<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+	<span class="p">};</span>
+	
+	<span class="kd">var</span> <span class="nx">handlers</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">HANDLERS</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">handlers</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">setupHandler</span><span class="p">(</span><span class="nx">handlers</span><span class="p">);</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nx">setupHandler</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">));</span>
+	<span class="p">}</span>
+	
+	<span class="kd">var</span> <span class="nx">firstTime</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+	<span class="nx">tracker</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;trackingChange&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">firstTime</span> <span class="o">&amp;&amp;</span> <span class="nx">value</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * Fires when the drag ends</span>
+<span class="cm">			 * @event drag:end</span>
+<span class="cm">			 */</span>
+			<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;drag:end&quot;</span><span class="p">,</span> <span class="nx">currentX</span><span class="p">,</span> <span class="nx">currentY</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="nx">firstTime</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+	<span class="p">});</span>
+	<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">NODE</span><span class="p">);</span>
+	<span class="nx">tracker</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mousemove&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">clientX</span><span class="p">,</span> <span class="nx">clientY</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">currentX</span> <span class="o">=</span> <span class="nx">startLeft</span> <span class="o">+</span> <span class="nx">clientX</span> <span class="o">-</span> <span class="nx">startX</span><span class="p">;</span>
+		<span class="nx">currentY</span> <span class="o">=</span> <span class="nx">startTop</span> <span class="o">+</span> <span class="nx">clientY</span> <span class="o">-</span> <span class="nx">startY</span><span class="p">;</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * Fires during the drag movement</span>
+<span class="cm">		 * @event drag</span>
+<span class="cm">		 */</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;drag&quot;</span><span class="p">,</span> <span class="nx">currentX</span><span class="p">,</span> <span class="nx">currentY</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">node</span><span class="p">.</span><span class="nx">css</span><span class="p">({</span>
+				<span class="nx">left</span><span class="o">:</span> <span class="nx">currentX</span> <span class="o">+</span> <span class="nx">PX</span><span class="p">,</span>
+				<span class="nx">top</span><span class="o">:</span> <span class="nx">currentY</span> <span class="o">+</span> <span class="nx">PX</span>
+			<span class="p">});</span>
+		<span class="p">}</span>
+	<span class="p">});</span>
+	<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;contextChange&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">newVal</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">tracker</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;context&quot;</span><span class="p">,</span> <span class="nx">newVal</span><span class="p">);</span>
+	<span class="p">});</span>
+<span class="p">};</span>
+<span class="nx">Drag</span><span class="p">.</span><span class="nx">NAME</span> <span class="o">=</span> <span class="s2">&quot;drag&quot;</span><span class="p">;</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Drag</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">);</span>
+<span class="cm">/**</span>
+<span class="cm"> * DragDrop class</span>
+<span class="cm"> * @class DragDrop</span>
+<span class="cm"> * @extends Drag</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm"> */</span>
+<span class="kd">var</span> <span class="nx">DragDrop</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+	<span class="nx">DragDrop</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
+	<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
+		<span class="nx">targets</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isArray</span><span class="p">,</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="p">[],</span>
+			<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">ArrayHelper</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">target</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">value</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">target</span><span class="p">);</span>
+				<span class="p">});</span>
+				<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">});</span>
+	
+	<span class="kd">var</span> <span class="nx">insideOffset</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">offset</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">x</span> <span class="o">&gt;</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">left</span> <span class="o">&amp;&amp;</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="p">(</span><span class="nx">offset</span><span class="p">.</span><span class="nx">left</span> <span class="o">+</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">width</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">y</span> <span class="o">&gt;</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">top</span> <span class="o">&amp;&amp;</span> <span class="nx">y</span> <span class="o">&lt;</span> <span class="p">(</span><span class="nx">offset</span><span class="p">.</span><span class="nx">top</span> <span class="o">+</span> <span class="nx">offset</span><span class="p">.</span><span class="nx">height</span><span class="p">);</span>
+	<span class="p">};</span>
+	
+	<span class="kd">var</span> <span class="nx">myTargets</span> <span class="o">=</span> <span class="p">[];</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Adds a drop target</span>
+<span class="cm">	 * @method addTarget</span>
+<span class="cm">	 * @param {HTMLElement | NodeList} target</span>
+<span class="cm">	 * @chainable</span>
+<span class="cm">	 */</span>
+	<span class="nx">myself</span><span class="p">.</span><span class="nx">addTarget</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">myTargets</span><span class="p">[</span><span class="nx">myTargets</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">target</span><span class="p">);</span>
+		<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
+	<span class="p">};</span>
+	
+	<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">clientX</span><span class="p">,</span> <span class="nx">clientY</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">targets</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;targets&quot;</span><span class="p">).</span><span class="nx">concat</span><span class="p">(</span><span class="nx">myTargets</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">hit</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+		<span class="nx">ArrayHelper</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">targets</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">insideOffset</span><span class="p">(</span><span class="nx">clientX</span><span class="p">,</span> <span class="nx">clientY</span><span class="p">,</span> <span class="nx">target</span><span class="p">.</span><span class="nx">offset</span><span class="p">()))</span> <span class="p">{</span>
+				<span class="cm">/**</span>
+<span class="cm">				 * Fires when a draggable object is drop into a target</span>
+<span class="cm">				 * @event drop:hit</span>
+<span class="cm">				 */</span>
+				<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;drop:hit&quot;</span><span class="p">,</span> <span class="nx">target</span><span class="p">);</span>
+				<span class="nx">hit</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">});</span>
+		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hit</span><span class="p">)</span> <span class="p">{</span>
+			<span class="cm">/**</span>
+<span class="cm">			 * Fires when a draggable object is release but not over any target</span>
+<span class="cm">			 * @event drop:miss</span>
+<span class="cm">			 */</span>
+			<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;drop:miss&quot;</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">});</span>
+<span class="p">};</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">DragDrop</span><span class="p">,</span> <span class="nx">Drag</span><span class="p">);</span>
+
+<span class="nx">$</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span>
+	<span class="nx">Drag</span><span class="o">:</span> <span class="nx">Drag</span><span class="p">,</span>
+	<span class="nx">DragDrop</span><span class="o">:</span> <span class="nx">DragDrop</span>
+<span class="p">});</span>
+			
 <span class="p">});</span>
 </pre></div>
 
@@ -284,32 +285,32 @@
                                 <li class=""><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
-                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
                                 <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
-                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
                         </ul>
                     </div>
 
                     <div id="classList" class="module">
                         <h4>Classes</h4>
                         <ul class="content">
+                                <li class=""><a href="Cell.html" title="Cell">Cell</a></li>
+                                <li class=""><a href="Column.html" title="Column">Column</a></li>
                                 <li class=""><a href="DataTable.html" title="DataTable">DataTable</a></li>
-                        </ul>
-                    </div>
-
-                    <div id="fileList" class="module">
-                        <h4>Files</h4>
-                        <ul class="content">        
-                                <li class="selected"><a href="dragdrop.js.html" title="dragdrop.js">dragdrop.js</a></li>
                         </ul>
                     </div>
 
@@ -322,12 +323,13 @@
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
+<script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "DataTable.html#method_addRow", "access": "", "host": "DataTable", "type": "method", "name": "addRow"}, {"url": "DataTable.html#method_addRows", "access": "", "host": "DataTable", "type": "method", "name": "addRows"}, {"url": "DataTable.html#config_columnDefinitions", "access": "", "host": "DataTable", "type": "config", "name": "columnDefinitions"}, {"url": "DataTable.html#method_getColumn", "access": "", "host": "DataTable", "type": "method", "name": "getColumn"}, {"url": "DataTable.html#method_getFirstTd", "access": "", "host": "DataTable", "type": "method", "name": "getFirstTd"}, {"url": "DataTable.html#method_getFirstTr", "access": "", "host": "DataTable", "type": "method", "name": "getFirstTr"}, {"url": "DataTable.html#method_getNextTd", "access": "", "host": "DataTable", "type": "method", "name": "getNextTd"}, {"url": "DataTable.html#method_getNextTr", "access": "", "host": "DataTable", "type": "method", "name": "getNextTr"}, {"url": "DataTable.html#method_onDataReturnAddRows", "access": "", "host": "DataTable", "type": "method", "name": "onDataReturnAddRows"}, {"url": "DataTable.html#method_onDataReturnReplaceRows", "access": "", "host": "DataTable", "type": "method", "name": "onDataReturnReplaceRows"}, {"url": "DataTable.html#config_recordSet", "access": "", "host": "DataTable", "type": "config", "name": "recordSet"}];
+    var ALL_YUI_PROPS = [{"url": "DataTable.html#method_addRow", "access": "", "host": "DataTable", "type": "method", "name": "addRow"}, {"url": "DataTable.html#method_addRows", "access": "", "host": "DataTable", "type": "method", "name": "addRows"}, {"url": "DataTable.html#config_autoScroll", "access": "", "host": "DataTable", "type": "config", "name": "autoScroll"}, {"url": "DataTable.html#event_autoScrollChange", "access": "", "host": "DataTable", "type": "event", "name": "autoScrollChange"}, {"url": "Column.html#config_cells", "access": "", "host": "Column", "type": "config", "name": "cells"}, {"url": "Column.html#event_cellsChange", "access": "", "host": "Column", "type": "event", "name": "cellsChange"}, {"url": "DataTable.html#config_columnDefinitions", "access": "", "host": "DataTable", "type": "config", "name": "columnDefinitions"}, {"url": "DataTable.html#event_columnDefinitionsChange", "access": "", "host": "DataTable", "type": "event", "name": "columnDefinitionsChange"}, {"url": "DataTable.html#method_getColumn", "access": "", "host": "DataTable", "type": "method", "name": "getColumn"}, {"url": "Column.html#method_getFirstCell", "access": "", "host": "Column", "type": "method", "name": "getFirstCell"}, {"url": "Column.html#method_getFirstTd", "access": "", "host": "Column", "type": "method", "name": "getFirstTd"}, {"url": "DataTable.html#method_getFirstTd", "access": "", "host": "DataTable", "type": "method", "name": "getFirstTd"}, {"url": "DataTable.html#method_getFirstTr", "access": "", "host": "DataTable", "type": "method", "name": "getFirstTr"}, {"url": "Column.html#method_getNextCell", "access": "", "host": "Column", "type": "method", "name": "getNextCell"}, {"url": "Column.html#method_getNextTd", "access": "", "host": "Column", "type": "method", "name": "getNextTd"}, {"url": "DataTable.html#method_getNextTd", "access": "", "host": "DataTable", "type": "method", "name": "getNextTd"}, {"url": "DataTable.html#method_getNextTr", "access": "", "host": "DataTable", "type": "method", "name": "getNextTr"}, {"url": "DataTable.html#method_onDataReturnAddRows", "access": "", "host": "DataTable", "type": "method", "name": "onDataReturnAddRows"}, {"url": "DataTable.html#method_onDataReturnReplaceRows", "access": "", "host": "DataTable", "type": "method", "name": "onDataReturnReplaceRows"}, {"url": "Cell.html#config_record", "access": "", "host": "Cell", "type": "config", "name": "record"}, {"url": "Cell.html#event_recordChange", "access": "", "host": "Cell", "type": "event", "name": "recordChange"}, {"url": "DataTable.html#config_recordSet", "access": "", "host": "DataTable", "type": "config", "name": "recordSet"}, {"url": "DataTable.html#event_recordSetChange", "access": "", "host": "DataTable", "type": "event", "name": "recordSetChange"}, {"url": "Cell.html#config_td", "access": "", "host": "Cell", "type": "config", "name": "td"}, {"url": "Cell.html#event_tdChange", "access": "", "host": "Cell", "type": "event", "name": "tdChange"}, {"url": "Cell.html#config_value", "access": "", "host": "Cell", "type": "config", "name": "value"}, {"url": "Cell.html#event_valueChange", "access": "", "host": "Cell", "type": "event", "name": "valueChange"}];
 </script>
 </body>
 </html>

@@ -26,7 +26,7 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 	
 	ATTRS: {
 		/**
-		 * @config panelNode
+		 * @attribute panelNode
 		 * @description The element to use as a panel
 		 * @writeOnce
 		 */
@@ -34,7 +34,7 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 			setter: $
 		},
 		/**
-		 * @config triggerEvent
+		 * @attribute triggerEvent
 		 * @description Event that triggers the selection of this tab
 		 * @default 'click'
 		 * @type String
@@ -43,21 +43,21 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 			value: 'click'
 		},
 		/**
-		 * @config labelContent
+		 * @attribute labelContent
 		 * @description Gets/sets the content of the tab's label
 		 */
 		labelContent: {
 			value: ''
 		},
 		/**
-		 * @config panelContent
+		 * @attribute panelContent
 		 * @description Gets/sets the content of the tab's panel
 		 */
 		panelContent: {
 			value: ''
 		},
 		/**
-		 * @config href
+		 * @attribute href
 		 * @description Href attribute for this tab's label. Useful for progressive enhancement
 		 * @default '#'
 		 * @writeOnce

@@ -7,17 +7,15 @@
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
 
-    <script type="text/javascript" src="assets/api-js"></script>
-    <script type="text/javascript" src="assets/ac-js"></script>
 </head>
 
-<body id="yahoo-com">
+<body>
 
-<div id="doc3" class="yui-t2">
+<div id="doc4" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
-        <h3>history&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>history&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
             &gt; <a href="./module_history.html" title="history">history</a>
                  &gt; History 
                 
@@ -248,17 +246,20 @@ If you have set a baseTitle using the options bundle, the value will be plugged 
                                 <h4>Methods inherited from <a href="EventTarget.html" property="yui:name" title="EventTarget">EventTarget</a>:</h4>
                                 <div class="content" rel="yui:methods">
                                     <code>
+                                            <span rel="yui:method" resource="EventTarget.html#method_after">                                        
+                                            <a class="" href="EventTarget.html#method_after" property="yui:name" title="after">after</a><span class="">,</span>
+                                            </span>
                                             <span rel="yui:method" resource="EventTarget.html#method_fire">                                        
                                             <a class="" href="EventTarget.html#method_fire" property="yui:name" title="fire">fire</a><span class="">,</span>
                                             </span>
                                             <span rel="yui:method" resource="EventTarget.html#method_on">                                        
                                             <a class="" href="EventTarget.html#method_on" property="yui:name" title="on">on</a><span class="">,</span>
                                             </span>
-                                            <span rel="yui:method" resource="EventTarget.html#method_unbind">                                        
-                                            <a class="" href="EventTarget.html#method_unbind" property="yui:name" title="unbind">unbind</a><span class="">,</span>
+                                            <span rel="yui:method" resource="EventTarget.html#method_once">                                        
+                                            <a class="" href="EventTarget.html#method_once" property="yui:name" title="once">once</a><span class="">,</span>
                                             </span>
-                                            <span rel="yui:method" resource="EventTarget.html#method_unbindAll">                                        
-                                            <a class="" href="EventTarget.html#method_unbindAll" property="yui:name" title="unbindAll">unbindAll</a>
+                                            <span rel="yui:method" resource="EventTarget.html#method_unbind">                                        
+                                            <a class="" href="EventTarget.html#method_unbind" property="yui:name" title="unbind">unbind</a>
                                             </span>
                                     </code>
                                 </div>
@@ -279,15 +280,19 @@ If you have set a baseTitle using the options bundle, the value will be plugged 
                                             <span rel="yui:method" resource="Attribute.html#method_getAttrs">                                        
                                             <a class="" href="Attribute.html#method_getAttrs" property="yui:name" title="getAttrs">getAttrs</a><span class="">,</span>
                                             </span>
-                                            <span rel="yui:method" resource="Attribute.html#method_isSet">                                        
-                                            <a class="" href="Attribute.html#method_isSet" property="yui:name" title="isSet">isSet</a><span class="">,</span>
-                                            </span>
                                             <span rel="yui:method" resource="Attribute.html#method_set">                                        
                                             <a class="" href="Attribute.html#method_set" property="yui:name" title="set">set</a><span class="">,</span>
                                             </span>
                                             <span rel="yui:method" resource="Attribute.html#method_unset">                                        
                                             <a class="" href="Attribute.html#method_unset" property="yui:name" title="unset">unset</a>
                                             </span>
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="section field inheritance" rel="yui:superclass"  resource="Base.html">
+                                <h4>Methods inherited from <a href="Base.html" property="yui:name" title="Base">Base</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
                                     </code>
                                 </div>
                             </div>
@@ -298,6 +303,94 @@ If you have set a baseTitle using the options bundle, the value will be plugged 
                         <div class="section method details">
                             <h3 id="events">Events</h3>
                             <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_baseTitleChange">
+                                    <h4>
+                                        <a name="event_baseTitleChange">baseTitleChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">baseTitleChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'baseTitle' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_blankURLChange">
+                                    <h4>
+                                        <a name="event_blankURLChange">blankURLChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">blankURLChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'blankURL' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
                                     <div class="" rel="yui:event" resource="#event_change">
                                     <h4>
                                         <a name="event_change">change</a></h4>
@@ -353,10 +446,111 @@ If you have set a baseTitle using the options bundle, the value will be plugged 
                                     </div>
                                     <hr />
                                     </div>
+                                    <div class="" rel="yui:event" resource="#event_encodeURIChange">
+                                    <h4>
+                                        <a name="event_encodeURIChange">encodeURIChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">encodeURIChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'encodeURI' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_firstLoadChange">
+                                    <h4>
+                                        <a name="event_firstLoadChange">firstLoadChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">firstLoadChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'firstLoad' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
                             </div>
                         </div>
 
 
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Base.html">
+                            <h4>Events inherited from <a href="Base.html" property="yui:name" title="Base">Base</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="Base.html#event_onChange">
+                                        <a class="" href="Base.html#event_onChange" property="yui:name" title="onChange">onChange</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
                     </div>
 
                     <div rel="yui:attributes" resource="#configattributes">
@@ -462,18 +656,23 @@ Otherwise it must be served in same directory as this library
                                 <li class="selected"><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
-                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
                                 <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
-                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
                         </ul>
                     </div>
 
@@ -481,13 +680,6 @@ Otherwise it must be served in same directory as this library
                         <h4>Classes</h4>
                         <ul class="content">
                                 <li class="selected"><a href="History.html" title="History">History</a></li>
-                        </ul>
-                    </div>
-
-                    <div id="fileList" class="module">
-                        <h4>Files</h4>
-                        <ul class="content">        
-                                <li class=""><a href="imageloader.js.html" title="imageloader.js">imageloader.js</a></li>
                         </ul>
                     </div>
 
@@ -504,7 +696,11 @@ Otherwise it must be served in same directory as this library
                     <div id="eventsList" class="module">
                         <h4>Events</h4>
                         <ul class="content">        
+                                <li class=""><a href="#event_baseTitleChange" title="baseTitleChange">baseTitleChange</a></li>
+                                <li class=""><a href="#event_blankURLChange" title="blankURLChange">blankURLChange</a></li>
                                 <li class=""><a href="#event_change" title="change">change</a></li>
+                                <li class=""><a href="#event_encodeURIChange" title="encodeURIChange">encodeURIChange</a></li>
+                                <li class=""><a href="#event_firstLoadChange" title="firstLoadChange">firstLoadChange</a></li>
                         </ul>
                     </div>
 
@@ -523,12 +719,13 @@ Otherwise it must be served in same directory as this library
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
+<script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "History.html#config_baseTitle", "access": "", "host": "History", "type": "config", "name": "baseTitle"}, {"url": "History.html#config_blankURL", "access": "", "host": "History", "type": "config", "name": "blankURL"}, {"url": "History.html#event_change", "access": "", "host": "History", "type": "event", "name": "change"}, {"url": "History.html#method_changeTitle", "access": "", "host": "History", "type": "method", "name": "changeTitle"}, {"url": "History.html#config_encodeURI", "access": "", "host": "History", "type": "config", "name": "encodeURI"}, {"url": "History.html#config_firstLoad", "access": "", "host": "History", "type": "config", "name": "firstLoad"}, {"url": "History.html#method_go", "access": "", "host": "History", "type": "method", "name": "go"}, {"url": "History.html#method_initialize", "access": "", "host": "History", "type": "method", "name": "initialize"}];
+    var ALL_YUI_PROPS = [{"url": "History.html#config_baseTitle", "access": "", "host": "History", "type": "config", "name": "baseTitle"}, {"url": "History.html#event_baseTitleChange", "access": "", "host": "History", "type": "event", "name": "baseTitleChange"}, {"url": "History.html#config_blankURL", "access": "", "host": "History", "type": "config", "name": "blankURL"}, {"url": "History.html#event_blankURLChange", "access": "", "host": "History", "type": "event", "name": "blankURLChange"}, {"url": "History.html#event_change", "access": "", "host": "History", "type": "event", "name": "change"}, {"url": "History.html#method_changeTitle", "access": "", "host": "History", "type": "method", "name": "changeTitle"}, {"url": "History.html#config_encodeURI", "access": "", "host": "History", "type": "config", "name": "encodeURI"}, {"url": "History.html#event_encodeURIChange", "access": "", "host": "History", "type": "event", "name": "encodeURIChange"}, {"url": "History.html#config_firstLoad", "access": "", "host": "History", "type": "config", "name": "firstLoad"}, {"url": "History.html#event_firstLoadChange", "access": "", "host": "History", "type": "event", "name": "firstLoadChange"}, {"url": "History.html#method_go", "access": "", "host": "History", "type": "method", "name": "go"}, {"url": "History.html#method_initialize", "access": "", "host": "History", "type": "method", "name": "initialize"}];
 </script>
 </body>
 </html>

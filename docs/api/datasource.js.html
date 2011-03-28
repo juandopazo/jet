@@ -7,17 +7,15 @@
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
 
-    <script type="text/javascript" src="assets/api-js"></script>
-    <script type="text/javascript" src="assets/ac-js"></script>
 </head>
 
-<body id="yahoo-com">
+<body>
 
-<div id="doc3" class="yui-t2">
+<div id="doc4" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
-        <h3>cookie&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>cookie&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
             &gt; <a href="./module_cookie.html" title="cookie">cookie</a>
                 
                  &gt; datasource.js (source view) 
@@ -47,95 +45,174 @@
                         <style>
                             #doc3 .classopts { display:none; }
                         </style>
-                        <div class="highlight"><pre><span class="cm">/*</span>
-<span class="cm"> Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.</span>
-<span class="cm"> Code licensed under the BSD License</span>
-<span class="cm"> http://code.google.com/p/jet-js/wiki/Licence</span>
-<span class="cm">*/</span>
-<span class="cm">/**</span>
+                        <div class="highlight"><pre><span class="cm">/**</span>
 <span class="cm"> * DataSources are different ways of accessing data and parsing it into an schema</span>
 <span class="cm"> * @module datasource</span>
-<span class="cm"> * @namespace</span>
+<span class="cm"> * @requires base</span>
+<span class="cm"> * </span>
+<span class="cm"> * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.</span>
+<span class="cm"> * Code licensed under the BSD License</span>
+<span class="cm"> * https://github.com/juandopazo/jet/blob/master/LICENSE.md</span>
+<span class="cm">*/</span>
+<span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;datasource&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
+
+			
+<span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
+	<span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span>
+	<span class="nx">A</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">,</span>
+	<span class="nx">Base</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">RESPONSE_TYPE_JSON</span>		<span class="o">=</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span>
+	<span class="nx">RESPONSE_TYPE_XML</span>		<span class="o">=</span> <span class="s1">&#39;xml&#39;</span><span class="p">,</span>
+	<span class="nx">RESPONSE_TYPE_JSARRAY</span>	<span class="o">=</span> <span class="s1">&#39;jsarray&#39;</span><span class="p">,</span>
+	<span class="nx">RESPONSE_TYPE_TEXT</span>		<span class="o">=</span> <span class="s1">&#39;text&#39;</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">SOURCE_TYPE_XHR</span>			<span class="o">=</span> <span class="s1">&#39;xhr&#39;</span><span class="p">,</span>
+	<span class="nx">SOURCE_TYPE_JSONP</span>		<span class="o">=</span> <span class="s1">&#39;jsonp&#39;</span><span class="p">,</span>
+	<span class="nx">SOURCE_TYPE_LOCAL</span>		<span class="o">=</span> <span class="s1">&#39;local&#39;</span><span class="p">;</span>
+	
+<span class="kd">var</span> <span class="nx">PARSER</span> <span class="o">=</span> <span class="s2">&quot;parser&quot;</span><span class="p">,</span>
+	<span class="nx">REQUEST_LOGIC</span> <span class="o">=</span> <span class="s2">&quot;requestLogic&quot;</span><span class="p">,</span>
+	<span class="nx">RESPONSE_TYPE</span> <span class="o">=</span> <span class="s2">&quot;responseType&quot;</span><span class="p">,</span>
+	<span class="nx">URL</span> <span class="o">=</span> <span class="s2">&quot;url&quot;</span><span class="p">,</span>
+	<span class="nx">ERROR</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span><span class="p">,</span>
+	<span class="nx">REQUEST_FAILED_MSG</span> <span class="o">=</span> <span class="s2">&quot;Request failed&quot;</span><span class="p">,</span>
+	<span class="nx">AMPERSAND</span> <span class="o">=</span> <span class="s2">&quot;&amp;&quot;</span><span class="p">,</span>
+	<span class="nx">EQUAL_SIGN</span> <span class="o">=</span> <span class="s2">&quot;=&quot;</span><span class="p">,</span>
+	<span class="nx">TIMEOUT</span> <span class="o">=</span> <span class="s2">&quot;timeout&quot;</span><span class="p">,</span>
+	<span class="nx">TEMP_DATA</span> <span class="o">=</span> <span class="s2">&quot;tempData&quot;</span><span class="p">,</span>
+	<span class="nx">INITIAL_REQUEST</span> <span class="o">=</span> <span class="s2">&quot;initialRequest&quot;</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">Record</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">jet</span><span class="p">.</span><span class="nx">Record</span> <span class="o">=</span> <span class="p">{};</span>
+<span class="p">}</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">Record</span><span class="p">.</span><span class="nx">ids</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">jet</span><span class="p">.</span><span class="nx">Record</span><span class="p">.</span><span class="nx">ids</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * A record is a Hash width a unique id</span>
+<span class="cm"> * @class Record</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} An object literal</span>
 <span class="cm"> */</span>
-<span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;datasource&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
-	
-	<span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
-		<span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span>
-		<span class="nx">A</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">;</span>
-
-	<span class="kd">var</span> <span class="nx">RESPONSE_TYPE_JSON</span>		<span class="o">=</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span>
-		<span class="nx">RESPONSE_TYPE_XML</span>		<span class="o">=</span> <span class="s1">&#39;xml&#39;</span><span class="p">,</span>
-		<span class="nx">RESPONSE_TYPE_JSARRAY</span>	<span class="o">=</span> <span class="s1">&#39;jsarray&#39;</span><span class="p">,</span>
-		<span class="nx">RESPONSE_TYPE_TEXT</span>		<span class="o">=</span> <span class="s1">&#39;text&#39;</span><span class="p">;</span>
-	
-	<span class="kd">var</span> <span class="nx">SOURCE_TYPE_XHR</span>			<span class="o">=</span> <span class="s1">&#39;xhr&#39;</span><span class="p">,</span>
-		<span class="nx">SOURCE_TYPE_JSONP</span>		<span class="o">=</span> <span class="s1">&#39;jsonp&#39;</span><span class="p">,</span>
-		<span class="nx">SOURCE_TYPE_LOCAL</span>		<span class="o">=</span> <span class="s1">&#39;local&#39;</span><span class="p">;</span>
-		
-	<span class="kd">var</span> <span class="nx">PARSER</span> <span class="o">=</span> <span class="s2">&quot;parser&quot;</span><span class="p">,</span>
-		<span class="nx">REQUEST_LOGIC</span> <span class="o">=</span> <span class="s2">&quot;requestLogic&quot;</span><span class="p">,</span>
-		<span class="nx">RESPONSE_TYPE</span> <span class="o">=</span> <span class="s2">&quot;responseType&quot;</span><span class="p">,</span>
-		<span class="nx">URL</span> <span class="o">=</span> <span class="s2">&quot;url&quot;</span><span class="p">,</span>
-		<span class="nx">ERROR</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span><span class="p">,</span>
-		<span class="nx">REQUEST_FAILED_MSG</span> <span class="o">=</span> <span class="s2">&quot;Request failed&quot;</span><span class="p">,</span>
-		<span class="nx">AMPERSAND</span> <span class="o">=</span> <span class="s2">&quot;&amp;&quot;</span><span class="p">,</span>
-		<span class="nx">EQUAL_SIGN</span> <span class="o">=</span> <span class="s2">&quot;=&quot;</span><span class="p">,</span>
-		<span class="nx">TIMEOUT</span> <span class="o">=</span> <span class="s2">&quot;timeout&quot;</span><span class="p">,</span>
-		<span class="nx">TEMP_DATA</span> <span class="o">=</span> <span class="s2">&quot;tempData&quot;</span><span class="p">,</span>
-		<span class="nx">INITIAL_REQUEST</span> <span class="o">=</span> <span class="s2">&quot;initialRequest&quot;</span><span class="p">;</span>
-
-	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">Record</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">jet</span><span class="p">.</span><span class="nx">Record</span> <span class="o">=</span> <span class="p">{};</span>
-	<span class="p">}</span>
-	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">Record</span><span class="p">.</span><span class="nx">ids</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">jet</span><span class="p">.</span><span class="nx">Record</span><span class="p">.</span><span class="nx">ids</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-	<span class="p">}</span>
+<span class="kd">var</span> <span class="nx">Record</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">jet</span><span class="p">.</span><span class="nx">Record</span><span class="p">.</span><span class="nx">ids</span><span class="o">++</span><span class="p">;</span>
+	<span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
 	
 	<span class="cm">/**</span>
-<span class="cm">	 * A record is a Hash width a unique id</span>
-<span class="cm">	 * @class Record</span>
-<span class="cm">	 * @constructor</span>
-<span class="cm">	 * @param {Object} An object literal</span>
+<span class="cm">	 * Returns the id of the record. Each record has a unique id globally.alert</span>
+<span class="cm">	 * This allows for easy filtering, ordering, etc of records.alert</span>
+<span class="cm">	 * @method getId</span>
+<span class="cm">	 * @return Number</span>
 <span class="cm">	 */</span>
-	<span class="kd">var</span> <span class="nx">Record</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-		<span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">jet</span><span class="p">.</span><span class="nx">Record</span><span class="p">.</span><span class="nx">ids</span><span class="o">++</span><span class="p">;</span>
-		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-		
-		<span class="cm">/**</span>
-<span class="cm">		 * Returns the id of the record. Each record has a unique id globally.alert</span>
-<span class="cm">		 * This allows for easy filtering, ordering, etc of records.alert</span>
-<span class="cm">		 * @method getId</span>
-<span class="cm">		 * @return Number</span>
-<span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">getId</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">id</span><span class="p">;</span>
-		<span class="p">};</span>
-		<span class="cm">/**</span>
-<span class="cm">		 * Returns the data of the record. Must be an object literal</span>
-<span class="cm">		 * @method getData</span>
-<span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">getData</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">data</span><span class="p">;</span>
-		<span class="p">};</span>
-		<span class="cm">/**</span>
-<span class="cm">		 * Shortcut for getting a value from the record&#39;s data</span>
-<span class="cm">		 * @method get</span>
-<span class="cm">		 * @param {String} key</span>
-<span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">data</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
-		<span class="p">};</span>
+	<span class="nx">self</span><span class="p">.</span><span class="nx">getId</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">id</span><span class="p">;</span>
 	<span class="p">};</span>
 	<span class="cm">/**</span>
-<span class="cm">	 * Returns if an object is a Record</span>
-<span class="cm">	 * @method isRecord</span>
-<span class="cm">	 * @for Lang</span>
+<span class="cm">	 * Returns the data of the record. Must be an object literal</span>
+<span class="cm">	 * @method getData</span>
 <span class="cm">	 */</span>
-	<span class="nx">Lang</span><span class="p">.</span><span class="nx">isRecord</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">return</span> <span class="nx">o</span> <span class="k">instanceof</span> <span class="nx">Record</span><span class="p">;</span>
+	<span class="nx">self</span><span class="p">.</span><span class="nx">getData</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">data</span><span class="p">;</span>
+	<span class="p">};</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * Shortcut for getting a value from the record&#39;s data</span>
+<span class="cm">	 * @method get</span>
+<span class="cm">	 * @param {String} key</span>
+<span class="cm">	 */</span>
+	<span class="nx">self</span><span class="p">.</span><span class="nx">get</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">data</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+	<span class="p">};</span>
+<span class="p">};</span>
+<span class="cm">/**</span>
+<span class="cm"> * Returns if an object is a Record</span>
+<span class="cm"> * @method hasInstance</span>
+<span class="cm"> * @static</span>
+<span class="cm"> * @param {Object} o The object to check</span>
+<span class="cm"> */</span>
+<span class="nx">Record</span><span class="p">.</span><span class="nx">hasInstance</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">o</span> <span class="k">instanceof</span> <span class="nx">Record</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * A collections of Records</span>
+<span class="cm"> * @class RecordSet</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Array} data If data is passed, it is converted into several Records</span>
+<span class="cm"> */</span>
+<span class="kd">var</span> <span class="nx">RecordSet</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">RecordSet</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+	<span class="kd">var</span> <span class="nx">records</span> <span class="o">=</span> <span class="p">[];</span>
+	<span class="kd">var</span> <span class="nx">sortedBy</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+	<span class="kd">var</span> <span class="nx">order</span><span class="p">;</span>
+	
+	<span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+	
+	<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">recordData</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">records</span><span class="p">[</span><span class="nx">records</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Record</span><span class="p">(</span><span class="nx">recordData</span><span class="p">);</span>
+	<span class="p">});</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Returns all records in the set</span>
+<span class="cm">	 * @method getRecords</span>
+<span class="cm">	 */</span>
+	<span class="nx">self</span><span class="p">.</span><span class="nx">getRecords</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">records</span><span class="p">;</span>
+	<span class="p">};</span>
+			
+	<span class="cm">/**</span>
+<span class="cm">	 * Sorts the records based on a key of the data they hold</span>
+<span class="cm">	 * @method sortBy</span>
+<span class="cm">	 * @param {String} key The data key that will be sorted</span>
+<span class="cm">	 * @param {String} order the order in which to sort. May be &quot;asc&quot; or &quot;desc&quot;</span>
+<span class="cm">	 * @chainable</span>
+<span class="cm">	 */</span>
+	<span class="k">this</span><span class="p">.</span><span class="nx">sortBy</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">newOrder</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">records</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">records</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">_quicksortSet</span><span class="p">(</span><span class="nx">records</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">newOrder</span><span class="p">);</span>
+			<span class="nx">sortedBy</span> <span class="o">=</span> <span class="nx">key</span><span class="p">;</span>
+			<span class="nx">order</span> <span class="o">=</span> <span class="nx">newOrder</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nx">self</span><span class="p">;</span>
 	<span class="p">};</span>
 	
-	<span class="kd">var</span> <span class="nx">quicksortSet</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">set</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">order</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">toData</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">RecordSet</span><span class="p">.</span><span class="nx">hasInstance</span><span class="p">(</span><span class="nx">data</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">data</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">getRecords</span><span class="p">();</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">data</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">data</span> <span class="o">=</span> <span class="p">[</span><span class="nx">data</span><span class="p">];</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="nx">data</span><span class="p">;</span>
+	<span class="p">};</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Replaces all records with new data</span>
+<span class="cm">	 * @method replace</span>
+<span class="cm">	 * @param {Array} data</span>
+<span class="cm">	 * @chainable</span>
+<span class="cm">	 */</span>
+	<span class="k">this</span><span class="p">.</span><span class="nx">replace</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">data</span> <span class="o">=</span> <span class="nx">toData</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+		<span class="nx">self</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;replace&quot;</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
+		<span class="k">return</span> <span class="nx">sortedBy</span> <span class="o">?</span> <span class="nx">self</span><span class="p">.</span><span class="nx">sortBy</span><span class="p">(</span><span class="nx">sortedBy</span><span class="p">,</span> <span class="nx">order</span><span class="p">)</span> <span class="o">:</span> <span class="nx">self</span><span class="p">;</span>
+	<span class="p">};</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Adds data to the set, creating new Records</span>
+<span class="cm">	 * @method push</span>
+<span class="cm">	 * @param {Array} data</span>
+<span class="cm">	 * @chainable</span>
+<span class="cm">	 */</span>
+	<span class="k">this</span><span class="p">.</span><span class="nx">push</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">records</span> <span class="o">=</span> <span class="nx">records</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">toData</span><span class="p">(</span><span class="nx">data</span><span class="p">));</span>
+		<span class="nx">self</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;push&quot;</span><span class="p">,</span> <span class="nx">records</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
+		<span class="k">return</span> <span class="nx">sortedBy</span> <span class="o">?</span> <span class="nx">self</span><span class="p">.</span><span class="nx">sortBy</span><span class="p">(</span><span class="nx">sortedBy</span><span class="p">,</span> <span class="nx">order</span><span class="p">)</span> <span class="o">:</span> <span class="nx">self</span><span class="p">;</span>
+	<span class="p">};</span>
+<span class="p">};</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">RecordSet</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">EventTarget</span><span class="p">,</span> <span class="p">{</span>
+	
+	<span class="nx">_quicksortSet</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">set</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">order</span><span class="p">)</span> <span class="p">{</span>
 		<span class="k">if</span> <span class="p">(</span><span class="nx">set</span><span class="p">.</span><span class="nx">length</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
 			<span class="k">return</span> <span class="nx">set</span><span class="p">;</span>
 		<span class="p">}</span>
@@ -157,584 +234,482 @@
 				<span class="p">}</span>
 			<span class="p">}</span>
 		<span class="p">}</span>
-		<span class="k">return</span> <span class="nx">quicksortSet</span><span class="p">(</span><span class="nx">lesser</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">order</span><span class="p">).</span><span class="nx">concat</span><span class="p">([</span><span class="nx">pivot</span><span class="p">]).</span><span class="nx">concat</span><span class="p">(</span><span class="nx">quicksortSet</span><span class="p">(</span><span class="nx">greater</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">order</span><span class="p">));</span>
-	<span class="p">};</span>
+		<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_quicksortSet</span><span class="p">(</span><span class="nx">lesser</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">order</span><span class="p">).</span><span class="nx">concat</span><span class="p">([</span><span class="nx">pivot</span><span class="p">]).</span><span class="nx">concat</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_quicksortSet</span><span class="p">(</span><span class="nx">greater</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">order</span><span class="p">));</span>
+	<span class="p">},</span>
 	
 	<span class="cm">/**</span>
-<span class="cm">	 * A collections of Records</span>
-<span class="cm">	 * @class RecordSet</span>
-<span class="cm">	 * @constructor</span>
-<span class="cm">	 * @param {Array} data If data is passed, it is converted into several Records</span>
+<span class="cm">	 * Returns the number of records in the set</span>
+<span class="cm">	 * @method getCount</span>
+<span class="cm">	 * @return Number</span>
 <span class="cm">	 */</span>
-	<span class="kd">var</span> <span class="nx">RecordSet</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">RecordSet</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-		<span class="kd">var</span> <span class="nx">records</span> <span class="o">=</span> <span class="p">[];</span>
-		<span class="kd">var</span> <span class="nx">sortedBy</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-		<span class="kd">var</span> <span class="nx">order</span><span class="p">;</span>
-		
-		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-		
-		<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">recordData</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">records</span><span class="p">[</span><span class="nx">records</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Record</span><span class="p">(</span><span class="nx">recordData</span><span class="p">);</span>
-		<span class="p">});</span>
-		
-		<span class="cm">/**</span>
-<span class="cm">		 * Returns all records in the set</span>
-<span class="cm">		 * @method getRecords</span>
-<span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">getRecords</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">records</span><span class="p">;</span>
-		<span class="p">};</span>
-		
-		<span class="cm">/**</span>
-<span class="cm">		 * Returns the number of records in the set</span>
-<span class="cm">		 * @method getCount</span>
-<span class="cm">		 * @return Number</span>
-<span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">getCount</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="nx">records</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
-		<span class="p">};</span>
-		
-		<span class="cm">/**</span>
-<span class="cm">		 * Sorts the records based on a key of the data they hold</span>
-<span class="cm">		 * @method sortBy</span>
-<span class="cm">		 * @param {String} key The data key that will be sorted</span>
-<span class="cm">		 * @param {String} order the order in which to sort. May be &quot;asc&quot; or &quot;desc&quot;</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">sortBy</span> <span class="o">=</span>  <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">newOrder</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">records</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">records</span> <span class="o">=</span> <span class="nx">quicksortSet</span><span class="p">(</span><span class="nx">records</span><span class="p">,</span> <span class="nx">key</span><span class="p">,</span> <span class="nx">newOrder</span><span class="p">);</span>
-				<span class="nx">sortedBy</span> <span class="o">=</span> <span class="nx">key</span><span class="p">;</span>
-				<span class="nx">order</span> <span class="o">=</span> <span class="nx">newOrder</span><span class="p">;</span>
-			<span class="p">}</span>
-			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
-		<span class="p">};</span>
-		
-		<span class="kd">var</span> <span class="nx">toData</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isRecordSet</span><span class="p">(</span><span class="nx">data</span><span class="p">))</span> <span class="p">{</span>
-				<span class="nx">data</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">getRecords</span><span class="p">();</span>
-			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">data</span><span class="p">))</span> <span class="p">{</span>
-				<span class="nx">data</span> <span class="o">=</span> <span class="p">[</span><span class="nx">data</span><span class="p">];</span>
-			<span class="p">}</span>
-			<span class="k">return</span> <span class="nx">data</span><span class="p">;</span>
-		<span class="p">};</span>
-		
-		<span class="cm">/**</span>
-<span class="cm">		 * Replaces all records with new data</span>
-<span class="cm">		 * @method replace</span>
-<span class="cm">		 * @param {Array} data</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">replace</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">data</span> <span class="o">=</span> <span class="nx">toData</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
-			<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;replace&quot;</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
-			<span class="k">return</span> <span class="nx">sortedBy</span> <span class="o">?</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">sortBy</span><span class="p">(</span><span class="nx">sortedBy</span><span class="p">,</span> <span class="nx">order</span><span class="p">)</span> <span class="o">:</span> <span class="nx">myself</span><span class="p">;</span>
-		<span class="p">};</span>
-		
-		<span class="cm">/**</span>
-<span class="cm">		 * Adds data to the set, creating new Records</span>
-<span class="cm">		 * @method push</span>
-<span class="cm">		 * @param {Array} data</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">push</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">records</span> <span class="o">=</span> <span class="nx">records</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nx">toData</span><span class="p">(</span><span class="nx">data</span><span class="p">));</span>
-			<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;push&quot;</span><span class="p">,</span> <span class="nx">records</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
-			<span class="k">return</span> <span class="nx">sortedBy</span> <span class="o">?</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">sortBy</span><span class="p">(</span><span class="nx">sortedBy</span><span class="p">,</span> <span class="nx">order</span><span class="p">)</span> <span class="o">:</span> <span class="nx">myself</span><span class="p">;</span>
-		<span class="p">};</span>
-		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">getRecordById</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">requiredRecord</span><span class="p">;</span>
-			<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">records</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">record</span><span class="p">)</span> <span class="p">{</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">record</span><span class="p">.</span><span class="nx">getId</span><span class="p">()</span> <span class="o">==</span> <span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">requiredRecord</span> <span class="o">=</span> <span class="nx">record</span><span class="p">;</span>
-					<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
-				<span class="p">}</span>
-			<span class="p">});</span>
-			<span class="k">return</span> <span class="nx">requiredRecord</span><span class="p">;</span>
-		<span class="p">};</span>
-	<span class="p">};</span>
-	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">RecordSet</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">EventTarget</span><span class="p">);</span>
-	<span class="cm">/**</span>
-<span class="cm">	 * Returns whether an object is a RecordSet</span>
-<span class="cm">	 * @method isRecordSet</span>
-<span class="cm">	 * @for Lang</span>
-<span class="cm">	 */</span>
-	<span class="nx">Lang</span><span class="p">.</span><span class="nx">isRecordSet</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">return</span> <span class="nx">o</span> <span class="k">instanceof</span> <span class="nx">RecordSet</span><span class="p">;</span>
-	<span class="p">};</span>
-		
-	<span class="cm">/**</span>
-<span class="cm">	 * Base class for all data sources. The DataSource class shouldn&#39;t be used directly</span>
-<span class="cm">	 * @class DataSource</span>
-<span class="cm">	 * @extends Utility</span>
-<span class="cm">	 * @protected</span>
-<span class="cm">	 * @constructor</span>
-<span class="cm">	 * @param {Object} config Object literal specifying widget configuration properties</span>
-<span class="cm">	 */</span>
-	<span class="kd">var</span> <span class="nx">DataSource</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-		<span class="nx">DataSource</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
-		
-		<span class="kd">var</span> <span class="nx">recordSet</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">RecordSet</span><span class="p">([]);</span>
-		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config recordSet</span>
-<span class="cm">			 * @description This datasource&#39;s associated recordset</span>
-<span class="cm">			 * @type RecordSet</span>
-<span class="cm">			 * @readOnly</span>
-<span class="cm">			 */</span>
-			<span class="nx">recordSet</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">readOnly</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-				<span class="nx">getter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="nx">recordSet</span><span class="p">;</span>
-				<span class="p">}</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config responseType</span>
-<span class="cm">			 * @description The expected response type (&#39;xml&#39;, &#39;jsarray&#39;, &#39;json&#39;, &#39;text&#39;)</span>
-<span class="cm">			 * @required</span>
-<span class="cm">			 */</span>
-			<span class="nx">responseType</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config responseSchema</span>
-<span class="cm">			 * @description &lt;p&gt;The schema by which to parse the response data. May be:&lt;/p&gt;</span>
-<span class="cm">			 * &lt;p&gt;&lt;strong&gt;DataSource.responseType.JSARRAY schema&lt;/strong&gt;&lt;br/&gt;</span>
-<span class="cm">			 * A JSARRAY response type assumes the following response shape:&lt;/p&gt;</span>
-<span class="cm">			 * &lt;code&gt;//All records are listed as an array&lt;br/&gt;</span>
-<span class="cm">			 * [&lt;br/&gt;</span>
-<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[&#39;value1&#39;, &#39;value2&#39;, &#39;value3&#39;], //one record&lt;br/&gt;</span>
-<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[&#39;another1&#39;, &#39;another2&#39;, &#39;another3&#39;] //another record&lt;br/&gt;</span>
-<span class="cm">			 * ]&lt;/code&gt;</span>
-<span class="cm">			 * &lt;p&gt;&lt;/p&gt;</span>
-<span class="cm">			 * &lt;p&gt;&lt;strong&gt;DataSource.responseType.TEXT schema&lt;/strong&gt;&lt;br/&gt;</span>
-<span class="cm">			 * This schema essentially splits the string and then acts as if it where a DataSource.responseType.JSARRAY.&lt;br/&gt;</span>
-<span class="cm">			 * Must define a &lt;strong&gt;fieldDelim&lt;/strong&gt; property. Example (comma separated value):&lt;/p&gt;</span>
-<span class="cm">			 * &lt;code&gt;responseSchema: {&lt;br/&gt;</span>
-<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;fieldDelim: &quot;,&quot;&lt;br/&gt;</span>
-<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;fields: [&quot;firstField&quot;, &quot;secondField&quot;]&lt;br/&gt;</span>
-<span class="cm">			 * }&lt;/code&gt;</span>
-<span class="cm">			 * &lt;p&gt;&lt;/p&gt;</span>
-<span class="cm">			 * &lt;p&gt;&lt;strong&gt;DataSource.responseType.JSON schema&lt;/strong&gt;&lt;br/&gt;</span>
-<span class="cm">			 * Example:&lt;/p&gt;</span>
-<span class="cm">			 * &lt;code&gt;responseSchema = {&lt;br/&gt;</span>
-<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;resultList : &quot;Response.Results&quot;, // String pointer to result data&lt;br/&gt;</span>
-<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;// Field order doesn&#39;t matter and not all data is required to have a field&lt;br/&gt;</span>
-<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;fields : [&lt;br/&gt;</span>
-<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;{ key: &quot;id&quot; },                    // simple location&lt;br/&gt;</span>
-<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;{ key: &quot;obj&quot; }&lt;br/&gt;</span>
-<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;]&lt;br/&gt;</span>
-<span class="cm">			 * }&lt;/code&gt;</span>
-<span class="cm">			 * &lt;p&gt;&lt;/p&gt;</span>
-<span class="cm">			 * &lt;p&gt;&lt;strong&gt;DataSource.responseType.XML schema&lt;/strong&gt;&lt;br/&gt;</span>
-<span class="cm">			 * Example:&lt;/p&gt; </span>
-<span class="cm">			 * &lt;code&gt;responseSchema: {&lt;br/&gt;</span>
-<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;resultNode: &quot;rootNode&quot;, // every result field will be looked for between this node&#39;s children&lt;br/&gt;</span>
-<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;fields: [&lt;br/&gt;</span>
-<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;{ key: &quot;keyName&quot;, node: &quot;nodeName&quot; }, // in this case, the value of the field will be the node&#39;s value&lt;br/&gt;</span>
-<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;{ key: &quot;otherKey&quot;, node: &quot;otherNode&quot;, attr: &quot;type&quot; }, // in this other case, the field value will be the &quot;type&quot; attribute&lt;br/&gt;</span>
-<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;{ key: &quot;aNumber&quot;, node: &quot;someNode&quot;, parser: &quot;parseFloat&quot; } // this value will be parsed as a Float&lt;br/&gt;</span>
-<span class="cm">			 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;]&lt;br/&gt;</span>
-<span class="cm">			 * }&lt;/code&gt;</span>
-<span class="cm">			 * @type Hash</span>
-<span class="cm">			 * @required</span>
-<span class="cm">			 */</span>
-			<span class="nx">responseSchema</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config requestLogic</span>
-<span class="cm">			 * @description The logic for the chosen source type. Should only be used when extending the DataSource class</span>
-<span class="cm">			 * @protected</span>
-<span class="cm">			 * @writeOnce</span>
-<span class="cm">			 */</span>
-			<span class="nx">requestLogic</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span>
-			<span class="p">}</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config initialRequest</span>
-<span class="cm">			 * @description Data to send in the automatic initial request</span>
-<span class="cm">			 * @type Object</span>
-<span class="cm">			 */</span>
-		<span class="p">});</span>
-		
-		<span class="kd">var</span> <span class="nx">internalEvents</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">EventTarget</span><span class="p">();</span>
-		
-		<span class="kd">var</span> <span class="nx">parser</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">rawData</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">responseType</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">RESPONSE_TYPE</span><span class="p">);</span>
-			<span class="kd">var</span> <span class="nx">responseSchema</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;responseSchema&quot;</span><span class="p">);</span>
-			
-			<span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">[];</span>
-			
-			<span class="cm">/*</span>
-<span class="cm">			 * Text schema, ie: a comma separated value file.</span>
-<span class="cm">			 * This essentially splits the string and then acts as if it where a RESPONSE_TYPE_ARRAY</span>
-<span class="cm">			 */</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">responseType</span> <span class="o">==</span> <span class="nx">RESPONSE_TYPE_TEXT</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">rawData</span> <span class="o">=</span> <span class="nx">rawData</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="nx">responseSchema</span><span class="p">.</span><span class="nx">recordDelim</span><span class="p">);</span>
-				<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">rawData</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">rawData</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="nx">responseSchema</span><span class="p">.</span><span class="nx">fieldDelim</span><span class="p">);</span>
-				<span class="p">});</span>
-				<span class="nx">responseType</span> <span class="o">=</span> <span class="nx">RESPONSE_TYPE_JSARRAY</span><span class="p">;</span>
-			<span class="p">}</span>
-			<span class="cm">/*</span>
-<span class="cm">			 * A JSARRAY response type assumes the following response shape:</span>
-<span class="cm">			 * </span>
-<span class="cm">			 * //All records are listed as an array</span>
-<span class="cm">			 * [</span>
-<span class="cm">			 *     [&#39;value1&#39;, &#39;value2&#39;, &#39;value3&#39;], //one record</span>
-<span class="cm">			 *     [&#39;another1&#39;, &#39;another2&#39;, &#39;another3&#39;] //another record</span>
-<span class="cm">			 * ]</span>
-<span class="cm">			 */</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">responseType</span> <span class="o">==</span> <span class="nx">RESPONSE_TYPE_JSARRAY</span><span class="p">)</span> <span class="p">{</span>
-				<span class="kd">var</span> <span class="nx">fields</span> <span class="o">=</span> <span class="nx">responseSchema</span><span class="p">.</span><span class="nx">fields</span><span class="p">;</span>
-				<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">rawData</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">val</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{};</span>
-					<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">fields</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">fieldName</span><span class="p">,</span> <span class="nx">j</span><span class="p">)</span> <span class="p">{</span>
-						<span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">fieldName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">rawData</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">];</span>
-					<span class="p">});</span>
-				<span class="p">});</span>
-				
-			<span class="cm">/*</span>
-<span class="cm">			 * A JSON Schema</span>
-<span class="cm">			 * Example:</span>
-<span class="cm">			 * </span>
-<span class="cm">			 *	responseSchema = {</span>
-<span class="cm">				    resultsList : &quot;Response.Results&quot;, // String pointer to result data</span>
-<span class="cm">				    // Field order doesn&#39;t matter and not all data is required to have a field</span>
-<span class="cm">				    fields : [</span>
-<span class="cm">				        { key: &quot;id&quot; },                    // simple location</span>
-<span class="cm">				        { key: &quot;obj.nested&quot; },            // dot notation works</span>
-<span class="cm">				        { key: &quot;[&#39;arr&#39;][1][&#39;nested 2&#39;]&quot; } // bracket notation works</span>
-<span class="cm">				    ]</span>
-<span class="cm">				}</span>
-<span class="cm">			 */</span>
-			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">responseType</span> <span class="o">==</span> <span class="nx">RESPONSE_TYPE_JSON</span><span class="p">)</span> <span class="p">{</span>
-				<span class="kd">var</span> <span class="nx">found</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-				<span class="kd">var</span> <span class="nx">root</span> <span class="o">=</span> <span class="nx">rawData</span><span class="p">;</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">responseSchema</span><span class="p">.</span><span class="nx">resultList</span><span class="p">)</span> <span class="p">{</span>
-					<span class="kd">var</span> <span class="nx">resultList</span> <span class="o">=</span> <span class="nx">responseSchema</span><span class="p">.</span><span class="nx">resultList</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">);</span>
-					<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">resultList</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-						<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">root</span><span class="p">[</span><span class="nx">key</span><span class="p">])</span> <span class="p">{</span>
-							<span class="nx">found</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-						<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-							<span class="nx">root</span> <span class="o">=</span> <span class="nx">root</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
-						<span class="p">}</span>
-					<span class="p">});</span>
-				<span class="p">}</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">found</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">root</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">record</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
-						<span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{};</span>
-						<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">responseSchema</span><span class="p">.</span><span class="nx">fields</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">field</span><span class="p">)</span> <span class="p">{</span>
-							<span class="cm">/*</span>
-<span class="cm">							 * A field key can be defined with dot notation</span>
-<span class="cm">							 */</span>
-							<span class="kd">var</span> <span class="nx">nested</span> <span class="o">=</span> <span class="nx">field</span><span class="p">.</span><span class="nx">key</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">);</span>
-							<span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
-							<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">nested</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
-								<span class="k">if</span> <span class="p">(</span><span class="nx">record</span><span class="p">[</span><span class="nx">key</span><span class="p">])</span> <span class="p">{</span>
-									<span class="nx">value</span> <span class="o">=</span> <span class="nx">record</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
-								<span class="p">}</span>
-							<span class="p">});</span>
-							<span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">field</span><span class="p">.</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
-						<span class="p">});</span>
-					<span class="p">});</span>
-				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-					<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;parserError&quot;</span><span class="p">,</span> <span class="s2">&quot;Result list not found&quot;</span><span class="p">);</span>
-				<span class="p">}</span>
-			<span class="p">}</span>
-			<span class="cm">/*</span>
-<span class="cm">			 * XML Schema.</span>
-<span class="cm">			 * Example: </span>
-<span class="cm">			 * </span>
-<span class="cm">			 * responseSchema: {</span>
-<span class="cm">			 *     resultNode: &quot;rootNode&quot;, // every result field will be looked for between this node&#39;s children</span>
-<span class="cm">			 *     fields: [</span>
-<span class="cm">			 *         { key: &quot;keyName&quot;, node: &quot;nodeName&quot; }, // in this case, the value of the field will be the node&#39;s value</span>
-<span class="cm">			 *         { key: &quot;otherKey&quot;, node: &quot;otherNode&quot;, attr: &quot;type&quot; }, // in this other case, the field value will be the &quot;type&quot; attribute</span>
-<span class="cm">			 *         { key: &quot;aNumber&quot;, node: &quot;someNode&quot;, parser: &quot;Float&quot; } // this value will be parsed as a Float</span>
-<span class="cm">			 *     ]</span>
-<span class="cm">			 * }</span>
-<span class="cm">			 */</span>
-			<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">responseType</span> <span class="o">==</span> <span class="nx">RESPONSE_TYPE_XML</span><span class="p">)</span> <span class="p">{</span>
-				<span class="kd">var</span> <span class="nx">doc</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">;</span>
-				<span class="kd">var</span> <span class="nx">de</span> <span class="o">=</span> <span class="nx">rawData</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">;</span> 
-				<span class="kd">var</span> <span class="nx">resultNode</span> <span class="o">=</span> <span class="nx">de</span><span class="p">.</span><span class="nx">nodeName</span> <span class="o">==</span> <span class="nx">responseSchema</span><span class="p">.</span><span class="nx">resultNode</span> <span class="o">?</span> <span class="nx">$</span><span class="p">(</span><span class="nx">de</span><span class="p">)</span> <span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="nx">de</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="nx">responseSchema</span><span class="p">.</span><span class="nx">resultNode</span><span class="p">).</span><span class="nx">eq</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-				<span class="nx">resultNode</span><span class="p">.</span><span class="nx">children</span><span class="p">().</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">node</span><span class="p">)</span> <span class="p">{</span>
-					<span class="kd">var</span> <span class="nx">record</span> <span class="o">=</span> <span class="p">{};</span>
-					<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">responseSchema</span><span class="p">.</span><span class="nx">fields</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">field</span><span class="p">)</span> <span class="p">{</span>
-						<span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">nodeName</span> <span class="o">!=</span> <span class="nx">field</span><span class="p">.</span><span class="nx">node</span> <span class="o">?</span> <span class="nx">$</span><span class="p">(</span><span class="nx">node</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="nx">field</span><span class="p">.</span><span class="nx">node</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">:</span> <span class="nx">node</span><span class="p">;</span>
-						<span class="kd">var</span> <span class="nx">tmp</span><span class="p">;</span>
-						<span class="k">if</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-							<span class="k">if</span> <span class="p">(</span><span class="nx">field</span><span class="p">.</span><span class="nx">attr</span><span class="p">)</span> <span class="p">{</span>
-								<span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="nx">field</span><span class="p">.</span><span class="nx">attr</span><span class="p">);</span>
-							<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">field</span><span class="p">.</span><span class="nx">children</span><span class="p">)</span> <span class="p">{</span>
-								<span class="nx">tmp</span> <span class="o">=</span> <span class="p">[];</span>
-								<span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">).</span><span class="nx">children</span><span class="p">().</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
-									<span class="k">if</span> <span class="p">(</span><span class="nx">child</span><span class="p">.</span><span class="nx">firstChild</span><span class="p">)</span> <span class="p">{</span>
-										<span class="nx">tmp</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">child</span><span class="p">.</span><span class="nx">firstChild</span><span class="p">.</span><span class="nx">nodeValue</span><span class="p">);</span>
-									<span class="p">}</span>
-								<span class="p">});</span>
-								<span class="nx">value</span> <span class="o">=</span> <span class="nx">tmp</span><span class="p">;</span>
-							<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-								<span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">firstChild</span> <span class="o">?</span> <span class="nx">value</span><span class="p">.</span><span class="nx">firstChild</span><span class="p">.</span><span class="nx">nodeValue</span> <span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
-							<span class="p">}</span>
-							<span class="k">if</span> <span class="p">(</span><span class="nx">field</span><span class="p">.</span><span class="nx">parser</span><span class="p">)</span> <span class="p">{</span>
-								<span class="k">switch</span> <span class="p">(</span><span class="nx">field</span><span class="p">.</span><span class="nx">parser</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">())</span> <span class="p">{</span>
-								<span class="k">case</span> <span class="s2">&quot;float&quot;</span><span class="o">:</span>
-									<span class="nx">value</span> <span class="o">=</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
-									<span class="k">break</span><span class="p">;</span>
-								<span class="k">case</span> <span class="s2">&quot;10&quot;</span><span class="o">:</span>
-									<span class="nx">value</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
-									<span class="k">break</span><span class="p">;</span> 
-								<span class="p">}</span>
-							<span class="p">}</span>
-						<span class="p">}</span>
-						<span class="nx">record</span><span class="p">[</span><span class="nx">field</span><span class="p">.</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
-					<span class="p">});</span>
-					<span class="nx">data</span><span class="p">[</span><span class="nx">data</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">record</span><span class="p">;</span>
-				<span class="p">});</span>
-				<span class="nx">$</span><span class="p">.</span><span class="nx">context</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">;</span>
-			<span class="p">}</span>
-			<span class="k">return</span> <span class="k">new</span> <span class="nx">RecordSet</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
-		<span class="p">};</span>
-		
-		<span class="cm">/**</span>
-<span class="cm">		 * Sends a request</span>
-<span class="cm">		 * @method sendRequest</span>
-<span class="cm">		 * @param {Object} request</span>
-<span class="cm">		 * @param {Boolean} ignoreCache</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">sendRequest</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">ignoreCache</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">REQUEST_LOGIC</span><span class="p">)(</span><span class="nx">request</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">rawData</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">TEMP_DATA</span><span class="p">,</span> <span class="nx">rawData</span><span class="p">);</span>
-				<span class="kd">var</span> <span class="nx">tempData</span> <span class="o">=</span> <span class="nx">rawData</span><span class="p">;</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">internalEvents</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;beforeParse&quot;</span><span class="p">,</span> <span class="nx">rawData</span><span class="p">))</span> <span class="p">{</span>
-					<span class="nx">tempData</span> <span class="o">=</span> <span class="nx">parser</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">TEMP_DATA</span><span class="p">));</span>
-				<span class="p">}</span>
-				<span class="nx">recordSet</span> <span class="o">=</span> <span class="nx">tempData</span><span class="p">;</span>
-				<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;update&quot;</span><span class="p">,</span> <span class="nx">tempData</span><span class="p">);</span>
-				<span class="cm">/*Hash.each(tempData, function (key, val) {</span>
-<span class="cm">					if (!recordSet[key]) {</span>
-<span class="cm">						recordSet[key] = val;</span>
-<span class="cm">						myself.fire(&quot;recordAdded&quot;, key, val);</span>
-<span class="cm">					} else if (recordSet[key] != val || ignoreCache) {</span>
-<span class="cm">						recordSet[key] = val;</span>
-<span class="cm">						myself.fire(&quot;recordUpdate&quot;, key, val);</span>
-<span class="cm">					}</span>
-<span class="cm">				});*/</span>
-				
-			<span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">ERROR</span><span class="p">,</span> <span class="p">{</span>
-					<span class="nx">message</span><span class="o">:</span> <span class="nx">REQUEST_FAILED_MSG</span><span class="p">,</span>
-					<span class="nx">reason</span><span class="o">:</span> <span class="nx">reason</span>
-				<span class="p">});</span>
-			<span class="p">});</span>
-			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
-		<span class="p">};</span>
-		
-		<span class="cm">/**</span>
-<span class="cm">		 * Adds an event listener to the &quot;beforeParse&quot; event</span>
-<span class="cm">		 * @method onBeforeParse</span>
-<span class="cm">		 * @param {Function} callback</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">onBeforeParse</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">internalEvents</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;beforeParse&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">rawData</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">TEMP_DATA</span><span class="p">,</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">rawData</span><span class="p">));</span>
-			<span class="p">});</span>
-			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
-		<span class="p">};</span>
-	<span class="p">};</span>
-	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">DataSource</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Utility</span><span class="p">);</span>
+	<span class="nx">getCount</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRecords</span><span class="p">().</span><span class="nx">length</span><span class="p">;</span>
+	<span class="p">},</span>
 	
-	<span class="cm">/**</span>
-<span class="cm">	 * An AJAX DataSource</span>
-<span class="cm">	 * @namespace DataSource</span>
-<span class="cm">	 * @class Ajax</span>
-<span class="cm">	 * @extends DataSource</span>
-<span class="cm">	 * @constructor</span>
-<span class="cm">	 * @param {Object} config Object literal specifying widget configuration properties</span>
-<span class="cm">	 */</span>
-	<span class="kd">var</span> <span class="nx">Ajax</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-		<span class="nx">Ajax</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
-		
-		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config url</span>
-<span class="cm">			 * @description Url from which to fetch the data</span>
-<span class="cm">			 * @type String</span>
-<span class="cm">			 * @required</span>
-<span class="cm">			 */</span>
-			<span class="nx">url</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
+	<span class="nx">getRecordById</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">requiredRecord</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">records</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getRecords</span><span class="p">();</span>
+		<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">records</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">record</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">record</span><span class="p">.</span><span class="nx">getId</span><span class="p">()</span> <span class="o">==</span> <span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">requiredRecord</span> <span class="o">=</span> <span class="nx">record</span><span class="p">;</span>
+				<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
 			<span class="p">}</span>
 		<span class="p">});</span>
-		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">REQUEST_LOGIC</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">success</span><span class="p">,</span> <span class="nx">failure</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
-				<span class="nx">url</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">URL</span><span class="p">),</span>
-				<span class="nx">data</span><span class="o">:</span> <span class="nx">request</span><span class="p">,</span>
-				<span class="nx">dataType</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">RESPONSE_TYPE</span><span class="p">),</span>
-				<span class="nx">success</span><span class="o">:</span> <span class="nx">success</span><span class="p">,</span>
-				<span class="nx">error</span><span class="o">:</span> <span class="nx">failure</span>
-			<span class="p">});</span>
-		<span class="p">});</span>
-		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">INITIAL_REQUEST</span><span class="p">));</span>
-	<span class="p">};</span>
-	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Ajax</span><span class="p">,</span> <span class="nx">DataSource</span><span class="p">);</span>
-	
-	<span class="cm">/**</span>
-<span class="cm">	 * A Get DataSource that uses JSON for getting data across domains</span>
-<span class="cm">	 * @class Get</span>
-<span class="cm">	 * @extends DataSource</span>
-<span class="cm">	 * @constructor</span>
-<span class="cm">	 * @param {Object} config Object literal specifying configuration properties</span>
-<span class="cm">	 */</span>
-	<span class="kd">var</span> <span class="nx">Get</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-		<span class="nx">Get</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
-		
-		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config jsonCallbackParam</span>
-<span class="cm">			 * @description Name of the URL parameter that defines the name of the JSONP callback</span>
-<span class="cm">			 * @type String</span>
-<span class="cm">			 * @default &quot;p&quot;</span>
-<span class="cm">			 */</span>
-			<span class="nx">jsonCallbackParam</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;p&quot;</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config timeout</span>
-<span class="cm">			 * @description Ms after which the request is considered to have timed out</span>
-<span class="cm">			 * @type Number</span>
-<span class="cm">			 * @default 10000</span>
-<span class="cm">			 */</span>
-			<span class="nx">timeout</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="mi">10000</span>
-			<span class="p">},</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config url</span>
-<span class="cm">			 * @description Url from which to fetch the data</span>
-<span class="cm">			 * @type String</span>
-<span class="cm">			 * @required</span>
-<span class="cm">			 */</span>
-			<span class="nx">url</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="nx">val</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="nx">val</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span> <span class="o">?</span> <span class="nx">val</span> <span class="o">:</span> <span class="nx">val</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span><span class="p">;</span>
-				<span class="p">}</span>
-			<span class="p">}</span>
-		<span class="p">});</span>
-		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">REQUEST_LOGIC</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">success</span><span class="p">,</span> <span class="nx">failure</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">$</span><span class="p">.</span><span class="nx">jsonp</span><span class="p">({</span>
-				<span class="nx">url</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">URL</span><span class="p">),</span>
-				<span class="nx">data</span><span class="o">:</span> <span class="nx">request</span><span class="p">,</span>
-				<span class="nx">success</span><span class="o">:</span> <span class="nx">success</span><span class="p">,</span>
-				<span class="nx">jsonCallbackParam</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;jsonCallbackParam&quot;</span><span class="p">),</span>
-				<span class="nx">error</span><span class="o">:</span> <span class="nx">failure</span><span class="p">,</span>
-				<span class="nx">timeout</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">TIMEOUT</span><span class="p">)</span>
-			<span class="p">});</span>
-		<span class="p">});</span>
-		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">INITIAL_REQUEST</span><span class="p">));</span>
-	<span class="p">};</span>
-	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Get</span><span class="p">,</span> <span class="nx">DataSource</span><span class="p">);</span>
-	
-	<span class="cm">/**</span>
-<span class="cm">	 * Cross-domain data source</span>
-<span class="cm">	 * @class XDR</span>
-<span class="cm">	 * @extends DataSource</span>
-<span class="cm">	 * @namespace DataSource</span>
-<span class="cm">	 * @constructor</span>
-<span class="cm">	 * @param {Object} config Object literal specifying configuration properties</span>
-<span class="cm">	 */</span>
-	<span class="kd">var</span> <span class="nx">XDR</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-		<span class="nx">XDR</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
-		
-		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config url</span>
-<span class="cm">			 * @description Url from which to fetch the data</span>
-<span class="cm">			 * @type String</span>
-<span class="cm">			 * @required</span>
-<span class="cm">			 */</span>
-			<span class="nx">url</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
-			<span class="p">}</span>
-		<span class="p">});</span>
-		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">REQUEST_LOGIC</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">success</span><span class="p">,</span> <span class="nx">failure</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">type</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">RESPONSE_TYPE</span><span class="p">);</span>
-			<span class="nx">IO</span><span class="p">.</span><span class="nx">flajax</span><span class="p">({</span>
-				<span class="nx">url</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">URL</span><span class="p">),</span>
-				<span class="nx">data</span><span class="o">:</span> <span class="nx">request</span><span class="p">,</span>
-				<span class="nx">dataType</span><span class="o">:</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">RESPONSE_TYPE</span><span class="p">),</span>
-				<span class="nx">success</span><span class="o">:</span> <span class="nx">success</span><span class="p">,</span>
-				<span class="nx">error</span><span class="o">:</span> <span class="nx">failure</span>
-			<span class="p">});</span>
-		<span class="p">});</span>
-		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">INITIAL_REQUEST</span><span class="p">));</span>
-	<span class="p">};</span>
-	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">XDR</span><span class="p">,</span> <span class="nx">DataSource</span><span class="p">);</span>
-	
-	<span class="cm">/**</span>
-<span class="cm">	 * A Local DataSource uses local variables</span>
-<span class="cm">	 * @class Local</span>
-<span class="cm">	 * @extends DataSource</span>
-<span class="cm">	 * @constructor</span>
-<span class="cm">	 * @param {Object} config Object literal specifying widget configuration properties</span>
-<span class="cm">	 */</span>
-	<span class="kd">var</span> <span class="nx">Local</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-		<span class="nx">Local</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
-		
+		<span class="k">return</span> <span class="nx">requiredRecord</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">});</span>
+<span class="cm">/**</span>
+<span class="cm"> * Returns whether an object is a RecordSet</span>
+<span class="cm"> * @method hasInstance</span>
+<span class="cm"> * @static</span>
+<span class="cm"> * @param {object} o The object to check</span>
+<span class="cm"> */</span>
+<span class="nx">RecordSet</span><span class="p">.</span><span class="nx">hasInstance</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">o</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="nx">o</span> <span class="k">instanceof</span> <span class="nx">RecordSet</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="cm">/**</span>
+<span class="cm"> * Base class for all data sources. The DataSource class shouldn&#39;t be used directly</span>
+<span class="cm"> * @class DataSource</span>
+<span class="cm"> * @extends Utility</span>
+<span class="cm"> * @protected</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm"> */</span>
+<span class="kd">var</span> <span class="nx">DataSource</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;datasource&#39;</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Utility</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span>
+	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * @config localData</span>
-<span class="cm">		 * @description The data to be added to the data source</span>
+<span class="cm">		 * @attribute recordSet</span>
+<span class="cm">		 * @description This datasource&#39;s associated recordset</span>
+<span class="cm">		 * @type RecordSet</span>
+<span class="cm">		 * @writeOnce</span>
+<span class="cm">		 */</span>
+		<span class="nx">recordSet</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute responseType</span>
+<span class="cm">		 * @description The expected response type (&#39;xml&#39;, &#39;jsarray&#39;, &#39;json&#39;, &#39;text&#39;)</span>
 <span class="cm">		 * @required</span>
 <span class="cm">		 */</span>
-		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttr</span><span class="p">(</span><span class="s2">&quot;localData&quot;</span><span class="p">,</span> <span class="p">{</span>
-			<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
-		<span class="p">});</span>
-		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">REQUEST_LOGIC</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">success</span><span class="p">,</span> <span class="nx">failure</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">localData</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;localData&quot;</span><span class="p">);</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">localData</span><span class="p">))</span> <span class="p">{</span>
-				<span class="nx">success</span><span class="p">(</span><span class="nx">localData</span><span class="p">(</span><span class="nx">request</span><span class="p">));</span>
-			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-				<span class="nx">success</span><span class="p">(</span><span class="nx">localData</span><span class="p">);</span>
-			<span class="p">}</span>
-		<span class="p">});</span>
-		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">INITIAL_REQUEST</span><span class="p">));</span>
-	<span class="p">};</span>
-	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Local</span><span class="p">,</span> <span class="nx">DataSource</span><span class="p">);</span>
-	
-	<span class="nx">$</span><span class="p">.</span><span class="nx">mix</span><span class="p">(</span><span class="nx">DataSource</span><span class="p">,</span> <span class="p">{</span>
 		<span class="nx">responseType</span><span class="o">:</span> <span class="p">{</span>
-			<span class="nx">JSON</span><span class="o">:</span> <span class="nx">RESPONSE_TYPE_JSON</span><span class="p">,</span>
-			<span class="nx">XML</span><span class="o">:</span> <span class="nx">RESPONSE_TYPE_XML</span><span class="p">,</span>
-			<span class="nx">TEXT</span><span class="o">:</span> <span class="nx">RESPONSE_TYPE_TEXT</span><span class="p">,</span>
-			<span class="nx">JSARRAY</span><span class="o">:</span> <span class="nx">RESPONSE_TYPE_JSARRAY</span>
+			<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
 		<span class="p">},</span>
-		<span class="nx">Ajax</span><span class="o">:</span> <span class="nx">Ajax</span><span class="p">,</span>
-		<span class="nx">Get</span><span class="o">:</span> <span class="nx">Get</span><span class="p">,</span>
-		<span class="nx">Local</span><span class="o">:</span> <span class="nx">Local</span><span class="p">,</span>
-		<span class="nx">XDR</span><span class="o">:</span> <span class="nx">XDR</span>
-	<span class="p">});</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute responseSchema</span>
+<span class="cm">		 * @description &lt;p&gt;The schema by which to parse the response data. May be:&lt;/p&gt;</span>
+<span class="cm">		 * &lt;p&gt;&lt;strong&gt;DataSource.responseType.JSARRAY schema&lt;/strong&gt;&lt;br/&gt;</span>
+<span class="cm">		 * A JSARRAY response type assumes the following response shape:&lt;/p&gt;</span>
+<span class="cm">		 * &lt;code&gt;//All records are listed as an array&lt;br/&gt;</span>
+<span class="cm">		 * [&lt;br/&gt;</span>
+<span class="cm">		 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[&#39;value1&#39;, &#39;value2&#39;, &#39;value3&#39;], //one record&lt;br/&gt;</span>
+<span class="cm">		 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;[&#39;another1&#39;, &#39;another2&#39;, &#39;another3&#39;] //another record&lt;br/&gt;</span>
+<span class="cm">		 * ]&lt;/code&gt;</span>
+<span class="cm">		 * &lt;p&gt;&lt;/p&gt;</span>
+<span class="cm">		 * &lt;p&gt;&lt;strong&gt;DataSource.responseType.TEXT schema&lt;/strong&gt;&lt;br/&gt;</span>
+<span class="cm">		 * This schema essentially splits the string and then acts as if it where a DataSource.responseType.JSARRAY.&lt;br/&gt;</span>
+<span class="cm">		 * Must define a &lt;strong&gt;fieldDelim&lt;/strong&gt; property. Example (comma separated value):&lt;/p&gt;</span>
+<span class="cm">		 * &lt;code&gt;responseSchema: {&lt;br/&gt;</span>
+<span class="cm">		 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;fieldDelim: &quot;,&quot;&lt;br/&gt;</span>
+<span class="cm">		 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;fields: [&quot;firstField&quot;, &quot;secondField&quot;]&lt;br/&gt;</span>
+<span class="cm">		 * }&lt;/code&gt;</span>
+<span class="cm">		 * &lt;p&gt;&lt;/p&gt;</span>
+<span class="cm">		 * &lt;p&gt;&lt;strong&gt;DataSource.responseType.JSON schema&lt;/strong&gt;&lt;br/&gt;</span>
+<span class="cm">		 * Example:&lt;/p&gt;</span>
+<span class="cm">		 * &lt;code&gt;responseSchema = {&lt;br/&gt;</span>
+<span class="cm">		 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;resultList : &quot;Response.Results&quot;, // String pointer to result data&lt;br/&gt;</span>
+<span class="cm">		 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;// Field order doesn&#39;t matter and not all data is required to have a field&lt;br/&gt;</span>
+<span class="cm">		 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;fields : [&lt;br/&gt;</span>
+<span class="cm">		 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;{ key: &quot;id&quot; },                    // simple location&lt;br/&gt;</span>
+<span class="cm">		 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;{ key: &quot;obj&quot; }&lt;br/&gt;</span>
+<span class="cm">		 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;]&lt;br/&gt;</span>
+<span class="cm">		 * }&lt;/code&gt;</span>
+<span class="cm">		 * &lt;p&gt;&lt;/p&gt;</span>
+<span class="cm">		 * &lt;p&gt;&lt;strong&gt;DataSource.responseType.XML schema&lt;/strong&gt;&lt;br/&gt;</span>
+<span class="cm">		 * Example:&lt;/p&gt; </span>
+<span class="cm">		 * &lt;code&gt;responseSchema: {&lt;br/&gt;</span>
+<span class="cm">		 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;resultNode: &quot;rootNode&quot;, // every result field will be looked for between this node&#39;s children&lt;br/&gt;</span>
+<span class="cm">		 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;fields: [&lt;br/&gt;</span>
+<span class="cm">		 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;{ key: &quot;keyName&quot;, node: &quot;nodeName&quot; }, // in this case, the value of the field will be the node&#39;s value&lt;br/&gt;</span>
+<span class="cm">		 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;{ key: &quot;otherKey&quot;, node: &quot;otherNode&quot;, attr: &quot;type&quot; }, // in this other case, the field value will be the &quot;type&quot; attribute&lt;br/&gt;</span>
+<span class="cm">		 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;{ key: &quot;aNumber&quot;, node: &quot;someNode&quot;, parser: &quot;parseFloat&quot; } // this value will be parsed as a Float&lt;br/&gt;</span>
+<span class="cm">		 * &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;]&lt;br/&gt;</span>
+<span class="cm">		 * }&lt;/code&gt;</span>
+<span class="cm">		 * @type Hash</span>
+<span class="cm">		 * @required</span>
+<span class="cm">		 */</span>
+		<span class="nx">responseSchema</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute initialRequest</span>
+<span class="cm">		 * @description Data to send in the automatic initial request</span>
+<span class="cm">		 * @type Object</span>
+<span class="cm">		 */</span>
+		<span class="nx">initialRequest</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="p">{}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">},</span> <span class="p">{</span>
+	<span class="nx">_parser</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">rawData</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">responseType</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">RESPONSE_TYPE</span><span class="p">);</span>
+		<span class="kd">var</span> <span class="nx">responseSchema</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;responseSchema&quot;</span><span class="p">);</span>
+		
+		<span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="p">[];</span>
+		
+		<span class="cm">/*</span>
+<span class="cm">		 * Text schema, ie: a comma separated value file.</span>
+<span class="cm">		 * This essentially splits the string and then acts as if it where a RESPONSE_TYPE_ARRAY</span>
+<span class="cm">		 */</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">responseType</span> <span class="o">==</span> <span class="nx">RESPONSE_TYPE_TEXT</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">rawData</span> <span class="o">=</span> <span class="nx">rawData</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="nx">responseSchema</span><span class="p">.</span><span class="nx">recordDelim</span><span class="p">);</span>
+			<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">rawData</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">str</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">rawData</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">str</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="nx">responseSchema</span><span class="p">.</span><span class="nx">fieldDelim</span><span class="p">);</span>
+			<span class="p">});</span>
+			<span class="nx">responseType</span> <span class="o">=</span> <span class="nx">RESPONSE_TYPE_JSARRAY</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="cm">/*</span>
+<span class="cm">		 * A JSARRAY response type assumes the following response shape:</span>
+<span class="cm">		 * </span>
+<span class="cm">		 * //All records are listed as an array</span>
+<span class="cm">		 * [</span>
+<span class="cm">		 *     [&#39;value1&#39;, &#39;value2&#39;, &#39;value3&#39;], //one record</span>
+<span class="cm">		 *     [&#39;another1&#39;, &#39;another2&#39;, &#39;another3&#39;] //another record</span>
+<span class="cm">		 * ]</span>
+<span class="cm">		 */</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">responseType</span> <span class="o">==</span> <span class="nx">RESPONSE_TYPE_JSARRAY</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">fields</span> <span class="o">=</span> <span class="nx">responseSchema</span><span class="p">.</span><span class="nx">fields</span><span class="p">;</span>
+			<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">rawData</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">val</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{};</span>
+				<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">fields</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">fieldName</span><span class="p">,</span> <span class="nx">j</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">fieldName</span><span class="p">]</span> <span class="o">=</span> <span class="nx">rawData</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">j</span><span class="p">];</span>
+				<span class="p">});</span>
+			<span class="p">});</span>
+			
+		<span class="cm">/*</span>
+<span class="cm">		 * A JSON Schema</span>
+<span class="cm">		 * Example:</span>
+<span class="cm">		 * </span>
+<span class="cm">		 *	responseSchema = {</span>
+<span class="cm">			    resultsList : &quot;Response.Results&quot;, // String pointer to result data</span>
+<span class="cm">			    // Field order doesn&#39;t matter and not all data is required to have a field</span>
+<span class="cm">			    fields : [</span>
+<span class="cm">			        { key: &quot;id&quot; },                    // simple location</span>
+<span class="cm">			        { key: &quot;obj.nested&quot; },            // dot notation works</span>
+<span class="cm">			        { key: &quot;[&#39;arr&#39;][1][&#39;nested 2&#39;]&quot; } // bracket notation works</span>
+<span class="cm">			    ]</span>
+<span class="cm">			}</span>
+<span class="cm">		 */</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">responseType</span> <span class="o">==</span> <span class="nx">RESPONSE_TYPE_JSON</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">found</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">root</span> <span class="o">=</span> <span class="nx">rawData</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">responseSchema</span><span class="p">.</span><span class="nx">resultList</span><span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">resultList</span> <span class="o">=</span> <span class="nx">responseSchema</span><span class="p">.</span><span class="nx">resultList</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">);</span>
+				<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">resultList</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">root</span><span class="p">[</span><span class="nx">key</span><span class="p">])</span> <span class="p">{</span>
+						<span class="nx">found</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+					<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+						<span class="nx">root</span> <span class="o">=</span> <span class="nx">root</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+					<span class="p">}</span>
+				<span class="p">});</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">found</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">root</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">record</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
+					<span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{};</span>
+					<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">responseSchema</span><span class="p">.</span><span class="nx">fields</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">field</span><span class="p">)</span> <span class="p">{</span>
+						<span class="cm">/*</span>
+<span class="cm">						 * A field key can be defined with dot notation</span>
+<span class="cm">						 */</span>
+						<span class="kd">var</span> <span class="nx">nested</span> <span class="o">=</span> <span class="nx">field</span><span class="p">.</span><span class="nx">key</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">);</span>
+						<span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+						<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">nested</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+							<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isValue</span><span class="p">(</span><span class="nx">record</span><span class="p">[</span><span class="nx">key</span><span class="p">]))</span> <span class="p">{</span>
+								<span class="nx">value</span> <span class="o">=</span> <span class="nx">record</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+							<span class="p">}</span>
+						<span class="p">});</span>
+						<span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">][</span><span class="nx">field</span><span class="p">.</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+					<span class="p">});</span>
+				<span class="p">});</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;parserError&quot;</span><span class="p">,</span> <span class="s2">&quot;Result list not found&quot;</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+		<span class="cm">/*</span>
+<span class="cm">		 * XML Schema.</span>
+<span class="cm">		 * Example: </span>
+<span class="cm">		 * </span>
+<span class="cm">		 * responseSchema: {</span>
+<span class="cm">		 *     resultNode: &quot;rootNode&quot;, // every result field will be looked for between this node&#39;s children</span>
+<span class="cm">		 *     fields: [</span>
+<span class="cm">		 *         { key: &quot;keyName&quot;, node: &quot;nodeName&quot; }, // in this case, the value of the field will be the node&#39;s value</span>
+<span class="cm">		 *         { key: &quot;otherKey&quot;, node: &quot;otherNode&quot;, attr: &quot;type&quot; }, // in this other case, the field value will be the &quot;type&quot; attribute</span>
+<span class="cm">		 *         { key: &quot;aNumber&quot;, node: &quot;someNode&quot;, parser: &quot;Float&quot; } // this value will be parsed as a Float</span>
+<span class="cm">		 *     ]</span>
+<span class="cm">		 * }</span>
+<span class="cm">		 */</span>
+		<span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">responseType</span> <span class="o">==</span> <span class="nx">RESPONSE_TYPE_XML</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">doc</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">;</span>
+			<span class="kd">var</span> <span class="nx">de</span> <span class="o">=</span> <span class="nx">rawData</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">;</span> 
+			<span class="kd">var</span> <span class="nx">resultNode</span> <span class="o">=</span> <span class="nx">de</span><span class="p">.</span><span class="nx">nodeName</span> <span class="o">==</span> <span class="nx">responseSchema</span><span class="p">.</span><span class="nx">resultNode</span> <span class="o">?</span> <span class="nx">$</span><span class="p">(</span><span class="nx">de</span><span class="p">)</span> <span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="nx">de</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="nx">responseSchema</span><span class="p">.</span><span class="nx">resultNode</span><span class="p">).</span><span class="nx">eq</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+			<span class="nx">resultNode</span><span class="p">.</span><span class="nx">children</span><span class="p">().</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">node</span><span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">record</span> <span class="o">=</span> <span class="p">{};</span>
+				<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">responseSchema</span><span class="p">.</span><span class="nx">fields</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">field</span><span class="p">)</span> <span class="p">{</span>
+					<span class="kd">var</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">nodeName</span> <span class="o">!=</span> <span class="nx">field</span><span class="p">.</span><span class="nx">node</span> <span class="o">?</span> <span class="nx">$</span><span class="p">(</span><span class="nx">node</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="nx">field</span><span class="p">.</span><span class="nx">node</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">:</span> <span class="nx">node</span><span class="p">;</span>
+					<span class="kd">var</span> <span class="nx">tmp</span><span class="p">;</span>
+					<span class="k">if</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">if</span> <span class="p">(</span><span class="nx">field</span><span class="p">.</span><span class="nx">attr</span><span class="p">)</span> <span class="p">{</span>
+							<span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="nx">field</span><span class="p">.</span><span class="nx">attr</span><span class="p">);</span>
+						<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">field</span><span class="p">.</span><span class="nx">children</span><span class="p">)</span> <span class="p">{</span>
+							<span class="nx">tmp</span> <span class="o">=</span> <span class="p">[];</span>
+							<span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">).</span><span class="nx">children</span><span class="p">().</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
+								<span class="k">if</span> <span class="p">(</span><span class="nx">child</span><span class="p">.</span><span class="nx">firstChild</span><span class="p">)</span> <span class="p">{</span>
+									<span class="nx">tmp</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">child</span><span class="p">.</span><span class="nx">firstChild</span><span class="p">.</span><span class="nx">nodeValue</span><span class="p">);</span>
+								<span class="p">}</span>
+							<span class="p">});</span>
+							<span class="nx">value</span> <span class="o">=</span> <span class="nx">tmp</span><span class="p">;</span>
+						<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+							<span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">firstChild</span> <span class="o">?</span> <span class="nx">value</span><span class="p">.</span><span class="nx">firstChild</span><span class="p">.</span><span class="nx">nodeValue</span> <span class="o">:</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+						<span class="p">}</span>
+						<span class="k">if</span> <span class="p">(</span><span class="nx">field</span><span class="p">.</span><span class="nx">parser</span><span class="p">)</span> <span class="p">{</span>
+							<span class="k">switch</span> <span class="p">(</span><span class="nx">field</span><span class="p">.</span><span class="nx">parser</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">())</span> <span class="p">{</span>
+							<span class="k">case</span> <span class="s2">&quot;float&quot;</span><span class="o">:</span>
+								<span class="nx">value</span> <span class="o">=</span> <span class="nb">parseFloat</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+								<span class="k">break</span><span class="p">;</span>
+							<span class="k">case</span> <span class="s2">&quot;10&quot;</span><span class="o">:</span>
+								<span class="nx">value</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="mi">10</span><span class="p">);</span>
+								<span class="k">break</span><span class="p">;</span> 
+							<span class="p">}</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+					<span class="nx">record</span><span class="p">[</span><span class="nx">field</span><span class="p">.</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+				<span class="p">});</span>
+				<span class="nx">data</span><span class="p">[</span><span class="nx">data</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span> <span class="o">=</span> <span class="nx">record</span><span class="p">;</span>
+			<span class="p">});</span>
+			<span class="nx">$</span><span class="p">.</span><span class="nx">context</span> <span class="o">=</span> <span class="nx">doc</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="k">new</span> <span class="nx">RecordSet</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+	<span class="p">},</span>
 	
-	<span class="nx">$</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span>
-		<span class="nx">DataSource</span><span class="o">:</span> <span class="nx">DataSource</span><span class="p">,</span>
-		<span class="nx">Record</span><span class="o">:</span> <span class="nx">Record</span><span class="p">,</span>
-		<span class="nx">RecordSet</span><span class="o">:</span> <span class="nx">RecordSet</span>
-	<span class="p">});</span>
+	<span class="cm">/**</span>
+<span class="cm">	 * Sends a request</span>
+<span class="cm">	 * @method sendRequest</span>
+<span class="cm">	 * @param {Object} request</span>
+<span class="cm">	 * @param {Boolean} ignoreCache</span>
+<span class="cm">	 * @chainable</span>
+<span class="cm">	 */</span>
+	<span class="nx">sendRequest</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">ignoreCache</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">internalEvents</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_events</span><span class="p">;</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">handleRequest</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">rawData</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">self</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">TEMP_DATA</span><span class="p">,</span> <span class="nx">rawData</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">tempData</span> <span class="o">=</span> <span class="nx">rawData</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">internalEvents</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;beforeParse&quot;</span><span class="p">,</span> <span class="nx">rawData</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">tempData</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">_parser</span><span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">TEMP_DATA</span><span class="p">));</span>
+			<span class="p">}</span>
+			<span class="nx">self</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;recordSet&#39;</span><span class="p">,</span> <span class="nx">tempData</span><span class="p">);</span>
+			<span class="nx">self</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;update&quot;</span><span class="p">,</span> <span class="nx">tempData</span><span class="p">);</span>
+			<span class="cm">/*Hash.each(tempData, function (key, val) {</span>
+<span class="cm">				if (!recordSet[key]) {</span>
+<span class="cm">					recordSet[key] = val;</span>
+<span class="cm">					self.fire(&quot;recordAdded&quot;, key, val);</span>
+<span class="cm">				} else if (recordSet[key] != val || ignoreCache) {</span>
+<span class="cm">					recordSet[key] = val;</span>
+<span class="cm">					self.fire(&quot;recordUpdate&quot;, key, val);</span>
+<span class="cm">				}</span>
+<span class="cm">			});*/</span>
+			
+		<span class="p">},</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">self</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">ERROR</span><span class="p">,</span> <span class="p">{</span>
+				<span class="nx">message</span><span class="o">:</span> <span class="nx">REQUEST_FAILED_MSG</span><span class="p">,</span>
+				<span class="nx">reason</span><span class="o">:</span> <span class="nx">reason</span>
+			<span class="p">});</span>
+		<span class="p">});</span>
+		<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+	<span class="p">},</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * @method handleRequest</span>
+<span class="cm">	 * @description The logic for the chosen source type. Should be overwritten when extending the DataSourceClass</span>
+<span class="cm">	 */</span>
+	<span class="nx">handleRequest</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">success</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">success</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span>
+	<span class="p">},</span>
+	
+	<span class="cm">/**</span>
+<span class="cm">	 * Adds an event listener to the &quot;beforeParse&quot; event</span>
+<span class="cm">	 * @method onBeforeParse</span>
+<span class="cm">	 * @param {Function} callback</span>
+<span class="cm">	 * @chainable</span>
+<span class="cm">	 */</span>
+	<span class="nx">onBeforeParse</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">_events</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;beforeParse&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">rawData</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">self</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">TEMP_DATA</span><span class="p">,</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">rawData</span><span class="p">));</span>
+		<span class="p">});</span>
+		<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+	<span class="p">},</span>
+	
+	<span class="nx">initializer</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">_events</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">$</span><span class="p">.</span><span class="nx">EventTarget</span><span class="p">();</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">INITIAL_REQUEST</span><span class="p">));</span>
+	<span class="p">}</span>
+<span class="p">});</span>
+<span class="cm">/**</span>
+<span class="cm"> * A Get DataSource that uses JSON for getting data across domains</span>
+<span class="cm"> * @class DataSource.Get</span>
+<span class="cm"> * @extends DataSource</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying configuration properties</span>
+<span class="cm"> */</span>
+<span class="nx">DataSource</span><span class="p">.</span><span class="nx">Get</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;datasource-get&#39;</span><span class="p">,</span> <span class="nx">DataSource</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span>
+	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute jsonCallbackParam</span>
+<span class="cm">		 * @description Name of the URL parameter that defines the name of the JSONP callback</span>
+<span class="cm">		 * @type String</span>
+<span class="cm">		 * @default &quot;p&quot;</span>
+<span class="cm">		 */</span>
+		<span class="nx">jsonCallbackParam</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;p&quot;</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute timeout</span>
+<span class="cm">		 * @description Ms after which the request is considered to have timed out</span>
+<span class="cm">		 * @type Number</span>
+<span class="cm">		 * @default 10000</span>
+<span class="cm">		 */</span>
+		<span class="nx">timeout</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="mi">10000</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute url</span>
+<span class="cm">		 * @description Url from which to fetch the data</span>
+<span class="cm">		 * @type String</span>
+<span class="cm">		 * @required</span>
+<span class="cm">		 */</span>
+		<span class="nx">url</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+			<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">val</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="nx">val</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;?&quot;</span> <span class="o">?</span> <span class="nx">val</span> <span class="o">:</span> <span class="nx">val</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">},</span> <span class="p">{</span>
+	<span class="nx">handleRequest</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">success</span><span class="p">,</span> <span class="nx">failure</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">$</span><span class="p">.</span><span class="nx">jsonp</span><span class="p">({</span>
+			<span class="nx">url</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">URL</span><span class="p">),</span>
+			<span class="nx">data</span><span class="o">:</span> <span class="nx">request</span><span class="p">,</span>
+			<span class="nx">success</span><span class="o">:</span> <span class="nx">success</span><span class="p">,</span>
+			<span class="nx">jsonCallbackParam</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;jsonCallbackParam&quot;</span><span class="p">),</span>
+			<span class="nx">error</span><span class="o">:</span> <span class="nx">failure</span><span class="p">,</span>
+			<span class="nx">timeout</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">TIMEOUT</span><span class="p">)</span>
+		<span class="p">});</span>
+	<span class="p">}</span>
+<span class="p">});</span>
+<span class="cm">/**</span>
+<span class="cm"> * An AJAX DataSource</span>
+<span class="cm"> * @class DataSource.Ajax</span>
+<span class="cm"> * @extends DataSource</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm"> */</span>
+<span class="nx">DataSource</span><span class="p">.</span><span class="nx">Ajax</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;datasource-ajax&#39;</span><span class="p">,</span> <span class="nx">DataSource</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span>
+	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute url</span>
+<span class="cm">		 * @description Url from which to fetch the data</span>
+<span class="cm">		 * @type String</span>
+<span class="cm">		 * @required</span>
+<span class="cm">		 */</span>
+		<span class="nx">url</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">},</span> <span class="p">{</span>
+	<span class="nx">handleRequest</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">success</span><span class="p">,</span> <span class="nx">failure</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
+			<span class="nx">url</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">URL</span><span class="p">),</span>
+			<span class="nx">data</span><span class="o">:</span> <span class="nx">request</span><span class="p">,</span>
+			<span class="nx">dataType</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">RESPONSE_TYPE</span><span class="p">),</span>
+			<span class="nx">success</span><span class="o">:</span> <span class="nx">success</span><span class="p">,</span>
+			<span class="nx">error</span><span class="o">:</span> <span class="nx">failure</span>
+		<span class="p">});</span>
+	<span class="p">}</span>
+<span class="p">});</span>
+<span class="cm">/**</span>
+<span class="cm"> * Cross-domain data source</span>
+<span class="cm"> * @class DataSource.XDR</span>
+<span class="cm"> * @extends DataSource</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying configuration properties</span>
+<span class="cm"> */</span>
+<span class="nx">DataSource</span><span class="p">.</span><span class="nx">XDR</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;datasource-xdr&#39;</span><span class="p">,</span> <span class="nx">DataSource</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span>
+	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute url</span>
+<span class="cm">		 * @description Url from which to fetch the data</span>
+<span class="cm">		 * @type String</span>
+<span class="cm">		 * @required</span>
+<span class="cm">		 */</span>
+		<span class="nx">url</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">},</span> <span class="p">{</span>
+	<span class="nx">handleRequest</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">success</span><span class="p">,</span> <span class="nx">failure</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">type</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">RESPONSE_TYPE</span><span class="p">);</span>
+		<span class="nx">$</span><span class="p">.</span><span class="nx">flajax</span><span class="p">({</span>
+			<span class="nx">url</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">URL</span><span class="p">),</span>
+			<span class="nx">data</span><span class="o">:</span> <span class="nx">request</span><span class="p">,</span>
+			<span class="nx">dataType</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">RESPONSE_TYPE</span><span class="p">),</span>
+			<span class="nx">success</span><span class="o">:</span> <span class="nx">success</span><span class="p">,</span>
+			<span class="nx">error</span><span class="o">:</span> <span class="nx">failure</span>
+		<span class="p">});</span>
+	<span class="p">}</span>
+<span class="p">});</span>
+<span class="cm">/**</span>
+<span class="cm"> * A Local DataSource uses local variables</span>
+<span class="cm"> * @class DataSource.Local</span>
+<span class="cm"> * @extends DataSource</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm"> */</span>
+<span class="nx">DataSource</span><span class="p">.</span><span class="nx">Local</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;datasource-local&#39;</span><span class="p">,</span> <span class="nx">DataSource</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span>
+	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute localData</span>
+<span class="cm">		 * @description The object to use as a datasource</span>
+<span class="cm">		 * @required</span>
+<span class="cm">		 */</span>
+		<span class="nx">localData</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">},</span> <span class="p">{</span>
+	<span class="nx">handleRequest</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">success</span><span class="p">,</span> <span class="nx">failure</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">localData</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;localData&#39;</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isFunction</span><span class="p">(</span><span class="nx">localData</span><span class="p">))</span> <span class="p">{</span>
+			<span class="nx">success</span><span class="p">(</span><span class="nx">localData</span><span class="p">(</span><span class="nx">request</span><span class="p">));</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="nx">success</span><span class="p">(</span><span class="nx">localData</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">$</span><span class="p">.</span><span class="nx">mix</span><span class="p">(</span><span class="nx">DataSource</span><span class="p">,</span> <span class="p">{</span>
+	<span class="nx">responseType</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">JSON</span><span class="o">:</span> <span class="nx">RESPONSE_TYPE_JSON</span><span class="p">,</span>
+		<span class="nx">XML</span><span class="o">:</span> <span class="nx">RESPONSE_TYPE_XML</span><span class="p">,</span>
+		<span class="nx">TEXT</span><span class="o">:</span> <span class="nx">RESPONSE_TYPE_TEXT</span><span class="p">,</span>
+		<span class="nx">JSARRAY</span><span class="o">:</span> <span class="nx">RESPONSE_TYPE_JSARRAY</span>
+	<span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">$</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span>
+	<span class="nx">DataSource</span><span class="o">:</span> <span class="nx">DataSource</span><span class="p">,</span>
+	<span class="nx">Record</span><span class="o">:</span> <span class="nx">Record</span><span class="p">,</span>
+	<span class="nx">RecordSet</span><span class="o">:</span> <span class="nx">RecordSet</span>
+<span class="p">});</span>
+			
 <span class="p">});</span>
 </pre></div>
 
@@ -758,18 +733,23 @@
                                 <li class=""><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
-                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
                                 <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
-                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
                         </ul>
                     </div>
 
@@ -777,13 +757,6 @@
                         <h4>Classes</h4>
                         <ul class="content">
                                 <li class=""><a href="Cookie.html" title="Cookie">Cookie</a></li>
-                        </ul>
-                    </div>
-
-                    <div id="fileList" class="module">
-                        <h4>Files</h4>
-                        <ul class="content">        
-                                <li class="selected"><a href="datasource.js.html" title="datasource.js">datasource.js</a></li>
                         </ul>
                     </div>
 
@@ -796,9 +769,10 @@
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
+<script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
     var ALL_YUI_PROPS = [{"url": "Cookie.html#method_get", "access": "", "host": "Cookie", "type": "method", "name": "get"}, {"url": "Cookie.html#method_isSet", "access": "", "host": "Cookie", "type": "method", "name": "isSet"}, {"url": "Cookie.html#method_set", "access": "", "host": "Cookie", "type": "method", "name": "set"}, {"url": "Cookie.html#method_unset", "access": "", "host": "Cookie", "type": "method", "name": "unset"}];

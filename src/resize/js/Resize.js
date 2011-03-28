@@ -33,7 +33,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 	
 	ATTRS: {
 		/**
-		 * @config node
+		 * @attribute node
 		 * @description The node to be resized
 		 * @required
 		 */
@@ -54,7 +54,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 			validator: Lang.isArray
 		},
 		/**
-		 * @config hiddenHandles
+		 * @attribute hiddenHandles
 		 * @description If set to true, the handles are interactive but invisible
 		 * @type Boolean
 		 * @default false
@@ -66,7 +66,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 			value: 'yui'
 		},
 		/**
-		 * @config minWidth
+		 * @attribute minWidth
 		 * @description The minimum with the node can achieve
 		 * @type Number
 		 * @default 0
@@ -75,7 +75,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 			value: 0
 		},
 		/**
-		 * @config minHeight
+		 * @attribute minHeight
 		 * @description The minimum height the node can achieve
 		 * @type Number
 		 * @default 0
@@ -84,7 +84,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 			value: 0
 		},
 		/**
-		 * @config constrain
+		 * @attribute constrain
 		 * @description If set to true, the node can't become bigger than the screen
 		 * @type Boolean
 		 * @default false
@@ -93,7 +93,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 			value: false
 		},
 		/**
-		 * @config useProxy
+		 * @attribute useProxy
 		 * @description Whether to use a copy of the node while resizing or not.
 		 * Possible values: false, true, 'clone'
 		 * @type Boolean | String
@@ -105,7 +105,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 			writeOnce: true
 		},
 		/**
-		 * @config animate
+		 * @attribute animate
 		 * @description Creates an animation when the resize handle is released. Can only be set to true
 		 * if 'proxy' is set to true. <strong>Requires the Anim module.</strong>
 		 * @type Boolean
@@ -128,7 +128,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 			value: false
 		},
 		/**
-		 * @config shim
+		 * @attribute shim
 		 * @description Uses invisible elements to be able to resize the node over iframes
 		 * @type Boolean
 		 * @default false 
@@ -137,7 +137,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 			value: false
 		},
 		/**
-		 * @config locked
+		 * @attribute locked
 		 * @description If the resize is locked the handles are not interactive
 		 * @type Boolean
 		 * @default false

@@ -10,7 +10,7 @@ var PanelBase = $.mix(function () {
 	
 	ATTRS: {
 		/**
-		 * @config close
+		 * @attribute close
 		 * @description If true, a close button is added to the panel that hides it when clicked
 		 * @type Boolean
 		 * @default true
@@ -20,7 +20,7 @@ var PanelBase = $.mix(function () {
 			validator: Lang.isBoolean
 		},
 		/**
-		 * @config underlay
+		 * @attribute underlay
 		 * @description The underlay is inserted after the contentBox to allow for a more complex design
 		 * @readOnly
 		 */
@@ -28,7 +28,7 @@ var PanelBase = $.mix(function () {
 			setter: $
 		},
 		/**
-		 * @config shadow
+		 * @attribute shadow
 		 * @description If true, the panel shows a shadow
 		 * @default true
 		 */
@@ -97,7 +97,7 @@ PanelBase.prototype = {
 /**
  * A panel is an overlay that resembles an OS window without actually being one,
  * to the problems they have (stop javascript execution, etc)
- * @class PanelBase
+ * @class Panel
  * @extends Overlay
  * @uses PanelBase
  * @constructor
@@ -122,28 +122,6 @@ $.Panel = Base.create('panel', $.Overlay, [PanelBase], {}, {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-	/**
-	 * @config close
-	 * @description If true, a close button is added to the panel that hides it when clicked
-	 * @type Boolean
-	 * @default true
-	 */
-	/**
-	 * @config contentBox
-	 * @description A panel uses another container inside the boundingBox 
-	 * in order to have a more complex design (ie: shadow)
-	 * @readOnly
-	 */
-	/**
-	 * @config underlay
-	 * @description The underlay is inserted after the contentBox to allow for a more complex design
-	 * @readOnly
-	 */
-	/**
-	 * @config shadow
-	 * @description If true, the panel shows a shadow
-	 * @default true
-	 */
 $.StaticPanel = Base.create('panel', $.Module, [PanelBase], {}, {
 	initializer: function () {
 		var self = this;

@@ -7,17 +7,15 @@
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
 
-    <script type="text/javascript" src="assets/api-js"></script>
-    <script type="text/javascript" src="assets/ac-js"></script>
 </head>
 
-<body id="yahoo-com">
+<body>
 
-<div id="doc3" class="yui-t2">
+<div id="doc4" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
-        <h3>swf&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>swf&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
             &gt; <a href="./module_swf.html" title="swf">swf</a>
                 
                  &gt; tabs.js (source view) 
@@ -62,7 +60,7 @@
 	<span class="kd">var</span> <span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">;</span>
 	<span class="kd">var</span> <span class="nx">ArrayHelper</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">;</span>
 	
-	<span class="kd">var</span> <span class="nx">LI</span> <span class="o">=</span> <span class="s2">&quot;li&quot;</span><span class="p">,</span>
+	<span class="kd">var</span> <span class="nx">LI</span> <span class="o">=</span> <span class="s2">&quot;&lt;li/&gt;&quot;</span><span class="p">,</span>
 		<span class="nx">LABEL</span> <span class="o">=</span> <span class="s2">&quot;label&quot;</span><span class="p">,</span>
 		<span class="nx">PANEL</span> <span class="o">=</span> <span class="s2">&quot;panel&quot;</span><span class="p">;</span>
 	
@@ -74,7 +72,7 @@
 <span class="cm">	 * @param {Object} config Object literal specifying configuration properties</span>
 <span class="cm">	 */</span>
 	<span class="kd">var</span> <span class="nx">Tab</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-		<span class="nx">Tab</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+		<span class="nx">Tab</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
 		
 		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
 			<span class="cm">/**</span>
@@ -86,7 +84,7 @@
 			<span class="nx">label</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
 				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">?</span> <span class="nx">$</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">LI</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">$</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+					<span class="k">return</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">?</span> <span class="nx">$</span><span class="p">(</span><span class="nx">LI</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;a/&gt;&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
 				<span class="p">}</span>
 			<span class="p">},</span>
 			<span class="cm">/**</span>
@@ -98,7 +96,7 @@
 			<span class="nx">panel</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
 				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">?</span> <span class="nx">$</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+					<span class="k">return</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">?</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;div/&gt;&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
 				<span class="p">}</span> 
 			<span class="p">},</span>
 			<span class="cm">/**</span>
@@ -119,6 +117,9 @@
 					<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 				<span class="p">}</span>
 			<span class="p">},</span>
+			<span class="nx">triggerEvent</span><span class="o">:</span> <span class="p">{</span>
+				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;click&quot;</span>
+			<span class="p">},</span>
 			<span class="nx">panelContent</span><span class="o">:</span> <span class="p">{</span>
 				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
 					<span class="kd">var</span> <span class="nx">panel</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">PANEL</span><span class="p">);</span>
@@ -127,10 +128,15 @@
 					<span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 				<span class="p">}</span>
 			<span class="p">}</span>
-		<span class="p">}).</span><span class="nx">get</span><span class="p">(</span><span class="nx">LABEL</span><span class="p">).</span><span class="nx">first</span><span class="p">().</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+		<span class="p">});</span>
+		<span class="kd">var</span> <span class="nx">selectHandler</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
 			<span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
 			<span class="nx">e</span><span class="p">.</span><span class="nx">stopPropagation</span><span class="p">();</span>
 			<span class="nx">myself</span><span class="p">.</span><span class="nx">select</span><span class="p">();</span>
+		<span class="p">};</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LABEL</span><span class="p">).</span><span class="nx">first</span><span class="p">().</span><span class="nx">on</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;triggerEvent&quot;</span><span class="p">),</span> <span class="nx">selectHandler</span><span class="p">);</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;triggerEventChange&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">oldVal</span><span class="p">,</span> <span class="nx">newVal</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LABEL</span><span class="p">).</span><span class="nx">first</span><span class="p">().</span><span class="nx">unbind</span><span class="p">(</span><span class="nx">oldVal</span><span class="p">,</span> <span class="nx">selectHandler</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="nx">newVal</span><span class="p">,</span> <span class="nx">selectHandler</span><span class="p">);</span>
 		<span class="p">});</span>
 	<span class="p">};</span>
 	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Tab</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">,</span> <span class="p">{</span>
@@ -193,7 +199,8 @@
 		<span class="kd">var</span> <span class="nx">container</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;srcNode&quot;</span><span class="p">);</span>
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;boundingBox&quot;</span><span class="p">,</span> <span class="nx">container</span><span class="p">);</span>
 		
-        <span class="kd">var</span> <span class="nx">nav</span><span class="p">,</span> <span class="nx">pages</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">nav</span> <span class="o">=</span> <span class="nx">container</span><span class="p">.</span><span class="nx">children</span><span class="p">(</span><span class="s2">&quot;ul&quot;</span><span class="p">).</span><span class="nx">eq</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> 
+			<span class="nx">pages</span><span class="p">;</span>
 		
 		<span class="kd">var</span> <span class="nx">tabs</span> <span class="o">=</span> <span class="p">[];</span>
 		
@@ -221,19 +228,22 @@
 				<span class="nx">tabs</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">index</span> <span class="o">=</span> <span class="nx">i</span><span class="p">;</span>
 			<span class="p">}</span>
 		<span class="p">};</span>
+		
+		<span class="k">if</span> <span class="p">(</span><span class="nx">nav</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+			<span class="nx">nav</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;&lt;ul/&gt;&#39;</span><span class="p">).</span><span class="nx">prependTo</span><span class="p">(</span><span class="nx">container</span><span class="p">);</span>
+		<span class="p">}</span>
         
 		<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;render&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">node</span><span class="p">)</span> <span class="p">{</span>
 			<span class="k">if</span> <span class="p">(</span><span class="nx">node</span><span class="p">)</span> <span class="p">{</span>
 				<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;boundingBox&quot;</span><span class="p">,</span> <span class="nx">$</span><span class="p">(</span><span class="nx">node</span><span class="p">));</span>
 			<span class="p">}</span>
-			<span class="nx">nav</span> <span class="o">=</span> <span class="nx">container</span><span class="p">.</span><span class="nx">children</span><span class="p">(</span><span class="s2">&quot;ul&quot;</span><span class="p">).</span><span class="nx">eq</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 	        <span class="nx">pages</span> <span class="o">=</span> <span class="nx">container</span><span class="p">.</span><span class="nx">children</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">);</span>
 			
-	        <span class="k">if</span> <span class="p">(</span><span class="nx">pages</span><span class="p">.</span><span class="nx">getNodes</span><span class="p">().</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+	        <span class="k">if</span> <span class="p">(</span><span class="nx">pages</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
 	            <span class="nx">pages</span><span class="p">.</span><span class="nx">notEq</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="nx">hide</span><span class="p">();</span>
 	        <span class="p">}</span>
 			
-			<span class="k">if</span> <span class="p">(</span><span class="nx">nav</span><span class="p">.</span><span class="nx">getNodes</span><span class="p">().</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">nav</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
 				<span class="nx">nav</span><span class="p">.</span><span class="nx">children</span><span class="p">().</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">node</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
 					<span class="kd">var</span> <span class="nx">newTab</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Tab</span><span class="p">({</span>
 						<span class="nx">label</span><span class="o">:</span> <span class="nx">node</span><span class="p">,</span>
@@ -342,28 +352,27 @@
                                 <li class=""><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
-                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
                                 <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
                                 <li class="selected"><a href="module_swf.html" title="swf">swf</a></li>
                                 <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
-                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
                         </ul>
                     </div>
 
-
-                    <div id="fileList" class="module">
-                        <h4>Files</h4>
-                        <ul class="content">        
-                                <li class="selected"><a href="tabs.js.html" title="tabs.js">tabs.js</a></li>
-                        </ul>
-                    </div>
 
 
 
@@ -374,9 +383,10 @@
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
+<script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
     var ALL_YUI_PROPS = [];

@@ -1,11 +1,16 @@
 /**
- * Adds JSON support when needed. If JSON is found natively, this module
- * is not loaded but the $.JSON object is still found if needed
+ * Adds JSON support when needed. If JSON is found natively, this module is not loaded but the $.JSON object is still found if needed
  * @module json
  * @requires jet
- * @namespace
- */
- /**
+ * 
+ * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
+ * Code licensed under the BSD License
+ * https://github.com/juandopazo/jet/blob/master/LICENSE.md
+*/
+jet.add('json', function ($) {
+
+			
+/**
   * JSON parsing
   * @class JSON
   * @static
@@ -20,7 +25,6 @@
    * @method stringify
    * @param {Object} an object literal
    */
-jet().add('json', function ($) {
 /*
     http://www.JSON.org/json2.js
     2010-11-17
@@ -182,8 +186,8 @@ jet().add('json', function ($) {
 // Create a JSON object only if one does not already exist. We create the
 // methods in a closure to avoid creating global variables.
 
-if (!this.JSON) {
-    this.JSON = {};
+if (!window.JSON) {
+    $.JSON = window.JSON = {};
 }
 
 (function () {
@@ -504,5 +508,5 @@ if (!this.JSON) {
         };
     }
 }());
-	
+			
 });

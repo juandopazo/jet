@@ -7,17 +7,15 @@
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
 
-    <script type="text/javascript" src="assets/api-js"></script>
-    <script type="text/javascript" src="assets/ac-js"></script>
 </head>
 
-<body id="yahoo-com">
+<body>
 
-<div id="doc3" class="yui-t2">
+<div id="doc4" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
-        <h3>vector&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>vector&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
             &gt; <a href="./module_vector.html" title="vector">vector</a>
                  &gt; Vector.Text 
                 
@@ -60,7 +58,7 @@
   
 
                     <div class="summary description" property="yui:description">
-                        An Text vector
+                        A Text vector
                     </div>
 
                         <div class="section constructor details" rel="yui:constructor" resource="#constructor">
@@ -104,17 +102,20 @@
                                 <h4>Methods inherited from <a href="EventTarget.html" property="yui:name" title="EventTarget">EventTarget</a>:</h4>
                                 <div class="content" rel="yui:methods">
                                     <code>
+                                            <span rel="yui:method" resource="EventTarget.html#method_after">                                        
+                                            <a class="" href="EventTarget.html#method_after" property="yui:name" title="after">after</a><span class="">,</span>
+                                            </span>
                                             <span rel="yui:method" resource="EventTarget.html#method_fire">                                        
                                             <a class="" href="EventTarget.html#method_fire" property="yui:name" title="fire">fire</a><span class="">,</span>
                                             </span>
                                             <span rel="yui:method" resource="EventTarget.html#method_on">                                        
                                             <a class="" href="EventTarget.html#method_on" property="yui:name" title="on">on</a><span class="">,</span>
                                             </span>
-                                            <span rel="yui:method" resource="EventTarget.html#method_unbind">                                        
-                                            <a class="" href="EventTarget.html#method_unbind" property="yui:name" title="unbind">unbind</a><span class="">,</span>
+                                            <span rel="yui:method" resource="EventTarget.html#method_once">                                        
+                                            <a class="" href="EventTarget.html#method_once" property="yui:name" title="once">once</a><span class="">,</span>
                                             </span>
-                                            <span rel="yui:method" resource="EventTarget.html#method_unbindAll">                                        
-                                            <a class="" href="EventTarget.html#method_unbindAll" property="yui:name" title="unbindAll">unbindAll</a>
+                                            <span rel="yui:method" resource="EventTarget.html#method_unbind">                                        
+                                            <a class="" href="EventTarget.html#method_unbind" property="yui:name" title="unbind">unbind</a>
                                             </span>
                                     </code>
                                 </div>
@@ -134,9 +135,6 @@
                                             </span>
                                             <span rel="yui:method" resource="Attribute.html#method_getAttrs">                                        
                                             <a class="" href="Attribute.html#method_getAttrs" property="yui:name" title="getAttrs">getAttrs</a><span class="">,</span>
-                                            </span>
-                                            <span rel="yui:method" resource="Attribute.html#method_isSet">                                        
-                                            <a class="" href="Attribute.html#method_isSet" property="yui:name" title="isSet">isSet</a><span class="">,</span>
                                             </span>
                                             <span rel="yui:method" resource="Attribute.html#method_set">                                        
                                             <a class="" href="Attribute.html#method_set" property="yui:name" title="set">set</a><span class="">,</span>
@@ -217,6 +215,25 @@
                     <div rel="yui:events" resource="#events">
 
 
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Vector.html">
+                            <h4>Events inherited from <a href="Vector.html" property="yui:name" title="Vector">Vector</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="Vector.html#event_fill-opacityChange">
+                                        <a class="" href="Vector.html#event_fill-opacityChange" property="yui:name" title="fill-opacityChange">fill-opacityChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Vector.html#event_nodeChange">
+                                        <a class="" href="Vector.html#event_nodeChange" property="yui:name" title="nodeChange">nodeChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Vector.html#event_widthChange">
+                                        <a class="" href="Vector.html#event_widthChange" property="yui:name" title="widthChange">widthChange</a><span class="">,</span>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
                     </div>
 
                     <div rel="yui:attributes" resource="#configattributes">
@@ -262,18 +279,23 @@
                                 <li class=""><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
-                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
                                 <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
-                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class="selected"><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
                         </ul>
                     </div>
 
@@ -297,18 +319,18 @@
 
 
 
-
             </div>
 		</div>
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
+<script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Vector.html#method_addClass", "access": "", "host": "Vector", "type": "method", "name": "addClass"}, {"url": "Vector.html#method_append", "access": "", "host": "Vector", "type": "method", "name": "append"}, {"url": "Vector.html#method_appendTo", "access": "", "host": "Vector", "type": "method", "name": "appendTo"}, {"url": "Vector.html#method_colorArrayToHex", "access": "", "host": "Vector", "type": "method", "name": "colorArrayToHex"}, {"url": "Vector.html#method_colorHexToArray", "access": "", "host": "Vector", "type": "method", "name": "colorHexToArray"}, {"url": "Vector.html#method_css", "access": "", "host": "Vector", "type": "method", "name": "css"}, {"url": "Vector.Ellipse.html#config_cx", "access": "", "host": "Vector.Ellipse", "type": "config", "name": "cx"}, {"url": "Vector.Circle.html#config_cx", "access": "", "host": "Vector.Circle", "type": "config", "name": "cx"}, {"url": "Vector.Ellipse.html#config_cy", "access": "", "host": "Vector.Ellipse", "type": "config", "name": "cy"}, {"url": "Vector.Circle.html#config_cy", "access": "", "host": "Vector.Circle", "type": "config", "name": "cy"}, {"url": "Vector.html#method_decToHex", "access": "", "host": "Vector", "type": "method", "name": "decToHex"}, {"url": "Vector.html#method_detach", "access": "", "host": "Vector", "type": "method", "name": "detach"}, {"url": "Vector.html#config_fill-opacity", "access": "", "host": "Vector", "type": "config", "name": "fill-opacity"}, {"url": "Vector.html#method_hasClass", "access": "", "host": "Vector", "type": "method", "name": "hasClass"}, {"url": "Vector.html#method_hexToDec", "access": "", "host": "Vector", "type": "method", "name": "hexToDec"}, {"url": "Vector.html#method_hide", "access": "", "host": "Vector", "type": "method", "name": "hide"}, {"url": "Vector.html#config_node", "access": "", "host": "Vector", "type": "config", "name": "node"}, {"url": "Vector.html#method_on", "access": "", "host": "Vector", "type": "method", "name": "on"}, {"url": "Vector.html#method_parseDec", "access": "", "host": "Vector", "type": "method", "name": "parseDec"}, {"url": "Vector.Circle.html#config_r", "access": "", "host": "Vector.Circle", "type": "config", "name": "r"}, {"url": "Vector.html#method_remove", "access": "", "host": "Vector", "type": "method", "name": "remove"}, {"url": "Vector.html#method_removeClass", "access": "", "host": "Vector", "type": "method", "name": "removeClass"}, {"url": "Vector.Rectangle.html#method_rotate", "access": "", "host": "Vector.Rectangle", "type": "method", "name": "rotate"}, {"url": "Vector.Ellipse.html#property_rx", "access": "", "host": "Vector.Ellipse", "type": "property", "name": "rx"}, {"url": "Vector.Ellipse.html#config_ry", "access": "", "host": "Vector.Ellipse", "type": "config", "name": "ry"}, {"url": "Vector.html#method_show", "access": "", "host": "Vector", "type": "method", "name": "show"}, {"url": "Vector.html#method_toggleClass", "access": "", "host": "Vector", "type": "method", "name": "toggleClass"}, {"url": "Vector.html#method_unbind", "access": "", "host": "Vector", "type": "method", "name": "unbind"}, {"url": "Vector.html#method_unbindAll", "access": "", "host": "Vector", "type": "method", "name": "unbindAll"}, {"url": "Vector.html#config_width", "access": "", "host": "Vector", "type": "config", "name": "width"}, {"url": "Vector.Line.html#config_x1", "access": "", "host": "Vector.Line", "type": "config", "name": "x1"}, {"url": "Vector.Line.html#config_x2", "access": "", "host": "Vector.Line", "type": "config", "name": "x2"}, {"url": "Vector.Line.html#config_y1", "access": "", "host": "Vector.Line", "type": "config", "name": "y1"}, {"url": "Vector.Line.html#config_y2", "access": "", "host": "Vector.Line", "type": "config", "name": "y2"}];
+    var ALL_YUI_PROPS = [{"url": "Vector.html#method_addClass", "access": "", "host": "Vector", "type": "method", "name": "addClass"}, {"url": "Vector.html#method_append", "access": "", "host": "Vector", "type": "method", "name": "append"}, {"url": "Vector.html#method_appendTo", "access": "", "host": "Vector", "type": "method", "name": "appendTo"}, {"url": "Vector.html#method_colorArrayToHex", "access": "", "host": "Vector", "type": "method", "name": "colorArrayToHex"}, {"url": "Vector.html#method_colorHexToArray", "access": "", "host": "Vector", "type": "method", "name": "colorHexToArray"}, {"url": "Vector.html#method_css", "access": "", "host": "Vector", "type": "method", "name": "css"}, {"url": "Vector.Ellipse.html#config_cx", "access": "", "host": "Vector.Ellipse", "type": "config", "name": "cx"}, {"url": "Vector.Circle.html#config_cx", "access": "", "host": "Vector.Circle", "type": "config", "name": "cx"}, {"url": "Vector.Ellipse.html#event_cxChange", "access": "", "host": "Vector.Ellipse", "type": "event", "name": "cxChange"}, {"url": "Vector.Circle.html#event_cxChange", "access": "", "host": "Vector.Circle", "type": "event", "name": "cxChange"}, {"url": "Vector.Ellipse.html#config_cy", "access": "", "host": "Vector.Ellipse", "type": "config", "name": "cy"}, {"url": "Vector.Circle.html#config_cy", "access": "", "host": "Vector.Circle", "type": "config", "name": "cy"}, {"url": "Vector.Ellipse.html#event_cyChange", "access": "", "host": "Vector.Ellipse", "type": "event", "name": "cyChange"}, {"url": "Vector.Circle.html#event_cyChange", "access": "", "host": "Vector.Circle", "type": "event", "name": "cyChange"}, {"url": "Vector.html#method_decToHex", "access": "", "host": "Vector", "type": "method", "name": "decToHex"}, {"url": "Vector.html#method_detach", "access": "", "host": "Vector", "type": "method", "name": "detach"}, {"url": "Vector.html#config_fill-opacity", "access": "", "host": "Vector", "type": "config", "name": "fill-opacity"}, {"url": "Vector.html#event_fill-opacityChange", "access": "", "host": "Vector", "type": "event", "name": "fill-opacityChange"}, {"url": "Vector.html#method_hasClass", "access": "", "host": "Vector", "type": "method", "name": "hasClass"}, {"url": "Vector.html#method_hexToDec", "access": "", "host": "Vector", "type": "method", "name": "hexToDec"}, {"url": "Vector.html#method_hide", "access": "", "host": "Vector", "type": "method", "name": "hide"}, {"url": "Vector.html#config_node", "access": "", "host": "Vector", "type": "config", "name": "node"}, {"url": "Vector.html#event_nodeChange", "access": "", "host": "Vector", "type": "event", "name": "nodeChange"}, {"url": "Vector.html#method_on", "access": "", "host": "Vector", "type": "method", "name": "on"}, {"url": "Vector.html#method_parseDec", "access": "", "host": "Vector", "type": "method", "name": "parseDec"}, {"url": "Vector.Circle.html#config_r", "access": "", "host": "Vector.Circle", "type": "config", "name": "r"}, {"url": "Vector.Circle.html#event_rChange", "access": "", "host": "Vector.Circle", "type": "event", "name": "rChange"}, {"url": "Vector.html#method_remove", "access": "", "host": "Vector", "type": "method", "name": "remove"}, {"url": "Vector.html#method_removeClass", "access": "", "host": "Vector", "type": "method", "name": "removeClass"}, {"url": "Vector.Rectangle.html#method_rotate", "access": "", "host": "Vector.Rectangle", "type": "method", "name": "rotate"}, {"url": "Vector.Ellipse.html#property_rx", "access": "", "host": "Vector.Ellipse", "type": "property", "name": "rx"}, {"url": "Vector.Ellipse.html#config_ry", "access": "", "host": "Vector.Ellipse", "type": "config", "name": "ry"}, {"url": "Vector.Ellipse.html#event_ryChange", "access": "", "host": "Vector.Ellipse", "type": "event", "name": "ryChange"}, {"url": "Vector.html#method_show", "access": "", "host": "Vector", "type": "method", "name": "show"}, {"url": "Vector.html#method_toggleClass", "access": "", "host": "Vector", "type": "method", "name": "toggleClass"}, {"url": "Vector.html#method_unbind", "access": "", "host": "Vector", "type": "method", "name": "unbind"}, {"url": "Vector.html#method_unbindAll", "access": "", "host": "Vector", "type": "method", "name": "unbindAll"}, {"url": "Vector.html#config_width", "access": "", "host": "Vector", "type": "config", "name": "width"}, {"url": "Vector.html#event_widthChange", "access": "", "host": "Vector", "type": "event", "name": "widthChange"}, {"url": "Vector.Line.html#config_x1", "access": "", "host": "Vector.Line", "type": "config", "name": "x1"}, {"url": "Vector.Line.html#event_x1Change", "access": "", "host": "Vector.Line", "type": "event", "name": "x1Change"}, {"url": "Vector.Line.html#config_x2", "access": "", "host": "Vector.Line", "type": "config", "name": "x2"}, {"url": "Vector.Line.html#event_x2Change", "access": "", "host": "Vector.Line", "type": "event", "name": "x2Change"}, {"url": "Vector.Line.html#config_y1", "access": "", "host": "Vector.Line", "type": "config", "name": "y1"}, {"url": "Vector.Line.html#event_y1Change", "access": "", "host": "Vector.Line", "type": "event", "name": "y1Change"}, {"url": "Vector.Line.html#config_y2", "access": "", "host": "Vector.Line", "type": "config", "name": "y2"}, {"url": "Vector.Path.html#config_y2", "access": "", "host": "Vector.Path", "type": "config", "name": "y2"}, {"url": "Vector.Line.html#event_y2Change", "access": "", "host": "Vector.Line", "type": "event", "name": "y2Change"}, {"url": "Vector.Path.html#event_y2Change", "access": "", "host": "Vector.Path", "type": "event", "name": "y2Change"}];
 </script>
 </body>
 </html>

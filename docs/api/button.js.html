@@ -2,23 +2,21 @@
 <html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-	<title>API: base   button.js  (Jet Library)</title>
+	<title>API: anim   button.js  (Jet Library)</title>
 
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
 
-    <script type="text/javascript" src="assets/api-js"></script>
-    <script type="text/javascript" src="assets/ac-js"></script>
 </head>
 
-<body id="yahoo-com">
+<body>
 
-<div id="doc3" class="yui-t2">
+<div id="doc4" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
-        <h3>base&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
-            &gt; <a href="./module_base.html" title="base">base</a>
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>anim&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
+            &gt; <a href="./module_anim.html" title="anim">anim</a>
                 
                  &gt; button.js (source view) 
         <form onsubmit="return false">
@@ -47,538 +45,437 @@
                         <style>
                             #doc3 .classopts { display:none; }
                         </style>
-                        <div class="highlight"><pre><span class="cm">/*</span>
-<span class="cm"> Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.</span>
-<span class="cm"> Code licensed under the BSD License</span>
-<span class="cm"> http://code.google.com/p/jet-js/wiki/Licence</span>
-<span class="cm">*/</span>
-<span class="cm">/**</span>
+                        <div class="highlight"><pre><span class="cm">/**</span>
 <span class="cm"> * Different kinds of buttons and form elements</span>
 <span class="cm"> * @module button</span>
-<span class="cm"> * @require jet, node, base</span>
-<span class="cm"> * @namespace</span>
+<span class="cm"> * @requires base</span>
+<span class="cm"> * </span>
+<span class="cm"> * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.</span>
+<span class="cm"> * Code licensed under the BSD License</span>
+<span class="cm"> * https://github.com/juandopazo/jet/blob/master/LICENSE.md</span>
+<span class="cm">*/</span>
+<span class="nx">jet</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
+
+			
+<span class="kd">var</span> <span class="nx">A</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">,</span>
+	<span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span>
+	<span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">,</span>
+	<span class="nx">Base</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Base</span><span class="p">,</span>
+	<span class="nx">Widget</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Widget</span><span class="p">,</span>
+	<span class="nx">WidgetParent</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">WidgetParent</span><span class="p">,</span>
+	<span class="nx">WidgetChild</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">WidgetChild</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">BOUNDING_BOX</span> <span class="o">=</span> <span class="s2">&quot;boundingBox&quot;</span><span class="p">,</span>
+	<span class="nx">CONTENT_BOX</span> <span class="o">=</span> <span class="s1">&#39;contentBox&#39;</span><span class="p">,</span>
+	<span class="nx">LABEL_NODE</span> <span class="o">=</span> <span class="s1">&#39;labelNode&#39;</span><span class="p">,</span>
+	<span class="nx">ENABLED</span> <span class="o">=</span> <span class="s1">&#39;enabled&#39;</span><span class="p">,</span>
+	<span class="nx">HOVER</span> <span class="o">=</span> <span class="s1">&#39;hover&#39;</span><span class="p">,</span>
+	<span class="nx">FOCUS</span> <span class="o">=</span> <span class="s1">&#39;focus&#39;</span><span class="p">,</span>
+	<span class="nx">BLUR</span> <span class="o">=</span> <span class="s1">&#39;blur&#39;</span><span class="p">,</span>
+	<span class="nx">ID</span> <span class="o">=</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span>
+	<span class="nx">PARENT</span> <span class="o">=</span> <span class="s1">&#39;parent&#39;</span><span class="p">,</span>
+	<span class="nx">NAME</span> <span class="o">=</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span>
+	<span class="nx">PILL</span> <span class="o">=</span> <span class="s1">&#39;pill&#39;</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">Button</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">jet</span><span class="p">.</span><span class="nx">Button</span> <span class="o">=</span> <span class="p">{};</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">Button</span><span class="p">.</span><span class="nx">buttons</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">jet</span><span class="p">.</span><span class="nx">Button</span><span class="p">.</span><span class="nx">buttons</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * A button widget</span>
+<span class="cm"> * @class Button</span>
+<span class="cm"> * @extends Widget</span>
+<span class="cm"> * @uses WidgetChild</span>
+<span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
 <span class="cm"> */</span>
-<span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">var</span> <span class="nx">Button</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="nx">Widget</span><span class="p">,</span> <span class="p">[</span><span class="nx">WidgetChild</span><span class="p">],</span> <span class="p">{</span>
 	
-	<span class="kd">var</span> <span class="nx">A</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nb">Array</span><span class="p">,</span>
-		<span class="nx">Hash</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Hash</span><span class="p">,</span>
-		<span class="nx">Lang</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Lang</span><span class="p">;</span>
-	
-	<span class="kd">var</span> <span class="nx">CLASS_NAME</span> <span class="o">=</span> <span class="s2">&quot;className&quot;</span><span class="p">,</span>
-		<span class="nx">BUTTON</span> <span class="o">=</span> <span class="s2">&quot;button&quot;</span><span class="p">,</span>
-		<span class="nx">BOUNDING_BOX</span> <span class="o">=</span> <span class="s2">&quot;boundingBox&quot;</span><span class="p">,</span>
-		<span class="nx">BUTTON_NODE</span> <span class="o">=</span> <span class="s2">&quot;buttonNode&quot;</span><span class="p">,</span>
-		<span class="nx">NEW_SPAN</span> <span class="o">=</span> <span class="s2">&quot;&lt;span/&gt;&quot;</span><span class="p">,</span>
-		<span class="nx">CLASS_PREFIX</span> <span class="o">=</span> <span class="s2">&quot;classPrefix&quot;</span><span class="p">,</span>
-		<span class="nx">CONTENT_BOX</span> <span class="o">=</span> <span class="s2">&quot;contentBox&quot;</span><span class="p">,</span>
-		<span class="nx">VISIBILITY</span> <span class="o">=</span> <span class="s2">&quot;visibility&quot;</span><span class="p">,</span>
-		<span class="nx">PRESSED</span> <span class="o">=</span> <span class="s2">&quot;pressed&quot;</span><span class="p">,</span>
-		<span class="nx">CLICK</span> <span class="o">=</span> <span class="s2">&quot;click&quot;</span><span class="p">,</span>
-		<span class="nx">COMBO</span> <span class="o">=</span> <span class="s2">&quot;combo&quot;</span><span class="p">,</span>
-		<span class="nx">OPTION</span> <span class="o">=</span> <span class="s2">&quot;option&quot;</span><span class="p">,</span>
-		<span class="nx">OPTIONS</span> <span class="o">=</span> <span class="s2">&quot;options&quot;</span><span class="p">,</span>
-		<span class="nx">RENDER</span> <span class="o">=</span> <span class="s2">&quot;render&quot;</span><span class="p">,</span>
-		<span class="nx">TYPE</span> <span class="o">=</span> <span class="s2">&quot;type&quot;</span><span class="p">;</span>
-	
-	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">buttons</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">jet</span><span class="p">.</span><span class="nx">buttons</span> <span class="o">=</span> <span class="p">{};</span>
-	<span class="p">}</span>
-	
-	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">buttons</span><span class="p">.</span><span class="nx">buttons</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">jet</span><span class="p">.</span><span class="nx">buttons</span><span class="p">.</span><span class="nx">buttons</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-	<span class="p">}</span>
-	
-	<span class="kd">var</span> <span class="nx">ButtonBase</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-		<span class="nx">ButtonBase</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
-		
-		<span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;disabledChange&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BUTTON_NODE</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">disabled</span> <span class="o">=</span> <span class="o">!!</span><span class="nx">val</span><span class="p">;</span>
-		<span class="p">});</span>
-		
-		<span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;afterRender&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BUTTON_NODE</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">disabled</span> <span class="o">=</span> <span class="o">!!</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;disabled&quot;</span><span class="p">);</span>
-		<span class="p">});</span>
-	<span class="p">};</span>
-	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">ButtonBase</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Widget</span><span class="p">,</span> <span class="p">{</span>
+	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * Disables the button</span>
-<span class="cm">		 * @method disable</span>
-<span class="cm">		 * @chainable</span>
+<span class="cm">		 * @attribute enabled</span>
+<span class="cm">		 * @description Enabled status of the button</span>
+<span class="cm">		 * @type Boolean</span>
+<span class="cm">		 * @default true</span>
 <span class="cm">		 */</span>
-		<span class="nx">disable</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;disabled&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+		<span class="nx">enabled</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+			<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isBoolean</span>
 		<span class="p">},</span>
 		<span class="cm">/**</span>
-<span class="cm">		 * Enables the button</span>
-<span class="cm">		 * @method enable</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="nx">enable</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;disabled&quot;</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
-		<span class="p">},</span>
-		<span class="cm">/**</span>
-<span class="cm">		 * Fires the blur event</span>
-<span class="cm">		 * @method blur</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="nx">blur</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BUTTON_NODE</span><span class="p">).</span><span class="nx">blur</span><span class="p">();</span>
-			<span class="k">this</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;blur&quot;</span><span class="p">);</span>
-			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-		<span class="p">},</span>
-		<span class="cm">/**</span>
-<span class="cm">		 * Fires the focus event and sets the button as active</span>
-<span class="cm">		 * @method focus</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="nx">focus</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BUTTON_NODE</span><span class="p">).</span><span class="nx">focus</span><span class="p">();</span>
-			<span class="k">this</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;focus&quot;</span><span class="p">);</span>
-			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-		<span class="p">}</span>
-	<span class="p">});</span>
-	
-	<span class="cm">/**</span>
-<span class="cm">	 * A button may be a push button, a radio button or other form elements that behave as buttons</span>
-<span class="cm">	 * @class Button</span>
-<span class="cm">	 * @constructor</span>
-<span class="cm">	 * @extends Widget</span>
-<span class="cm">	 * @param {Object} config Object literal specifying widget configuration properties</span>
-<span class="cm">	 */</span>
-	<span class="kd">var</span> <span class="nx">Button</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-		<span class="nx">Button</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
-		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">CLASS_NAME</span><span class="p">,</span> <span class="nx">BUTTON</span><span class="p">).</span><span class="nx">addAttrs</span><span class="p">({</span>
-			<span class="cm">/**</span>
-<span class="cm">			 * @config type</span>
-<span class="cm">			 * @type String</span>
-<span class="cm">			 * @writeOnce</span>
-<span class="cm">			 * @default &quot;push&quot;</span>
-<span class="cm">			 */</span>
-			<span class="nx">type</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;push&quot;</span>
-			<span class="p">},</span>
-			<span class="c1">// overwrite standard boundingBox (a div) with a span</span>
-			<span class="c1">// maybe all widgets should use a span with display: inline-block as a boundingBox?</span>
-			<span class="nx">boundingBox</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">readOnly</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="nx">NEW_SPAN</span><span class="p">)</span>
-			<span class="p">},</span>
-			<span class="c1">//overwrite standard contentBox (a div) with a span</span>
-			<span class="nx">contentBox</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">readOnly</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="nx">NEW_SPAN</span><span class="p">)</span>
-			<span class="p">},</span>
-			<span class="nx">disabled</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isBoolean</span><span class="p">,</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span>
-			<span class="p">},</span>
-			<span class="nx">text</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;&quot;</span>
-			<span class="p">},</span>
-			<span class="nx">className</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="nx">Button</span><span class="p">.</span><span class="nx">NAME</span>
-			<span class="p">}</span>
-		<span class="p">});</span>
-		<span class="kd">var</span> <span class="nx">type</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">TYPE</span><span class="p">);</span>
-		<span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="o">++</span><span class="nx">jet</span><span class="p">.</span><span class="nx">buttons</span><span class="p">.</span><span class="nx">buttons</span><span class="p">;</span>
-		<span class="cm">/**</span>
-<span class="cm">		 * The button node</span>
-<span class="cm">		 * @config buttonNode</span>
+<span class="cm">		 * @attribute labelNode</span>
+<span class="cm">		 * @description Pointer to the &lt;label&gt; node related to this button</span>
+<span class="cm">		 * @type NodeList</span>
 <span class="cm">		 * @readOnly</span>
 <span class="cm">		 */</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">addAttr</span><span class="p">(</span><span class="nx">BUTTON_NODE</span><span class="p">,</span> <span class="p">{</span>
-			<span class="nx">readOnly</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-			<span class="nx">value</span><span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;link&quot;</span> <span class="o">?</span> <span class="s2">&quot;a&quot;</span> <span class="o">:</span> <span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;push&quot;</span> <span class="o">?</span> <span class="s2">&quot;button&quot;</span> <span class="o">:</span> <span class="s2">&quot;input&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/&gt;&quot;</span><span class="p">)</span>
-		<span class="p">});</span>
-		<span class="k">if</span> <span class="p">(</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;text&quot;</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BUTTON_NODE</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="nx">type</span><span class="p">);</span>
+		<span class="nx">labelNode</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+			<span class="nx">setter</span><span class="o">:</span> <span class="nx">$</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute labelContent</span>
+<span class="cm">		 * @description Text of this button&#39;s label</span>
+<span class="cm">		 * @type String</span>
+<span class="cm">		 * @default null</span>
+<span class="cm">		 */</span>
+		<span class="nx">labelContent</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">null</span><span class="p">,</span>
+			<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute text</span>
+<span class="cm">		 * @description Text inside the button</span>
+<span class="cm">		 * @default &#39;&#39;</span>
+<span class="cm">		 */</span>
+		<span class="nx">text</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="s1">&#39;&#39;</span>
 		<span class="p">}</span>
-		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">RENDER</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">buttonName</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CLASS_NAME</span><span class="p">);</span>				
-			<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BUTTON_NODE</span><span class="p">);</span>
-			<span class="kd">var</span> <span class="nx">text</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">);</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">type</span> <span class="o">==</span> <span class="s2">&quot;text&quot;</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">node</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="nx">text</span><span class="p">);</span>
+	<span class="p">},</span>
+	
+	<span class="nx">EVENTS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">enabledChange</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">boundingBox</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">disabledClass</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="s1">&#39;disabled&#39;</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">disabledClass</span><span class="p">);</span>
 			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-				<span class="nx">node</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">text</span><span class="p">);</span>
+				<span class="nx">disabledClass</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="nx">disabledClass</span><span class="p">);</span>
 			<span class="p">}</span>
-			<span class="kd">var</span> <span class="nx">prefix</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CLASS_PREFIX</span><span class="p">);</span>
-			<span class="kd">var</span> <span class="nx">prefixName</span> <span class="o">=</span> <span class="nx">prefix</span> <span class="o">+</span> <span class="nx">buttonName</span><span class="p">;</span>
-			<span class="kd">var</span> <span class="nx">eventPrefix</span> <span class="o">=</span> <span class="nx">prefix</span> <span class="o">+</span> <span class="nx">type</span> <span class="o">+</span> <span class="nx">buttonName</span><span class="p">;</span>
-			<span class="kd">var</span> <span class="nx">boundingBox</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">prefixName</span><span class="p">,</span> <span class="nx">prefix</span> <span class="o">+</span> <span class="nx">type</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nx">buttonName</span><span class="p">);</span>
-			<span class="kd">var</span> <span class="nx">contentBox</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CONTENT_BOX</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;first-child&quot;</span><span class="p">);</span>
-			<span class="nx">node</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mouseover&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-				<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">prefixName</span> <span class="o">+</span> <span class="s2">&quot;-hover&quot;</span><span class="p">,</span> <span class="nx">eventPrefix</span> <span class="o">+</span> <span class="s2">&quot;-hover&quot;</span><span class="p">);</span>
-			<span class="p">}).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;mouseout&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-				<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="nx">prefixName</span> <span class="o">+</span> <span class="s2">&quot;-hover&quot;</span><span class="p">,</span> <span class="nx">eventPrefix</span> <span class="o">+</span> <span class="s2">&quot;-hover&quot;</span><span class="p">);</span>
-			<span class="p">}).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;focus&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-				<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">prefixName</span> <span class="o">+</span> <span class="s2">&quot;-focus&quot;</span><span class="p">,</span> <span class="nx">eventPrefix</span> <span class="o">+</span> <span class="s2">&quot;-focus&quot;</span><span class="p">);</span>
-				<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;focus&quot;</span><span class="p">);</span>
-			<span class="p">}).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;blur&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-				<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="nx">prefixName</span> <span class="o">+</span> <span class="s2">&quot;-focus&quot;</span><span class="p">,</span> <span class="nx">eventPrefix</span> <span class="o">+</span> <span class="s2">&quot;-focus&quot;</span><span class="p">);</span>
-				<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;blur&quot;</span><span class="p">);</span>
-			<span class="p">}).</span><span class="nx">on</span><span class="p">(</span><span class="nx">CLICK</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
-				<span class="c1">//node[0].blur();</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="nx">PRESSED</span><span class="p">))</span> <span class="p">{</span>
-					<span class="nx">e</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CONTENT_BOX</span><span class="p">).</span><span class="nx">_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">disabled</span> <span class="o">=</span> <span class="o">!</span><span class="nx">val</span><span class="p">;</span>
+		<span class="p">},</span>
+		
+		<span class="nx">labelContentChange</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">labelNode</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LABEL_NODE</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">val</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">labelNode</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">val</span><span class="p">);</span>
+				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">labelNode</span><span class="p">.</span><span class="nx">parent</span><span class="p">().</span><span class="nx">_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">{</span>
+					<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">prepend</span><span class="p">(</span><span class="nx">labelNode</span><span class="p">);</span>
 				<span class="p">}</span>
-			<span class="p">});</span>
-			<span class="nx">id</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CLASS_PREFIX</span><span class="p">)</span> <span class="o">+</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CLASS_NAME</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nx">id</span><span class="p">;</span>
-			<span class="nx">node</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="nx">id</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">contentBox</span><span class="p">.</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">boundingBox</span><span class="p">));</span>
-		<span class="p">});</span>
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;afterRender&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="c1">// since the order of the nodes was changed, use visibility inherit to avoid breaking the hide() method</span>
-			<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="nx">VISIBILITY</span><span class="p">,</span> <span class="s2">&quot;inherit&quot;</span><span class="p">);</span>
-			<span class="kd">var</span> <span class="nx">label</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">);</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">label</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">label</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;label/&gt;&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">label</span><span class="p">).</span><span class="nx">insertBefore</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">));</span>
-				<span class="nx">label</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;for&quot;</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">labelNode</span><span class="p">.</span><span class="nx">remove</span><span class="p">();</span>
 			<span class="p">}</span>
-		<span class="p">});</span>
-	<span class="p">};</span>
-	<span class="nx">Button</span><span class="p">.</span><span class="nx">NAME</span> <span class="o">=</span> <span class="s2">&quot;button&quot;</span><span class="p">;</span>
-	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">Button</span><span class="p">,</span> <span class="nx">ButtonBase</span><span class="p">);</span>
-	
-	<span class="kd">var</span> <span class="nx">createTag</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">tag</span><span class="p">)</span> <span class="p">{</span>
-		<span class="k">return</span> <span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="nx">tag</span><span class="p">);</span>
-	<span class="p">};</span>
-	
-	<span class="kd">var</span> <span class="nx">addOption</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">combo</span><span class="p">,</span> <span class="nx">text</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-		<span class="cm">/* Note by jdopazo:</span>
-<span class="cm">		 Lazy initialization for the function _add()</span>
-<span class="cm">		 I create a &lt;select&gt; element that I never attach to the dom</span>
-<span class="cm">		 and try to attach an &lt;OPTION&gt; element to it with try...catch</span>
-<span class="cm">		 This way I avoid using try...catch every time this function is called */</span>
-		<span class="kd">var</span> <span class="nx">testSelect</span> <span class="o">=</span> <span class="nx">createTag</span><span class="p">(</span><span class="s2">&quot;select&quot;</span><span class="p">),</span>
-			<span class="nx">testOption</span> <span class="o">=</span> <span class="nx">createTag</span><span class="p">(</span><span class="nx">OPTION</span><span class="p">),</span>
-			<span class="nx">standards</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-		<span class="k">try</span> <span class="p">{</span>
-			<span class="nx">testSelect</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">testOption</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span> <span class="c1">//standards compliant</span>
-			<span class="nx">standards</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-		<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">ex</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">testSelect</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">testOption</span><span class="p">);</span> <span class="c1">// IE only</span>
+		<span class="p">},</span>
+		
+		<span class="nx">textChange</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CONTENT_BOX</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">val</span><span class="p">);</span>
+		<span class="p">},</span>
+		
+		<span class="nx">afterFocus</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="nx">FOCUS</span><span class="p">));</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CONTENT_BOX</span><span class="p">).</span><span class="nx">focus</span><span class="p">();</span>
+		<span class="p">},</span>
+		
+		<span class="nx">afterBlur</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">removeClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="nx">FOCUS</span><span class="p">));</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CONTENT_BOX</span><span class="p">).</span><span class="nx">blur</span><span class="p">();</span>
+		<span class="p">},</span>
+		
+		<span class="nx">mouseover</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">domEvent</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">addClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="nx">HOVER</span><span class="p">));</span>
+		<span class="p">},</span>
+		
+		<span class="nx">mouseout</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">domEvent</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">removeClass</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="nx">HOVER</span><span class="p">));</span>
+		<span class="p">},</span>
+		
+		<span class="nx">render</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_uid</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">contentBox</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CONTENT_BOX</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="nx">ID</span><span class="p">,</span> <span class="nx">id</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">));</span>
+			<span class="kd">var</span> <span class="nx">labelNode</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LABEL_NODE</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">label</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;labelContent&#39;</span><span class="p">);</span>
+			<span class="nx">labelNode</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s1">&#39;for&#39;</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isString</span><span class="p">(</span><span class="nx">label</span><span class="p">))</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">prepend</span><span class="p">(</span><span class="nx">labelNode</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">label</span><span class="p">));</span>
+			<span class="p">}</span>
+			<span class="nx">contentBox</span><span class="p">.</span><span class="nx">_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">disabled</span> <span class="o">=</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">ENABLED</span><span class="p">);</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">_handlers</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">contentBox</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">FOCUS</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_onDomFocus</span><span class="p">,</span> <span class="k">this</span><span class="p">));</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">_handlers</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">contentBox</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="nx">BLUR</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_onDomBlur</span><span class="p">,</span> <span class="k">this</span><span class="p">));</span>
+		<span class="p">},</span>
+		
+		<span class="nx">destroy</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CONTENT_BOX</span><span class="p">).</span><span class="nx">unbind</span><span class="p">(</span><span class="nx">FOCUS</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_onDomFocus</span><span class="p">).</span><span class="nx">unbind</span><span class="p">(</span><span class="nx">BLUR</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_onDomBlur</span><span class="p">);</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LABEL_NODE</span><span class="p">).</span><span class="nx">remove</span><span class="p">();</span>
 		<span class="p">}</span>
-		<span class="k">if</span> <span class="p">(</span><span class="nx">standards</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">addOption</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">combo</span><span class="p">,</span> <span class="nx">text</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-				<span class="kd">var</span> <span class="nx">newOption</span> <span class="o">=</span> <span class="nx">createTag</span><span class="p">(</span><span class="nx">OPTION</span><span class="p">);</span>
-				<span class="nx">newOption</span><span class="p">.</span><span class="nx">text</span> <span class="o">=</span> <span class="nx">text</span><span class="p">;</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">newOption</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
-				<span class="p">}</span>
-				<span class="nx">combo</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">newOption</span><span class="p">,</span> <span class="kc">null</span><span class="p">);</span>
-			<span class="p">};</span>
-		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-			<span class="nx">addOption</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">combo</span><span class="p">,</span> <span class="nx">text</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-				<span class="kd">var</span> <span class="nx">newOption</span> <span class="o">=</span> <span class="nx">createTag</span><span class="p">(</span><span class="nx">OPTION</span><span class="p">);</span>
-				<span class="nx">newOption</span><span class="p">.</span><span class="nx">text</span> <span class="o">=</span> <span class="nx">text</span><span class="p">;</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">newOption</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
-				<span class="p">}</span>
-				<span class="nx">combo</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">newOption</span><span class="p">);</span>
-			<span class="p">};</span>
-		<span class="p">}</span>
-		<span class="nx">addOption</span><span class="p">(</span><span class="nx">combo</span><span class="p">,</span> <span class="nx">text</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
-	<span class="p">};</span>
-	
-	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">buttons</span><span class="p">.</span><span class="nx">combo</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">jet</span><span class="p">.</span><span class="nx">buttons</span><span class="p">.</span><span class="nx">combo</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
 	<span class="p">}</span>
 	
+<span class="p">},</span> <span class="p">{</span>
+	<span class="nx">CONTENT_TEMPLATE</span><span class="o">:</span> <span class="s1">&#39;&lt;button/&gt;&#39;</span><span class="p">,</span>
+	<span class="nx">LABEL_TEMPLATE</span><span class="o">:</span> <span class="s1">&#39;&lt;label/&gt;&#39;</span><span class="p">,</span>
 	<span class="cm">/**</span>
-<span class="cm">	 * A ComboBox is a select html element</span>
-<span class="cm">	 * @class ComboBox</span>
-<span class="cm">	 * @extends Button</span>
-<span class="cm">	 * @constructor</span>
-<span class="cm">	 * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm">	 * Disables the button</span>
+<span class="cm">	 * @method disable</span>
+<span class="cm">	 * @chainable</span>
 <span class="cm">	 */</span>
-	<span class="kd">var</span> <span class="nx">ComboBox</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-		<span class="nx">ComboBox</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
-		
-		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
-			<span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="p">[]</span>
-			<span class="p">},</span>
-			<span class="nx">buttonNode</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">readOnly</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;select/&gt;&quot;</span><span class="p">)</span>
-			<span class="p">},</span>
-			<span class="nx">className</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;combobox&quot;</span>
-			<span class="p">},</span>
-			<span class="nx">selected</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">,</span>
-				<span class="nx">getter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-					<span class="kd">var</span> <span class="nx">combo</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BUTTON_NODE</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span> 
-					<span class="k">return</span> <span class="nx">combo</span><span class="p">.</span><span class="nx">options</span><span class="p">[</span><span class="nx">combo</span><span class="p">.</span><span class="nx">selectedIndex</span><span class="p">];</span>
-				<span class="p">},</span>
-				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
-					<span class="kd">var</span> <span class="nx">combo</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BUTTON_NODE</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
-					<span class="k">if</span> <span class="p">(</span><span class="nx">val</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;change&quot;</span><span class="p">,</span> <span class="nx">combo</span><span class="p">.</span><span class="nx">options</span><span class="p">[</span><span class="nx">val</span><span class="p">]))</span> <span class="p">{</span>
-						<span class="nx">combo</span><span class="p">.</span><span class="nx">selectedIndex</span> <span class="o">=</span> <span class="nx">val</span><span class="p">;</span>
-					<span class="p">}</span>
-					<span class="k">return</span> <span class="nx">val</span><span class="p">;</span>
-				<span class="p">}</span>
-			<span class="p">},</span>
-			<span class="nx">count</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">readOnly</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-				<span class="nx">getter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BUTTON_NODE</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">options</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
-				<span class="p">}</span>
-			<span class="p">}</span>
-		<span class="p">});</span>
-		
-		<span class="kd">var</span> <span class="nx">setOptions</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">combo</span><span class="p">,</span> <span class="nx">opts</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">opts</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isHash</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="p">{</span>
-					<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">text</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
-						<span class="nx">addOption</span><span class="p">(</span><span class="nx">combo</span><span class="p">,</span> <span class="nx">text</span><span class="p">,</span> <span class="nx">val</span><span class="p">);</span>
-					<span class="p">});</span>
-				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-					<span class="nx">addOption</span><span class="p">(</span><span class="nx">combo</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
-				<span class="p">}</span>
-			<span class="p">});</span>
-		<span class="p">};</span>
-		
-		<span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="o">++</span><span class="nx">jet</span><span class="p">.</span><span class="nx">buttons</span><span class="p">.</span><span class="nx">combo</span><span class="p">;</span>
-		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;optionsChange&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">newOptions</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">combo</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BUTTON_NODE</span><span class="p">)[</span><span class="mi">0</span><span class="p">];</span>
-			<span class="nx">combo</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-			<span class="nx">setOptions</span><span class="p">(</span><span class="nx">combo</span><span class="p">,</span> <span class="nx">newOptions</span><span class="p">);</span>
-		<span class="p">});</span>
-		
-		<span class="nx">myself</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;render&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">boundingBox</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">);</span>
-			<span class="kd">var</span> <span class="nx">button</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BUTTON_NODE</span><span class="p">);</span>
-			<span class="kd">var</span> <span class="nx">label</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">);</span>
-			<span class="nx">id</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CLASS_PREFIX</span><span class="p">)</span> <span class="o">+</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CLASS_NAME</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nx">id</span><span class="p">;</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">label</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">label</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;label/&gt;&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">label</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">boundingBox</span><span class="p">);</span>
-				<span class="nx">label</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;for&quot;</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
-			<span class="p">}</span>
-			<span class="nx">button</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="nx">id</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">boundingBox</span><span class="p">);</span>
-			<span class="nx">button</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;change&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;change&quot;</span><span class="p">,</span> <span class="nx">button</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">options</span><span class="p">[</span><span class="nx">button</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">selectedIndex</span><span class="p">]);</span>
-			<span class="p">});</span>
-			<span class="nx">setOptions</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BUTTON_NODE</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">OPTIONS</span><span class="p">));</span>
-		<span class="p">});</span>
-	<span class="p">};</span>
-	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">ComboBox</span><span class="p">,</span> <span class="nx">ButtonBase</span><span class="p">,</span> <span class="p">{</span>
-		<span class="cm">/**</span>
-<span class="cm">		 * @method add</span>
-<span class="cm">		 * @description Adds options to the combo box</span>
-<span class="cm">		 * @param {String | Hash} The text value of the option, or alternatively </span>
-<span class="cm">		 * a hash which key is the text and the value is the option&#39;s value</span>
-<span class="cm">		 * @param {String} value optional - The value of the option</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="nx">add</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">text</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-			<span class="kd">var</span> <span class="nx">opt</span><span class="p">;</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">opt</span> <span class="o">=</span> <span class="p">{};</span>
-				<span class="nx">opt</span><span class="p">[</span><span class="nx">text</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
-			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-				<span class="nx">opt</span> <span class="o">=</span> <span class="nx">text</span><span class="p">;</span>
-			<span class="p">}</span>
-			<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;options&quot;</span><span class="p">).</span><span class="nx">push</span><span class="p">(</span><span class="nx">opt</span><span class="p">);</span>
-			<span class="nx">addOption</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BUTTON_NODE</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">text</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
-			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
-		<span class="p">},</span>
-		<span class="cm">/**</span>
-<span class="cm">		 * @method fill</span>
-<span class="cm">		 * @description Adds several options to the select</span>
-<span class="cm">		 * @param {Array} values An array of text values that behave like the &quot;text&quot; parameter of the add() method</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="nx">fill</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">values</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nx">values</span><span class="p">))</span> <span class="p">{</span>
-				<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">values</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">t</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">myself</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">t</span><span class="p">);</span>
-				<span class="p">});</span>
-			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-				<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">values</span><span class="p">,</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">add</span><span class="p">);</span>
-			<span class="p">}</span>
-			<span class="k">return</span> <span class="nx">myself</span><span class="p">;</span>
-		<span class="p">},</span>
-		<span class="cm">/**</span>
-<span class="cm">		 * @method clear</span>
-<span class="cm">		 * @description Removes all options from the combo box</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="nx">clear</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;options&quot;</span><span class="p">,</span> <span class="p">[]);</span>
-		<span class="p">},</span>
-		<span class="cm">/**</span>
-<span class="cm">		 * @method select</span>
-<span class="cm">		 * @description Selects a certain option based on an index</span>
-<span class="cm">		 * @param {Number} index</span>
-<span class="cm">		 * @chainable</span>
-<span class="cm">		 */</span>
-		<span class="nx">select</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;selected&quot;</span><span class="p">,</span> <span class="nx">index</span><span class="p">);</span>
-		<span class="p">}</span>
-	<span class="p">});</span>
-	
-	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">radioButtons</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">jet</span><span class="p">.</span><span class="nx">radioButtons</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-	<span class="p">}</span>
-	
+	<span class="nx">disable</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">ENABLED</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+	<span class="p">},</span>
 	<span class="cm">/**</span>
-<span class="cm">	 * A RadioButton is actually a group of radio buttons that interact with each other</span>
-<span class="cm">	 * @class RadioButton</span>
-<span class="cm">	 * @extends Widget</span>
-<span class="cm">	 * @constructor</span>
-<span class="cm">	 * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm">	 * Enables the button</span>
+<span class="cm">	 * @method enable</span>
+<span class="cm">	 * @chainable</span>
 <span class="cm">	 */</span>
-	<span class="kd">var</span> <span class="nx">RadioButton</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-		<span class="nx">RadioButton</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
-		
-		<span class="kd">var</span> <span class="nx">globalId</span> <span class="o">=</span> <span class="o">++</span><span class="nx">jet</span><span class="p">.</span><span class="nx">radioButtons</span><span class="p">;</span>
-		<span class="kd">var</span> <span class="nx">selected</span><span class="p">,</span> <span class="nx">selectedValue</span><span class="p">;</span>
-		<span class="kd">var</span> <span class="nx">buttons</span> <span class="o">=</span> <span class="p">[];</span>
-		
-		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
-			<span class="nx">options</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">required</span><span class="o">:</span> <span class="kc">true</span>
-			<span class="p">},</span>
-			<span class="nx">className</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;radio&quot;</span>
-			<span class="p">},</span>
-			<span class="nx">namePrefix</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;jet-radio&quot;</span>
-			<span class="p">},</span>
-			<span class="nx">buttons</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">readOnly</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="nx">buttons</span>
-			<span class="p">},</span>
-			<span class="nx">selected</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="mi">0</span>
-			<span class="p">},</span>
-			<span class="nx">value</span><span class="o">:</span> <span class="p">{</span>
-			<span class="p">}</span>
-		<span class="p">});</span>
-		
-		<span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;selectedChange&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">newIndex</span><span class="p">,</span> <span class="nx">oldIndex</span><span class="p">)</span> <span class="p">{</span>
-			<span class="nx">buttons</span><span class="p">[</span><span class="nx">oldIndex</span><span class="p">][</span><span class="mi">0</span><span class="p">].</span><span class="nx">checked</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">newIndex</span><span class="p">))</span> <span class="p">{</span>
-				<span class="nx">buttons</span><span class="p">[</span><span class="nx">newIndex</span><span class="p">][</span><span class="mi">0</span><span class="p">].</span><span class="nx">checked</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-			<span class="p">}</span>
-			
-		<span class="p">}).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;render&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">boundingBox</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">);</span>
-			<span class="kd">var</span> <span class="nx">prefix</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CLASS_PREFIX</span><span class="p">);</span>
-			<span class="kd">var</span> <span class="nx">className</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CLASS_NAME</span><span class="p">);</span>
-			<span class="kd">var</span> <span class="nx">options</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;options&quot;</span><span class="p">);</span>
-			<span class="kd">var</span> <span class="nx">namePrefix</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;namePrefix&quot;</span><span class="p">);</span>
-			<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">options</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">btn</span><span class="p">,</span> <span class="nx">i</span><span class="p">)</span> <span class="p">{</span>
-				<span class="kd">var</span> <span class="nx">holder</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;span/&gt;&quot;</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">boundingBox</span><span class="p">);</span>
-				<span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">namePrefix</span> <span class="o">+</span> <span class="nx">globalId</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nx">i</span><span class="p">;</span>
-				<span class="kd">var</span> <span class="nx">input</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;input/&gt;&quot;</span><span class="p">).</span><span class="nx">attr</span><span class="p">({</span>
-					<span class="nx">type</span><span class="o">:</span> <span class="s2">&quot;radio&quot;</span><span class="p">,</span>
-					<span class="nx">name</span><span class="o">:</span> <span class="nx">namePrefix</span> <span class="o">+</span> <span class="nx">globalId</span><span class="p">,</span>
-					<span class="nx">id</span><span class="o">:</span> <span class="nx">id</span><span class="p">,</span>
-					<span class="nx">value</span><span class="o">:</span> <span class="nx">btn</span><span class="p">.</span><span class="nx">value</span>
-				<span class="p">}).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">holder</span><span class="p">);</span>
-				<span class="kd">var</span> <span class="nx">label</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;label/&gt;&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">btn</span><span class="p">.</span><span class="nx">label</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">holder</span><span class="p">);</span>
-				<span class="nx">label</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;for&quot;</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
-				<span class="nx">input</span><span class="p">.</span><span class="nx">link</span><span class="p">(</span><span class="nx">label</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">rad</span><span class="p">)</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-						<span class="k">if</span> <span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">index</span> <span class="o">!==</span> <span class="nx">selected</span><span class="p">)</span> <span class="p">{</span>
-							<span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;change&quot;</span><span class="p">,</span> <span class="nx">index</span><span class="p">,</span> <span class="nx">input</span><span class="p">);</span>
-							<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;selected&quot;</span><span class="p">,</span> <span class="nx">index</span><span class="p">);</span>
-							<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="nx">rad</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">value</span><span class="p">);</span>
-						<span class="p">}</span>
-					<span class="p">};</span>
-				<span class="p">}(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">input</span><span class="p">)));</span>
-				<span class="nx">buttons</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">input</span><span class="p">);</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">===</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;selected&quot;</span><span class="p">))</span> <span class="p">{</span>
-					<span class="nx">input</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">checked</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-					<span class="nx">myself</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="nx">input</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">value</span><span class="p">);</span>
-				<span class="p">}</span>
-			<span class="p">});</span>
-		<span class="p">});</span>
-	<span class="p">};</span>
-	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">RadioButton</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Widget</span><span class="p">,</span> <span class="p">{</span>
-		<span class="nx">disable</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">buttons</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;buttons&quot;</span><span class="p">);</span> 
-			<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">index</span><span class="p">)</span> <span class="o">?</span> <span class="p">[</span><span class="nx">buttons</span><span class="p">[</span><span class="nx">index</span><span class="p">]]</span> <span class="o">:</span> <span class="nx">buttons</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">btn</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">btn</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">disabled</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-				<span class="nx">btn</span><span class="p">.</span><span class="nx">next</span><span class="p">().</span><span class="nx">addClass</span><span class="p">(</span><span class="s2">&quot;disabled&quot;</span><span class="p">);</span>
-			<span class="p">});</span>
-			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-		<span class="p">},</span>
-		<span class="nx">enable</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">buttons</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;buttons&quot;</span><span class="p">);</span> 
-			<span class="nx">A</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">index</span><span class="p">)</span> <span class="o">?</span> <span class="p">[</span><span class="nx">buttons</span><span class="p">[</span><span class="nx">index</span><span class="p">]]</span> <span class="o">:</span> <span class="nx">buttons</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">btn</span><span class="p">)</span> <span class="p">{</span>
-				<span class="nx">btn</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">disabled</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-				<span class="nx">btn</span><span class="p">.</span><span class="nx">next</span><span class="p">().</span><span class="nx">removeClass</span><span class="p">(</span><span class="s2">&quot;disabled&quot;</span><span class="p">);</span>
-			<span class="p">});</span>
-			<span class="k">return</span> <span class="k">this</span><span class="p">;</span>
-		<span class="p">}</span>
-	<span class="p">});</span>
+	<span class="nx">enable</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">ENABLED</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+	<span class="p">},</span>
 	
-	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">jet</span><span class="p">.</span><span class="nx">checkboxes</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">jet</span><span class="p">.</span><span class="nx">checkboxes</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="nx">initializer</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">LABEL_NODE</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">LABEL_NODE</span><span class="p">)</span> <span class="o">||</span> <span class="k">this</span><span class="p">.</span><span class="nx">LABEL_TEMPLATE</span><span class="p">);</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">_onDomFocus</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">focus</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">_onDomBlur</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">blur</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
 	<span class="p">}</span>
 	
-	<span class="kd">var</span> <span class="nx">CheckBox</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-		<span class="nx">CheckBox</span><span class="p">.</span><span class="nx">superclass</span><span class="p">.</span><span class="nx">constructor</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">arguments</span><span class="p">);</span>
-		
-		<span class="kd">var</span> <span class="nx">myself</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">addAttrs</span><span class="p">({</span>
-			<span class="nx">buttonNode</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">readOnly</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;input/&gt;&quot;</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s2">&quot;checkbox&quot;</span><span class="p">)</span>
-			<span class="p">},</span>
-			<span class="nx">label</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;&quot;</span>
-			<span class="p">},</span>
-			<span class="nx">className</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="s2">&quot;checkbox&quot;</span>
-			<span class="p">},</span>
-			<span class="nx">checked</span><span class="o">:</span> <span class="p">{</span>
-				<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
-				<span class="nx">getter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BUTTON_NODE</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">checked</span><span class="p">;</span>
-				<span class="p">},</span>
-				<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BUTTON_NODE</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">checked</span> <span class="o">=</span> <span class="nx">val</span><span class="p">;</span>
-					<span class="k">return</span> <span class="nx">val</span><span class="p">;</span>
-				<span class="p">}</span>
+<span class="p">});</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">Button</span> <span class="o">=</span> <span class="nx">Button</span><span class="p">;</span>
+<span class="cm">/**</span>
+<span class="cm"> * A button widget that selects/unselects itself when clicked</span>
+<span class="cm"> * @class ToggleButton</span>
+<span class="cm"> * @extends Button</span>
+<span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm"> */</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">ToggleButton</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;button-toggle&#39;</span><span class="p">,</span> <span class="nx">Button</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span>
+	<span class="nx">EVENTS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">click</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">toggle</span><span class="p">();</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">});</span>
+<span class="cm">/**</span>
+<span class="cm"> * A group of buttons that can be styled as a pill</span>
+<span class="cm"> * @class ButtonGroup</span>
+<span class="cm"> * @extends Widget</span>
+<span class="cm"> * @uses WidgetParent</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm"> */</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">ButtonGroup</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;button-group&#39;</span><span class="p">,</span> <span class="nx">Widget</span><span class="p">,</span> <span class="p">[</span><span class="nx">WidgetParent</span><span class="p">],</span> <span class="p">{</span>
+	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">defaultChildType</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Button</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute pill</span>
+<span class="cm">		 * @description Whether this button group should be styled as a pill</span>
+<span class="cm">		 * @type Boolean</span>
+<span class="cm">		 * @default false</span>
+<span class="cm">		 */</span>
+		<span class="nx">pill</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+			<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isBoolean</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	
+	<span class="nx">EVENTS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">pillChange</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">pill</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">boundingBox</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">pillClass</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="nx">PILL</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="nx">pill</span><span class="p">)</span> <span class="p">{</span>
+				<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">pillClass</span><span class="p">);</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="nx">pillClass</span><span class="p">);</span>
 			<span class="p">}</span>
-		<span class="p">});</span>
+		<span class="p">},</span>
 		
-		<span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="o">++</span><span class="nx">jet</span><span class="p">.</span><span class="nx">checkboxes</span><span class="p">;</span>
-		
-		<span class="k">this</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;render&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">boundingBox</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">);</span>
-			<span class="nx">id</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CLASS_PREFIX</span><span class="p">)</span> <span class="o">+</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CLASS_NAME</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nx">id</span><span class="p">;</span>
-			<span class="kd">var</span> <span class="nx">btn</span> <span class="o">=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BUTTON_NODE</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="nx">id</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">boundingBox</span><span class="p">);</span>
-			<span class="nx">$</span><span class="p">(</span><span class="s2">&quot;&lt;label/&gt;&quot;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">boundingBox</span><span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">setAttribute</span><span class="p">(</span><span class="s2">&quot;for&quot;</span><span class="p">,</span> <span class="nx">id</span><span class="p">);</span>
-			<span class="nx">btn</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">disabled</span> <span class="o">=</span> <span class="o">!!</span><span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;disabled&quot;</span><span class="p">);</span>
-			
-			<span class="nx">btn</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s2">&quot;click&quot;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
-				<span class="kd">var</span> <span class="nx">checked</span> <span class="o">=</span> <span class="nx">btn</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">checked</span><span class="p">;</span>
-				<span class="k">if</span> <span class="p">(</span><span class="nx">checked</span> <span class="o">!=</span> <span class="nx">myself</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">&quot;checked&quot;</span><span class="p">))</span> <span class="p">{</span>
-					<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">myself</span><span class="p">.</span><span class="nx">fire</span><span class="p">(</span><span class="s2">&quot;change&quot;</span><span class="p">,</span> <span class="nx">checked</span><span class="p">))</span> <span class="p">{</span>
-						<span class="nx">btn</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">checked</span> <span class="o">=</span> <span class="o">!</span><span class="nx">checked</span><span class="p">;</span>
-					<span class="p">}</span>
-				<span class="p">}</span>
+		<span class="nx">render</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">boundingBox</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">);</span>
+			<span class="kd">var</span> <span class="nx">pillClass</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="nx">PILL</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">PILL</span><span class="p">))</span> <span class="p">{</span>
+				<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="nx">pillClass</span><span class="p">);</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">boundingBox</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="nx">pillClass</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">});</span>
+<span class="cm">/**</span>
+<span class="cm"> * An option of a &lt;select&gt; element</span>
+<span class="cm"> * @class ComboOption</span>
+<span class="cm"> * @extends Widget</span>
+<span class="cm"> * @uses WidgetChild</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm"> */</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">ComboOption</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;combo-option&#39;</span><span class="p">,</span> <span class="nx">Widget</span><span class="p">,</span> <span class="p">[</span><span class="nx">WidgetChild</span><span class="p">],</span> <span class="p">{</span>
+	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute value</span>
+<span class="cm">		 * @description Sets/returns the value of the option</span>
+<span class="cm">		 */</span>
+		<span class="nx">value</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">getter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">value</span><span class="p">();</span>
+			<span class="p">},</span>
+			<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">value</span><span class="p">(</span><span class="nx">val</span><span class="p">);</span>
+				<span class="k">return</span> <span class="nx">val</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute text</span>
+<span class="cm">		 * @description Sets/returns the text of the option</span>
+<span class="cm">		 */</span>
+		<span class="nx">text</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">getter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">);</span>
+			<span class="p">},</span>
+			<span class="nx">setter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">BOUNDING_BOX</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="nx">val</span><span class="p">);</span>
+				<span class="k">return</span> <span class="nx">val</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">},</span> <span class="p">{</span>
+	<span class="nx">BOUNDING_TEMPLATE</span><span class="o">:</span> <span class="s1">&#39;&lt;option/&gt;&#39;</span><span class="p">,</span>
+	<span class="nx">CONTENT_TEMPLATE</span><span class="o">:</span> <span class="kc">null</span>
+<span class="p">});</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * A ComboBox is a select html element</span>
+<span class="cm"> * @class ComboBox</span>
+<span class="cm"> * @extends Button</span>
+<span class="cm"> * @uses WidgetParent</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm"> */</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">ComboBox</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;combobox&#39;</span><span class="p">,</span> <span class="nx">Button</span><span class="p">,</span> <span class="p">[</span><span class="nx">WidgetParent</span><span class="p">],</span> <span class="p">{</span>
+	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">defaultChildType</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="nx">$</span><span class="p">.</span><span class="nx">ComboOption</span>
+		<span class="p">},</span>
+		<span class="nx">multiple</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+			<span class="nx">readOnly</span><span class="o">:</span> <span class="kc">true</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	<span class="nx">EVENTS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">selectionChange</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CONTENT_BOX</span><span class="p">).</span><span class="nx">_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">selectedIndex</span> <span class="o">=</span> <span class="nx">val</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">},</span> <span class="p">{</span>
+	<span class="nx">CONTENT_TEMPLATE</span><span class="o">:</span> <span class="s1">&#39;&lt;select/&gt;&#39;</span>
+<span class="p">});</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">jet</span><span class="p">.</span><span class="nx">Button</span><span class="p">.</span><span class="nx">radio</span><span class="p">))</span> <span class="p">{</span>
+	<span class="nx">jet</span><span class="p">.</span><span class="nx">Button</span><span class="p">.</span><span class="nx">radio</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * A radio button</span>
+<span class="cm"> * @class RadioButton</span>
+<span class="cm"> * @extends Button</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm"> */</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">RadioButton</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;radio&#39;</span><span class="p">,</span> <span class="nx">Button</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span>
+	<span class="nx">EVENTS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">selectedChange</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CONTENT_BOX</span><span class="p">).</span><span class="nx">_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">checked</span> <span class="o">=</span> <span class="o">!!</span><span class="nx">val</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">render</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CONTENT_BOX</span><span class="p">).</span><span class="nx">attr</span><span class="p">({</span>
+				<span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;radio&#39;</span><span class="p">,</span>
+				<span class="nx">name</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">PARENT</span><span class="p">).</span><span class="nx">get</span><span class="p">(</span><span class="nx">NAME</span><span class="p">)</span>
 			<span class="p">});</span>
-		<span class="p">});</span>
-	<span class="p">};</span>
-	<span class="nx">$</span><span class="p">.</span><span class="nx">extend</span><span class="p">(</span><span class="nx">CheckBox</span><span class="p">,</span> <span class="nx">ButtonBase</span><span class="p">);</span>
-	
-	<span class="nx">$</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span>
-		<span class="nx">Button</span><span class="o">:</span> <span class="nx">Button</span><span class="p">,</span>
-		<span class="nx">ComboBox</span><span class="o">:</span> <span class="nx">ComboBox</span><span class="p">,</span>
-		<span class="nx">RadioButton</span><span class="o">:</span> <span class="nx">RadioButton</span><span class="p">,</span>
-		<span class="nx">CheckBox</span><span class="o">:</span> <span class="nx">CheckBox</span>
-	<span class="p">});</span>
-	
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">},</span> <span class="p">{</span>
+	<span class="nx">CONTENT_TEMPLATE</span><span class="o">:</span> <span class="s1">&#39;&lt;input/&gt;&#39;</span>
+<span class="p">});</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * A group of radio buttons that interact together</span>
+<span class="cm"> * @class RadioGroup</span>
+<span class="cm"> * @extends Widget</span>
+<span class="cm"> * @uses WidgetParent</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm"> */</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">RadioGroup</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;radio-group&#39;</span><span class="p">,</span> <span class="nx">Widget</span><span class="p">,</span> <span class="p">[</span><span class="nx">WidgetParent</span><span class="p">],</span> <span class="p">{</span>
+	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute multiple</span>
+<span class="cm">		 * @description Boolean indicating if multiple children can be selected at once. Whether or not multiple selection is enabled is always delegated to the value of the multiple attribute of the root widget in the object hierarchy</span>
+<span class="cm">		 * @default false</span>
+<span class="cm">		 * @readOnly</span>
+<span class="cm">		 */</span>
+		<span class="nx">multiple</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+			<span class="nx">readOnly</span><span class="o">:</span> <span class="kc">true</span>
+		<span class="p">},</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute name</span>
+<span class="cm">		 * @description Name attribute of all radio buttons in the group</span>
+<span class="cm">		 * @readOnly</span>
+<span class="cm">		 */</span>
+		<span class="nx">name</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span>
+		<span class="p">},</span>
+		<span class="nx">defaultChildType</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="nx">$</span><span class="p">.</span><span class="nx">RadioButton</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">},</span> <span class="p">{</span>
+	<span class="nx">initializer</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">NAME</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="o">++</span><span class="nx">jet</span><span class="p">.</span><span class="nx">Button</span><span class="p">.</span><span class="nx">radio</span><span class="p">));</span>
+	<span class="p">}</span>
+<span class="p">});</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">Lang</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">(</span><span class="nx">jet</span><span class="p">.</span><span class="nx">Button</span><span class="p">.</span><span class="nx">checkbox</span><span class="p">))</span> <span class="p">{</span>
+	<span class="nx">jet</span><span class="p">.</span><span class="nx">Button</span><span class="p">.</span><span class="nx">checkbox</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * A Checkbox</span>
+<span class="cm"> * @class CheckBox</span>
+<span class="cm"> * @extends Button</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm"> */</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">CheckBox</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;checkbox&#39;</span><span class="p">,</span> <span class="nx">Button</span><span class="p">,</span> <span class="p">[],</span> <span class="p">{</span>
+	<span class="nx">EVENTS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">selectedChange</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">,</span> <span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CONTENT_BOX</span><span class="p">).</span><span class="nx">_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">checked</span> <span class="o">=</span> <span class="o">!!</span><span class="nx">val</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">render</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+			<span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">CONTENT_BOX</span><span class="p">).</span><span class="nx">attr</span><span class="p">({</span>
+				<span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;checkbox&#39;</span><span class="p">,</span>
+				<span class="nx">name</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">PARENT</span><span class="p">).</span><span class="nx">get</span><span class="p">(</span><span class="nx">NAME</span><span class="p">)</span>
+			<span class="p">});</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">},</span> <span class="p">{</span>
+	<span class="nx">CONTENT_TEMPLATE</span><span class="o">:</span> <span class="s1">&#39;&lt;input/&gt;&#39;</span>
+<span class="p">});</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * A group of checkboxes that interact together</span>
+<span class="cm"> * @class CheckBoxGroup</span>
+<span class="cm"> * @extends Widget</span>
+<span class="cm"> * @uses WidgetParent</span>
+<span class="cm"> * @constructor</span>
+<span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
+<span class="cm"> */</span>
+<span class="nx">$</span><span class="p">.</span><span class="nx">CheckBoxGroup</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;checkbox-group&#39;</span><span class="p">,</span> <span class="nx">Widget</span><span class="p">,</span> <span class="p">[</span><span class="nx">WidgetParent</span><span class="p">],</span> <span class="p">{</span>
+	<span class="nx">ATTRS</span><span class="o">:</span> <span class="p">{</span>
+		<span class="cm">/**</span>
+<span class="cm">		 * @attribute name</span>
+<span class="cm">		 * @description Name attribute of all checkboxes in the group</span>
+<span class="cm">		 * @readOnly</span>
+<span class="cm">		 */</span>
+		<span class="nx">name</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">writeOnce</span><span class="o">:</span> <span class="kc">true</span>
+		<span class="p">},</span>
+		<span class="nx">defaultChildType</span><span class="o">:</span> <span class="p">{</span>
+			<span class="nx">value</span><span class="o">:</span> <span class="nx">$</span><span class="p">.</span><span class="nx">CheckBox</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">},</span> <span class="p">{</span>
+	<span class="nx">initializer</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">NAME</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">getClassName</span><span class="p">(</span><span class="o">+</span><span class="nx">jet</span><span class="p">.</span><span class="nx">Button</span><span class="p">.</span><span class="nx">checkbox</span><span class="p">));</span>
+	<span class="p">}</span>
+<span class="p">});</span>
+			
 <span class="p">});</span>
 </pre></div>
 
@@ -591,8 +488,8 @@
                     <div id="moduleList" class="module">
                         <h4>Modules</h4>
                         <ul class="content">
-                                <li class=""><a href="module_anim.html" title="anim">anim</a></li>
-                                <li class="selected"><a href="module_base.html" title="base">base</a></li>
+                                <li class="selected"><a href="module_anim.html" title="anim">anim</a></li>
+                                <li class=""><a href="module_base.html" title="base">base</a></li>
                                 <li class=""><a href="module_button.html" title="button">button</a></li>
                                 <li class=""><a href="module_container.html" title="container">container</a></li>
                                 <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
@@ -602,38 +499,32 @@
                                 <li class=""><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
-                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
                                 <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
-                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
                         </ul>
                     </div>
 
                     <div id="classList" class="module">
                         <h4>Classes</h4>
                         <ul class="content">
-                                <li class=""><a href="Attribute.html" title="Attribute">Attribute</a></li>
-                                <li class=""><a href="Base.html" title="Base">Base</a></li>
-                                <li class=""><a href="EventTarget.html" title="EventTarget">EventTarget</a></li>
-                                <li class=""><a href="OOP.html" title="OOP">OOP</a></li>
-                                <li class=""><a href="Utility.html" title="Utility">Utility</a></li>
-                                <li class=""><a href="utils.Mouse.html" title="utils.Mouse">utils.Mouse</a></li>
-                                <li class=""><a href="Widget.html" title="Widget">Widget</a></li>
-                        </ul>
-                    </div>
-
-                    <div id="fileList" class="module">
-                        <h4>Files</h4>
-                        <ul class="content">        
-                                <li class="selected"><a href="button.js.html" title="button.js">button.js</a></li>
+                                <li class=""><a href="Easing.html" title="Easing">Easing</a></li>
+                                <li class=""><a href="TimeFrame.html" title="TimeFrame">TimeFrame</a></li>
+                                <li class=""><a href="Tween.html" title="Tween">Tween</a></li>
                         </ul>
                     </div>
 
@@ -646,12 +537,13 @@
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
+<script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Attribute.html#method_addAttr", "access": "", "host": "Attribute", "type": "method", "name": "addAttr"}, {"url": "Attribute.html#method_addAttrs", "access": "", "host": "Attribute", "type": "method", "name": "addAttrs"}, {"url": "Widget.html#event_afterRender", "access": "", "host": "Widget", "type": "event", "name": "afterRender"}, {"url": "OOP.html#method_augment", "access": "", "host": "OOP", "type": "method", "name": "augment"}, {"url": "Widget.html#method_blur", "access": "", "host": "Widget", "type": "method", "name": "blur"}, {"url": "utils.Mouse.html#method_blur", "access": "", "host": "utils.Mouse", "type": "method", "name": "blur"}, {"url": "Widget.html#config_boundingBox", "access": "", "host": "Widget", "type": "config", "name": "boundingBox"}, {"url": "Widget.html#config_className", "access": "", "host": "Widget", "type": "config", "name": "className"}, {"url": "Widget.html#config_classPrefix", "access": "", "host": "Widget", "type": "config", "name": "classPrefix"}, {"url": "Utility.html#method_destroy", "access": "", "host": "Utility", "type": "method", "name": "destroy"}, {"url": "Widget.html#method_destroy", "access": "", "host": "Widget", "type": "method", "name": "destroy"}, {"url": "Widget.html#event_destroy", "access": "", "host": "Widget", "type": "event", "name": "destroy"}, {"url": "utils.Mouse.html#method_disable", "access": "", "host": "utils.Mouse", "type": "method", "name": "disable"}, {"url": "utils.Mouse.html#method_down", "access": "", "host": "utils.Mouse", "type": "method", "name": "down"}, {"url": "utils.Mouse.html#method_enable", "access": "", "host": "utils.Mouse", "type": "method", "name": "enable"}, {"url": "OOP.html#method_extend", "access": "", "host": "OOP", "type": "method", "name": "extend"}, {"url": "EventTarget.html#method_fire", "access": "", "host": "EventTarget", "type": "method", "name": "fire"}, {"url": "Widget.html#method_focus", "access": "", "host": "Widget", "type": "method", "name": "focus"}, {"url": "utils.Mouse.html#method_focus", "access": "", "host": "utils.Mouse", "type": "method", "name": "focus"}, {"url": "utils.Mouse.html#config_frequency", "access": "", "host": "utils.Mouse", "type": "config", "name": "frequency"}, {"url": "Attribute.html#method_get", "access": "", "host": "Attribute", "type": "method", "name": "get"}, {"url": "Attribute.html#method_getAttrs", "access": "", "host": "Attribute", "type": "method", "name": "getAttrs"}, {"url": "Widget.html#method_hide", "access": "", "host": "Widget", "type": "method", "name": "hide"}, {"url": "Attribute.html#method_isSet", "access": "", "host": "Attribute", "type": "method", "name": "isSet"}, {"url": "utils.Mouse.html#event_move", "access": "", "host": "utils.Mouse", "type": "event", "name": "move"}, {"url": "EventTarget.html#method_on", "access": "", "host": "EventTarget", "type": "method", "name": "on"}, {"url": "Base.html#config_on", "access": "", "host": "Base", "type": "config", "name": "on"}, {"url": "Widget.html#method_render", "access": "", "host": "Widget", "type": "method", "name": "render"}, {"url": "Widget.html#event_render", "access": "", "host": "Widget", "type": "event", "name": "render"}, {"url": "Widget.html#config_rendered", "access": "", "host": "Widget", "type": "config", "name": "rendered"}, {"url": "Attribute.html#method_set", "access": "", "host": "Attribute", "type": "method", "name": "set"}, {"url": "Widget.html#method_show", "access": "", "host": "Widget", "type": "method", "name": "show"}, {"url": "Widget.html#config_srcNode", "access": "", "host": "Widget", "type": "config", "name": "srcNode"}, {"url": "utils.Mouse.html#config_tracking", "access": "", "host": "utils.Mouse", "type": "config", "name": "tracking"}, {"url": "EventTarget.html#method_unbind", "access": "", "host": "EventTarget", "type": "method", "name": "unbind"}, {"url": "EventTarget.html#method_unbindAll", "access": "", "host": "EventTarget", "type": "method", "name": "unbindAll"}, {"url": "Attribute.html#method_unset", "access": "", "host": "Attribute", "type": "method", "name": "unset"}, {"url": "utils.Mouse.html#method_up", "access": "", "host": "utils.Mouse", "type": "method", "name": "up"}, {"url": "utils.Mouse.html#event_up", "access": "", "host": "utils.Mouse", "type": "event", "name": "up"}];
+    var ALL_YUI_PROPS = [{"url": "TimeFrame.html#method_addTween", "access": "", "host": "TimeFrame", "type": "method", "name": "addTween"}, {"url": "Tween.html#config_duration", "access": "", "host": "Tween", "type": "config", "name": "duration"}, {"url": "Tween.html#event_durationChange", "access": "", "host": "Tween", "type": "event", "name": "durationChange"}, {"url": "Easing.html#method_easein", "access": "", "host": "Easing", "type": "method", "name": "easein"}, {"url": "Easing.html#method_easeout", "access": "", "host": "Easing", "type": "method", "name": "easeout"}, {"url": "Tween.html#config_easing", "access": "", "host": "Tween", "type": "config", "name": "easing"}, {"url": "Tween.html#event_easingChange", "access": "", "host": "Tween", "type": "event", "name": "easingChange"}, {"url": "Tween.html#config_easingStrength", "access": "", "host": "Tween", "type": "config", "name": "easingStrength"}, {"url": "Tween.html#event_easingStrengthChange", "access": "", "host": "Tween", "type": "event", "name": "easingStrengthChange"}, {"url": "TimeFrame.html#property_fps", "access": "", "host": "TimeFrame", "type": "property", "name": "fps"}, {"url": "Tween.html#config_from", "access": "", "host": "Tween", "type": "config", "name": "from"}, {"url": "Tween.html#event_fromChange", "access": "", "host": "Tween", "type": "event", "name": "fromChange"}, {"url": "Easing.html#method_linear", "access": "", "host": "Easing", "type": "method", "name": "linear"}, {"url": "Tween.html#config_node", "access": "", "host": "Tween", "type": "config", "name": "node"}, {"url": "Tween.html#event_nodeChange", "access": "", "host": "Tween", "type": "event", "name": "nodeChange"}, {"url": "Tween.html#method_pause", "access": "", "host": "Tween", "type": "method", "name": "pause"}, {"url": "TimeFrame.html#method_play", "access": "", "host": "TimeFrame", "type": "method", "name": "play"}, {"url": "Tween.html#method_play", "access": "", "host": "Tween", "type": "method", "name": "play"}, {"url": "Tween.html#config_playing", "access": "", "host": "Tween", "type": "config", "name": "playing"}, {"url": "Tween.html#event_playingChange", "access": "", "host": "Tween", "type": "event", "name": "playingChange"}, {"url": "Tween.html#event_previousTimeChange", "access": "", "host": "Tween", "type": "event", "name": "previousTimeChange"}, {"url": "TimeFrame.html#method_removeTween", "access": "", "host": "TimeFrame", "type": "method", "name": "removeTween"}, {"url": "Tween.html#method_reverse", "access": "", "host": "Tween", "type": "method", "name": "reverse"}, {"url": "Easing.html#method_sling", "access": "", "host": "Easing", "type": "method", "name": "sling"}, {"url": "Tween.html#event_startTimeChange", "access": "", "host": "Tween", "type": "event", "name": "startTimeChange"}, {"url": "TimeFrame.html#method_stop", "access": "", "host": "TimeFrame", "type": "method", "name": "stop"}, {"url": "Tween.html#method_stop", "access": "", "host": "Tween", "type": "method", "name": "stop"}, {"url": "Tween.html#config_to", "access": "", "host": "Tween", "type": "config", "name": "to"}, {"url": "Tween.html#event_toChange", "access": "", "host": "Tween", "type": "event", "name": "toChange"}];
 </script>
 </body>
 </html>

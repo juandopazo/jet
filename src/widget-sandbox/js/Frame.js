@@ -93,7 +93,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 	*/
 	ATTRS: {
 		/**
-		* @config title
+		* @attribute title
 		* @description The title to give the blank page.
 		* @type String
 		*/
@@ -101,7 +101,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 			value: 'Blank Page'
 		},
 		/**
-		* @config dir
+		* @attribute dir
 		* @description The default text direction for this new frame. Default: ltr
 		* @type String
 		*/
@@ -109,7 +109,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 			value: 'ltr'
 		},
 		/**
-		* @config lang
+		* @attribute lang
 		* @description The default language. Default: en-US
 		* @type String
 		*/
@@ -117,7 +117,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 			value: 'en-US'
 		},
 		/**
-		* @config src
+		* @attribute src
 		* @description The src of the iframe/window. Defaults to javascript:;
 		* @type String
 		*/
@@ -126,7 +126,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 			value: 'javascript' + (($.UA.ie) ? ':false' : ':') + ';'
 		},
 		/**
-		* @config content
+		* @attribute content
 		* @description The string to inject into the body of the new frame/window.
 		* @type String
 		*/
@@ -136,7 +136,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 			getter: '_getHTML'
 		},
 		/**
-		* @config use
+		* @attribute use
 		* @description Array of modules to include in the scoped YUI instance at render time. Default: ['none', 'selector-css2']
 		* @writeonce
 		* @type Array
@@ -146,7 +146,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 			value: []
 		},
 		/**
-		* @config container
+		* @attribute container
 		* @description The container to append the iFrame to on render.
 		* @type String/HTMLElement/Node
 		*/
@@ -157,7 +157,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 			}
 		},
 		/**
-		* @config node
+		* @attribute node
 		* @description The Node instance of the iframe.
 		* @type Node
 		*/
@@ -169,7 +169,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 			}
 		},
 		/**
-		* @config id
+		* @attribute id
 		* @description Set the id of the new Node. (optional)
 		* @type String
 		* @writeonce
@@ -184,7 +184,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 			}
 		},
 		/**
-		* @config linkedcss
+		* @attribute linkedcss
 		* @description An array of url's to external linked style sheets
 		* @type String
 		*/
@@ -194,7 +194,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 			setter: '_setLinkedCSS'
 		},
 		/**
-		* @config extracss
+		* @attribute extracss
 		* @description A string of CSS to add to the Head of the Editor
 		* @type String
 		*/
@@ -204,7 +204,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 		},
 		/**
 		* @private
-		* @config rendered
+		* @attribute rendered
 		* @description Internal reference set when render is called.
 		* @type Boolean
 		*/

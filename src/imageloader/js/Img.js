@@ -19,7 +19,7 @@ var LOAD = "load",
 var Img = $.Img = Base.create('image', Base, [], {
 	ATTRS: {
 		/**
-		 * @config src
+		 * @attribute src
 		 * @description URI of the image to load
 		 * @required
 		 * @writeOnce
@@ -31,14 +31,14 @@ var Img = $.Img = Base.create('image', Base, [], {
 			validator: Lang.isString
 		},
 		/**
-		 * @config image
+		 * @attribute image
 		 * @description A pointer to the actual Image object
 		 */
 		image: {
 			value: null
 		},
 		/**
-		 * @config node
+		 * @attribute node
 		 * @description A NodeList with the image node
 		 * @readOnly
 		 * @type NodeList
@@ -47,7 +47,7 @@ var Img = $.Img = Base.create('image', Base, [], {
 			value: null
 		},
 		/**
-		 * @config timeout
+		 * @attribute timeout
 		 * @description Time the image can spend loading before firing the timeout event
 		 * @default 5000
 		 * @type Number (ms)
@@ -56,7 +56,7 @@ var Img = $.Img = Base.create('image', Base, [], {
 			value: 5000
 		},
 		/**
-		 * @config type
+		 * @attribute type
 		 * @description The image type. Used to specify if an image is PNG
 		 * @type String
 		 */
@@ -68,7 +68,7 @@ var Img = $.Img = Base.create('image', Base, [], {
 			}
 		},
 		/**
-		 * @config loaded
+		 * @attribute loaded
 		 * @description Specifies if the image has finished loading or not
 		 * @type Boolean
 		 */

@@ -7,17 +7,15 @@
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
 
-    <script type="text/javascript" src="assets/api-js"></script>
-    <script type="text/javascript" src="assets/ac-js"></script>
 </head>
 
-<body id="yahoo-com">
+<body>
 
-<div id="doc3" class="yui-t2">
+<div id="doc4" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
-        <h3>resize&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>resize&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
             &gt; <a href="./module_resize.html" title="resize">resize</a>
                 
                  &gt; sizzle.js (source view) 
@@ -221,6 +219,10 @@
 
 <span class="nx">Sizzle</span><span class="p">.</span><span class="nx">matches</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">expr</span><span class="p">,</span> <span class="nx">set</span><span class="p">){</span>
 	<span class="k">return</span> <span class="nx">Sizzle</span><span class="p">(</span><span class="nx">expr</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">set</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">matchesSelector</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">node</span><span class="p">,</span> <span class="nx">expr</span><span class="p">){</span>
+	<span class="k">return</span> <span class="nx">Sizzle</span><span class="p">(</span><span class="nx">expr</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="p">[</span><span class="nx">node</span><span class="p">]).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="nx">Sizzle</span><span class="p">.</span><span class="nx">find</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">expr</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">isXML</span><span class="p">){</span>
@@ -442,7 +444,9 @@
 		<span class="nx">ID</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">isXML</span><span class="p">){</span>
 			<span class="k">if</span> <span class="p">(</span> <span class="k">typeof</span> <span class="nx">context</span><span class="p">.</span><span class="nx">getElementById</span> <span class="o">!==</span> <span class="s2">&quot;undefined&quot;</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">isXML</span> <span class="p">)</span> <span class="p">{</span>
 				<span class="kd">var</span> <span class="nx">m</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
-				<span class="k">return</span> <span class="nx">m</span> <span class="o">?</span> <span class="p">[</span><span class="nx">m</span><span class="p">]</span> <span class="o">:</span> <span class="p">[];</span>
+				<span class="c1">// Check parentNode to catch when Blackberry 4.6 returns</span>
+				<span class="c1">// nodes that are no longer in the document #6963</span>
+				<span class="k">return</span> <span class="nx">m</span> <span class="o">&amp;&amp;</span> <span class="nx">m</span><span class="p">.</span><span class="nx">parentNode</span> <span class="o">?</span> <span class="p">[</span><span class="nx">m</span><span class="p">]</span> <span class="o">:</span> <span class="p">[];</span>
 			<span class="p">}</span>
 		<span class="p">},</span>
 		<span class="nx">NAME</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">context</span><span class="p">){</span>
@@ -801,57 +805,89 @@
 	<span class="p">};</span>
 <span class="p">}</span>
 
-<span class="kd">var</span> <span class="nx">sortOrder</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">sortOrder</span><span class="p">,</span> <span class="nx">siblingCheck</span><span class="p">;</span>
 
 <span class="k">if</span> <span class="p">(</span> <span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">compareDocumentPosition</span> <span class="p">)</span> <span class="p">{</span>
 	<span class="nx">sortOrder</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span> <span class="nx">a</span> <span class="o">===</span> <span class="nx">b</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">hasDuplicate</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+			<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="p">}</span>
+
 		<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">a</span><span class="p">.</span><span class="nx">compareDocumentPosition</span> <span class="o">||</span> <span class="o">!</span><span class="nx">b</span><span class="p">.</span><span class="nx">compareDocumentPosition</span> <span class="p">)</span> <span class="p">{</span>
-			<span class="k">if</span> <span class="p">(</span> <span class="nx">a</span> <span class="o">==</span> <span class="nx">b</span> <span class="p">)</span> <span class="p">{</span>
-				<span class="nx">hasDuplicate</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-			<span class="p">}</span>
 			<span class="k">return</span> <span class="nx">a</span><span class="p">.</span><span class="nx">compareDocumentPosition</span> <span class="o">?</span> <span class="o">-</span><span class="mi">1</span> <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
 		<span class="p">}</span>
 
-		<span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">compareDocumentPosition</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">4</span> <span class="o">?</span> <span class="o">-</span><span class="mi">1</span> <span class="o">:</span> <span class="nx">a</span> <span class="o">===</span> <span class="nx">b</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
-		<span class="k">if</span> <span class="p">(</span> <span class="nx">ret</span> <span class="o">===</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
-			<span class="nx">hasDuplicate</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-		<span class="p">}</span>
-		<span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
+		<span class="k">return</span> <span class="nx">a</span><span class="p">.</span><span class="nx">compareDocumentPosition</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">4</span> <span class="o">?</span> <span class="o">-</span><span class="mi">1</span> <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
 	<span class="p">};</span>
-<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="s2">&quot;sourceIndex&quot;</span> <span class="k">in</span> <span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span> <span class="p">)</span> <span class="p">{</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
 	<span class="nx">sortOrder</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="p">)</span> <span class="p">{</span>
-		<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">a</span><span class="p">.</span><span class="nx">sourceIndex</span> <span class="o">||</span> <span class="o">!</span><span class="nx">b</span><span class="p">.</span><span class="nx">sourceIndex</span> <span class="p">)</span> <span class="p">{</span>
-			<span class="k">if</span> <span class="p">(</span> <span class="nx">a</span> <span class="o">==</span> <span class="nx">b</span> <span class="p">)</span> <span class="p">{</span>
-				<span class="nx">hasDuplicate</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-			<span class="p">}</span>
-			<span class="k">return</span> <span class="nx">a</span><span class="p">.</span><span class="nx">sourceIndex</span> <span class="o">?</span> <span class="o">-</span><span class="mi">1</span> <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
+		<span class="kd">var</span> <span class="nx">ap</span> <span class="o">=</span> <span class="p">[],</span> <span class="nx">bp</span> <span class="o">=</span> <span class="p">[],</span> <span class="nx">aup</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">,</span> <span class="nx">bup</span> <span class="o">=</span> <span class="nx">b</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">,</span>
+			<span class="nx">cur</span> <span class="o">=</span> <span class="nx">aup</span><span class="p">,</span> <span class="nx">al</span><span class="p">,</span> <span class="nx">bl</span><span class="p">;</span>
+
+		<span class="c1">// The nodes are identical, we can exit early</span>
+		<span class="k">if</span> <span class="p">(</span> <span class="nx">a</span> <span class="o">===</span> <span class="nx">b</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">hasDuplicate</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+			<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+
+		<span class="c1">// If the nodes are siblings (or identical) we can do a quick check</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">aup</span> <span class="o">===</span> <span class="nx">bup</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">siblingCheck</span><span class="p">(</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="p">);</span>
+
+		<span class="c1">// If no parents were found then the nodes are disconnected</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">aup</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">bup</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
 		<span class="p">}</span>
 
-		<span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">sourceIndex</span> <span class="o">-</span> <span class="nx">b</span><span class="p">.</span><span class="nx">sourceIndex</span><span class="p">;</span>
-		<span class="k">if</span> <span class="p">(</span> <span class="nx">ret</span> <span class="o">===</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
-			<span class="nx">hasDuplicate</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-		<span class="p">}</span>
-		<span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
-	<span class="p">};</span>
-<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createRange</span> <span class="p">)</span> <span class="p">{</span>
-	<span class="nx">sortOrder</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="p">)</span> <span class="p">{</span>
-		<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">a</span><span class="p">.</span><span class="nx">ownerDocument</span> <span class="o">||</span> <span class="o">!</span><span class="nx">b</span><span class="p">.</span><span class="nx">ownerDocument</span> <span class="p">)</span> <span class="p">{</span>
-			<span class="k">if</span> <span class="p">(</span> <span class="nx">a</span> <span class="o">==</span> <span class="nx">b</span> <span class="p">)</span> <span class="p">{</span>
-				<span class="nx">hasDuplicate</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-			<span class="p">}</span>
-			<span class="k">return</span> <span class="nx">a</span><span class="p">.</span><span class="nx">ownerDocument</span> <span class="o">?</span> <span class="o">-</span><span class="mi">1</span> <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
+		<span class="c1">// Otherwise they&#39;re somewhere else in the tree so we need</span>
+		<span class="c1">// to build up a full list of the parentNodes for comparison</span>
+		<span class="k">while</span> <span class="p">(</span> <span class="nx">cur</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">ap</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span> <span class="nx">cur</span> <span class="p">);</span>
+			<span class="nx">cur</span> <span class="o">=</span> <span class="nx">cur</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">;</span>
 		<span class="p">}</span>
 
-		<span class="kd">var</span> <span class="nx">aRange</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">ownerDocument</span><span class="p">.</span><span class="nx">createRange</span><span class="p">(),</span> <span class="nx">bRange</span> <span class="o">=</span> <span class="nx">b</span><span class="p">.</span><span class="nx">ownerDocument</span><span class="p">.</span><span class="nx">createRange</span><span class="p">();</span>
-		<span class="nx">aRange</span><span class="p">.</span><span class="nx">setStart</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-		<span class="nx">aRange</span><span class="p">.</span><span class="nx">setEnd</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-		<span class="nx">bRange</span><span class="p">.</span><span class="nx">setStart</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-		<span class="nx">bRange</span><span class="p">.</span><span class="nx">setEnd</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-		<span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="nx">aRange</span><span class="p">.</span><span class="nx">compareBoundaryPoints</span><span class="p">(</span><span class="nx">Range</span><span class="p">.</span><span class="nx">START_TO_END</span><span class="p">,</span> <span class="nx">bRange</span><span class="p">);</span>
-		<span class="k">if</span> <span class="p">(</span> <span class="nx">ret</span> <span class="o">===</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
-			<span class="nx">hasDuplicate</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+		<span class="nx">cur</span> <span class="o">=</span> <span class="nx">bup</span><span class="p">;</span>
+
+		<span class="k">while</span> <span class="p">(</span> <span class="nx">cur</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">bp</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span> <span class="nx">cur</span> <span class="p">);</span>
+			<span class="nx">cur</span> <span class="o">=</span> <span class="nx">cur</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">;</span>
 		<span class="p">}</span>
-		<span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
+
+		<span class="nx">al</span> <span class="o">=</span> <span class="nx">ap</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+		<span class="nx">bl</span> <span class="o">=</span> <span class="nx">bp</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+
+		<span class="c1">// Start walking down the tree looking for a discrepancy</span>
+		<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">al</span> <span class="o">&amp;&amp;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">bl</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">ap</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">!==</span> <span class="nx">bp</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">siblingCheck</span><span class="p">(</span> <span class="nx">ap</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">bp</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+
+		<span class="c1">// We ended someplace up the tree so do a sibling check</span>
+		<span class="k">return</span> <span class="nx">i</span> <span class="o">===</span> <span class="nx">al</span> <span class="o">?</span>
+			<span class="nx">siblingCheck</span><span class="p">(</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">bp</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span> <span class="p">)</span> <span class="o">:</span>
+			<span class="nx">siblingCheck</span><span class="p">(</span> <span class="nx">ap</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">b</span><span class="p">,</span> <span class="mi">1</span> <span class="p">);</span>
+	<span class="p">};</span>
+
+	<span class="nx">siblingCheck</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">ret</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span> <span class="nx">a</span> <span class="o">===</span> <span class="nx">b</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="kd">var</span> <span class="nx">cur</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">nextSibling</span><span class="p">;</span>
+
+		<span class="k">while</span> <span class="p">(</span> <span class="nx">cur</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">cur</span> <span class="o">===</span> <span class="nx">b</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+			<span class="p">}</span>
+
+			<span class="nx">cur</span> <span class="o">=</span> <span class="nx">cur</span><span class="p">.</span><span class="nx">nextSibling</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
 	<span class="p">};</span>
 <span class="p">}</span>
 
@@ -965,10 +1001,32 @@
 
 			<span class="c1">// Only use querySelectorAll on non-XML documents</span>
 			<span class="c1">// (ID selectors don&#39;t work in non-HTML documents)</span>
-			<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">seed</span> <span class="o">&amp;&amp;</span> <span class="nx">context</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">9</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">Sizzle</span><span class="p">.</span><span class="nx">isXML</span><span class="p">(</span><span class="nx">context</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
-				<span class="k">try</span> <span class="p">{</span>
-					<span class="k">return</span> <span class="nx">makeArray</span><span class="p">(</span> <span class="nx">context</span><span class="p">.</span><span class="nx">querySelectorAll</span><span class="p">(</span><span class="nx">query</span><span class="p">),</span> <span class="nx">extra</span> <span class="p">);</span>
-				<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">){}</span>
+			<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">seed</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">Sizzle</span><span class="p">.</span><span class="nx">isXML</span><span class="p">(</span><span class="nx">context</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">context</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">9</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="k">try</span> <span class="p">{</span>
+						<span class="k">return</span> <span class="nx">makeArray</span><span class="p">(</span> <span class="nx">context</span><span class="p">.</span><span class="nx">querySelectorAll</span><span class="p">(</span><span class="nx">query</span><span class="p">),</span> <span class="nx">extra</span> <span class="p">);</span>
+					<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">qsaError</span><span class="p">)</span> <span class="p">{}</span>
+
+				<span class="c1">// qSA works strangely on Element-rooted queries</span>
+				<span class="c1">// We can work around this by specifying an extra ID on the root</span>
+				<span class="c1">// and working up from there (Thanks to Andrew Dupont for the technique)</span>
+				<span class="c1">// IE 8 doesn&#39;t work on object elements</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">context</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">context</span><span class="p">.</span><span class="nx">nodeName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">!==</span> <span class="s2">&quot;object&quot;</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="kd">var</span> <span class="nx">old</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span> <span class="s2">&quot;id&quot;</span> <span class="p">),</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="s2">&quot;__sizzle__&quot;</span><span class="p">;</span>
+
+					<span class="k">try</span> <span class="p">{</span>
+						<span class="k">return</span> <span class="nx">makeArray</span><span class="p">(</span> <span class="nx">context</span><span class="p">.</span><span class="nx">querySelectorAll</span><span class="p">(</span> <span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nx">query</span> <span class="p">),</span> <span class="nx">extra</span> <span class="p">);</span>
+
+					<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">pseudoError</span><span class="p">)</span> <span class="p">{</span>
+					<span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+						<span class="k">if</span> <span class="p">(</span> <span class="nx">old</span> <span class="p">)</span> <span class="p">{</span>
+							<span class="nx">context</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">old</span><span class="p">;</span>
+
+						<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+							<span class="nx">context</span><span class="p">.</span><span class="nx">removeAttribute</span><span class="p">(</span> <span class="s2">&quot;id&quot;</span> <span class="p">);</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
 			<span class="p">}</span>
 		
 			<span class="k">return</span> <span class="nx">oldSizzle</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">extra</span><span class="p">,</span> <span class="nx">seed</span><span class="p">);</span>
@@ -981,6 +1039,35 @@
 		<span class="nx">div</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span> <span class="c1">// release memory in IE</span>
 	<span class="p">})();</span>
 <span class="p">}</span>
+
+<span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+	<span class="kd">var</span> <span class="nx">html</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">,</span>
+		<span class="nx">matches</span> <span class="o">=</span> <span class="nx">html</span><span class="p">.</span><span class="nx">matchesSelector</span> <span class="o">||</span> <span class="nx">html</span><span class="p">.</span><span class="nx">mozMatchesSelector</span> <span class="o">||</span> <span class="nx">html</span><span class="p">.</span><span class="nx">webkitMatchesSelector</span> <span class="o">||</span> <span class="nx">html</span><span class="p">.</span><span class="nx">msMatchesSelector</span><span class="p">,</span>
+		<span class="nx">pseudoWorks</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+
+	<span class="k">try</span> <span class="p">{</span>
+		<span class="c1">// This should fail with an exception</span>
+		<span class="c1">// Gecko does not error, returns false instead</span>
+		<span class="nx">matches</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span> <span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">,</span> <span class="s2">&quot;[test!=&#39;&#39;]:sizzle&quot;</span> <span class="p">);</span>
+	
+	<span class="p">}</span> <span class="k">catch</span><span class="p">(</span> <span class="nx">pseudoError</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">pseudoWorks</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="p">(</span> <span class="nx">matches</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">matchesSelector</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">node</span><span class="p">,</span> <span class="nx">expr</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">Sizzle</span><span class="p">.</span><span class="nx">isXML</span><span class="p">(</span> <span class="nx">node</span> <span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">try</span> <span class="p">{</span> 
+					<span class="k">if</span> <span class="p">(</span> <span class="nx">pseudoWorks</span> <span class="o">||</span> <span class="o">!</span><span class="nx">Expr</span><span class="p">.</span><span class="nx">match</span><span class="p">.</span><span class="nx">PSEUDO</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span> <span class="nx">expr</span> <span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="sr">/!=/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span> <span class="nx">expr</span> <span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="k">return</span> <span class="nx">matches</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span> <span class="nx">node</span><span class="p">,</span> <span class="nx">expr</span> <span class="p">);</span>
+					<span class="p">}</span>
+				<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{}</span>
+			<span class="p">}</span>
+
+			<span class="k">return</span> <span class="nx">Sizzle</span><span class="p">(</span><span class="nx">expr</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="p">[</span><span class="nx">node</span><span class="p">]).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="p">};</span>
+	<span class="p">}</span>
+<span class="p">})();</span>
 
 <span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
 	<span class="kd">var</span> <span class="nx">div</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">);</span>
@@ -1079,11 +1166,21 @@
 	<span class="p">}</span>
 <span class="p">}</span>
 
-<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">contains</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">compareDocumentPosition</span> <span class="o">?</span> <span class="kd">function</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">){</span>
-	<span class="k">return</span> <span class="o">!!</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">compareDocumentPosition</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">16</span><span class="p">);</span>
-<span class="p">}</span> <span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">){</span>
-	<span class="k">return</span> <span class="nx">a</span> <span class="o">!==</span> <span class="nx">b</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">contains</span> <span class="o">?</span> <span class="nx">a</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="o">:</span> <span class="kc">true</span><span class="p">);</span>
-<span class="p">};</span>
+<span class="k">if</span> <span class="p">(</span> <span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">contains</span> <span class="p">)</span> <span class="p">{</span>
+	<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">contains</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">){</span>
+		<span class="k">return</span> <span class="nx">a</span> <span class="o">!==</span> <span class="nx">b</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">contains</span> <span class="o">?</span> <span class="nx">a</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="o">:</span> <span class="kc">true</span><span class="p">);</span>
+	<span class="p">};</span>
+
+<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">compareDocumentPosition</span> <span class="p">)</span> <span class="p">{</span>
+	<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">contains</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">){</span>
+		<span class="k">return</span> <span class="o">!!</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">compareDocumentPosition</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">16</span><span class="p">);</span>
+	<span class="p">};</span>
+
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+	<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">contains</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+	<span class="p">};</span>
+<span class="p">}</span>
 
 <span class="nx">Sizzle</span><span class="p">.</span><span class="nx">isXML</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
 	<span class="c1">// documentElement is verified for cases where it doesn&#39;t yet exist</span>
@@ -1113,32 +1210,8 @@
 <span class="p">};</span>
 
 <span class="c1">// EXPOSE</span>
-<span class="nx">jet</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;sizzle&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">$</span><span class="p">.</span><span class="nx">parseQuery</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">root</span><span class="p">)</span> <span class="p">{</span>
-		<span class="nx">root</span> <span class="o">=</span> <span class="nx">root</span> <span class="o">||</span> <span class="nx">$</span><span class="p">.</span><span class="nx">context</span><span class="p">;</span>
-		<span class="kd">var</span> <span class="nx">c</span> <span class="o">=</span> <span class="nx">query</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-		<span class="k">if</span> <span class="p">(</span><span class="nx">c</span> <span class="o">==</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">)</span> <span class="p">{</span>
-			<span class="k">if</span> <span class="p">(</span><span class="nx">query</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/&lt;/g</span><span class="p">).</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-				<span class="k">return</span> <span class="nx">root</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="nx">query</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">query</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">3</span><span class="p">));</span>
-			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-				<span class="kd">var</span> <span class="nx">baseNode</span> <span class="o">=</span> <span class="s2">&quot;div&quot;</span><span class="p">;</span>
-				<span class="nx">Hash</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">nodeCreation</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">replacement</span><span class="p">,</span> <span class="nx">list</span><span class="p">)</span> <span class="p">{</span>
-					<span class="nx">ArrayHelper</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">list</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">{</span>
-						<span class="k">if</span> <span class="p">(</span><span class="nx">query</span><span class="p">.</span><span class="nx">search</span><span class="p">(</span><span class="nx">c</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-							<span class="nx">baseNode</span> <span class="o">=</span> <span class="nx">replacement</span><span class="p">;</span>
-						<span class="p">}</span>
-					<span class="p">});</span>
-				<span class="p">});</span>
-				<span class="kd">var</span> <span class="nx">tmpDiv</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Node</span><span class="p">(</span><span class="nx">baseNode</span><span class="p">,</span> <span class="nx">root</span><span class="p">);</span>
-				<span class="nx">tmpDiv</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="nx">query</span><span class="p">);</span>
-				<span class="k">return</span> <span class="nx">tmpDiv</span><span class="p">.</span><span class="nx">children</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="nx">_node</span><span class="p">;</span>
-			<span class="p">}</span>
-		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-			<span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">Sizzle</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">root</span><span class="p">);</span>
-			<span class="k">return</span> <span class="nx">result</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">?</span> <span class="nx">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">:</span> <span class="nx">result</span><span class="p">;</span>
-		<span class="p">}</span>
-	<span class="p">};</span>
-<span class="p">});</span>
+
+<span class="nb">window</span><span class="p">.</span><span class="nx">Sizzle</span> <span class="o">=</span> <span class="nx">Sizzle</span><span class="p">;</span>
 
 <span class="p">})();</span>
 </pre></div>
@@ -1163,18 +1236,23 @@
                                 <li class=""><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
-                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
                                 <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class="selected"><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
-                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
                         </ul>
                     </div>
 
@@ -1182,14 +1260,6 @@
                         <h4>Classes</h4>
                         <ul class="content">
                                 <li class=""><a href="Resize.html" title="Resize">Resize</a></li>
-                        </ul>
-                    </div>
-
-                    <div id="fileList" class="module">
-                        <h4>Files</h4>
-                        <ul class="content">        
-                                <li class="selected"><a href="sizzle.js.html" title="sizzle.js">sizzle.js</a></li>
-                                <li class=""><a href="spbar.js.html" title="spbar.js">spbar.js</a></li>
                         </ul>
                     </div>
 
@@ -1202,12 +1272,13 @@
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
+<script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Resize.html#config_animate", "access": "", "host": "Resize", "type": "config", "name": "animate"}, {"url": "Resize.html#event_beforeResize", "access": "", "host": "Resize", "type": "event", "name": "beforeResize"}, {"url": "Resize.html#config_constrain", "access": "", "host": "Resize", "type": "config", "name": "constrain"}, {"url": "Resize.html#event_endResize", "access": "", "host": "Resize", "type": "event", "name": "endResize"}, {"url": "Resize.html#property_handles", "access": "", "host": "Resize", "type": "property", "name": "handles"}, {"url": "Resize.html#config_hiddenHandles", "access": "", "host": "Resize", "type": "config", "name": "hiddenHandles"}, {"url": "Resize.html#method_lock", "access": "", "host": "Resize", "type": "method", "name": "lock"}, {"url": "Resize.html#config_locked", "access": "", "host": "Resize", "type": "config", "name": "locked"}, {"url": "Resize.html#config_minHeight", "access": "", "host": "Resize", "type": "config", "name": "minHeight"}, {"url": "Resize.html#config_minWidth", "access": "", "host": "Resize", "type": "config", "name": "minWidth"}, {"url": "Resize.html#config_node", "access": "", "host": "Resize", "type": "config", "name": "node"}, {"url": "Resize.html#config_proxy", "access": "", "host": "Resize", "type": "config", "name": "proxy"}, {"url": "Resize.html#property_reposition", "access": "", "host": "Resize", "type": "property", "name": "reposition"}, {"url": "Resize.html#event_resize", "access": "", "host": "Resize", "type": "event", "name": "resize"}, {"url": "Resize.html#config_shim", "access": "", "host": "Resize", "type": "config", "name": "shim"}, {"url": "Resize.html#method_stop", "access": "", "host": "Resize", "type": "method", "name": "stop"}, {"url": "Resize.html#method_unlock", "access": "", "host": "Resize", "type": "method", "name": "unlock"}];
+    var ALL_YUI_PROPS = [{"url": "Resize.html#config_animate", "access": "", "host": "Resize", "type": "config", "name": "animate"}, {"url": "Resize.html#event_animateChange", "access": "", "host": "Resize", "type": "event", "name": "animateChange"}, {"url": "Resize.html#event_beforeResize", "access": "", "host": "Resize", "type": "event", "name": "beforeResize"}, {"url": "Resize.html#config_constrain", "access": "", "host": "Resize", "type": "config", "name": "constrain"}, {"url": "Resize.html#event_constrainChange", "access": "", "host": "Resize", "type": "event", "name": "constrainChange"}, {"url": "Resize.html#event_endResize", "access": "", "host": "Resize", "type": "event", "name": "endResize"}, {"url": "Resize.html#property_handles", "access": "", "host": "Resize", "type": "property", "name": "handles"}, {"url": "Resize.html#config_hiddenHandles", "access": "", "host": "Resize", "type": "config", "name": "hiddenHandles"}, {"url": "Resize.html#event_hiddenHandlesChange", "access": "", "host": "Resize", "type": "event", "name": "hiddenHandlesChange"}, {"url": "Resize.html#method_lock", "access": "", "host": "Resize", "type": "method", "name": "lock"}, {"url": "Resize.html#config_locked", "access": "", "host": "Resize", "type": "config", "name": "locked"}, {"url": "Resize.html#event_lockedChange", "access": "", "host": "Resize", "type": "event", "name": "lockedChange"}, {"url": "Resize.html#config_minHeight", "access": "", "host": "Resize", "type": "config", "name": "minHeight"}, {"url": "Resize.html#event_minHeightChange", "access": "", "host": "Resize", "type": "event", "name": "minHeightChange"}, {"url": "Resize.html#config_minWidth", "access": "", "host": "Resize", "type": "config", "name": "minWidth"}, {"url": "Resize.html#event_minWidthChange", "access": "", "host": "Resize", "type": "event", "name": "minWidthChange"}, {"url": "Resize.html#config_node", "access": "", "host": "Resize", "type": "config", "name": "node"}, {"url": "Resize.html#event_nodeChange", "access": "", "host": "Resize", "type": "event", "name": "nodeChange"}, {"url": "Resize.html#property_reposition", "access": "", "host": "Resize", "type": "property", "name": "reposition"}, {"url": "Resize.html#event_resize", "access": "", "host": "Resize", "type": "event", "name": "resize"}, {"url": "Resize.html#config_shim", "access": "", "host": "Resize", "type": "config", "name": "shim"}, {"url": "Resize.html#event_shimChange", "access": "", "host": "Resize", "type": "event", "name": "shimChange"}, {"url": "Resize.html#method_stop", "access": "", "host": "Resize", "type": "method", "name": "stop"}, {"url": "Resize.html#method_unlock", "access": "", "host": "Resize", "type": "method", "name": "unlock"}, {"url": "Resize.html#config_useProxy", "access": "", "host": "Resize", "type": "config", "name": "useProxy"}, {"url": "Resize.html#event_useProxyChange", "access": "", "host": "Resize", "type": "event", "name": "useProxyChange"}];
 </script>
 </body>
 </html>

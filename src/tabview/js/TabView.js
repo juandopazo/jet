@@ -10,7 +10,7 @@
 $.TabView = Base.create('tabview', Widget, [$.WidgetParent], {
 	ATTRS: {
 		/**
-		 * @config panelContainer
+		 * @attribute panelContainer
 		 * @description Node that contains all tab panels
 		 * @writeOnce
 		 * @type NodeList

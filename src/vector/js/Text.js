@@ -1,10 +1,9 @@
 
 /**
  * A Text vector
- * @class Text
+ * @class Vector.Text
  * @extends Vector
  * @constructor
- * @namespace Vector
  * @param {Object} config
  */
 var Text = Base.create('text', Vector, [], {}, {

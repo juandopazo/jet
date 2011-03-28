@@ -2,23 +2,21 @@
 <html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-	<title>API: tabs  Tab   (Jet Library)</title>
+	<title>API: tabview  Tab   (Jet Library)</title>
 
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
 
-    <script type="text/javascript" src="assets/api-js"></script>
-    <script type="text/javascript" src="assets/ac-js"></script>
 </head>
 
-<body id="yahoo-com">
+<body>
 
-<div id="doc3" class="yui-t2">
+<div id="doc4" class="yui-t2">
 	<div id="hd">
-        <h1><a href="http://code.google.com/p/jet-js" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a></h1>
-        <h3>tabs&nbsp; <span class="subtitle">0.1.53</span></h3>
-        <a href="./index.html" title="JET - Javascript Extension Toolkit">JET - Javascript Extension Toolkit</a> 
-            &gt; <a href="./module_tabs.html" title="tabs">tabs</a>
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>tabview&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
+            &gt; <a href="./module_tabview.html" title="tabview">tabview</a>
                  &gt; Tab 
                 
         <form onsubmit="return false">
@@ -50,9 +48,18 @@
                         
                             Class <b property="yui:name">Tab</b>
                         <span class="extends">
-                           - extends <a href="Base.html" title="Base">Base</a>
+                           - extends <a href="Widget.html" title="Widget">Widget</a>
                         </span>
 
+                            <span class="extends" rel="yui:extends">
+                          - uses 
+                            
+                                <span rel="extend" resource="WidgetChild.html">
+                                <a href="WidgetChild.html" property="yui:name" title="WidgetChild">WidgetChild</a>
+                                </span>
+                            
+                            
+                        </span>
                     </h2>
                     <!-- class tree goes here -->
                     
@@ -95,155 +102,39 @@
                     
                     <div rel="yui:properties" resource="#properties">
 
+                        <div rel="yui:inheritance">
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Widget.html">
+                            <h4>Properties inherited from <a href="Widget.html" property="yui:name" title="Widget">Widget</a>:</h4>
+                            <div class="content" rel="yui:properties">
+                                <code>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
                     </div>
 
                     <div rel="yui:methods" resource="#methods">
-                        <div class="section method details">
-                            <h3 id="methods">Methods</h3>
-                            <div class="content">
-                                    <div class="" rel="yui:method" resource="#method_remove">
-                                    <h4>
-                                        <a name="method_remove">remove</a></h4>
-                                    <div class="detail" >
-                                        <code>
-                                        
-                                        
-                                        
-                                        void
-                                            <strong property="yui:name">remove</strong>
-                                           (
-                                            )
-                                        </code>
-                                        
-                                        <div class="description" property="yui:description">
-                                            Removes this tab from the DOM
-                                        </div>
-
-                                        <div class="description">
-
-
-
-
-             
-
-                                        </div>
-
-                                    </div>
-                                    <hr />
-                                    </div>
-                                    <div class="" rel="yui:method" resource="#method_select">
-                                    <h4>
-                                        <a name="method_select">select</a></h4>
-                                    <div class="detail" >
-                                        <code>
-                                        
-                                        
-                                        
-                                        void
-                                            <strong property="yui:name">select</strong>
-                                           (
-                                                
-                                                        
-                                                         silent
-                                                    
-                                                
-                                            )
-                                        </code>
-                                        
-                                        <div class="description" property="yui:description">
-                                            Selects this tab
-                                        </div>
-
-                                        <div class="description">
-
-                                                <dl rel="yui:parameters">
-                                                    <dt>Parameters:</dt>
-                                                        <dd rel="yui:parameter">
-                                                        <code><span property="yui:name">silent</span>
-                                                        &lt;<span property="yui:type">Boolean</span>&gt;
-                                                        </code>
-                                                        <span property="yui:description"> If true, the "selected" event is not fired</span>
-                                                        </dd>
-                                                </dl>
-
-
-                                            <div class="chainable">
-                                                <strong>Chainable:</strong> This method is chainable.
-                                            </div>        
-
-             
-
-                                        </div>
-
-                                    </div>
-                                    <hr />
-                                    </div>
-                                    <div class="" rel="yui:method" resource="#method_unselect">
-                                    <h4>
-                                        <a name="method_unselect">unselect</a></h4>
-                                    <div class="detail" >
-                                        <code>
-                                        
-                                        
-                                        
-                                        void
-                                            <strong property="yui:name">unselect</strong>
-                                           (
-                                                
-                                                        
-                                                         silent
-                                                    
-                                                
-                                            )
-                                        </code>
-                                        
-                                        <div class="description" property="yui:description">
-                                            Deselects this tab
-                                        </div>
-
-                                        <div class="description">
-
-                                                <dl rel="yui:parameters">
-                                                    <dt>Parameters:</dt>
-                                                        <dd rel="yui:parameter">
-                                                        <code><span property="yui:name">silent</span>
-                                                        &lt;<span property="yui:type">Boolean</span>&gt;
-                                                        </code>
-                                                        <span property="yui:description"> If true, the "selected" event is not fired</span>
-                                                        </dd>
-                                                </dl>
-
-
-                                            <div class="chainable">
-                                                <strong>Chainable:</strong> This method is chainable.
-                                            </div>        
-
-             
-
-                                        </div>
-
-                                    </div>
-                                    <hr />
-                                    </div>
-                            </div>
-                        </div>
 
                         <div rel="yui:inheritance">                    
                             <div class="section field inheritance" rel="yui:superclass"  resource="EventTarget.html">
                                 <h4>Methods inherited from <a href="EventTarget.html" property="yui:name" title="EventTarget">EventTarget</a>:</h4>
                                 <div class="content" rel="yui:methods">
                                     <code>
+                                            <span rel="yui:method" resource="EventTarget.html#method_after">                                        
+                                            <a class="" href="EventTarget.html#method_after" property="yui:name" title="after">after</a><span class="">,</span>
+                                            </span>
                                             <span rel="yui:method" resource="EventTarget.html#method_fire">                                        
                                             <a class="" href="EventTarget.html#method_fire" property="yui:name" title="fire">fire</a><span class="">,</span>
                                             </span>
                                             <span rel="yui:method" resource="EventTarget.html#method_on">                                        
                                             <a class="" href="EventTarget.html#method_on" property="yui:name" title="on">on</a><span class="">,</span>
                                             </span>
-                                            <span rel="yui:method" resource="EventTarget.html#method_unbind">                                        
-                                            <a class="" href="EventTarget.html#method_unbind" property="yui:name" title="unbind">unbind</a><span class="">,</span>
+                                            <span rel="yui:method" resource="EventTarget.html#method_once">                                        
+                                            <a class="" href="EventTarget.html#method_once" property="yui:name" title="once">once</a><span class="">,</span>
                                             </span>
-                                            <span rel="yui:method" resource="EventTarget.html#method_unbindAll">                                        
-                                            <a class="" href="EventTarget.html#method_unbindAll" property="yui:name" title="unbindAll">unbindAll</a>
+                                            <span rel="yui:method" resource="EventTarget.html#method_unbind">                                        
+                                            <a class="" href="EventTarget.html#method_unbind" property="yui:name" title="unbind">unbind</a>
                                             </span>
                                     </code>
                                 </div>
@@ -264,9 +155,6 @@
                                             <span rel="yui:method" resource="Attribute.html#method_getAttrs">                                        
                                             <a class="" href="Attribute.html#method_getAttrs" property="yui:name" title="getAttrs">getAttrs</a><span class="">,</span>
                                             </span>
-                                            <span rel="yui:method" resource="Attribute.html#method_isSet">                                        
-                                            <a class="" href="Attribute.html#method_isSet" property="yui:name" title="isSet">isSet</a><span class="">,</span>
-                                            </span>
                                             <span rel="yui:method" resource="Attribute.html#method_set">                                        
                                             <a class="" href="Attribute.html#method_set" property="yui:name" title="set">set</a><span class="">,</span>
                                             </span>
@@ -276,59 +164,455 @@
                                     </code>
                                 </div>
                             </div>
+                            <div class="section field inheritance" rel="yui:superclass"  resource="Widget.html">
+                                <h4>Methods inherited from <a href="Widget.html" property="yui:name" title="Widget">Widget</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="Widget.html#method_blur">                                        
+                                            <a class="" href="Widget.html#method_blur" property="yui:name" title="blur">blur</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="Widget.html#method_destroy">                                        
+                                            <a class="" href="Widget.html#method_destroy" property="yui:name" title="destroy">destroy</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="Widget.html#method_focus">                                        
+                                            <a class="" href="Widget.html#method_focus" property="yui:name" title="focus">focus</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="Widget.html#method_hide">                                        
+                                            <a class="" href="Widget.html#method_hide" property="yui:name" title="hide">hide</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="Widget.html#method_render">                                        
+                                            <a class="" href="Widget.html#method_render" property="yui:name" title="render">render</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="Widget.html#method_show">                                        
+                                            <a class="" href="Widget.html#method_show" property="yui:name" title="show">show</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="section field inheritance" rel="yui:superclass"  resource="Base.html">
+                                <h4>Methods inherited from <a href="Base.html" property="yui:name" title="Base">Base</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                    </code>
+                                </div>
+                            </div>
+                            <div class="section field inheritance" rel="yui:superclass"  resource="WidgetChild.html">
+                                <h4>Methods inherited from <a href="WidgetChild.html" property="yui:name" title="WidgetChild">WidgetChild</a>:</h4>
+                                <div class="content" rel="yui:methods">
+                                    <code>
+                                            <span rel="yui:method" resource="WidgetChild.html#method_next">                                        
+                                            <a class="" href="WidgetChild.html#method_next" property="yui:name" title="next">next</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="WidgetChild.html#method_previous">                                        
+                                            <a class="" href="WidgetChild.html#method_previous" property="yui:name" title="previous">previous</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="WidgetChild.html#method_select">                                        
+                                            <a class="" href="WidgetChild.html#method_select" property="yui:name" title="select">select</a><span class="">,</span>
+                                            </span>
+                                            <span rel="yui:method" resource="WidgetChild.html#method_toggle">                                        
+                                            <a class="" href="WidgetChild.html#method_toggle" property="yui:name" title="toggle">toggle</a>
+                                            </span>
+                                    </code>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div rel="yui:events" resource="#events">
+                        <div class="section method details">
+                            <h3 id="events">Events</h3>
+                            <div class="content">
+                                    <div class="" rel="yui:event" resource="#event_hrefChange">
+                                    <h4>
+                                        <a name="event_hrefChange">hrefChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">hrefChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'href' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
 
 
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_labelContentChange">
+                                    <h4>
+                                        <a name="event_labelContentChange">labelContentChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">labelContentChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'labelContent' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_panelContentChange">
+                                    <h4>
+                                        <a name="event_panelContentChange">panelContentChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">panelContentChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'panelContent' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_panelNodeChange">
+                                    <h4>
+                                        <a name="event_panelNodeChange">panelNodeChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">panelNodeChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'panelNode' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                                    <div class="" rel="yui:event" resource="#event_triggerEventChange">
+                                    <h4>
+                                        <a name="event_triggerEventChange">triggerEventChange</a></h4>
+                                    <div class="detail">
+                                        <code>
+                                        
+                                        
+                                        
+                                            <strong property="yui:name">triggerEventChange</strong>
+
+                                            (
+                                                
+                                                        
+                                                         event
+                                                    
+                                                
+                                            )
+
+                                        </code>
+                                        
+                                        <div class="description" property="yui:description">
+                                            Fires when the value for the configuration attribute 'triggerEvent' is changed. You can listen for the event using the <a href="EventTarget.html#method_on">on</a> method if you wish to be notified before the attribute's value has changed, or using the <a href="EventTarget.html#method_after">after</a> method if you wish to be notified after the attribute's value has changed.
+                                        </div>
+
+                                        <div class="description">
+
+
+                                                <dl rel="yui:parameters">
+                                                    <dt>Parameters:</dt>
+                                                        <dd rel="yui:parameter">
+                                                            <code><span property="yui:name">event</span>
+                                                                &lt;<span property="yui:type">EventFacade</span>&gt;
+                                                            </code>
+                                                            <span property="yui:description">An EventFacade object with      the following attribute specific properties added:	<dl>		<dt>prevVal</dt>		<dd>The value of the attribute, prior to it being set</dd>		<dt>newVal</dt>		<dd>The value the attribute is to be set to</dd>		<dt>attrName</dt>		<dd>The name of the attribute being set</dd>		<dt>subAttrName</dt>		<dd>If setting a property within the attribute's value,           the name of the sub-attribute property being set</dd>	</dl></span>
+                                                        </dd>
+                                                        
+                                                </dl>
+
+
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    </div>
+                            </div>
+                        </div>
+
+
+                        <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Widget.html">
+                            <h4>Events inherited from <a href="Widget.html" property="yui:name" title="Widget">Widget</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="Widget.html#event_afterHide">
+                                        <a class="" href="Widget.html#event_afterHide" property="yui:name" title="afterHide">afterHide</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_afterRender">
+                                        <a class="" href="Widget.html#event_afterRender" property="yui:name" title="afterRender">afterRender</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_afterShow">
+                                        <a class="" href="Widget.html#event_afterShow" property="yui:name" title="afterShow">afterShow</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_blur">
+                                        <a class="" href="Widget.html#event_blur" property="yui:name" title="blur">blur</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_boundingBoxChange">
+                                        <a class="" href="Widget.html#event_boundingBoxChange" property="yui:name" title="boundingBoxChange">boundingBoxChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_classPrefixChange">
+                                        <a class="" href="Widget.html#event_classPrefixChange" property="yui:name" title="classPrefixChange">classPrefixChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_contentBoxChange">
+                                        <a class="" href="Widget.html#event_contentBoxChange" property="yui:name" title="contentBoxChange">contentBoxChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_destroy">
+                                        <a class="" href="Widget.html#event_destroy" property="yui:name" title="destroy">destroy</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_focus">
+                                        <a class="" href="Widget.html#event_focus" property="yui:name" title="focus">focus</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_heightChange">
+                                        <a class="" href="Widget.html#event_heightChange" property="yui:name" title="heightChange">heightChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_hide">
+                                        <a class="" href="Widget.html#event_hide" property="yui:name" title="hide">hide</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_idChange">
+                                        <a class="" href="Widget.html#event_idChange" property="yui:name" title="idChange">idChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_render">
+                                        <a class="" href="Widget.html#event_render" property="yui:name" title="render">render</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_renderedChange">
+                                        <a class="" href="Widget.html#event_renderedChange" property="yui:name" title="renderedChange">renderedChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_show">
+                                        <a class="" href="Widget.html#event_show" property="yui:name" title="show">show</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_srcNodeChange">
+                                        <a class="" href="Widget.html#event_srcNodeChange" property="yui:name" title="srcNodeChange">srcNodeChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="Widget.html#event_widthChange">
+                                        <a class="" href="Widget.html#event_widthChange" property="yui:name" title="widthChange">widthChange</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Base.html">
+                            <h4>Events inherited from <a href="Base.html" property="yui:name" title="Base">Base</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="Base.html#event_onChange">
+                                        <a class="" href="Base.html#event_onChange" property="yui:name" title="onChange">onChange</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="WidgetChild.html">
+                            <h4>Events inherited from <a href="WidgetChild.html" property="yui:name" title="WidgetChild">WidgetChild</a>:</h4>
+                            <div class="content" rel="yui:events">
+                                <code>
+                                        <span rel="yui:event" resource="WidgetChild.html#event_indexChange">
+                                        <a class="" href="WidgetChild.html#event_indexChange" property="yui:name" title="indexChange">indexChange</a><span class="">,</span>
+                                        </span>
+                                                                            <span rel="yui:event" resource="WidgetChild.html#event_parentChange">
+                                        <a class="" href="WidgetChild.html#event_parentChange" property="yui:name" title="parentChange">parentChange</a>
+                                        </span>
+                                                                            <span rel="yui:event" resource="WidgetChild.html#event_selectedChange">
+                                        <a class="" href="WidgetChild.html#event_selectedChange" property="yui:name" title="selectedChange">selectedChange</a>
+                                        </span>
+                                    
+                                </code>
+                            </div>
+                        </div>
+                        </div>
                     </div>
 
                     <div rel="yui:attributes" resource="#configattributes">
                         <div class="section field details">
                             <h3 id="configattributes">Configuration Attributes</h3>
                             <div class="content">
-                                    <div class="" rel="yui:attribute" resource="#config_label">
-                                    <h4><a name="config_label">label</a>
-                                        <code>- <span property="yui:type">String | LI Node</span></code>
+                                    <div class="" rel="yui:attribute" resource="#config_href">
+                                    <h4><a name="config_href">href</a>
+                                        <code>- writeonce <span property="yui:type">object</span></code>
                                     </h4>
                                     <div class="detail">
                                         <div class="description" property="yui:description">
-                                            The text to use as label
-                                        </div>
-                                    </div>
- 
-     
-
-                                    <hr />
-                                    </div>        
-                                    <div class="" rel="yui:attribute" resource="#config_panel">
-                                    <h4><a name="config_panel">panel</a>
-                                        <code>- <span property="yui:type">String | DOM Node</span></code>
-                                    </h4>
-                                    <div class="detail">
-                                        <div class="description" property="yui:description">
-                                            The element or text to use as a panel
-                                        </div>
-                                    </div>
- 
-     
-
-                                    <hr />
-                                    </div>        
-                                    <div class="" rel="yui:attribute" resource="#config_selected">
-                                    <h4><a name="config_selected">selected</a>
-                                        <code>- <span property="yui:type">Boolean</span></code>
-                                    </h4>
-                                    <div class="detail">
-                                        <div class="description" property="yui:description">
-                                            True if this is the currently selected tab of a TabView
+                                            Href attribute for this tab's label. Useful for progressive enhancement
                                         </div>
                                     </div>
  
      
                                     <div class="default">
-                                        Default Value: false
+                                        Default Value: '#'
+                                    </div>        
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_labelContent">
+                                    <h4><a name="config_labelContent">labelContent</a>
+                                        <code>- <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Gets/sets the content of the tab's label
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_panelContent">
+                                    <h4><a name="config_panelContent">panelContent</a>
+                                        <code>- <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Gets/sets the content of the tab's panel
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_panelNode">
+                                    <h4><a name="config_panelNode">panelNode</a>
+                                        <code>- writeonce <span property="yui:type">object</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            The element to use as a panel
+                                        </div>
+                                    </div>
+ 
+     
+
+                                    <hr />
+                                    </div>        
+                                    <div class="" rel="yui:attribute" resource="#config_triggerEvent">
+                                    <h4><a name="config_triggerEvent">triggerEvent</a>
+                                        <code>- <span property="yui:type">String</span></code>
+                                    </h4>
+                                    <div class="detail">
+                                        <div class="description" property="yui:description">
+                                            Event that triggers the selection of this tab
+                                        </div>
+                                    </div>
+ 
+     
+                                    <div class="default">
+                                        Default Value: 'click'
                                     </div>        
 
                                     <hr />
@@ -338,6 +622,39 @@
                         </div>
 
                         <div rel="yui:inheritance">                    
+                        <div class="section field inheritance" rel="yui:superclass"  resource="Widget.html">
+                            <h4>Configuration attributes inherited from <a href="Widget.html" property="yui:name" title="Widget">Widget</a>:</h4>
+                            <div class="content" rel="yui:attributes">
+                                <code>
+                                    <h2>Widget</h2>
+                                        <span rel="yui:attribute" resource="Widget.html#config_boundingBox">                                        
+                                        <a class="" href="Widget.html#config_boundingBox" property="yui:name" title="boundingBox">boundingBox</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_classPrefix">                                        
+                                        <a class="" href="Widget.html#config_classPrefix" property="yui:name" title="classPrefix">classPrefix</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_contentBox">                                        
+                                        <a class="" href="Widget.html#config_contentBox" property="yui:name" title="contentBox">contentBox</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_height">                                        
+                                        <a class="" href="Widget.html#config_height" property="yui:name" title="height">height</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_id">                                        
+                                        <a class="" href="Widget.html#config_id" property="yui:name" title="id">id</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_rendered">                                        
+                                        <a class="" href="Widget.html#config_rendered" property="yui:name" title="rendered">rendered</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_srcNode">                                        
+                                        <a class="" href="Widget.html#config_srcNode" property="yui:name" title="srcNode">srcNode</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="Widget.html#config_width">                                        
+                                        <a class="" href="Widget.html#config_width" property="yui:name" title="width">width</a>
+                                        </span>
+                                        
+                                </code>
+                            </div>
+                        </div>
                         <div class="section field inheritance" rel="yui:superclass"  resource="Base.html">
                             <h4>Configuration attributes inherited from <a href="Base.html" property="yui:name" title="Base">Base</a>:</h4>
                             <div class="content" rel="yui:attributes">
@@ -345,6 +662,24 @@
                                     <h2>Base</h2>
                                         <span rel="yui:attribute" resource="Base.html#config_on">                                        
                                         <a class="" href="Base.html#config_on" property="yui:name" title="on">on</a>
+                                        </span>
+                                        
+                                </code>
+                            </div>
+                        </div>
+                        <div class="section field inheritance" rel="yui:superclass"  resource="WidgetChild.html">
+                            <h4>Configuration attributes inherited from <a href="WidgetChild.html" property="yui:name" title="WidgetChild">WidgetChild</a>:</h4>
+                            <div class="content" rel="yui:attributes">
+                                <code>
+                                    <h2>WidgetChild</h2>
+                                        <span rel="yui:attribute" resource="WidgetChild.html#config_index">                                        
+                                        <a class="" href="WidgetChild.html#config_index" property="yui:name" title="index">index</a><span class="">,</span>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="WidgetChild.html#config_parent">                                        
+                                        <a class="" href="WidgetChild.html#config_parent" property="yui:name" title="parent">parent</a>
+                                        </span>
+                                                                                <span rel="yui:attribute" resource="WidgetChild.html#config_selected">                                        
+                                        <a class="" href="WidgetChild.html#config_selected" property="yui:name" title="selected">selected</a>
                                         </span>
                                         
                                 </code>
@@ -372,18 +707,23 @@
                                 <li class=""><a href="module_history.html" title="history">history</a></li>
                                 <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
                                 <li class=""><a href="module_io.html" title="io">io</a></li>
-                                <li class=""><a href="module_jet.html" title="jet">jet</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
                                 <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
                                 <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
                                 <li class=""><a href="module_node.html" title="node">node</a></li>
                                 <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
-                                <li class=""><a href="module_simpleprogressbar.html" title="simpleprogressbar">simpleprogressbar</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
-                                <li class="selected"><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class="selected"><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
-                                <li class=""><a href="module_ua.html" title="ua">ua</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
                         </ul>
                     </div>
 
@@ -395,30 +735,27 @@
                         </ul>
                     </div>
 
-                    <div id="fileList" class="module">
-                        <h4>Files</h4>
+
+
+                    <div id="eventsList" class="module">
+                        <h4>Events</h4>
                         <ul class="content">        
-                                <li class=""><a href="treeview.js.html" title="treeview.js">treeview.js</a></li>
+                                <li class=""><a href="#event_hrefChange" title="hrefChange">hrefChange</a></li>
+                                <li class=""><a href="#event_labelContentChange" title="labelContentChange">labelContentChange</a></li>
+                                <li class=""><a href="#event_panelContentChange" title="panelContentChange">panelContentChange</a></li>
+                                <li class=""><a href="#event_panelNodeChange" title="panelNodeChange">panelNodeChange</a></li>
+                                <li class=""><a href="#event_triggerEventChange" title="triggerEventChange">triggerEventChange</a></li>
                         </ul>
                     </div>
-
-
-                    <div id="methodsList" class="module">
-                        <h4>Methods</h4>
-                        <ul class="content">        
-                                <li class=""><a href="#method_remove" title="remove">remove</a></li>
-                                <li class=""><a href="#method_select" title="select">select</a></li>
-                                <li class=""><a href="#method_unselect" title="unselect">unselect</a></li>
-                        </ul>
-                    </div>
-
 
                     <div id="configList" class="module">
                         <h4>Configuration Attributes</h4>
                         <ul class="content">        
-                                <li class=""><a href="#config_label" title="label">label</a></li>
-                                <li class=""><a href="#config_panel" title="panel">panel</a></li>
-                                <li class=""><a href="#config_selected" title="selected">selected</a></li>
+                                <li class=""><a href="#config_href" title="href">href</a></li>
+                                <li class=""><a href="#config_labelContent" title="labelContent">labelContent</a></li>
+                                <li class=""><a href="#config_panelContent" title="panelContent">panelContent</a></li>
+                                <li class=""><a href="#config_panelNode" title="panelNode">panelNode</a></li>
+                                <li class=""><a href="#config_triggerEvent" title="triggerEvent">triggerEvent</a></li>
                         </ul>
                     </div>
 
@@ -427,12 +764,13 @@
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2010 Juan Ignacio Dopazo All rights reserved.
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
+<script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
-    var ALL_YUI_PROPS = [{"url": "Tab.html#config_label", "access": "", "host": "Tab", "type": "config", "name": "label"}, {"url": "Tab.html#config_panel", "access": "", "host": "Tab", "type": "config", "name": "panel"}, {"url": "Tab.html#method_remove", "access": "", "host": "Tab", "type": "method", "name": "remove"}, {"url": "Tab.html#method_select", "access": "", "host": "Tab", "type": "method", "name": "select"}, {"url": "Tab.html#config_selected", "access": "", "host": "Tab", "type": "config", "name": "selected"}, {"url": "Tab.html#method_unselect", "access": "", "host": "Tab", "type": "method", "name": "unselect"}];
+    var ALL_YUI_PROPS = [{"url": "Tab.html#config_href", "access": "", "host": "Tab", "type": "config", "name": "href"}, {"url": "Tab.html#event_hrefChange", "access": "", "host": "Tab", "type": "event", "name": "hrefChange"}, {"url": "Tab.html#config_labelContent", "access": "", "host": "Tab", "type": "config", "name": "labelContent"}, {"url": "Tab.html#event_labelContentChange", "access": "", "host": "Tab", "type": "event", "name": "labelContentChange"}, {"url": "Tab.html#config_panelContent", "access": "", "host": "Tab", "type": "config", "name": "panelContent"}, {"url": "Tab.html#event_panelContentChange", "access": "", "host": "Tab", "type": "event", "name": "panelContentChange"}, {"url": "Tab.html#config_panelNode", "access": "", "host": "Tab", "type": "config", "name": "panelNode"}, {"url": "Tab.html#event_panelNodeChange", "access": "", "host": "Tab", "type": "event", "name": "panelNodeChange"}, {"url": "Tab.html#config_triggerEvent", "access": "", "host": "Tab", "type": "config", "name": "triggerEvent"}, {"url": "Tab.html#event_triggerEventChange", "access": "", "host": "Tab", "type": "event", "name": "triggerEventChange"}];
 </script>
 </body>
 </html>

@@ -1,17 +1,16 @@
 
 /**
  * A circle vector
- * @class Circle
+ * @class Vector.Circle
  * @extends Vector
  * @constructor
- * @namespace Vector
  * @param {Object} config
  */
 var Circle = Base.create('circle', Vector, [], {
 	
 	ATTRS: {
 		/**
-		 * @config r
+		 * @attribute r
 		 * @description Radius of the circle
 		 */
 		r: {
@@ -31,7 +30,7 @@ var Circle = Base.create('circle', Vector, [], {
 			}
 		},
 		/**
-		 * @config cx
+		 * @attribute cx
 		 * @description X coordinate of the circle's center
 		 */
 		cx: {
@@ -45,7 +44,7 @@ var Circle = Base.create('circle', Vector, [], {
 			}
 		},
 		/**
-		 * @config cy
+		 * @attribute cy
 		 * @description Y coordinate of the circle's center
 		 */
 		cy: {

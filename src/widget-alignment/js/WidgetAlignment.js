@@ -8,7 +8,6 @@ var PX = 'px';
  * A widget extension that provides alignment support
  * @class WidgetAlignment
  * @constructor
- * @param {Object} config Object literal specifying widget configuration properties
  */
 function WidgetAlignment() {};
 $.mix(WidgetAlignment, {
@@ -198,7 +197,7 @@ $.mix(WidgetAlignment, {
 	
 	ATTRS: {
 		/**
-		 * @config fixed
+		 * @attribute fixed
 		 * @description Whether the widget should stay fixed to the viewport or no
 		 * @default false
 		 */
@@ -207,7 +206,7 @@ $.mix(WidgetAlignment, {
 		},
 		
 		/**
-		 * @config constrain
+		 * @attribute constrain
 		 * @description If set to true, the widget will never bleed outside the viewport
 		 * @default false
 		 */
@@ -216,7 +215,7 @@ $.mix(WidgetAlignment, {
 		},
 
 		/**
-		 * @config align
+		 * @attribute align
 		 * @description Alignment configuration. An object containing three optional properties:
 		 * - node: a selector or node instance of a node to use as a reference
 		 * - points: an array of two values representing corners of nodes. The first one is this widget's corner to use. The second one is the target's corner

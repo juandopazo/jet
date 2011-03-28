@@ -3,14 +3,13 @@
  * Cross-domain data source
  * @class DataSource.XDR
  * @extends DataSource
- * @namespace DataSource
  * @constructor
  * @param {Object} config Object literal specifying configuration properties
  */
 DataSource.XDR = Base.create('datasource-xdr', DataSource, [], {
 	ATTRS: {
 		/**
-		 * @config url
+		 * @attribute url
 		 * @description Url from which to fetch the data
 		 * @type String
 		 * @required

@@ -1,548 +1,432 @@
-/*
- Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
- Code licensed under the BSD License
- http://code.google.com/p/jet-js/wiki/Licence
-*/
 /**
  * Different kinds of buttons and form elements
  * @module button
- * @require jet, node, base
- * @namespace
+ * @requires base
+ * 
+ * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
+ * Code licensed under the BSD License
+ * https://github.com/juandopazo/jet/blob/master/LICENSE.md
+*/
+jet.add('button', function ($) {
+
+			
+var A = $.Array,
+	Hash = $.Hash,
+	Lang = $.Lang,
+	Base = $.Base,
+	Widget = $.Widget,
+	WidgetParent = $.WidgetParent,
+	WidgetChild = $.WidgetChild;
+
+var BOUNDING_BOX = "boundingBox",
+	CONTENT_BOX = 'contentBox',
+	LABEL_NODE = 'labelNode',
+	ENABLED = 'enabled',
+	HOVER = 'hover',
+	FOCUS = 'focus',
+	BLUR = 'blur',
+	ID = 'id',
+	PARENT = 'parent',
+	NAME = 'name',
+	PILL = 'pill';
+
+if (!jet.Button) {
+	jet.Button = {};
+}
+
+if (!jet.Button.buttons) {
+	jet.Button.buttons = 1;
+}
+
+/**
+ * A button widget
+ * @class Button
+ * @extends Widget
+ * @uses WidgetChild
+ * @param {Object} config Object literal specifying widget configuration properties
  */
-jet().add('button', function ($) {
+var Button = Base.create('button', Widget, [WidgetChild], {
 	
-	var A = $.Array,
-		Hash = $.Hash,
-		Lang = $.Lang;
-	
-	var CLASS_NAME = "className",
-		BUTTON = "button",
-		BOUNDING_BOX = "boundingBox",
-		BUTTON_NODE = "buttonNode",
-		NEW_SPAN = "<span/>",
-		CLASS_PREFIX = "classPrefix",
-		CONTENT_BOX = "contentBox",
-		VISIBILITY = "visibility",
-		PRESSED = "pressed",
-		CLICK = "click",
-		COMBO = "combo",
-		OPTION = "option",
-		OPTIONS = "options",
-		RENDER = "render",
-		TYPE = "type";
-	
-	if (!jet.buttons) {
-		jet.buttons = {};
-	}
-	
-	if (!jet.buttons.buttons) {
-		jet.buttons.buttons = 1;
-	}
-	
-	var ButtonBase = function () {
-		ButtonBase.superclass.constructor.apply(this, arguments);
-		
-		this.on("disabledChange", function (e, val) {
-			this.get(BUTTON_NODE)[0].disabled = !!val;
-		});
-		
-		this.on("afterRender", function () {
-			this.get(BUTTON_NODE)[0].disabled = !!this.get("disabled");
-		});
-	};
-	$.extend(ButtonBase, $.Widget, {
+	ATTRS: {
 		/**
-		 * Disables the button
-		 * @method disable
-		 * @chainable
+		 * @attribute enabled
+		 * @description Enabled status of the button
+		 * @type Boolean
+		 * @default true
 		 */
-		disable: function () {
-			return this.set("disabled", true);
+		enabled: {
+			value: true,
+			validator: Lang.isBoolean
 		},
 		/**
-		 * Enables the button
-		 * @method enable
-		 * @chainable
-		 */
-		enable: function () {
-			return this.set("disabled", false);
-		},
-		/**
-		 * Fires the blur event
-		 * @method blur
-		 * @chainable
-		 */
-		blur: function () {
-			this.get(BUTTON_NODE).blur();
-			this.fire("blur");
-			return this;
-		},
-		/**
-		 * Fires the focus event and sets the button as active
-		 * @method focus
-		 * @chainable
-		 */
-		focus: function () {
-			this.get(BUTTON_NODE).focus();
-			this.fire("focus");
-			return this;
-		}
-	});
-	
-	/**
-	 * A button may be a push button, a radio button or other form elements that behave as buttons
-	 * @class Button
-	 * @constructor
-	 * @extends Widget
-	 * @param {Object} config Object literal specifying widget configuration properties
-	 */
-	var Button = function () {
-		Button.superclass.constructor.apply(this, arguments);
-		var myself = this.set(CLASS_NAME, BUTTON).addAttrs({
-			/**
-			 * @config type
-			 * @type String
-			 * @writeOnce
-			 * @default "push"
-			 */
-			type: {
-				writeOnce: true,
-				value: "push"
-			},
-			// overwrite standard boundingBox (a div) with a span
-			// maybe all widgets should use a span with display: inline-block as a boundingBox?
-			boundingBox: {
-				readOnly: true,
-				value: $(NEW_SPAN)
-			},
-			//overwrite standard contentBox (a div) with a span
-			contentBox: {
-				readOnly: true,
-				value: $(NEW_SPAN)
-			},
-			disabled: {
-				validator: Lang.isBoolean,
-				value: false
-			},
-			text: {
-				value: ""
-			},
-			className: {
-				value: Button.NAME
-			}
-		});
-		var type = myself.get(TYPE);
-		var id = ++jet.buttons.buttons;
-		/**
-		 * The button node
-		 * @config buttonNode
+		 * @attribute labelNode
+		 * @description Pointer to the <label> node related to this button
+		 * @type NodeList
 		 * @readOnly
 		 */
-		myself.addAttr(BUTTON_NODE, {
-			readOnly: true,
-			value: $("<" + (type == "link" ? "a" : type == "push" ? "button" : "input") + "/>")
-		});
-		if (type == "text") {
-			myself.get(BUTTON_NODE).attr("type", type);
+		labelNode: {
+			value: null,
+			setter: $
+		},
+		/**
+		 * @attribute labelContent
+		 * @description Text of this button's label
+		 * @type String
+		 * @default null
+		 */
+		labelContent: {
+			value: null,
+			validator: Lang.isString
+		},
+		/**
+		 * @attribute text
+		 * @description Text inside the button
+		 * @default ''
+		 */
+		text: {
+			value: ''
 		}
-		
-		myself.on(RENDER, function () {
-			var buttonName = myself.get(CLASS_NAME);				
-			var node = myself.get(BUTTON_NODE);
-			var text = myself.get("text");
-			if (type == "text") {
-				node.attr("value", text);
+	},
+	
+	EVENTS: {
+		enabledChange: function (e, val) {
+			var boundingBox = this.get(BOUNDING_BOX);
+			var disabledClass = this.getClassName('disabled');
+			if (!val) {
+				boundingBox.addClass(disabledClass);
 			} else {
-				node.html(text);
+				disabledClass.removeClass(disabledClass);
 			}
-			var prefix = myself.get(CLASS_PREFIX);
-			var prefixName = prefix + buttonName;
-			var eventPrefix = prefix + type + buttonName;
-			var boundingBox = myself.get(BOUNDING_BOX).addClass(prefixName, prefix + type + "-" + buttonName);
-			var contentBox = myself.get(CONTENT_BOX).addClass("first-child");
-			node.on("mouseover", function () {
-				boundingBox.addClass(prefixName + "-hover", eventPrefix + "-hover");
-			}).on("mouseout", function () {
-				boundingBox.removeClass(prefixName + "-hover", eventPrefix + "-hover");
-			}).on("focus", function () {
-				boundingBox.addClass(prefixName + "-focus", eventPrefix + "-focus");
-				myself.fire("focus");
-			}).on("blur", function () {
-				boundingBox.removeClass(prefixName + "-focus", eventPrefix + "-focus");
-				myself.fire("blur");
-			}).on(CLICK, function (e) {
-				//node[0].blur();
-				if (myself.fire(PRESSED)) {
-					e.preventDefault();
+			this.get(CONTENT_BOX)._nodes[0].disabled = !val;
+		},
+		
+		labelContentChange: function (e, val) {
+			var labelNode = this.get(LABEL_NODE);
+			if (Lang.isString(val)) {
+				labelNode.html(val);
+				if (!labelNode.parent()._nodes[0]) {
+					this.get(BOUNDING_BOX).prepend(labelNode);
 				}
-			});
-			id = myself.get(CLASS_PREFIX) + myself.get(CLASS_NAME) + "-" + id;
-			node.attr("id", id).appendTo(contentBox.appendTo(boundingBox));
-		});
-		myself.on("afterRender", function () {
-			// since the order of the nodes was changed, use visibility inherit to avoid breaking the hide() method
-			myself.get(BOUNDING_BOX).css(VISIBILITY, "inherit");
-			var label = myself.get("label");
-			if (label) {
-				label = $("<label/>").html(label).insertBefore(myself.get(BOUNDING_BOX));
-				label[0].setAttribute("for", id);
+			} else {
+				labelNode.remove();
 			}
-		});
-	};
-	Button.NAME = "button";
-	$.extend(Button, ButtonBase);
-	
-	var createTag = function (tag) {
-		return $.context.createElement(tag);
-	};
-	
-	var addOption = function (combo, text, value) {
-		/* Note by jdopazo:
-		 Lazy initialization for the function _add()
-		 I create a <select> element that I never attach to the dom
-		 and try to attach an <OPTION> element to it with try...catch
-		 This way I avoid using try...catch every time this function is called */
-		var testSelect = createTag("select"),
-			testOption = createTag(OPTION),
-			standards = false;
-		try {
-			testSelect.add(testOption, null); //standards compliant
-			standards = true;
-		} catch (ex) {
-			testSelect.add(testOption); // IE only
+		},
+		
+		textChange: function (e, val) {
+			this.get(CONTENT_BOX).html(val);
+		},
+		
+		afterFocus: function (e) {
+			this.get(BOUNDING_BOX).addClass(this.getClassName(FOCUS));
+			this.get(CONTENT_BOX).focus();
+		},
+		
+		afterBlur: function (e) {
+			this.get(BOUNDING_BOX).removeClass(this.getClassName(FOCUS));
+			this.get(CONTENT_BOX).blur();
+		},
+		
+		mouseover: function (e, domEvent) {
+			this.get(BOUNDING_BOX).addClass(this.getClassName(HOVER));
+		},
+		
+		mouseout: function (e, domEvent) {
+			this.get(BOUNDING_BOX).removeClass(this.getClassName(HOVER));
+		},
+		
+		render: function () {
+			var id = this.getClassName('content', this._uid);
+			var contentBox = this.get(CONTENT_BOX).attr(ID, id).html(this.get('text'));
+			var labelNode = this.get(LABEL_NODE);
+			var label = this.get('labelContent');
+			labelNode._nodes[0].setAttribute('for', id);
+			if (Lang.isString(label)) {
+				this.get(BOUNDING_BOX).prepend(labelNode.html(label));
+			}
+			contentBox._nodes[0].disabled = !this.get(ENABLED);
+			this._handlers.push(contentBox.on(FOCUS, this._onDomFocus, this));
+			this._handlers.push(contentBox.on(BLUR, this._onDomBlur, this));
+		},
+		
+		destroy: function () {
+			this.get(CONTENT_BOX).unbind(FOCUS, this._onDomFocus).unbind(BLUR, this._onDomBlur);
+			this.get(LABEL_NODE).remove();
 		}
-		if (standards) {
-			addOption = function (combo, text, value) {
-				var newOption = createTag(OPTION);
-				newOption.text = text;
-				if (value) {
-					newOption.value = value;
-				}
-				combo.add(newOption, null);
-			};
-		} else {
-			addOption = function (combo, text, value) {
-				var newOption = createTag(OPTION);
-				newOption.text = text;
-				if (value) {
-					newOption.value = value;
-				}
-				combo.add(newOption);
-			};
-		}
-		addOption(combo, text, value);
-	};
-	
-	if (!jet.buttons.combo) {
-		jet.buttons.combo = 1;
 	}
 	
+}, {
+	CONTENT_TEMPLATE: '<button/>',
+	LABEL_TEMPLATE: '<label/>',
 	/**
-	 * A ComboBox is a select html element
-	 * @class ComboBox
-	 * @extends Button
-	 * @constructor
-	 * @param {Object} config Object literal specifying widget configuration properties
+	 * Disables the button
+	 * @method disable
+	 * @chainable
 	 */
-	var ComboBox = function () {
-		ComboBox.superclass.constructor.apply(this, arguments);
-		
-		var myself = this.addAttrs({
-			/**
-			 * @config options
-			 * @description List of options to prepopulate the combobox
-			 * @type Array
-			 */
-			options: {
-				value: []
-			},
-			buttonNode: {
-				readOnly: true,
-				value: $("<select/>")
-			},
-			className: {
-				value: "combobox"
-			},
-			/**
-			 * @config selected
-			 * @description The selected option index
-			 * @type Number
-			 */
-			selected: {
-				validator: Lang.isNumber,
-				getter: function () {
-					var combo = myself.get(BUTTON_NODE)[0]; 
-					return combo.options[combo.selectedIndex];
-				},
-				setter: function (val) {
-					var combo = myself.get(BUTTON_NODE)[0];
-					if (val >= 0 && myself.fire("change", combo.options[val])) {
-						combo.selectedIndex = val;
-					}
-					return val;
-				}
-			},
-			/**
-			 * @config count
-			 * @description returns the nombre of options in the combobox
-			 * @readOnly
-			 */
-			count: {
-				readOnly: true,
-				getter: function () {
-					return myself.get(BUTTON_NODE)[0].options.length;
-				}
-			}
-		});
-		
-		var setOptions = function (combo, opts) {
-			A.each(opts, function (value) {
-				if (Lang.isHash(value)) {
-					Hash.each(value, function (text, val) {
-						addOption(combo, text, val);
-					});
-				} else {
-					addOption(combo, value);
-				}
-			});
-		};
-		
-		var id = ++jet.buttons.combo;
-		
-		myself.on("optionsChange", function (e, newOptions) {
-			var combo = myself.get(BUTTON_NODE)[0];
-			combo.options.length = 0;
-			setOptions(combo, newOptions);
-		});
-		
-		myself.on("render", function () {
-			var boundingBox = myself.get(BOUNDING_BOX);
-			var button = myself.get(BUTTON_NODE);
-			var label = myself.get("label");
-			id = myself.get(CLASS_PREFIX) + myself.get(CLASS_NAME) + "-" + id;
-			if (label) {
-				label = $("<label/>").html(label).appendTo(boundingBox);
-				label[0].setAttribute("for", id);
-			}
-			button.attr("id", id).appendTo(boundingBox);
-			button.on("change", function (e) {
-				myself.fire("change", button[0].options[button[0].selectedIndex]);
-			});
-			setOptions(myself.get(BUTTON_NODE)[0], myself.get(OPTIONS));
-		});
-	};
-	$.extend(ComboBox, ButtonBase, {
-		/**
-		 * @method add
-		 * @description Adds options to the combo box
-		 * @param {String | Hash} The text value of the option, or alternatively 
-		 * a hash which key is the text and the value is the option's value
-		 * @param {String} value optional - The value of the option
-		 * @chainable
-		 */
-		add: function (text, value) {
-			var myself = this;
-			var opt;
-			if (value) {
-				opt = {};
-				opt[text] = value;
-			} else {
-				opt = text;
-			}
-			myself.get("options").push(opt);
-			addOption(myself.get(BUTTON_NODE)[0], text, value);
-			return myself;
-		},
-		/**
-		 * @method fill
-		 * @description Adds several options to the select
-		 * @param {Array} values An array of text values that behave like the "text" parameter of the add() method
-		 * @chainable
-		 */
-		fill: function (values) {
-			var myself = this;
-			if (Lang.isArray(values)) {
-				A.each(values, function (t) {
-					myself.add(t);
-				});
-			} else {
-				Hash.each(values, myself.add);
-			}
-			return myself;
-		},
-		/**
-		 * @method clear
-		 * @description Removes all options from the combo box
-		 * @chainable
-		 */
-		clear: function () {
-			return this.set("options", []);
-		},
-		/**
-		 * @method select
-		 * @description Selects a certain option based on an index
-		 * @param {Number} index
-		 * @chainable
-		 */
-		select: function (index) {
-			return this.set("selected", index);
-		}
-	});
-	
-	if (!jet.radioButtons) {
-		jet.radioButtons = 1;
-	}
-	
+	disable: function () {
+		return this.set(ENABLED, false);
+	},
 	/**
-	 * A RadioButton is actually a group of radio buttons that interact with each other
-	 * @class RadioButton
-	 * @extends Widget
-	 * @constructor
-	 * @param {Object} config Object literal specifying widget configuration properties
+	 * Enables the button
+	 * @method enable
+	 * @chainable
 	 */
-	var RadioButton = function () {
-		RadioButton.superclass.constructor.apply(this, arguments);
-		
-		var globalId = ++jet.radioButtons;
-		var selected, selectedValue;
-		var buttons = [];
-		
-		var myself = this.addAttrs({
-			options: {
-				required: true
-			},
-			className: {
-				value: "radio"
-			},
-			namePrefix: {
-				value: "jet-radio"
-			},
-			buttons: {
-				readOnly: true,
-				value: buttons
-			},
-			selected: {
-				value: 0
-			},
-			value: {
-			}
-		});
-		
-		this.on("selectedChange", function (e, newIndex, oldIndex) {
-			buttons[oldIndex][0].checked = false;
-			if (Lang.isNumber(newIndex)) {
-				buttons[newIndex][0].checked = true;
-			}
-			
-		}).on("render", function () {
-			var boundingBox = myself.get(BOUNDING_BOX);
-			var prefix = myself.get(CLASS_PREFIX);
-			var className = myself.get(CLASS_NAME);
-			var options = myself.get("options");
-			var namePrefix = myself.get("namePrefix");
-			A.each(options, function (btn, i) {
-				var holder = $("<span/>").appendTo(boundingBox);
-				var id = namePrefix + globalId + "-" + i;
-				var input = $("<input/>").attr({
-					type: "radio",
-					name: namePrefix + globalId,
-					id: id,
-					value: btn.value
-				}).appendTo(holder);
-				var label = $("<label/>").html(btn.label).appendTo(holder);
-				label[0].setAttribute("for", id);
-				input.link(label).on("click", (function (index, rad) {
-					return function () {
-						if (myself.fire("click", index) && index !== selected) {
-							myself.fire("change", index, input);
-							myself.set("selected", index);
-							myself.set("value", rad[0].value);
-						}
-					};
-				}(i, input)));
-				buttons.push(input);
-				if (i === myself.get("selected")) {
-					input[0].checked = true;
-					myself.set("value", input[0].value);
-				}
-			});
-		});
-	};
-	$.extend(RadioButton, $.Widget, {
-		disable: function (index) {
-			var buttons = this.get("buttons"); 
-			A.each(Lang.isNumber(index) ? [buttons[index]] : buttons, function (btn) {
-				btn[0].disabled = true;
-				btn.next().addClass("disabled");
-			});
-			return this;
-		},
-		enable: function (index) {
-			var buttons = this.get("buttons"); 
-			A.each(Lang.isNumber(index) ? [buttons[index]] : buttons, function (btn) {
-				btn[0].disabled = false;
-				btn.next().removeClass("disabled");
-			});
-			return this;
-		}
-	});
+	enable: function () {
+		return this.set(ENABLED, true);
+	},
 	
-	if (!jet.checkboxes) {
-		jet.checkboxes = 1;
+	initializer: function () {
+		this.set(LABEL_NODE, this.get(LABEL_NODE) || this.LABEL_TEMPLATE);
+		this._onDomFocus = $.bind(this.focus, this);
+		this._onDomBlur = $.bind(this.blur, this);
 	}
 	
-	var CheckBox = function () {
-		CheckBox.superclass.constructor.apply(this, arguments);
-		
-		var myself = this.addAttrs({
-			buttonNode: {
-				readOnly: true,
-				value: $("<input/>").attr("type", "checkbox")
-			},
-			label: {
-				value: ""
-			},
-			className: {
-				value: "checkbox"
-			},
-			checked: {
-				value: false,
-				getter: function () {
-					return myself.get(BUTTON_NODE)[0].checked;
-				},
-				setter: function (val) {
-					myself.get(BUTTON_NODE)[0].checked = val;
-					return val;
-				}
+});
+$.Button = Button;
+/**
+ * A button widget that selects/unselects itself when clicked
+ * @class ToggleButton
+ * @extends Button
+ * @param {Object} config Object literal specifying widget configuration properties
+ */
+$.ToggleButton = Base.create('button-toggle', Button, [], {
+	EVENTS: {
+		click: function () {
+			this.toggle();
+		}
+	}
+});
+/**
+ * A group of buttons that can be styled as a pill
+ * @class ButtonGroup
+ * @extends Widget
+ * @uses WidgetParent
+ * @constructor
+ * @param {Object} config Object literal specifying widget configuration properties
+ */
+$.ButtonGroup = Base.create('button-group', Widget, [WidgetParent], {
+	ATTRS: {
+		defaultChildType: {
+			value: $.Button
+		},
+		/**
+		 * @attribute pill
+		 * @description Whether this button group should be styled as a pill
+		 * @type Boolean
+		 * @default false
+		 */
+		pill: {
+			value: false,
+			validator: Lang.isBoolean
+		}
+	},
+	
+	EVENTS: {
+		pillChange: function (e, pill) {
+			var boundingBox = this.get(BOUNDING_BOX);
+			var pillClass = this.getClassName(PILL);
+			if (pill) {
+				boundingBox.addClass(pillClass);
+			} else {
+				boundingBox.removeClass(pillClass);
 			}
-		});
+		},
 		
-		var id = ++jet.checkboxes;
-		
-		this.on("render", function () {
-			var boundingBox = myself.get(BOUNDING_BOX);
-			id = myself.get(CLASS_PREFIX) + myself.get(CLASS_NAME) + "-" + id;
-			var btn = myself.get(BUTTON_NODE).attr("id", id).appendTo(boundingBox);
-			$("<label/>").html(myself.get("label")).appendTo(boundingBox)[0].setAttribute("for", id);
-			btn[0].disabled = !!myself.get("disabled");
-			
-			btn.on("click", function () {
-				var checked = btn[0].checked;
-				if (checked != myself.get("checked")) {
-					if (!myself.fire("change", checked)) {
-						btn[0].checked = !checked;
-					}
-				}
+		render: function () {
+			var boundingBox = this.get(BOUNDING_BOX);
+			var pillClass = this.getClassName(PILL);
+			if (this.get(PILL)) {
+				boundingBox.addClass(pillClass);
+			} else {
+				boundingBox.removeClass(pillClass);
+			}
+		}
+	}
+});
+/**
+ * An option of a <select> element
+ * @class ComboOption
+ * @extends Widget
+ * @uses WidgetChild
+ * @constructor
+ * @param {Object} config Object literal specifying widget configuration properties
+ */
+$.ComboOption = Base.create('combo-option', Widget, [WidgetChild], {
+	ATTRS: {
+		/**
+		 * @attribute value
+		 * @description Sets/returns the value of the option
+		 */
+		value: {
+			getter: function () {
+				return this.get(BOUNDING_BOX).value();
+			},
+			setter: function (val) {
+				this.get(BOUNDING_BOX).value(val);
+				return val;
+			}
+		},
+		/**
+		 * @attribute text
+		 * @description Sets/returns the text of the option
+		 */
+		text: {
+			getter: function () {
+				return this.get(BOUNDING_BOX).attr('text');
+			},
+			setter: function (val) {
+				this.get(BOUNDING_BOX).attr('text', val);
+				return val;
+			}
+		}
+	}
+}, {
+	BOUNDING_TEMPLATE: '<option/>',
+	CONTENT_TEMPLATE: null
+});
+
+/**
+ * A ComboBox is a select html element
+ * @class ComboBox
+ * @extends Button
+ * @uses WidgetParent
+ * @constructor
+ * @param {Object} config Object literal specifying widget configuration properties
+ */
+$.ComboBox = Base.create('combobox', Button, [WidgetParent], {
+	ATTRS: {
+		defaultChildType: {
+			value: $.ComboOption
+		},
+		multiple: {
+			value: false,
+			readOnly: true
+		}
+	},
+	EVENTS: {
+		selectionChange: function (e, val) {
+			this.get(CONTENT_BOX)._nodes[0].selectedIndex = val.get('index');
+		}
+	}
+}, {
+	CONTENT_TEMPLATE: '<select/>'
+});
+if (!Lang.isNumber(jet.Button.radio)) {
+	jet.Button.radio = 0;
+}
+
+/**
+ * A radio button
+ * @class RadioButton
+ * @extends Button
+ * @constructor
+ * @param {Object} config Object literal specifying widget configuration properties
+ */
+$.RadioButton = Base.create('radio', Button, [], {
+	EVENTS: {
+		selectedChange: function (e, val) {
+			this.get(CONTENT_BOX)._nodes[0].checked = !!val;
+		},
+		render: function () {
+			this.get(CONTENT_BOX).attr({
+				type: 'radio',
+				name: this.get(PARENT).get(NAME)
 			});
-		});
-	};
-	$.extend(CheckBox, ButtonBase);
-	
-	$.add({
-		Button: Button,
-		ComboBox: ComboBox,
-		RadioButton: RadioButton,
-		CheckBox: CheckBox
-	});
-	
+		}
+	}
+}, {
+	CONTENT_TEMPLATE: '<input/>'
+});
+
+/**
+ * A group of radio buttons that interact together
+ * @class RadioGroup
+ * @extends Widget
+ * @uses WidgetParent
+ * @constructor
+ * @param {Object} config Object literal specifying widget configuration properties
+ */
+$.RadioGroup = Base.create('radio-group', Widget, [WidgetParent], {
+	ATTRS: {
+		/**
+		 * @attribute multiple
+		 * @description Boolean indicating if multiple children can be selected at once. Whether or not multiple selection is enabled is always delegated to the value of the multiple attribute of the root widget in the object hierarchy
+		 * @default false
+		 * @readOnly
+		 */
+		multiple: {
+			value: false,
+			readOnly: true
+		},
+		/**
+		 * @attribute name
+		 * @description Name attribute of all radio buttons in the group
+		 * @readOnly
+		 */
+		name: {
+			writeOnce: true
+		},
+		defaultChildType: {
+			value: $.RadioButton
+		}
+	}
+}, {
+	initializer: function () {
+		this.set(NAME, this.getClassName(++jet.Button.radio));
+	}
+});
+if (!Lang.isNumber(jet.Button.checkbox)) {
+	jet.Button.checkbox = 0;
+}
+
+/**
+ * A Checkbox
+ * @class CheckBox
+ * @extends Button
+ * @constructor
+ * @param {Object} config Object literal specifying widget configuration properties
+ */
+$.CheckBox = Base.create('checkbox', Button, [], {
+	EVENTS: {
+		selectedChange: function (e, val) {
+			this.get(CONTENT_BOX)._nodes[0].checked = !!val;
+		},
+		render: function () {
+			this.get(CONTENT_BOX).attr({
+				type: 'checkbox',
+				name: this.get(PARENT).get(NAME)
+			});
+		}
+	}
+}, {
+	CONTENT_TEMPLATE: '<input/>'
+});
+
+/**
+ * A group of checkboxes that interact together
+ * @class CheckBoxGroup
+ * @extends Widget
+ * @uses WidgetParent
+ * @constructor
+ * @param {Object} config Object literal specifying widget configuration properties
+ */
+$.CheckBoxGroup = Base.create('checkbox-group', Widget, [WidgetParent], {
+	ATTRS: {
+		/**
+		 * @attribute name
+		 * @description Name attribute of all checkboxes in the group
+		 * @readOnly
+		 */
+		name: {
+			writeOnce: true
+		},
+		defaultChildType: {
+			value: $.CheckBox
+		}
+	}
+}, {
+	initializer: function () {
+		this.set(NAME, this.getClassName(+jet.Button.checkbox));
+	}
+});
+			
 });

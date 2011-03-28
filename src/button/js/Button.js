@@ -38,7 +38,7 @@ var Button = Base.create('button', Widget, [WidgetChild], {
 	
 	ATTRS: {
 		/**
-		 * @config enabled
+		 * @attribute enabled
 		 * @description Enabled status of the button
 		 * @type Boolean
 		 * @default true
@@ -48,7 +48,7 @@ var Button = Base.create('button', Widget, [WidgetChild], {
 			validator: Lang.isBoolean
 		},
 		/**
-		 * @config labelNode
+		 * @attribute labelNode
 		 * @description Pointer to the <label> node related to this button
 		 * @type NodeList
 		 * @readOnly
@@ -58,17 +58,17 @@ var Button = Base.create('button', Widget, [WidgetChild], {
 			setter: $
 		},
 		/**
-		 * @config label
+		 * @attribute labelContent
 		 * @description Text of this button's label
 		 * @type String
 		 * @default null
 		 */
-		label: {
+		labelContent: {
 			value: null,
 			validator: Lang.isString
 		},
 		/**
-		 * @config text
+		 * @attribute text
 		 * @description Text inside the button
 		 * @default ''
 		 */
@@ -89,7 +89,7 @@ var Button = Base.create('button', Widget, [WidgetChild], {
 			this.get(CONTENT_BOX)._nodes[0].disabled = !val;
 		},
 		
-		labelChange: function (e, val) {
+		labelContentChange: function (e, val) {
 			var labelNode = this.get(LABEL_NODE);
 			if (Lang.isString(val)) {
 				labelNode.html(val);
@@ -127,7 +127,7 @@ var Button = Base.create('button', Widget, [WidgetChild], {
 			var id = this.getClassName('content', this._uid);
 			var contentBox = this.get(CONTENT_BOX).attr(ID, id).html(this.get('text'));
 			var labelNode = this.get(LABEL_NODE);
-			var label = this.get('label');
+			var label = this.get('labelContent');
 			labelNode._nodes[0].setAttribute('for', id);
 			if (Lang.isString(label)) {
 				this.get(BOUNDING_BOX).prepend(labelNode.html(label));
@@ -164,14 +164,9 @@ var Button = Base.create('button', Widget, [WidgetChild], {
 	},
 	
 	initializer: function () {
-		var self = this;
-		this.set(LABEL_NODE, this.LABEL_TEMPLATE);
-		this._onDomFocus = function (e) {
-			self.focus();
-		};
-		this._onDomBlur = function (e) {
-			self.blur();
-		};
+		this.set(LABEL_NODE, this.get(LABEL_NODE) || this.LABEL_TEMPLATE);
+		this._onDomFocus = $.bind(this.focus, this);
+		this._onDomBlur = $.bind(this.blur, this);
 	}
 	
 });

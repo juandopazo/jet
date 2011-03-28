@@ -6,36 +6,40 @@ if (!Lang.isNumber(Global.ovZindex)) {
 	Global.ovZindex = 10;
 }
 /**
+ * An Overlay is a Module that floats in the page (doesn't have position static)
  * @class Overlay
- * @description An Overlay is a Module that floats in the page (doesn't have position static)
- * @extends Module
- * @uses WidgetAlignment
  * @constructor
+ * @extends Module
+ * @uses WidgetStack
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment], {
+$.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment, $.WidgetStack], {
 	
 	ATTRS: {
 		/**
-		 * @config draggable
+		 * @attribute draggable
 		 * @description If true, the overlay can be dragged. Requires $.Drag
 		 * @default false
 		 * @type Boolean
+		 * @writeOnce
 		 */
 		draggable: {
 			validator: function () {
 				return !!$.Drag;
 			},
-			value: false
+			value: false,
+			writeOnce: true
 		},
 		/**
-		 * @config modal
+		 * @attribute modal
 		 * @description Whether this overlay should stop the user from interacting with the rest of the page
-		 * @default faulse
+		 * @default false
 		 * @type Boolean
+		 * @writeOnce
 		 */
 		modal: {
-			value: false
+			value: false,
+			writeOnce: true
 		},
 		
 		startZIndex: {
@@ -45,8 +49,8 @@ $.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment], {
 			readOnly: true
 		},
 		/**
-		 * @config modalBox
-		 * @config Node that prevents the user from interacting with the page if 'modal' is set to true
+		 * @attribute modalBox
+		 * @attribute Node that prevents the user from interacting with the page if 'modal' is set to true
 		 * @type NodeList
 		 * @readOnly
 		 */

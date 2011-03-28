@@ -10,7 +10,7 @@ $.SimpleDialog = Base.create('dialog', $.Panel, [], {
 	ATTRS: {
 		
 		/**
-		 * @config buttons
+		 * @attribute buttons
 		 * @description An array of button configuration objects
 		 * @default []
 		 * @type Array

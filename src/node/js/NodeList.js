@@ -333,7 +333,7 @@ NodeList.prototype = {
 	/**
 	 * Returns a new NodeList with all nodes cloned from the current one
 	 * @method clone
-	 * @param {Boolean} deep If true, all nodes in the brach are cloned. If not, only the ones in the collection
+	 * @param {Boolean} deep If true all nodes in the brach are cloned. If not, only the ones in the collection
 	 * @return {NodeList}
 	 */
 	clone: function (deep) {
@@ -417,7 +417,7 @@ NodeList.prototype = {
 	/**
 	 * Returns whether the first node in this NodeList is inserted in the document
 	 * @method inDoc
-	 * @param [Document] doc
+	 * @param {Document} doc
 	 * @return Boolean
 	 */
 	inDoc: function () {
@@ -609,7 +609,7 @@ NodeList.prototype = {
 	 * @method on
 	 * @param {String} type
 	 * @param {Function} callback
-	 * @chainable
+	 * @param {Object} thisp
 	 */
 	on: function (type, callback, thisp) {
 		var handlers = [];

@@ -2,7 +2,6 @@
 /**
  * A canvas for Vectors
  * @class VectorView
- * @namespace
  * @extends Widget
  * @constructor
  * @param {Object} config

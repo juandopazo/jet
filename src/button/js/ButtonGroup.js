@@ -13,7 +13,7 @@ $.ButtonGroup = Base.create('button-group', Widget, [WidgetParent], {
 			value: $.Button
 		},
 		/**
-		 * @config pill
+		 * @attribute pill
 		 * @description Whether this button group should be styled as a pill
 		 * @type Boolean
 		 * @default false

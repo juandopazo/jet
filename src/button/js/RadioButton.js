@@ -37,7 +37,7 @@ $.RadioButton = Base.create('radio', Button, [], {
 $.RadioGroup = Base.create('radio-group', Widget, [WidgetParent], {
 	ATTRS: {
 		/**
-		 * @config multiple
+		 * @attribute multiple
 		 * @description Boolean indicating if multiple children can be selected at once. Whether or not multiple selection is enabled is always delegated to the value of the multiple attribute of the root widget in the object hierarchy
 		 * @default false
 		 * @readOnly
@@ -47,7 +47,7 @@ $.RadioGroup = Base.create('radio-group', Widget, [WidgetParent], {
 			readOnly: true
 		},
 		/**
-		 * @config name
+		 * @attribute name
 		 * @description Name attribute of all radio buttons in the group
 		 * @readOnly
 		 */

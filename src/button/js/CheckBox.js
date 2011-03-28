@@ -37,7 +37,7 @@ $.CheckBox = Base.create('checkbox', Button, [], {
 $.CheckBoxGroup = Base.create('checkbox-group', Widget, [WidgetParent], {
 	ATTRS: {
 		/**
-		 * @config name
+		 * @attribute name
 		 * @description Name attribute of all checkboxes in the group
 		 * @readOnly
 		 */

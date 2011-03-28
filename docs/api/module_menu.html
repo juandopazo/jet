@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: menu   (Jet Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+</head>
+
+<body>
+
+<div id="doc4" class="yui-t2">
+	<div id="hd">
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>menu&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
+            &gt; <a href="./module_menu.html" title="menu">menu</a>
+                
+                
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                   
+                    <h3>Module: menu
+                    
+
+
+                    </h3>
+                    <div class="description summary">
+                        OS-like menus for navigation
+                    </div>
+
+
+
+                <div class="yui-gc">
+                    <div class="yui-u first">
+
+                            <p>This module contains the following classes:</p>
+                            <script>
+                            //var YUI_CLASS_LIST = [{"extends": {"superclass": {"WidgetParent": "WidgetParent", "EventTarget": "EventTarget", "Widget": "Widget", "Base": "Base", "Attribute": "Attribute"}, "events": {"WidgetParent": [{"access": "", "deprecated": false, "name": "childrenChange"}, {"access": "", "deprecated": false, "name": "childrenContainerChange"}, {"access": "", "deprecated": false, "name": "childTypeChange"}, {"access": "", "deprecated": false, "name": "defaultChildTypeChange"}, {"access": "", "deprecated": false, "name": "multipleChange"}, {"access": "", "deprecated": false, "name": "selectedIndexChange"}, {"access": "", "deprecated": false, "name": "selectionChange"}], "Widget": [{"access": "", "deprecated": false, "name": "afterHide"}, {"access": "", "deprecated": false, "name": "afterRender"}, {"access": "", "deprecated": false, "name": "afterShow"}, {"access": "", "deprecated": false, "name": "blur"}, {"access": "", "deprecated": false, "name": "boundingBoxChange"}, {"access": "", "deprecated": false, "name": "classPrefixChange"}, {"access": "", "deprecated": false, "name": "contentBoxChange"}, {"access": "", "deprecated": false, "name": "destroy"}, {"access": "", "deprecated": false, "name": "focus"}, {"access": "", "deprecated": false, "name": "heightChange"}, {"access": "", "deprecated": false, "name": "hide"}, {"access": "", "deprecated": false, "name": "idChange"}, {"access": "", "deprecated": false, "name": "render"}, {"access": "", "deprecated": false, "name": "renderedChange"}, {"access": "", "deprecated": false, "name": "show"}, {"access": "", "deprecated": false, "name": "srcNodeChange"}, {"access": "", "deprecated": false, "name": "widthChange"}], "Base": [{"access": "", "deprecated": false, "name": "onChange"}]}, "configs": {"WidgetParent": [{"access": "", "deprecated": false, "name": "children"}, {"access": "", "deprecated": false, "name": "childrenContainer"}, {"access": "", "deprecated": false, "name": "childType"}, {"access": "", "deprecated": false, "name": "defaultChildType"}, {"access": "", "deprecated": false, "name": "multiple"}, {"access": "", "deprecated": false, "name": "selectedIndex"}, {"access": "", "deprecated": false, "name": "selection"}], "Widget": [{"access": "", "deprecated": false, "name": "boundingBox"}, {"access": "", "deprecated": false, "name": "classPrefix"}, {"access": "", "deprecated": false, "name": "contentBox"}, {"access": "", "deprecated": false, "name": "height"}, {"access": "", "deprecated": false, "name": "id"}, {"access": "", "deprecated": false, "name": "rendered"}, {"access": "", "deprecated": false, "name": "srcNode"}, {"access": "", "deprecated": false, "name": "width"}], "Base": [{"access": "", "deprecated": false, "name": "on"}]}, "properties": {"Widget": []}, "methods": {"EventTarget": [{"access": "", "deprecated": false, "name": "after"}, {"access": "", "deprecated": false, "name": "fire"}, {"access": "", "deprecated": false, "name": "on"}, {"access": "", "deprecated": false, "name": "once"}, {"access": "", "deprecated": false, "name": "unbind"}], "Attribute": [{"access": "", "deprecated": false, "name": "addAttr"}, {"access": "", "deprecated": false, "name": "addAttrs"}, {"access": "", "deprecated": false, "name": "get"}, {"access": "", "deprecated": false, "name": "getAttrs"}, {"access": "", "deprecated": false, "name": "set"}, {"access": "", "deprecated": false, "name": "unset"}], "Widget": [{"access": "", "deprecated": false, "name": "blur"}, {"access": "", "deprecated": false, "name": "destroy"}, {"access": "", "deprecated": false, "name": "focus"}, {"access": "", "deprecated": false, "name": "hide"}, {"access": "", "deprecated": false, "name": "render"}, {"access": "", "deprecated": false, "name": "show"}], "Base": [], "WidgetParent": [{"access": "", "deprecated": false, "name": "add"}, {"access": "", "deprecated": false, "name": "each"}, {"access": "", "deprecated": false, "name": "item"}, {"access": "", "deprecated": false, "name": "remove"}]}}, "description": "A navigation menu", "guessedname": "Menu", "name": "Menu"}, {"extends": {"superclass": {"EventTarget": "EventTarget", "Attribute": "Attribute", "Widget": "Widget", "Base": "Base"}, "events": {"Widget": [{"access": "", "deprecated": false, "name": "afterHide"}, {"access": "", "deprecated": false, "name": "afterRender"}, {"access": "", "deprecated": false, "name": "afterShow"}, {"access": "", "deprecated": false, "name": "blur"}, {"access": "", "deprecated": false, "name": "boundingBoxChange"}, {"access": "", "deprecated": false, "name": "classPrefixChange"}, {"access": "", "deprecated": false, "name": "contentBoxChange"}, {"access": "", "deprecated": false, "name": "destroy"}, {"access": "", "deprecated": false, "name": "focus"}, {"access": "", "deprecated": false, "name": "heightChange"}, {"access": "", "deprecated": false, "name": "hide"}, {"access": "", "deprecated": false, "name": "idChange"}, {"access": "", "deprecated": false, "name": "render"}, {"access": "", "deprecated": false, "name": "renderedChange"}, {"access": "", "deprecated": false, "name": "show"}, {"access": "", "deprecated": false, "name": "srcNodeChange"}, {"access": "", "deprecated": false, "name": "widthChange"}], "Base": [{"access": "", "deprecated": false, "name": "onChange"}]}, "configs": {"Widget": [{"access": "", "deprecated": false, "name": "boundingBox"}, {"access": "", "deprecated": false, "name": "classPrefix"}, {"access": "", "deprecated": false, "name": "contentBox"}, {"access": "", "deprecated": false, "name": "height"}, {"access": "", "deprecated": false, "name": "id"}, {"access": "", "deprecated": false, "name": "rendered"}, {"access": "", "deprecated": false, "name": "srcNode"}, {"access": "", "deprecated": false, "name": "width"}], "Base": [{"access": "", "deprecated": false, "name": "on"}]}, "properties": {"Widget": []}, "methods": {"EventTarget": [{"access": "", "deprecated": false, "name": "after"}, {"access": "", "deprecated": false, "name": "fire"}, {"access": "", "deprecated": false, "name": "on"}, {"access": "", "deprecated": false, "name": "once"}, {"access": "", "deprecated": false, "name": "unbind"}], "Attribute": [{"access": "", "deprecated": false, "name": "addAttr"}, {"access": "", "deprecated": false, "name": "addAttrs"}, {"access": "", "deprecated": false, "name": "get"}, {"access": "", "deprecated": false, "name": "getAttrs"}, {"access": "", "deprecated": false, "name": "set"}, {"access": "", "deprecated": false, "name": "unset"}], "Widget": [{"access": "", "deprecated": false, "name": "blur"}, {"access": "", "deprecated": false, "name": "destroy"}, {"access": "", "deprecated": false, "name": "focus"}, {"access": "", "deprecated": false, "name": "hide"}, {"access": "", "deprecated": false, "name": "render"}, {"access": "", "deprecated": false, "name": "show"}], "Base": []}}, "description": "A menu item", "guessedname": "MenuItem", "name": "MenuItem"}];
+                            </script>
+                            <div id="splash_classList">
+                                <ul>
+                                    <li><a href="Menu.html" title="Menu" id="class_0">Menu</a></li>
+                                    <li><a href="MenuItem.html" title="MenuItem" id="class_1">MenuItem</a></li>
+                                </ul>
+                            </div>
+                    </div>
+                    <div class="yui-u">
+
+                        </div>
+                </div>
+
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_anim.html" title="anim">anim</a></li>
+                                <li class=""><a href="module_base.html" title="base">base</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_io.html" title="io">io</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class="selected"><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_node.html" title="node">node</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class=""><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="Menu.html" title="Menu">Menu</a></li>
+                                <li class=""><a href="MenuItem.html" title="MenuItem">MenuItem</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
+	</div>
+</div>
+<script type="text/javascript" src="assets/api.js"></script>
+<script type="text/javascript">
+
+    var ALL_YUI_PROPS = [{"url": "MenuItem.html#config_labelContent", "access": "", "host": "MenuItem", "type": "config", "name": "labelContent"}, {"url": "MenuItem.html#event_labelContentChange", "access": "", "host": "MenuItem", "type": "event", "name": "labelContentChange"}, {"url": "MenuItem.html#config_labelNode", "access": "", "host": "MenuItem", "type": "config", "name": "labelNode"}, {"url": "MenuItem.html#event_labelNodeChange", "access": "", "host": "MenuItem", "type": "event", "name": "labelNodeChange"}];
+</script>
+</body>
+</html>

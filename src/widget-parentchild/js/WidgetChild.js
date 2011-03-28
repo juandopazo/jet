@@ -3,7 +3,6 @@
  * An extension that turns a widget into a child widget
  * @class WidgetChild
  * @constructor
- * @extends Widget
  * @param {Object} config Object literal specifying widget configuration properties
  */
 function WidgetChild() {}
@@ -13,7 +12,7 @@ $.mix(WidgetChild, {
 	
 	ATTRS: {
 		/**
-		 * @config selected
+		 * @attribute selected
 		 * @description Boolean indicating if the Widget is selected
 		 * @type Boolean
 		 * @default false
@@ -23,7 +22,7 @@ $.mix(WidgetChild, {
 		},
 		
 		/**
-		 * @config index
+		 * @attribute index
 		 * @description Number representing the Widget's ordinal position in its parent Widget
 		 * @default 0
 		 * @type Number
@@ -33,7 +32,7 @@ $.mix(WidgetChild, {
 		},
 		
 		/**
-		 * @config parent
+		 * @attribute parent
 		 * @description Retrieves the parent of the Widget in the object hierarchy
 		 * @default null
 		 */
