@@ -7,8 +7,6 @@
 	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
 	<link rel="stylesheet" type="text/css" href="assets/api.css" />
 
-    <script type="text/javascript" src="assets/api-js"></script>
-    <script type="text/javascript" src="assets/ac-js"></script>
 </head>
 
 <body>
@@ -112,8 +110,8 @@
 <span class="kd">var</span> <span class="nx">UA_SUPPORTS_FIXED</span> <span class="o">=</span> <span class="nx">$</span><span class="p">.</span><span class="nx">UA</span><span class="p">.</span><span class="nx">support</span><span class="p">.</span><span class="nx">fixed</span><span class="p">;</span>
 
 <span class="cm">/**</span>
-<span class="cm"> * A module is a basic container with header, body and footer</span>
 <span class="cm"> * @class Module</span>
+<span class="cm"> * @description A module is a basic container with header, body and footer</span>
 <span class="cm"> * @extends Widget</span>
 <span class="cm"> * @constructor</span>
 <span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
@@ -151,6 +149,7 @@
 <span class="cm">		 * @config headerContent</span>
 <span class="cm">		 * @description The header of the module.</span>
 <span class="cm">		 * If set to a string a node is creating and the string is set to its innerHTML</span>
+<span class="cm">		 * @type DOM Node | String | NodeList</span>
 <span class="cm">		 */</span>
 		<span class="nx">headerContent</span><span class="o">:</span> <span class="p">{</span>
 			<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isValue</span>
@@ -160,6 +159,7 @@
 <span class="cm">		 * @description The body of the module.</span>
 <span class="cm">		 * If set to a string a node is creating and the string is set to its innerHTML</span>
 <span class="cm">		 * A body is always present in a Module</span>
+<span class="cm">		 * @type DOM Node | String | NodeList</span>
 <span class="cm">		 * @default &quot;&quot;</span>
 <span class="cm">		 */</span>
 		<span class="nx">bodyContent</span><span class="o">:</span> <span class="p">{</span>
@@ -170,6 +170,7 @@
 <span class="cm">		 * @config footerContent</span>
 <span class="cm">		 * @description The footer of the module.</span>
 <span class="cm">		 * If set to a string a node is creating and the string is set to its innerHTML</span>
+<span class="cm">		 * @type DOM Node | String | NodeList</span>
 <span class="cm">		 */</span>
 		<span class="nx">footerContent</span><span class="o">:</span> <span class="p">{</span>
 			<span class="nx">validator</span><span class="o">:</span> <span class="nx">Lang</span><span class="p">.</span><span class="nx">isValue</span>
@@ -228,10 +229,9 @@
 <span class="cm">/**</span>
 <span class="cm"> * An Overlay is a Module that floats in the page (doesn&#39;t have position static)</span>
 <span class="cm"> * @class Overlay</span>
-<span class="cm"> * @extends Module</span>
-<span class="cm"> * @uses WidgetAlignment</span>
-<span class="cm"> * @uses WidgetStack</span>
 <span class="cm"> * @constructor</span>
+<span class="cm"> * @extends Module</span>
+<span class="cm"> * @uses WidgetStack</span>
 <span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
 <span class="cm"> */</span>
 <span class="nx">$</span><span class="p">.</span><span class="nx">Overlay</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;overlay&#39;</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">Module</span><span class="p">,</span> <span class="p">[</span><span class="nx">$</span><span class="p">.</span><span class="nx">WidgetAlignment</span><span class="p">,</span> <span class="nx">$</span><span class="p">.</span><span class="nx">WidgetStack</span><span class="p">],</span> <span class="p">{</span>
@@ -363,7 +363,6 @@
 <span class="cm"> * @class Tooltip</span>
 <span class="cm"> * @extends Widget</span>
 <span class="cm"> * @constructor</span>
-<span class="cm"> * @uses WidgetAlignment</span>
 <span class="cm"> * @param {Object} config Object literal specifying widget configuration properties</span>
 <span class="cm"> */</span>
 <span class="nx">$</span><span class="p">.</span><span class="nx">Tooltip</span> <span class="o">=</span> <span class="nx">Base</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">&#39;tooltip&#39;</span><span class="p">,</span> <span class="nx">Widget</span><span class="p">,</span> <span class="p">[</span><span class="nx">$</span><span class="p">.</span><span class="nx">WidgetAlignment</span><span class="p">],</span> <span class="p">{</span>
@@ -619,6 +618,7 @@
                                 <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
                                 <li class=""><a href="module_resize.html" title="resize">resize</a></li>
                                 <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
                                 <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
                                 <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
                                 <li class=""><a href="module_vector.html" title="vector">vector</a></li>
@@ -656,6 +656,7 @@
         Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
 	</div>
 </div>
+<script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
 
     var ALL_YUI_PROPS = [{"url": "Button.html#method_disable", "access": "", "host": "Button", "type": "method", "name": "disable"}, {"url": "Button.html#method_enable", "access": "", "host": "Button", "type": "method", "name": "enable"}, {"url": "Button.html#config_enabled", "access": "", "host": "Button", "type": "config", "name": "enabled"}, {"url": "Button.html#config_labelContent", "access": "", "host": "Button", "type": "config", "name": "labelContent"}, {"url": "Button.html#config_labelNode", "access": "", "host": "Button", "type": "config", "name": "labelNode"}, {"url": "RadioGroup.html#config_multiple", "access": "", "host": "RadioGroup", "type": "config", "name": "multiple"}, {"url": "RadioGroup.html#config_name", "access": "", "host": "RadioGroup", "type": "config", "name": "name"}, {"url": "CheckBoxGroup.html#config_name", "access": "", "host": "CheckBoxGroup", "type": "config", "name": "name"}, {"url": "ButtonGroup.html#config_pill", "access": "", "host": "ButtonGroup", "type": "config", "name": "pill"}, {"url": "Button.html#config_text", "access": "", "host": "Button", "type": "config", "name": "text"}, {"url": "ComboOption.html#config_text", "access": "", "host": "ComboOption", "type": "config", "name": "text"}, {"url": "ComboOption.html#config_value", "access": "", "host": "ComboOption", "type": "config", "name": "value"}];

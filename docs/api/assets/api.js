@@ -40,3 +40,182 @@ http://developer.yahoo.net/yui/license.txt
 version: 2.7.0
 */
 YAHOO.namespace("util");YAHOO.util.Cookie={_createCookieString:function(B,D,C,A){var F=YAHOO.lang;var E=encodeURIComponent(B)+"="+(C?encodeURIComponent(D):D);if(F.isObject(A)){if(A.expires instanceof Date){E+="; expires="+A.expires.toGMTString();}if(F.isString(A.path)&&A.path!=""){E+="; path="+A.path;}if(F.isString(A.domain)&&A.domain!=""){E+="; domain="+A.domain;}if(A.secure===true){E+="; secure";}}return E;},_createCookieHashString:function(B){var D=YAHOO.lang;if(!D.isObject(B)){throw new TypeError("Cookie._createCookieHashString(): Argument must be an object.");}var C=new Array();for(var A in B){if(D.hasOwnProperty(B,A)&&!D.isFunction(B[A])&&!D.isUndefined(B[A])){C.push(encodeURIComponent(A)+"="+encodeURIComponent(String(B[A])));}}return C.join("&");},_parseCookieHash:function(E){var D=E.split("&"),F=null,C=new Object();if(E.length>0){for(var B=0,A=D.length;B<A;B++){F=D[B].split("=");C[decodeURIComponent(F[0])]=decodeURIComponent(F[1]);}}return C;},_parseCookieString:function(J,A){var K=new Object();if(YAHOO.lang.isString(J)&&J.length>0){var B=(A===false?function(L){return L;}:decodeURIComponent);if(/[^=]+=[^=;]?(?:; [^=]+=[^=]?)?/.test(J)){var H=J.split(/;\s/g),I=null,C=null,E=null;for(var D=0,F=H.length;D<F;D++){E=H[D].match(/([^=]+)=/i);if(E instanceof Array){try{I=decodeURIComponent(E[1]);C=B(H[D].substring(E[1].length+1));}catch(G){}}else{I=decodeURIComponent(H[D]);C=I;}K[I]=C;}}}return K;},get:function(A,B){var D=YAHOO.lang;var C=this._parseCookieString(document.cookie);if(!D.isString(A)||A===""){throw new TypeError("Cookie.get(): Cookie name must be a non-empty string.");}if(D.isUndefined(C[A])){return null;}if(!D.isFunction(B)){return C[A];}else{return B(C[A]);}},getSub:function(A,C,B){var E=YAHOO.lang;var D=this.getSubs(A);if(D!==null){if(!E.isString(C)||C===""){throw new TypeError("Cookie.getSub(): Subcookie name must be a non-empty string.");}if(E.isUndefined(D[C])){return null;}if(!E.isFunction(B)){return D[C];}else{return B(D[C]);}}else{return null;}},getSubs:function(A){if(!YAHOO.lang.isString(A)||A===""){throw new TypeError("Cookie.getSubs(): Cookie name must be a non-empty string.");}var B=this._parseCookieString(document.cookie,false);if(YAHOO.lang.isString(B[A])){return this._parseCookieHash(B[A]);}return null;},remove:function(B,A){if(!YAHOO.lang.isString(B)||B===""){throw new TypeError("Cookie.remove(): Cookie name must be a non-empty string.");}A=A||{};A.expires=new Date(0);return this.set(B,"",A);},removeSub:function(B,D,A){if(!YAHOO.lang.isString(B)||B===""){throw new TypeError("Cookie.removeSub(): Cookie name must be a non-empty string.");}if(!YAHOO.lang.isString(D)||D===""){throw new TypeError("Cookie.removeSub(): Subcookie name must be a non-empty string.");}var C=this.getSubs(B);if(YAHOO.lang.isObject(C)&&YAHOO.lang.hasOwnProperty(C,D)){delete C[D];return this.setSubs(B,C,A);}else{return"";}},set:function(B,C,A){var E=YAHOO.lang;if(!E.isString(B)){throw new TypeError("Cookie.set(): Cookie name must be a string.");}if(E.isUndefined(C)){throw new TypeError("Cookie.set(): Value cannot be undefined.");}var D=this._createCookieString(B,C,true,A);document.cookie=D;return D;},setSub:function(B,D,C,A){var F=YAHOO.lang;if(!F.isString(B)||B===""){throw new TypeError("Cookie.setSub(): Cookie name must be a non-empty string.");}if(!F.isString(D)||D===""){throw new TypeError("Cookie.setSub(): Subcookie name must be a non-empty string.");}if(F.isUndefined(C)){throw new TypeError("Cookie.setSub(): Subcookie value cannot be undefined.");}var E=this.getSubs(B);if(!F.isObject(E)){E=new Object();}E[D]=C;return this.setSubs(B,E,A);},setSubs:function(B,C,A){var E=YAHOO.lang;if(!E.isString(B)){throw new TypeError("Cookie.setSubs(): Cookie name must be a string.");}if(!E.isObject(C)){throw new TypeError("Cookie.setSubs(): Cookie value must be an object.");}var D=this._createCookieString(B,this._createCookieHashString(C),false,A);document.cookie=D;return D;}};YAHOO.register("cookie",YAHOO.util.Cookie,{version:"2.7.0",build:"1796"});
+
+(function() {
+
+    var Event=YAHOO.util.Event,
+        Dom=YAHOO.util.Dom,
+        oACDS, oAutoComp,
+        show = {
+            'private': false,
+            'protected': false,
+            'deprecated': false
+        },
+        
+        ITEM_TEMPLATE = '<em>{host}</em> <span>{name}</span>',
+        // ITEM_TEMPLATE = '<em>{host}</em> <span>{params}</span> <span>{name}</span>',
+        // ITEM_TEMPLATE = '<em>{host}</em> <span>{params}</span> <span>{name}</span><div>{description}</div>',
+        yuidoc = YAHOO.namespace('yuidoc'),
+        propdata,
+        initialized = false;
+
+yuidoc.init = function(altdata) {
+   yuidoc.initUI(altdata);
+};
+
+yuidoc.initUI = function(altdata) {
+
+    if (initialized) {
+        return;
+    }
+
+    propdata = ALL_YUI_PROPS || altdata;
+
+    //Checkboxes are available..
+    var handleClick = function(e) {
+        var id, checked = false;
+        if (YAHOO.lang.isString(e)) {
+            id = e;
+        } else {
+            var tar = Event.getTarget(e);
+            id = tar.id;
+        }
+        var el = Dom.get(id);
+        checked = el.checked;
+
+        var className = id;
+        if (checked) {
+            show[id.replace('show_', '')] = true;
+            Dom.addClass(document.body, className);
+            YAHOO.util.Cookie.setSub('yuidoc', id, 'checked');
+        } else {
+            show[id.replace('show_', '')] = false;
+            Dom.removeClass(document.body, className);
+            YAHOO.util.Cookie.setSub('yuidoc', id, '');
+        }
+    };
+
+    var checkCookie = function(id) {
+        var value = YAHOO.util.Cookie.getSub('yuidoc', id),
+            el = Dom.get(id), checked = (value === 'checked');;
+
+        el.checked = checked;
+        return checked;
+    };
+
+    var els = ['show_deprecated', 'show_protected', 'show_private'],
+        reapplyHash = false;
+
+    for (var i = 0; i < els.length; i++) {
+        Event.on(els[i], 'click', handleClick);
+        reapplyHash = checkCookie(els[i]) || reapplyHash;
+        handleClick(els[i]);
+    }
+
+    // If we dynamically show private/protected/etc items during
+    // load, we need to reapply anchors so that the search feature
+    // works correctly for items that are initially hidden.
+    if (reapplyHash) {
+        var dl = document.location, hash = dl.hash;
+        if (hash) {
+            dl.hash = hash;
+        }
+    }
+    
+};
+
+//Starting the AutoComplete code
+    var getResults = function(query) {
+        var results = [];
+        if (query && query.length > 0) {
+            var q = query.toLowerCase();
+            for (var i=0, len=propdata.length; i<len; ++i) {
+                var prop = propdata[i];
+                if (!show['protected'] && prop.access == "protected") {
+                    // skip
+                } else if (!show['private'] && prop.access == "private") {
+                    // skip
+                } else if (!show['deprecated'] && prop.deprecated) {
+                    // skip
+                } else {
+                    var s = (prop.host + "." + prop.name).toLowerCase();
+                    if (s.indexOf(q) > -1 ) {
+                        results.push([query, prop]);
+                    }
+                }
+            }
+        }
+
+        return results;
+    };
+
+    // Define Custom Event handlers
+    var myOnDataReturn = function(sType, aArgs) {
+        var oAutoComp = aArgs[0];
+        var query = aArgs[1];
+        var aResults = aArgs[2];
+
+        if(aResults.length == 0) {
+            if (query.length > 0) {
+                oAutoComp.setBody("<div id=\"resultsdefault\">Not found</div>");
+            }
+        }
+    };
+
+    var myOnItemSelect = function(sType, aArgs) {
+        var ac = aArgs[0];
+        var item = aArgs[2];
+        location.href = item[1].url;
+    };
+
+
+    Event.onAvailable("searchresults", function() {
+
+        // Instantiate JS Function DataSource
+        oACDS = new YAHOO.widget.DS_JSFunction(getResults);
+        oACDS.maxCacheEntries = 30;
+
+        // Instantiate AutoComplete
+        oAutoComp = new YAHOO.widget.AutoComplete('searchinput','searchresults', oACDS);
+        //oAutoComp.alwaysShowContainer = true;
+        oAutoComp.queryDelay = 0.2;
+        oAutoComp.maxResultsDisplayed = 200;
+        oAutoComp.minQueryLength = 0;
+        oAutoComp.formatResult = function(oResultItem, query) {
+            // var sMarkup = "<em>" + oResultItem[1].host + '</em> <span>' + oResultItem[1].name + '</span>';
+            // return sMarkup;
+            // return  "<em>" + oResultItem[1].host + '</em> <span>' + oResultItem[1].name + '</span>';
+            return  YAHOO.lang.substitute(ITEM_TEMPLATE, oResultItem[1]);
+        };
+
+        // Subscribe to Custom Events
+        oAutoComp.dataReturnEvent.subscribe(myOnDataReturn);
+        oAutoComp.itemSelectEvent.subscribe(myOnItemSelect);
+        
+        // Set initial content in the container
+        oAutoComp.sendQuery(Dom.get("searchinput").value);
+
+    });
+
+    var validateForm = function() {
+        return false;
+    };
+    
+    YAHOO.util.Event.onAvailable('classTab', function() {
+        var tabs = new YAHOO.widget.TabView('classTab');
+    });
+
+    /*
+    YAHOO.util.Event.onAvailable('codeTree', function() {
+        var tree1 = new YAHOO.widget.TreeView('codeTree');
+        tree1.render();    
+    });
+    */
+
+    YAHOO.util.Event.onDOMReady(function() {
+        if (typeof ALL_YUI_PROPS != "undefined") {
+            YAHOO.yuidoc.initUI();
+        }
+    });
+
+})();

@@ -1,0 +1,1285 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>API: resize   sizzle.js  (Jet Library)</title>
+
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+
+</head>
+
+<body>
+
+<div id="doc4" class="yui-t2">
+	<div id="hd">
+        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
+        <h3>resize&nbsp; <span class="subtitle">0.1</span></h3>
+        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
+            &gt; <a href="./module_resize.html" title="resize">resize</a>
+                
+                 &gt; sizzle.js (source view) 
+        <form onsubmit="return false">
+            <div id="propertysearch">
+                Search: <input autocomplete="off" id="searchinput" />
+                <div id="searchresults">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+	</div>
+
+	<div id="bd">
+		<div id="yui-main">
+			<div class="yui-b">
+            <form action="#" name="yui-classopts-form" method="get" id="yui-classopts-form">
+                <fieldset>
+                    <legend>Filters</legend>
+                <span class="classopts"><input type="checkbox" name="show_private" id="show_private" /> <label for="show_private">Show Private</label></span>
+                <span class="classopts"><input type="checkbox" name="show_protected" id="show_protected" /> <label for="show_protected">Show Protected</label></span>
+                <span class="classopts"><input type="checkbox" name="show_deprecated" id="show_deprecated" /> <label for="show_deprecated">Show Deprecated</label></span>
+                </fieldset>
+            </form>
+
+                    <div id="srcout">
+                        <style>
+                            #doc3 .classopts { display:none; }
+                        </style>
+                        <div class="highlight"><pre><span class="cm">/*!</span>
+<span class="cm"> * Sizzle CSS Selector Engine - v1.0</span>
+<span class="cm"> *  Copyright 2009, The Dojo Foundation</span>
+<span class="cm"> *  Released under the MIT, BSD, and GPL Licenses.</span>
+<span class="cm"> *  More information: http://sizzlejs.com/</span>
+<span class="cm"> * </span>
+<span class="cm"> * @module sizzle</span>
+<span class="cm"> */</span>
+<span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+
+<span class="kd">var</span> <span class="nx">chunker</span> <span class="o">=</span> <span class="sr">/((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^\[\]]*\]|[&#39;&quot;][^&#39;&quot;]*[&#39;&quot;]|[^\[\]&#39;&quot;]+)+\]|\\.|[^ &gt;+~,(\[\\]+)+|[&gt;+~])(\s*,\s*)?((?:.|\r|\n)*)/g</span><span class="p">,</span>
+	<span class="nx">done</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+	<span class="nx">toString</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">toString</span><span class="p">,</span>
+	<span class="nx">hasDuplicate</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
+	<span class="nx">baseHasDuplicate</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+<span class="c1">// Here we check if the JavaScript engine is using some sort of</span>
+<span class="c1">// optimization where it does not always call our comparision</span>
+<span class="c1">// function. If that is the case, discard the hasDuplicate value.</span>
+<span class="c1">//   Thus far that includes Google Chrome.</span>
+<span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">].</span><span class="nx">sort</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+	<span class="nx">baseHasDuplicate</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">});</span>
+
+<span class="kd">var</span> <span class="nx">Sizzle</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">selector</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">results</span><span class="p">,</span> <span class="nx">seed</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">results</span> <span class="o">=</span> <span class="nx">results</span> <span class="o">||</span> <span class="p">[];</span>
+	<span class="nx">context</span> <span class="o">=</span> <span class="nx">context</span> <span class="o">||</span> <span class="nb">document</span><span class="p">;</span>
+
+	<span class="kd">var</span> <span class="nx">origContext</span> <span class="o">=</span> <span class="nx">context</span><span class="p">;</span>
+
+	<span class="k">if</span> <span class="p">(</span> <span class="nx">context</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">!==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">context</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">!==</span> <span class="mi">9</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="p">[];</span>
+	<span class="p">}</span>
+	
+	<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">selector</span> <span class="o">||</span> <span class="k">typeof</span> <span class="nx">selector</span> <span class="o">!==</span> <span class="s2">&quot;string&quot;</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nx">results</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="kd">var</span> <span class="nx">parts</span> <span class="o">=</span> <span class="p">[],</span> <span class="nx">m</span><span class="p">,</span> <span class="nx">set</span><span class="p">,</span> <span class="nx">checkSet</span><span class="p">,</span> <span class="nx">extra</span><span class="p">,</span> <span class="nx">prune</span> <span class="o">=</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">contextXML</span> <span class="o">=</span> <span class="nx">Sizzle</span><span class="p">.</span><span class="nx">isXML</span><span class="p">(</span><span class="nx">context</span><span class="p">),</span>
+		<span class="nx">soFar</span> <span class="o">=</span> <span class="nx">selector</span><span class="p">,</span> <span class="nx">ret</span><span class="p">,</span> <span class="nx">cur</span><span class="p">,</span> <span class="nx">pop</span><span class="p">,</span> <span class="nx">i</span><span class="p">;</span>
+	
+	<span class="c1">// Reset the position of the chunker regexp (start from head)</span>
+	<span class="k">do</span> <span class="p">{</span>
+		<span class="nx">chunker</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">);</span>
+		<span class="nx">m</span> <span class="o">=</span> <span class="nx">chunker</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">soFar</span><span class="p">);</span>
+
+		<span class="k">if</span> <span class="p">(</span> <span class="nx">m</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">soFar</span> <span class="o">=</span> <span class="nx">m</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+		
+			<span class="nx">parts</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nx">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">);</span>
+		
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">m</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="nx">extra</span> <span class="o">=</span> <span class="nx">m</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+				<span class="k">break</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span> <span class="k">while</span> <span class="p">(</span> <span class="nx">m</span> <span class="p">);</span>
+
+	<span class="k">if</span> <span class="p">(</span> <span class="nx">parts</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">origPOS</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span> <span class="nx">selector</span> <span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span> <span class="nx">parts</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">relative</span><span class="p">[</span> <span class="nx">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">]</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">set</span> <span class="o">=</span> <span class="nx">posProcess</span><span class="p">(</span> <span class="nx">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nx">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nx">context</span> <span class="p">);</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="nx">set</span> <span class="o">=</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">relative</span><span class="p">[</span> <span class="nx">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">]</span> <span class="o">?</span>
+				<span class="p">[</span> <span class="nx">context</span> <span class="p">]</span> <span class="o">:</span>
+				<span class="nx">Sizzle</span><span class="p">(</span> <span class="nx">parts</span><span class="p">.</span><span class="nx">shift</span><span class="p">(),</span> <span class="nx">context</span> <span class="p">);</span>
+
+			<span class="k">while</span> <span class="p">(</span> <span class="nx">parts</span><span class="p">.</span><span class="nx">length</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="nx">selector</span> <span class="o">=</span> <span class="nx">parts</span><span class="p">.</span><span class="nx">shift</span><span class="p">();</span>
+
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">relative</span><span class="p">[</span> <span class="nx">selector</span> <span class="p">]</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">selector</span> <span class="o">+=</span> <span class="nx">parts</span><span class="p">.</span><span class="nx">shift</span><span class="p">();</span>
+				<span class="p">}</span>
+				
+				<span class="nx">set</span> <span class="o">=</span> <span class="nx">posProcess</span><span class="p">(</span> <span class="nx">selector</span><span class="p">,</span> <span class="nx">set</span> <span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="c1">// Take a shortcut and set the context if the root selector is an ID</span>
+		<span class="c1">// (but not if it&#39;ll be faster if the inner selector is an ID)</span>
+		<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">seed</span> <span class="o">&amp;&amp;</span> <span class="nx">parts</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">context</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">9</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">contextXML</span> <span class="o">&amp;&amp;</span>
+				<span class="nx">Expr</span><span class="p">.</span><span class="nx">match</span><span class="p">.</span><span class="nx">ID</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">Expr</span><span class="p">.</span><span class="nx">match</span><span class="p">.</span><span class="nx">ID</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">parts</span><span class="p">[</span><span class="nx">parts</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">ret</span> <span class="o">=</span> <span class="nx">Sizzle</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span> <span class="nx">parts</span><span class="p">.</span><span class="nx">shift</span><span class="p">(),</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">contextXML</span> <span class="p">);</span>
+			<span class="nx">context</span> <span class="o">=</span> <span class="nx">ret</span><span class="p">.</span><span class="nx">expr</span> <span class="o">?</span> <span class="nx">Sizzle</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span> <span class="nx">ret</span><span class="p">.</span><span class="nx">expr</span><span class="p">,</span> <span class="nx">ret</span><span class="p">.</span><span class="nx">set</span> <span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">:</span> <span class="nx">ret</span><span class="p">.</span><span class="nx">set</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+		<span class="p">}</span>
+
+		<span class="k">if</span> <span class="p">(</span> <span class="nx">context</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">ret</span> <span class="o">=</span> <span class="nx">seed</span> <span class="o">?</span>
+				<span class="p">{</span> <span class="nx">expr</span><span class="o">:</span> <span class="nx">parts</span><span class="p">.</span><span class="nx">pop</span><span class="p">(),</span> <span class="nx">set</span><span class="o">:</span> <span class="nx">makeArray</span><span class="p">(</span><span class="nx">seed</span><span class="p">)</span> <span class="p">}</span> <span class="o">:</span>
+				<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span> <span class="nx">parts</span><span class="p">.</span><span class="nx">pop</span><span class="p">(),</span> <span class="nx">parts</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s2">&quot;~&quot;</span> <span class="o">||</span> <span class="nx">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">===</span> <span class="s2">&quot;+&quot;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">context</span><span class="p">.</span><span class="nx">parentNode</span> <span class="o">?</span> <span class="nx">context</span><span class="p">.</span><span class="nx">parentNode</span> <span class="o">:</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">contextXML</span> <span class="p">);</span>
+			<span class="nx">set</span> <span class="o">=</span> <span class="nx">ret</span><span class="p">.</span><span class="nx">expr</span> <span class="o">?</span> <span class="nx">Sizzle</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span> <span class="nx">ret</span><span class="p">.</span><span class="nx">expr</span><span class="p">,</span> <span class="nx">ret</span><span class="p">.</span><span class="nx">set</span> <span class="p">)</span> <span class="o">:</span> <span class="nx">ret</span><span class="p">.</span><span class="nx">set</span><span class="p">;</span>
+
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">parts</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="nx">checkSet</span> <span class="o">=</span> <span class="nx">makeArray</span><span class="p">(</span><span class="nx">set</span><span class="p">);</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">prune</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+			<span class="p">}</span>
+
+			<span class="k">while</span> <span class="p">(</span> <span class="nx">parts</span><span class="p">.</span><span class="nx">length</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="nx">cur</span> <span class="o">=</span> <span class="nx">parts</span><span class="p">.</span><span class="nx">pop</span><span class="p">();</span>
+				<span class="nx">pop</span> <span class="o">=</span> <span class="nx">cur</span><span class="p">;</span>
+
+				<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">Expr</span><span class="p">.</span><span class="nx">relative</span><span class="p">[</span> <span class="nx">cur</span> <span class="p">]</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">cur</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+					<span class="nx">pop</span> <span class="o">=</span> <span class="nx">parts</span><span class="p">.</span><span class="nx">pop</span><span class="p">();</span>
+				<span class="p">}</span>
+
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">pop</span> <span class="o">==</span> <span class="kc">null</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">pop</span> <span class="o">=</span> <span class="nx">context</span><span class="p">;</span>
+				<span class="p">}</span>
+
+				<span class="nx">Expr</span><span class="p">.</span><span class="nx">relative</span><span class="p">[</span> <span class="nx">cur</span> <span class="p">](</span> <span class="nx">checkSet</span><span class="p">,</span> <span class="nx">pop</span><span class="p">,</span> <span class="nx">contextXML</span> <span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="nx">checkSet</span> <span class="o">=</span> <span class="nx">parts</span> <span class="o">=</span> <span class="p">[];</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">checkSet</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">checkSet</span> <span class="o">=</span> <span class="nx">set</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">checkSet</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span> <span class="nx">cur</span> <span class="o">||</span> <span class="nx">selector</span> <span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="p">(</span> <span class="nx">toString</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">checkSet</span><span class="p">)</span> <span class="o">===</span> <span class="s2">&quot;[object Array]&quot;</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">prune</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">results</span><span class="p">.</span><span class="nx">push</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span> <span class="nx">results</span><span class="p">,</span> <span class="nx">checkSet</span> <span class="p">);</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">context</span> <span class="o">&amp;&amp;</span> <span class="nx">context</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">for</span> <span class="p">(</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">===</span> <span class="kc">true</span> <span class="o">||</span> <span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">Sizzle</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">context</span><span class="p">,</span> <span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">results</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nx">set</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">);</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="k">for</span> <span class="p">(</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">results</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nx">set</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">);</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nx">makeArray</span><span class="p">(</span> <span class="nx">checkSet</span><span class="p">,</span> <span class="nx">results</span> <span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="p">(</span> <span class="nx">extra</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">Sizzle</span><span class="p">(</span> <span class="nx">extra</span><span class="p">,</span> <span class="nx">origContext</span><span class="p">,</span> <span class="nx">results</span><span class="p">,</span> <span class="nx">seed</span> <span class="p">);</span>
+		<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">uniqueSort</span><span class="p">(</span> <span class="nx">results</span> <span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="nx">results</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">uniqueSort</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">results</span><span class="p">){</span>
+	<span class="k">if</span> <span class="p">(</span> <span class="nx">sortOrder</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">hasDuplicate</span> <span class="o">=</span> <span class="nx">baseHasDuplicate</span><span class="p">;</span>
+		<span class="nx">results</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="nx">sortOrder</span><span class="p">);</span>
+
+		<span class="k">if</span> <span class="p">(</span> <span class="nx">hasDuplicate</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">results</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">results</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">===</span> <span class="nx">results</span><span class="p">[</span><span class="nx">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">results</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">i</span><span class="o">--</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="nx">results</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">matches</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">expr</span><span class="p">,</span> <span class="nx">set</span><span class="p">){</span>
+	<span class="k">return</span> <span class="nx">Sizzle</span><span class="p">(</span><span class="nx">expr</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">set</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">matchesSelector</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">node</span><span class="p">,</span> <span class="nx">expr</span><span class="p">){</span>
+	<span class="k">return</span> <span class="nx">Sizzle</span><span class="p">(</span><span class="nx">expr</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="p">[</span><span class="nx">node</span><span class="p">]).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">find</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">expr</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">isXML</span><span class="p">){</span>
+	<span class="kd">var</span> <span class="nx">set</span><span class="p">;</span>
+
+	<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">expr</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="p">[];</span>
+	<span class="p">}</span>
+
+	<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">order</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">type</span> <span class="o">=</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">order</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">match</span><span class="p">;</span>
+		
+		<span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="nx">match</span> <span class="o">=</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">leftMatch</span><span class="p">[</span> <span class="nx">type</span> <span class="p">].</span><span class="nx">exec</span><span class="p">(</span> <span class="nx">expr</span> <span class="p">))</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="kd">var</span> <span class="nx">left</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+			<span class="nx">match</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">left</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span> <span class="nx">left</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">)</span> <span class="o">!==</span> <span class="s2">&quot;\\&quot;</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">||</span> <span class="s2">&quot;&quot;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\\/g</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">);</span>
+				<span class="nx">set</span> <span class="o">=</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">find</span><span class="p">[</span> <span class="nx">type</span> <span class="p">](</span> <span class="nx">match</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">isXML</span> <span class="p">);</span>
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">set</span> <span class="o">!=</span> <span class="kc">null</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">expr</span> <span class="o">=</span> <span class="nx">expr</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">match</span><span class="p">[</span> <span class="nx">type</span> <span class="p">],</span> <span class="s2">&quot;&quot;</span> <span class="p">);</span>
+					<span class="k">break</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">set</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">set</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="p">{</span><span class="nx">set</span><span class="o">:</span> <span class="nx">set</span><span class="p">,</span> <span class="nx">expr</span><span class="o">:</span> <span class="nx">expr</span><span class="p">};</span>
+<span class="p">};</span>
+
+<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">filter</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">expr</span><span class="p">,</span> <span class="nx">set</span><span class="p">,</span> <span class="nx">inplace</span><span class="p">,</span> <span class="nx">not</span><span class="p">){</span>
+	<span class="kd">var</span> <span class="nx">old</span> <span class="o">=</span> <span class="nx">expr</span><span class="p">,</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">[],</span> <span class="nx">curLoop</span> <span class="o">=</span> <span class="nx">set</span><span class="p">,</span> <span class="nx">match</span><span class="p">,</span> <span class="nx">anyFound</span><span class="p">,</span>
+		<span class="nx">isXMLFilter</span> <span class="o">=</span> <span class="nx">set</span> <span class="o">&amp;&amp;</span> <span class="nx">set</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="nx">Sizzle</span><span class="p">.</span><span class="nx">isXML</span><span class="p">(</span><span class="nx">set</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+
+	<span class="k">while</span> <span class="p">(</span> <span class="nx">expr</span> <span class="o">&amp;&amp;</span> <span class="nx">set</span><span class="p">.</span><span class="nx">length</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">type</span> <span class="k">in</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">filter</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="nx">match</span> <span class="o">=</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">leftMatch</span><span class="p">[</span> <span class="nx">type</span> <span class="p">].</span><span class="nx">exec</span><span class="p">(</span> <span class="nx">expr</span> <span class="p">))</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="nx">match</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">filter</span> <span class="o">=</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">filter</span><span class="p">[</span> <span class="nx">type</span> <span class="p">],</span> <span class="nx">found</span><span class="p">,</span> <span class="nx">item</span><span class="p">,</span> <span class="nx">left</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+				<span class="nx">anyFound</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+
+				<span class="nx">match</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">left</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span> <span class="nx">left</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">)</span> <span class="o">===</span> <span class="s2">&quot;\\&quot;</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="k">continue</span><span class="p">;</span>
+				<span class="p">}</span>
+
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">curLoop</span> <span class="o">===</span> <span class="nx">result</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">result</span> <span class="o">=</span> <span class="p">[];</span>
+				<span class="p">}</span>
+
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">preFilter</span><span class="p">[</span> <span class="nx">type</span> <span class="p">]</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">match</span> <span class="o">=</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">preFilter</span><span class="p">[</span> <span class="nx">type</span> <span class="p">](</span> <span class="nx">match</span><span class="p">,</span> <span class="nx">curLoop</span><span class="p">,</span> <span class="nx">inplace</span><span class="p">,</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">not</span><span class="p">,</span> <span class="nx">isXMLFilter</span> <span class="p">);</span>
+
+					<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">match</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="nx">anyFound</span> <span class="o">=</span> <span class="nx">found</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+					<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">match</span> <span class="o">===</span> <span class="kc">true</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="k">continue</span><span class="p">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">match</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="p">(</span><span class="nx">item</span> <span class="o">=</span> <span class="nx">curLoop</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="k">if</span> <span class="p">(</span> <span class="nx">item</span> <span class="p">)</span> <span class="p">{</span>
+							<span class="nx">found</span> <span class="o">=</span> <span class="nx">filter</span><span class="p">(</span> <span class="nx">item</span><span class="p">,</span> <span class="nx">match</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">curLoop</span> <span class="p">);</span>
+							<span class="kd">var</span> <span class="nx">pass</span> <span class="o">=</span> <span class="nx">not</span> <span class="o">^</span> <span class="o">!!</span><span class="nx">found</span><span class="p">;</span>
+
+							<span class="k">if</span> <span class="p">(</span> <span class="nx">inplace</span> <span class="o">&amp;&amp;</span> <span class="nx">found</span> <span class="o">!=</span> <span class="kc">null</span> <span class="p">)</span> <span class="p">{</span>
+								<span class="k">if</span> <span class="p">(</span> <span class="nx">pass</span> <span class="p">)</span> <span class="p">{</span>
+									<span class="nx">anyFound</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+								<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+									<span class="nx">curLoop</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+								<span class="p">}</span>
+							<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">pass</span> <span class="p">)</span> <span class="p">{</span>
+								<span class="nx">result</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nx">item</span> <span class="p">);</span>
+								<span class="nx">anyFound</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+							<span class="p">}</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">found</span> <span class="o">!==</span> <span class="kc">undefined</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">inplace</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="nx">curLoop</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span>
+					<span class="p">}</span>
+
+					<span class="nx">expr</span> <span class="o">=</span> <span class="nx">expr</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">match</span><span class="p">[</span> <span class="nx">type</span> <span class="p">],</span> <span class="s2">&quot;&quot;</span> <span class="p">);</span>
+
+					<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">anyFound</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="k">return</span> <span class="p">[];</span>
+					<span class="p">}</span>
+
+					<span class="k">break</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+
+		<span class="c1">// Improper expression</span>
+		<span class="k">if</span> <span class="p">(</span> <span class="nx">expr</span> <span class="o">===</span> <span class="nx">old</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">anyFound</span> <span class="o">==</span> <span class="kc">null</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span> <span class="nx">expr</span> <span class="p">);</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="k">break</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+
+		<span class="nx">old</span> <span class="o">=</span> <span class="nx">expr</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="nx">curLoop</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">error</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">msg</span> <span class="p">)</span> <span class="p">{</span>
+	<span class="k">throw</span> <span class="s2">&quot;Syntax error, unrecognized expression: &quot;</span> <span class="o">+</span> <span class="nx">msg</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">Expr</span> <span class="o">=</span> <span class="nx">Sizzle</span><span class="p">.</span><span class="nx">selectors</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="nx">order</span><span class="o">:</span> <span class="p">[</span> <span class="s2">&quot;ID&quot;</span><span class="p">,</span> <span class="s2">&quot;NAME&quot;</span><span class="p">,</span> <span class="s2">&quot;TAG&quot;</span> <span class="p">],</span>
+	<span class="nx">match</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">ID</span><span class="o">:</span> <span class="sr">/#((?:[\w\u00c0-\uFFFF\-]|\\.)+)/</span><span class="p">,</span>
+		<span class="nx">CLASS</span><span class="o">:</span> <span class="sr">/\.((?:[\w\u00c0-\uFFFF\-]|\\.)+)/</span><span class="p">,</span>
+		<span class="nx">NAME</span><span class="o">:</span> <span class="sr">/\[name=[&#39;&quot;]*((?:[\w\u00c0-\uFFFF\-]|\\.)+)[&#39;&quot;]*\]/</span><span class="p">,</span>
+		<span class="nx">ATTR</span><span class="o">:</span> <span class="sr">/\[\s*((?:[\w\u00c0-\uFFFF\-]|\\.)+)\s*(?:(\S?=)\s*([&#39;&quot;]*)(.*?)\3|)\s*\]/</span><span class="p">,</span>
+		<span class="nx">TAG</span><span class="o">:</span> <span class="sr">/^((?:[\w\u00c0-\uFFFF\*\-]|\\.)+)/</span><span class="p">,</span>
+		<span class="nx">CHILD</span><span class="o">:</span> <span class="sr">/:(only|nth|last|first)-child(?:\((even|odd|[\dn+\-]*)\))?/</span><span class="p">,</span>
+		<span class="nx">POS</span><span class="o">:</span> <span class="sr">/:(nth|eq|gt|lt|first|last|even|odd)(?:\((\d*)\))?(?=[^\-]|$)/</span><span class="p">,</span>
+		<span class="nx">PSEUDO</span><span class="o">:</span> <span class="sr">/:((?:[\w\u00c0-\uFFFF\-]|\\.)+)(?:\(([&#39;&quot;]?)((?:\([^\)]+\)|[^\(\)]*)+)\2\))?/</span>
+	<span class="p">},</span>
+	<span class="nx">leftMatch</span><span class="o">:</span> <span class="p">{},</span>
+	<span class="nx">attrMap</span><span class="o">:</span> <span class="p">{</span>
+		<span class="s2">&quot;class&quot;</span><span class="o">:</span> <span class="s2">&quot;className&quot;</span><span class="p">,</span>
+		<span class="s2">&quot;for&quot;</span><span class="o">:</span> <span class="s2">&quot;htmlFor&quot;</span>
+	<span class="p">},</span>
+	<span class="nx">attrHandle</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">href</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;href&quot;</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	<span class="nx">relative</span><span class="o">:</span> <span class="p">{</span>
+		<span class="s2">&quot;+&quot;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">checkSet</span><span class="p">,</span> <span class="nx">part</span><span class="p">){</span>
+			<span class="kd">var</span> <span class="nx">isPartStr</span> <span class="o">=</span> <span class="k">typeof</span> <span class="nx">part</span> <span class="o">===</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+				<span class="nx">isTag</span> <span class="o">=</span> <span class="nx">isPartStr</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="sr">/\W/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">part</span><span class="p">),</span>
+				<span class="nx">isPartStrNotTag</span> <span class="o">=</span> <span class="nx">isPartStr</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">isTag</span><span class="p">;</span>
+
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">isTag</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="nx">part</span> <span class="o">=</span> <span class="nx">part</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span>
+			<span class="p">}</span>
+
+			<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">checkSet</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="nx">elem</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span> <span class="p">(</span><span class="nx">elem</span> <span class="o">=</span> <span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="k">while</span> <span class="p">(</span> <span class="p">(</span><span class="nx">elem</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">previousSibling</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">!==</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">{}</span>
+
+					<span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">isPartStrNotTag</span> <span class="o">||</span> <span class="nx">elem</span> <span class="o">&amp;&amp;</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">nodeName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">===</span> <span class="nx">part</span> <span class="o">?</span>
+						<span class="nx">elem</span> <span class="o">||</span> <span class="kc">false</span> <span class="o">:</span>
+						<span class="nx">elem</span> <span class="o">===</span> <span class="nx">part</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">isPartStrNotTag</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span> <span class="nx">part</span><span class="p">,</span> <span class="nx">checkSet</span><span class="p">,</span> <span class="kc">true</span> <span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		<span class="s2">&quot;&gt;&quot;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">checkSet</span><span class="p">,</span> <span class="nx">part</span><span class="p">){</span>
+			<span class="kd">var</span> <span class="nx">isPartStr</span> <span class="o">=</span> <span class="k">typeof</span> <span class="nx">part</span> <span class="o">===</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+				<span class="nx">elem</span><span class="p">,</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">checkSet</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">isPartStr</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="sr">/\W/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">part</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="nx">part</span> <span class="o">=</span> <span class="nx">part</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span>
+
+				<span class="k">for</span> <span class="p">(</span> <span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">elem</span> <span class="o">=</span> <span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+					<span class="k">if</span> <span class="p">(</span> <span class="nx">elem</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="kd">var</span> <span class="nx">parent</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">;</span>
+						<span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">nodeName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">===</span> <span class="nx">part</span> <span class="o">?</span> <span class="nx">parent</span> <span class="o">:</span> <span class="kc">false</span><span class="p">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="k">for</span> <span class="p">(</span> <span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">elem</span> <span class="o">=</span> <span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+					<span class="k">if</span> <span class="p">(</span> <span class="nx">elem</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">isPartStr</span> <span class="o">?</span>
+							<span class="nx">elem</span><span class="p">.</span><span class="nx">parentNode</span> <span class="o">:</span>
+							<span class="nx">elem</span><span class="p">.</span><span class="nx">parentNode</span> <span class="o">===</span> <span class="nx">part</span><span class="p">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">isPartStr</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span> <span class="nx">part</span><span class="p">,</span> <span class="nx">checkSet</span><span class="p">,</span> <span class="kc">true</span> <span class="p">);</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		<span class="s2">&quot;&quot;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">checkSet</span><span class="p">,</span> <span class="nx">part</span><span class="p">,</span> <span class="nx">isXML</span><span class="p">){</span>
+			<span class="kd">var</span> <span class="nx">doneName</span> <span class="o">=</span> <span class="nx">done</span><span class="o">++</span><span class="p">,</span> <span class="nx">checkFn</span> <span class="o">=</span> <span class="nx">dirCheck</span><span class="p">,</span> <span class="nx">nodeCheck</span><span class="p">;</span>
+
+			<span class="k">if</span> <span class="p">(</span> <span class="k">typeof</span> <span class="nx">part</span> <span class="o">===</span> <span class="s2">&quot;string&quot;</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="sr">/\W/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">part</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="nx">part</span> <span class="o">=</span> <span class="nx">part</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span>
+				<span class="nx">nodeCheck</span> <span class="o">=</span> <span class="nx">part</span><span class="p">;</span>
+				<span class="nx">checkFn</span> <span class="o">=</span> <span class="nx">dirNodeCheck</span><span class="p">;</span>
+			<span class="p">}</span>
+
+			<span class="nx">checkFn</span><span class="p">(</span><span class="s2">&quot;parentNode&quot;</span><span class="p">,</span> <span class="nx">part</span><span class="p">,</span> <span class="nx">doneName</span><span class="p">,</span> <span class="nx">checkSet</span><span class="p">,</span> <span class="nx">nodeCheck</span><span class="p">,</span> <span class="nx">isXML</span><span class="p">);</span>
+		<span class="p">},</span>
+		<span class="s2">&quot;~&quot;</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">checkSet</span><span class="p">,</span> <span class="nx">part</span><span class="p">,</span> <span class="nx">isXML</span><span class="p">){</span>
+			<span class="kd">var</span> <span class="nx">doneName</span> <span class="o">=</span> <span class="nx">done</span><span class="o">++</span><span class="p">,</span> <span class="nx">checkFn</span> <span class="o">=</span> <span class="nx">dirCheck</span><span class="p">,</span> <span class="nx">nodeCheck</span><span class="p">;</span>
+
+			<span class="k">if</span> <span class="p">(</span> <span class="k">typeof</span> <span class="nx">part</span> <span class="o">===</span> <span class="s2">&quot;string&quot;</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="sr">/\W/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">part</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="nx">part</span> <span class="o">=</span> <span class="nx">part</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span>
+				<span class="nx">nodeCheck</span> <span class="o">=</span> <span class="nx">part</span><span class="p">;</span>
+				<span class="nx">checkFn</span> <span class="o">=</span> <span class="nx">dirNodeCheck</span><span class="p">;</span>
+			<span class="p">}</span>
+
+			<span class="nx">checkFn</span><span class="p">(</span><span class="s2">&quot;previousSibling&quot;</span><span class="p">,</span> <span class="nx">part</span><span class="p">,</span> <span class="nx">doneName</span><span class="p">,</span> <span class="nx">checkSet</span><span class="p">,</span> <span class="nx">nodeCheck</span><span class="p">,</span> <span class="nx">isXML</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	<span class="nx">find</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">ID</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">isXML</span><span class="p">){</span>
+			<span class="k">if</span> <span class="p">(</span> <span class="k">typeof</span> <span class="nx">context</span><span class="p">.</span><span class="nx">getElementById</span> <span class="o">!==</span> <span class="s2">&quot;undefined&quot;</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">isXML</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">m</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+				<span class="c1">// Check parentNode to catch when Blackberry 4.6 returns</span>
+				<span class="c1">// nodes that are no longer in the document #6963</span>
+				<span class="k">return</span> <span class="nx">m</span> <span class="o">&amp;&amp;</span> <span class="nx">m</span><span class="p">.</span><span class="nx">parentNode</span> <span class="o">?</span> <span class="p">[</span><span class="nx">m</span><span class="p">]</span> <span class="o">:</span> <span class="p">[];</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		<span class="nx">NAME</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">context</span><span class="p">){</span>
+			<span class="k">if</span> <span class="p">(</span> <span class="k">typeof</span> <span class="nx">context</span><span class="p">.</span><span class="nx">getElementsByName</span> <span class="o">!==</span> <span class="s2">&quot;undefined&quot;</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="p">[],</span> <span class="nx">results</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">getElementsByName</span><span class="p">(</span><span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+
+				<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">results</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span> <span class="nx">results</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="o">===</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="nx">ret</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nx">results</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">);</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+
+				<span class="k">return</span> <span class="nx">ret</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">?</span> <span class="kc">null</span> <span class="o">:</span> <span class="nx">ret</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		<span class="nx">TAG</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">context</span><span class="p">){</span>
+			<span class="k">return</span> <span class="nx">context</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	<span class="nx">preFilter</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">CLASS</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">curLoop</span><span class="p">,</span> <span class="nx">inplace</span><span class="p">,</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">not</span><span class="p">,</span> <span class="nx">isXML</span><span class="p">){</span>
+			<span class="nx">match</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\\/g</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="p">;</span>
+
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">isXML</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">match</span><span class="p">;</span>
+			<span class="p">}</span>
+
+			<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">elem</span><span class="p">;</span> <span class="p">(</span><span class="nx">elem</span> <span class="o">=</span> <span class="nx">curLoop</span><span class="p">[</span><span class="nx">i</span><span class="p">])</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">elem</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span> <span class="nx">not</span> <span class="o">^</span> <span class="p">(</span><span class="nx">elem</span><span class="p">.</span><span class="nx">className</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">className</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="p">).</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/[\t\n]/g</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">).</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">match</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">inplace</span> <span class="p">)</span> <span class="p">{</span>
+							<span class="nx">result</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nx">elem</span> <span class="p">);</span>
+						<span class="p">}</span>
+					<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">inplace</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="nx">curLoop</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+
+			<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">ID</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">){</span>
+			<span class="k">return</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\\/g</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">);</span>
+		<span class="p">},</span>
+		<span class="nx">TAG</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">curLoop</span><span class="p">){</span>
+			<span class="k">return</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">toLowerCase</span><span class="p">();</span>
+		<span class="p">},</span>
+		<span class="nx">CHILD</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">){</span>
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">===</span> <span class="s2">&quot;nth&quot;</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="c1">// parse equations like &#39;even&#39;, &#39;odd&#39;, &#39;5&#39;, &#39;2n&#39;, &#39;3n+2&#39;, &#39;4n-1&#39;, &#39;-n+6&#39;</span>
+				<span class="kd">var</span> <span class="nx">test</span> <span class="o">=</span> <span class="sr">/(-?)(\d*)n((?:\+|-)?\d*)/</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span>
+					<span class="nx">match</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">===</span> <span class="s2">&quot;even&quot;</span> <span class="o">&amp;&amp;</span> <span class="s2">&quot;2n&quot;</span> <span class="o">||</span> <span class="nx">match</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">===</span> <span class="s2">&quot;odd&quot;</span> <span class="o">&amp;&amp;</span> <span class="s2">&quot;2n+1&quot;</span> <span class="o">||</span>
+					<span class="o">!</span><span class="sr">/\D/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span> <span class="nx">match</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="s2">&quot;0n+&quot;</span> <span class="o">+</span> <span class="nx">match</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">||</span> <span class="nx">match</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+
+				<span class="c1">// calculate the numbers (first)n+(last) including if they are negative</span>
+				<span class="nx">match</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="nx">test</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="nx">test</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">||</span> <span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="mi">0</span><span class="p">;</span>
+				<span class="nx">match</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="nx">test</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="mi">0</span><span class="p">;</span>
+			<span class="p">}</span>
+
+			<span class="c1">// TODO: Move to normal caching system</span>
+			<span class="nx">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nx">done</span><span class="o">++</span><span class="p">;</span>
+
+			<span class="k">return</span> <span class="nx">match</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">ATTR</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">curLoop</span><span class="p">,</span> <span class="nx">inplace</span><span class="p">,</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">not</span><span class="p">,</span> <span class="nx">isXML</span><span class="p">){</span>
+			<span class="kd">var</span> <span class="nx">name</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\\/g</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">);</span>
+			
+			<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">isXML</span> <span class="o">&amp;&amp;</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">attrMap</span><span class="p">[</span><span class="nx">name</span><span class="p">]</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">attrMap</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span>
+			<span class="p">}</span>
+
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">match</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">===</span> <span class="s2">&quot;~=&quot;</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="nx">match</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nx">match</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="p">;</span>
+			<span class="p">}</span>
+
+			<span class="k">return</span> <span class="nx">match</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">PSEUDO</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">curLoop</span><span class="p">,</span> <span class="nx">inplace</span><span class="p">,</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">not</span><span class="p">){</span>
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">===</span> <span class="s2">&quot;not&quot;</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="c1">// If we&#39;re dealing with a complex expression, or a simple one</span>
+				<span class="k">if</span> <span class="p">(</span> <span class="p">(</span> <span class="nx">chunker</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">match</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">||</span> <span class="s2">&quot;&quot;</span> <span class="p">).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="o">||</span> <span class="sr">/^\w/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="nx">match</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">match</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="nx">Sizzle</span><span class="p">(</span><span class="nx">match</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="nx">curLoop</span><span class="p">);</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+					<span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="nx">Sizzle</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">match</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="nx">curLoop</span><span class="p">,</span> <span class="nx">inplace</span><span class="p">,</span> <span class="kc">true</span> <span class="o">^</span> <span class="nx">not</span><span class="p">);</span>
+					<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">inplace</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="nx">result</span><span class="p">.</span><span class="nx">push</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">ret</span> <span class="p">);</span>
+					<span class="p">}</span>
+					<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+				<span class="p">}</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">match</span><span class="p">.</span><span class="nx">POS</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span> <span class="nx">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="o">||</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">match</span><span class="p">.</span><span class="nx">CHILD</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span> <span class="nx">match</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+			<span class="p">}</span>
+			
+			<span class="k">return</span> <span class="nx">match</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">POS</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">){</span>
+			<span class="nx">match</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span> <span class="kc">true</span> <span class="p">);</span>
+			<span class="k">return</span> <span class="nx">match</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	<span class="nx">filters</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">enabled</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">disabled</span> <span class="o">===</span> <span class="kc">false</span> <span class="o">&amp;&amp;</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">type</span> <span class="o">!==</span> <span class="s2">&quot;hidden&quot;</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">disabled</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">disabled</span> <span class="o">===</span> <span class="kc">true</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">checked</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">checked</span> <span class="o">===</span> <span class="kc">true</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">selected</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="c1">// Accessing this property makes selected-by-default</span>
+			<span class="c1">// options in Safari work properly</span>
+			<span class="nx">elem</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">.</span><span class="nx">selectedIndex</span><span class="p">;</span>
+			<span class="k">return</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">selected</span> <span class="o">===</span> <span class="kc">true</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">parent</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="o">!!</span><span class="nx">elem</span><span class="p">.</span><span class="nx">firstChild</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">empty</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="o">!</span><span class="nx">elem</span><span class="p">.</span><span class="nx">firstChild</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">has</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">match</span><span class="p">){</span>
+			<span class="k">return</span> <span class="o">!!</span><span class="nx">Sizzle</span><span class="p">(</span> <span class="nx">match</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="nx">elem</span> <span class="p">).</span><span class="nx">length</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">header</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="p">(</span><span class="sr">/h\d/i</span><span class="p">).</span><span class="nx">test</span><span class="p">(</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">nodeName</span> <span class="p">);</span>
+		<span class="p">},</span>
+		<span class="nx">text</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="s2">&quot;text&quot;</span> <span class="o">===</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">type</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">radio</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="s2">&quot;radio&quot;</span> <span class="o">===</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">type</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">checkbox</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="s2">&quot;checkbox&quot;</span> <span class="o">===</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">type</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">file</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="s2">&quot;file&quot;</span> <span class="o">===</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">type</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">password</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="s2">&quot;password&quot;</span> <span class="o">===</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">type</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">submit</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="s2">&quot;submit&quot;</span> <span class="o">===</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">type</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">image</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="s2">&quot;image&quot;</span> <span class="o">===</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">type</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">reset</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="s2">&quot;reset&quot;</span> <span class="o">===</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">type</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">button</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="s2">&quot;button&quot;</span> <span class="o">===</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">type</span> <span class="o">||</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">nodeName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">===</span> <span class="s2">&quot;button&quot;</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">input</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="p">(</span><span class="sr">/input|select|textarea|button/i</span><span class="p">).</span><span class="nx">test</span><span class="p">(</span><span class="nx">elem</span><span class="p">.</span><span class="nx">nodeName</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	<span class="nx">setFilters</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">first</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">i</span><span class="p">){</span>
+			<span class="k">return</span> <span class="nx">i</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">last</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">match</span><span class="p">,</span> <span class="nx">array</span><span class="p">){</span>
+			<span class="k">return</span> <span class="nx">i</span> <span class="o">===</span> <span class="nx">array</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">even</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">i</span><span class="p">){</span>
+			<span class="k">return</span> <span class="nx">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">odd</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">i</span><span class="p">){</span>
+			<span class="k">return</span> <span class="nx">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">1</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">lt</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">match</span><span class="p">){</span>
+			<span class="k">return</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">match</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">gt</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">match</span><span class="p">){</span>
+			<span class="k">return</span> <span class="nx">i</span> <span class="o">&gt;</span> <span class="nx">match</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">nth</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">match</span><span class="p">){</span>
+			<span class="k">return</span> <span class="nx">match</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="mi">0</span> <span class="o">===</span> <span class="nx">i</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">eq</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">match</span><span class="p">){</span>
+			<span class="k">return</span> <span class="nx">match</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="mi">0</span> <span class="o">===</span> <span class="nx">i</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">},</span>
+	<span class="nx">filter</span><span class="o">:</span> <span class="p">{</span>
+		<span class="nx">PSEUDO</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">match</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">array</span><span class="p">){</span>
+			<span class="kd">var</span> <span class="nx">name</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nx">filter</span> <span class="o">=</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">filters</span><span class="p">[</span> <span class="nx">name</span> <span class="p">];</span>
+
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">filter</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">filter</span><span class="p">(</span> <span class="nx">elem</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">match</span><span class="p">,</span> <span class="nx">array</span> <span class="p">);</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">name</span> <span class="o">===</span> <span class="s2">&quot;contains&quot;</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="p">(</span><span class="nx">elem</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">||</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">innerText</span> <span class="o">||</span> <span class="nx">Sizzle</span><span class="p">.</span><span class="nx">getText</span><span class="p">([</span> <span class="nx">elem</span> <span class="p">])</span> <span class="o">||</span> <span class="s2">&quot;&quot;</span><span class="p">).</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">match</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">name</span> <span class="o">===</span> <span class="s2">&quot;not&quot;</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">not</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+
+				<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">not</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span> <span class="nx">not</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="o">===</span> <span class="nx">elem</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+
+				<span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span> <span class="s2">&quot;Syntax error, unrecognized expression: &quot;</span> <span class="o">+</span> <span class="nx">name</span> <span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		<span class="nx">CHILD</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">match</span><span class="p">){</span>
+			<span class="kd">var</span> <span class="nx">type</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nx">node</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">;</span>
+			<span class="k">switch</span> <span class="p">(</span><span class="nx">type</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">case</span> <span class="s1">&#39;only&#39;</span><span class="o">:</span>
+				<span class="k">case</span> <span class="s1">&#39;first&#39;</span><span class="o">:</span>
+					<span class="k">while</span> <span class="p">(</span> <span class="p">(</span><span class="nx">node</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">previousSibling</span><span class="p">)</span> <span class="p">)</span>	 <span class="p">{</span>
+						<span class="k">if</span> <span class="p">(</span> <span class="nx">node</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">{</span> 
+							<span class="k">return</span> <span class="kc">false</span><span class="p">;</span> 
+						<span class="p">}</span>
+					<span class="p">}</span>
+					<span class="k">if</span> <span class="p">(</span> <span class="nx">type</span> <span class="o">===</span> <span class="s2">&quot;first&quot;</span> <span class="p">)</span> <span class="p">{</span> 
+						<span class="k">return</span> <span class="kc">true</span><span class="p">;</span> 
+					<span class="p">}</span>
+					<span class="nx">node</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">;</span>
+				<span class="k">case</span> <span class="s1">&#39;last&#39;</span><span class="o">:</span>
+					<span class="k">while</span> <span class="p">(</span> <span class="p">(</span><span class="nx">node</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">nextSibling</span><span class="p">)</span> <span class="p">)</span>	 <span class="p">{</span>
+						<span class="k">if</span> <span class="p">(</span> <span class="nx">node</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">{</span> 
+							<span class="k">return</span> <span class="kc">false</span><span class="p">;</span> 
+						<span class="p">}</span>
+					<span class="p">}</span>
+					<span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+				<span class="k">case</span> <span class="s1">&#39;nth&#39;</span><span class="o">:</span>
+					<span class="kd">var</span> <span class="nx">first</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="nx">last</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+
+					<span class="k">if</span> <span class="p">(</span> <span class="nx">first</span> <span class="o">===</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">last</span> <span class="o">===</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+					<span class="p">}</span>
+					
+					<span class="kd">var</span> <span class="nx">doneName</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+						<span class="nx">parent</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">;</span>
+	
+					<span class="k">if</span> <span class="p">(</span> <span class="nx">parent</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">parent</span><span class="p">.</span><span class="nx">sizcache</span> <span class="o">!==</span> <span class="nx">doneName</span> <span class="o">||</span> <span class="o">!</span><span class="nx">elem</span><span class="p">.</span><span class="nx">nodeIndex</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="kd">var</span> <span class="nx">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+						<span class="k">for</span> <span class="p">(</span> <span class="nx">node</span> <span class="o">=</span> <span class="nx">parent</span><span class="p">.</span><span class="nx">firstChild</span><span class="p">;</span> <span class="nx">node</span><span class="p">;</span> <span class="nx">node</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">nextSibling</span> <span class="p">)</span> <span class="p">{</span>
+							<span class="k">if</span> <span class="p">(</span> <span class="nx">node</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">{</span>
+								<span class="nx">node</span><span class="p">.</span><span class="nx">nodeIndex</span> <span class="o">=</span> <span class="o">++</span><span class="nx">count</span><span class="p">;</span>
+							<span class="p">}</span>
+						<span class="p">}</span> 
+						<span class="nx">parent</span><span class="p">.</span><span class="nx">sizcache</span> <span class="o">=</span> <span class="nx">doneName</span><span class="p">;</span>
+					<span class="p">}</span>
+					
+					<span class="kd">var</span> <span class="nx">diff</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">nodeIndex</span> <span class="o">-</span> <span class="nx">last</span><span class="p">;</span>
+					<span class="k">if</span> <span class="p">(</span> <span class="nx">first</span> <span class="o">===</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="k">return</span> <span class="nx">diff</span> <span class="o">===</span> <span class="mi">0</span><span class="p">;</span>
+					<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+						<span class="k">return</span> <span class="p">(</span> <span class="nx">diff</span> <span class="o">%</span> <span class="nx">first</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">diff</span> <span class="o">/</span> <span class="nx">first</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="p">);</span>
+					<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">},</span>
+		<span class="nx">ID</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">match</span><span class="p">){</span>
+			<span class="k">return</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span> <span class="o">===</span> <span class="nx">match</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">TAG</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">match</span><span class="p">){</span>
+			<span class="k">return</span> <span class="p">(</span><span class="nx">match</span> <span class="o">===</span> <span class="s2">&quot;*&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="o">||</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">nodeName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">===</span> <span class="nx">match</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">CLASS</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">match</span><span class="p">){</span>
+			<span class="k">return</span> <span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">elem</span><span class="p">.</span><span class="nx">className</span> <span class="o">||</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;class&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+				<span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span> <span class="nx">match</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">ATTR</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">match</span><span class="p">){</span>
+			<span class="kd">var</span> <span class="nx">name</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+				<span class="nx">result</span> <span class="o">=</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">attrHandle</span><span class="p">[</span> <span class="nx">name</span> <span class="p">]</span> <span class="o">?</span>
+					<span class="nx">Expr</span><span class="p">.</span><span class="nx">attrHandle</span><span class="p">[</span> <span class="nx">name</span> <span class="p">](</span> <span class="nx">elem</span> <span class="p">)</span> <span class="o">:</span>
+					<span class="nx">elem</span><span class="p">[</span> <span class="nx">name</span> <span class="p">]</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">?</span>
+						<span class="nx">elem</span><span class="p">[</span> <span class="nx">name</span> <span class="p">]</span> <span class="o">:</span>
+						<span class="nx">elem</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span> <span class="nx">name</span> <span class="p">),</span>
+				<span class="nx">value</span> <span class="o">=</span> <span class="nx">result</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+				<span class="nx">type</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+				<span class="nx">check</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+
+			<span class="k">return</span> <span class="nx">result</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span>
+				<span class="nx">type</span> <span class="o">===</span> <span class="s2">&quot;!=&quot;</span> <span class="o">:</span>
+				<span class="nx">type</span> <span class="o">===</span> <span class="s2">&quot;=&quot;</span> <span class="o">?</span>
+				<span class="nx">value</span> <span class="o">===</span> <span class="nx">check</span> <span class="o">:</span>
+				<span class="nx">type</span> <span class="o">===</span> <span class="s2">&quot;*=&quot;</span> <span class="o">?</span>
+				<span class="nx">value</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">check</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">:</span>
+				<span class="nx">type</span> <span class="o">===</span> <span class="s2">&quot;~=&quot;</span> <span class="o">?</span>
+				<span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nx">value</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="p">).</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">check</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">:</span>
+				<span class="o">!</span><span class="nx">check</span> <span class="o">?</span>
+				<span class="nx">value</span> <span class="o">&amp;&amp;</span> <span class="nx">result</span> <span class="o">!==</span> <span class="kc">false</span> <span class="o">:</span>
+				<span class="nx">type</span> <span class="o">===</span> <span class="s2">&quot;!=&quot;</span> <span class="o">?</span>
+				<span class="nx">value</span> <span class="o">!==</span> <span class="nx">check</span> <span class="o">:</span>
+				<span class="nx">type</span> <span class="o">===</span> <span class="s2">&quot;^=&quot;</span> <span class="o">?</span>
+				<span class="nx">value</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">check</span><span class="p">)</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">:</span>
+				<span class="nx">type</span> <span class="o">===</span> <span class="s2">&quot;$=&quot;</span> <span class="o">?</span>
+				<span class="nx">value</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="nx">value</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">check</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="o">===</span> <span class="nx">check</span> <span class="o">:</span>
+				<span class="nx">type</span> <span class="o">===</span> <span class="s2">&quot;|=&quot;</span> <span class="o">?</span>
+				<span class="nx">value</span> <span class="o">===</span> <span class="nx">check</span> <span class="o">||</span> <span class="nx">value</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">check</span><span class="p">.</span><span class="nx">length</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">===</span> <span class="nx">check</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">:</span>
+				<span class="kc">false</span><span class="p">;</span>
+		<span class="p">},</span>
+		<span class="nx">POS</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">match</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">array</span><span class="p">){</span>
+			<span class="kd">var</span> <span class="nx">name</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="nx">filter</span> <span class="o">=</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">setFilters</span><span class="p">[</span> <span class="nx">name</span> <span class="p">];</span>
+
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">filter</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">filter</span><span class="p">(</span> <span class="nx">elem</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">match</span><span class="p">,</span> <span class="nx">array</span> <span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">origPOS</span> <span class="o">=</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">match</span><span class="p">.</span><span class="nx">POS</span><span class="p">,</span>
+	<span class="nx">fescape</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">all</span><span class="p">,</span> <span class="nx">num</span><span class="p">){</span>
+		<span class="k">return</span> <span class="s2">&quot;\\&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="nx">num</span> <span class="o">-</span> <span class="mi">0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+	<span class="p">};</span>
+
+<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">type</span> <span class="k">in</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">match</span> <span class="p">)</span> <span class="p">{</span>
+	<span class="nx">Expr</span><span class="p">.</span><span class="nx">match</span><span class="p">[</span> <span class="nx">type</span> <span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">match</span><span class="p">[</span> <span class="nx">type</span> <span class="p">].</span><span class="nx">source</span> <span class="o">+</span> <span class="p">(</span><span class="sr">/(?![^\[]*\])(?![^\(]*\))/</span><span class="p">.</span><span class="nx">source</span><span class="p">)</span> <span class="p">);</span>
+	<span class="nx">Expr</span><span class="p">.</span><span class="nx">leftMatch</span><span class="p">[</span> <span class="nx">type</span> <span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">RegExp</span><span class="p">(</span> <span class="sr">/(^(?:.|\r|\n)*?)/</span><span class="p">.</span><span class="nx">source</span> <span class="o">+</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">match</span><span class="p">[</span> <span class="nx">type</span> <span class="p">].</span><span class="nx">source</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/\\(\d+)/g</span><span class="p">,</span> <span class="nx">fescape</span><span class="p">)</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">makeArray</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">array</span><span class="p">,</span> <span class="nx">results</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">array</span> <span class="o">=</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span> <span class="nx">array</span><span class="p">,</span> <span class="mi">0</span> <span class="p">);</span>
+
+	<span class="k">if</span> <span class="p">(</span> <span class="nx">results</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">results</span><span class="p">.</span><span class="nx">push</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span> <span class="nx">results</span><span class="p">,</span> <span class="nx">array</span> <span class="p">);</span>
+		<span class="k">return</span> <span class="nx">results</span><span class="p">;</span>
+	<span class="p">}</span>
+	
+	<span class="k">return</span> <span class="nx">array</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// Perform a simple check to determine if the browser is capable of</span>
+<span class="c1">// converting a NodeList to an array using builtin methods.</span>
+<span class="c1">// Also verifies that the returned array holds DOM nodes</span>
+<span class="c1">// (which is not the case in the Blackberry browser)</span>
+<span class="k">try</span> <span class="p">{</span>
+	<span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span> <span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">childNodes</span><span class="p">,</span> <span class="mi">0</span> <span class="p">)[</span><span class="mi">0</span><span class="p">].</span><span class="nx">nodeType</span><span class="p">;</span>
+
+<span class="c1">// Provide a fallback method if it does not work</span>
+<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">){</span>
+	<span class="nx">makeArray</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">array</span><span class="p">,</span> <span class="nx">results</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="nx">results</span> <span class="o">||</span> <span class="p">[],</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+		<span class="k">if</span> <span class="p">(</span> <span class="nx">toString</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">array</span><span class="p">)</span> <span class="o">===</span> <span class="s2">&quot;[object Array]&quot;</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">push</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span> <span class="nx">ret</span><span class="p">,</span> <span class="nx">array</span> <span class="p">);</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span> <span class="k">typeof</span> <span class="nx">array</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="s2">&quot;number&quot;</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">array</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">ret</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nx">array</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">);</span>
+				<span class="p">}</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+				<span class="k">for</span> <span class="p">(</span> <span class="p">;</span> <span class="nx">array</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">ret</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nx">array</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">);</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+
+		<span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
+	<span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">var</span> <span class="nx">sortOrder</span><span class="p">,</span> <span class="nx">siblingCheck</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="p">(</span> <span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">compareDocumentPosition</span> <span class="p">)</span> <span class="p">{</span>
+	<span class="nx">sortOrder</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span> <span class="nx">a</span> <span class="o">===</span> <span class="nx">b</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">hasDuplicate</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+			<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">a</span><span class="p">.</span><span class="nx">compareDocumentPosition</span> <span class="o">||</span> <span class="o">!</span><span class="nx">b</span><span class="p">.</span><span class="nx">compareDocumentPosition</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">a</span><span class="p">.</span><span class="nx">compareDocumentPosition</span> <span class="o">?</span> <span class="o">-</span><span class="mi">1</span> <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="k">return</span> <span class="nx">a</span><span class="p">.</span><span class="nx">compareDocumentPosition</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">4</span> <span class="o">?</span> <span class="o">-</span><span class="mi">1</span> <span class="o">:</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="p">};</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+	<span class="nx">sortOrder</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">ap</span> <span class="o">=</span> <span class="p">[],</span> <span class="nx">bp</span> <span class="o">=</span> <span class="p">[],</span> <span class="nx">aup</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">,</span> <span class="nx">bup</span> <span class="o">=</span> <span class="nx">b</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">,</span>
+			<span class="nx">cur</span> <span class="o">=</span> <span class="nx">aup</span><span class="p">,</span> <span class="nx">al</span><span class="p">,</span> <span class="nx">bl</span><span class="p">;</span>
+
+		<span class="c1">// The nodes are identical, we can exit early</span>
+		<span class="k">if</span> <span class="p">(</span> <span class="nx">a</span> <span class="o">===</span> <span class="nx">b</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">hasDuplicate</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+			<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+
+		<span class="c1">// If the nodes are siblings (or identical) we can do a quick check</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">aup</span> <span class="o">===</span> <span class="nx">bup</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">siblingCheck</span><span class="p">(</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="p">);</span>
+
+		<span class="c1">// If no parents were found then the nodes are disconnected</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">aup</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">bup</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="c1">// Otherwise they&#39;re somewhere else in the tree so we need</span>
+		<span class="c1">// to build up a full list of the parentNodes for comparison</span>
+		<span class="k">while</span> <span class="p">(</span> <span class="nx">cur</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">ap</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span> <span class="nx">cur</span> <span class="p">);</span>
+			<span class="nx">cur</span> <span class="o">=</span> <span class="nx">cur</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="nx">cur</span> <span class="o">=</span> <span class="nx">bup</span><span class="p">;</span>
+
+		<span class="k">while</span> <span class="p">(</span> <span class="nx">cur</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">bp</span><span class="p">.</span><span class="nx">unshift</span><span class="p">(</span> <span class="nx">cur</span> <span class="p">);</span>
+			<span class="nx">cur</span> <span class="o">=</span> <span class="nx">cur</span><span class="p">.</span><span class="nx">parentNode</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="nx">al</span> <span class="o">=</span> <span class="nx">ap</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+		<span class="nx">bl</span> <span class="o">=</span> <span class="nx">bp</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+
+		<span class="c1">// Start walking down the tree looking for a discrepancy</span>
+		<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">al</span> <span class="o">&amp;&amp;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">bl</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">ap</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">!==</span> <span class="nx">bp</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="nx">siblingCheck</span><span class="p">(</span> <span class="nx">ap</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">bp</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+
+		<span class="c1">// We ended someplace up the tree so do a sibling check</span>
+		<span class="k">return</span> <span class="nx">i</span> <span class="o">===</span> <span class="nx">al</span> <span class="o">?</span>
+			<span class="nx">siblingCheck</span><span class="p">(</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">bp</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span> <span class="p">)</span> <span class="o">:</span>
+			<span class="nx">siblingCheck</span><span class="p">(</span> <span class="nx">ap</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">b</span><span class="p">,</span> <span class="mi">1</span> <span class="p">);</span>
+	<span class="p">};</span>
+
+	<span class="nx">siblingCheck</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">ret</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span> <span class="nx">a</span> <span class="o">===</span> <span class="nx">b</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="kd">var</span> <span class="nx">cur</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">nextSibling</span><span class="p">;</span>
+
+		<span class="k">while</span> <span class="p">(</span> <span class="nx">cur</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">cur</span> <span class="o">===</span> <span class="nx">b</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+			<span class="p">}</span>
+
+			<span class="nx">cur</span> <span class="o">=</span> <span class="nx">cur</span><span class="p">.</span><span class="nx">nextSibling</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="p">};</span>
+<span class="p">}</span>
+
+<span class="c1">// Utility function for retreiving the text value of an array of DOM nodes</span>
+<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">getText</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">elems</span> <span class="p">)</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">ret</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nx">elem</span><span class="p">;</span>
+
+	<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">elems</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">elem</span> <span class="o">=</span> <span class="nx">elems</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+
+		<span class="c1">// Get the text from text nodes and CDATA nodes</span>
+		<span class="k">if</span> <span class="p">(</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">3</span> <span class="o">||</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">4</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">ret</span> <span class="o">+=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">nodeValue</span><span class="p">;</span>
+
+		<span class="c1">// Traverse everything else, except comment nodes</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">!==</span> <span class="mi">8</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">ret</span> <span class="o">+=</span> <span class="nx">Sizzle</span><span class="p">.</span><span class="nx">getText</span><span class="p">(</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">childNodes</span> <span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="nx">ret</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// Check to see if the browser returns elements by name when</span>
+<span class="c1">// querying by getElementById (and provide a workaround)</span>
+<span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+	<span class="c1">// We&#39;re going to inject a fake input element with a specified name</span>
+	<span class="kd">var</span> <span class="nx">form</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">),</span>
+		<span class="nx">id</span> <span class="o">=</span> <span class="s2">&quot;script&quot;</span> <span class="o">+</span> <span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">()).</span><span class="nx">getTime</span><span class="p">();</span>
+	<span class="nx">form</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s2">&quot;&lt;a name=&#39;&quot;</span> <span class="o">+</span> <span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot;&#39;/&gt;&quot;</span><span class="p">;</span>
+
+	<span class="c1">// Inject it into the root element, check its status, and remove it quickly</span>
+	<span class="kd">var</span> <span class="nx">root</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">;</span>
+	<span class="nx">root</span><span class="p">.</span><span class="nx">insertBefore</span><span class="p">(</span> <span class="nx">form</span><span class="p">,</span> <span class="nx">root</span><span class="p">.</span><span class="nx">firstChild</span> <span class="p">);</span>
+
+	<span class="c1">// The workaround has to do additional checks after a getElementById</span>
+	<span class="c1">// Which slows things down for other browsers (hence the branching)</span>
+	<span class="k">if</span> <span class="p">(</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span> <span class="nx">id</span> <span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">Expr</span><span class="p">.</span><span class="nx">find</span><span class="p">.</span><span class="nx">ID</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">isXML</span><span class="p">){</span>
+			<span class="k">if</span> <span class="p">(</span> <span class="k">typeof</span> <span class="nx">context</span><span class="p">.</span><span class="nx">getElementById</span> <span class="o">!==</span> <span class="s2">&quot;undefined&quot;</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">isXML</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">m</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+				<span class="k">return</span> <span class="nx">m</span> <span class="o">?</span> <span class="nx">m</span><span class="p">.</span><span class="nx">id</span> <span class="o">===</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">||</span> <span class="k">typeof</span> <span class="nx">m</span><span class="p">.</span><span class="nx">getAttributeNode</span> <span class="o">!==</span> <span class="s2">&quot;undefined&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">m</span><span class="p">.</span><span class="nx">getAttributeNode</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">).</span><span class="nx">nodeValue</span> <span class="o">===</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">?</span> <span class="p">[</span><span class="nx">m</span><span class="p">]</span> <span class="o">:</span> <span class="kc">undefined</span> <span class="o">:</span> <span class="p">[];</span>
+			<span class="p">}</span>
+		<span class="p">};</span>
+
+		<span class="nx">Expr</span><span class="p">.</span><span class="nx">filter</span><span class="p">.</span><span class="nx">ID</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">,</span> <span class="nx">match</span><span class="p">){</span>
+			<span class="kd">var</span> <span class="nx">node</span> <span class="o">=</span> <span class="k">typeof</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">getAttributeNode</span> <span class="o">!==</span> <span class="s2">&quot;undefined&quot;</span> <span class="o">&amp;&amp;</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">getAttributeNode</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">);</span>
+			<span class="k">return</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">node</span> <span class="o">&amp;&amp;</span> <span class="nx">node</span><span class="p">.</span><span class="nx">nodeValue</span> <span class="o">===</span> <span class="nx">match</span><span class="p">;</span>
+		<span class="p">};</span>
+	<span class="p">}</span>
+
+	<span class="nx">root</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span> <span class="nx">form</span> <span class="p">);</span>
+	<span class="nx">root</span> <span class="o">=</span> <span class="nx">form</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span> <span class="c1">// release memory in IE</span>
+<span class="p">})();</span>
+
+<span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+	<span class="c1">// Check to see if the browser returns only elements</span>
+	<span class="c1">// when doing getElementsByTagName(&quot;*&quot;)</span>
+
+	<span class="c1">// Create a fake element</span>
+	<span class="kd">var</span> <span class="nx">div</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">);</span>
+	<span class="nx">div</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createComment</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="p">);</span>
+
+	<span class="c1">// Make sure no comments are found</span>
+	<span class="k">if</span> <span class="p">(</span> <span class="nx">div</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="p">).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">Expr</span><span class="p">.</span><span class="nx">find</span><span class="p">.</span><span class="nx">TAG</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">context</span><span class="p">){</span>
+			<span class="kd">var</span> <span class="nx">results</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+
+			<span class="c1">// Filter out possible comments</span>
+			<span class="k">if</span> <span class="p">(</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">===</span> <span class="s2">&quot;*&quot;</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="kd">var</span> <span class="nx">tmp</span> <span class="o">=</span> <span class="p">[];</span>
+
+				<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">results</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span> <span class="nx">results</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="nx">tmp</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span> <span class="nx">results</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="p">);</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+
+				<span class="nx">results</span> <span class="o">=</span> <span class="nx">tmp</span><span class="p">;</span>
+			<span class="p">}</span>
+
+			<span class="k">return</span> <span class="nx">results</span><span class="p">;</span>
+		<span class="p">};</span>
+	<span class="p">}</span>
+
+	<span class="c1">// Check to see if an attribute returns normalized href attributes</span>
+	<span class="nx">div</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s2">&quot;&lt;a href=&#39;#&#39;&gt;&lt;/a&gt;&quot;</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span> <span class="nx">div</span><span class="p">.</span><span class="nx">firstChild</span> <span class="o">&amp;&amp;</span> <span class="k">typeof</span> <span class="nx">div</span><span class="p">.</span><span class="nx">firstChild</span><span class="p">.</span><span class="nx">getAttribute</span> <span class="o">!==</span> <span class="s2">&quot;undefined&quot;</span> <span class="o">&amp;&amp;</span>
+			<span class="nx">div</span><span class="p">.</span><span class="nx">firstChild</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;href&quot;</span><span class="p">)</span> <span class="o">!==</span> <span class="s2">&quot;#&quot;</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">Expr</span><span class="p">.</span><span class="nx">attrHandle</span><span class="p">.</span><span class="nx">href</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+			<span class="k">return</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="s2">&quot;href&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+		<span class="p">};</span>
+	<span class="p">}</span>
+
+	<span class="nx">div</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span> <span class="c1">// release memory in IE</span>
+<span class="p">})();</span>
+
+<span class="k">if</span> <span class="p">(</span> <span class="nb">document</span><span class="p">.</span><span class="nx">querySelectorAll</span> <span class="p">)</span> <span class="p">{</span>
+	<span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+		<span class="kd">var</span> <span class="nx">oldSizzle</span> <span class="o">=</span> <span class="nx">Sizzle</span><span class="p">,</span> <span class="nx">div</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">);</span>
+		<span class="nx">div</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s2">&quot;&lt;p class=&#39;TEST&#39;&gt;&lt;/p&gt;&quot;</span><span class="p">;</span>
+
+		<span class="c1">// Safari can&#39;t handle uppercase or unicode characters when</span>
+		<span class="c1">// in quirks mode.</span>
+		<span class="k">if</span> <span class="p">(</span> <span class="nx">div</span><span class="p">.</span><span class="nx">querySelectorAll</span> <span class="o">&amp;&amp;</span> <span class="nx">div</span><span class="p">.</span><span class="nx">querySelectorAll</span><span class="p">(</span><span class="s2">&quot;.TEST&quot;</span><span class="p">).</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span><span class="p">;</span>
+		<span class="p">}</span>
+	
+		<span class="nx">Sizzle</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">extra</span><span class="p">,</span> <span class="nx">seed</span><span class="p">){</span>
+			<span class="nx">context</span> <span class="o">=</span> <span class="nx">context</span> <span class="o">||</span> <span class="nb">document</span><span class="p">;</span>
+
+			<span class="c1">// Only use querySelectorAll on non-XML documents</span>
+			<span class="c1">// (ID selectors don&#39;t work in non-HTML documents)</span>
+			<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">seed</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">Sizzle</span><span class="p">.</span><span class="nx">isXML</span><span class="p">(</span><span class="nx">context</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">context</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">9</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="k">try</span> <span class="p">{</span>
+						<span class="k">return</span> <span class="nx">makeArray</span><span class="p">(</span> <span class="nx">context</span><span class="p">.</span><span class="nx">querySelectorAll</span><span class="p">(</span><span class="nx">query</span><span class="p">),</span> <span class="nx">extra</span> <span class="p">);</span>
+					<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">qsaError</span><span class="p">)</span> <span class="p">{}</span>
+
+				<span class="c1">// qSA works strangely on Element-rooted queries</span>
+				<span class="c1">// We can work around this by specifying an extra ID on the root</span>
+				<span class="c1">// and working up from there (Thanks to Andrew Dupont for the technique)</span>
+				<span class="c1">// IE 8 doesn&#39;t work on object elements</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">context</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">context</span><span class="p">.</span><span class="nx">nodeName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">!==</span> <span class="s2">&quot;object&quot;</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="kd">var</span> <span class="nx">old</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span> <span class="s2">&quot;id&quot;</span> <span class="p">),</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="s2">&quot;__sizzle__&quot;</span><span class="p">;</span>
+
+					<span class="k">try</span> <span class="p">{</span>
+						<span class="k">return</span> <span class="nx">makeArray</span><span class="p">(</span> <span class="nx">context</span><span class="p">.</span><span class="nx">querySelectorAll</span><span class="p">(</span> <span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nx">query</span> <span class="p">),</span> <span class="nx">extra</span> <span class="p">);</span>
+
+					<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">pseudoError</span><span class="p">)</span> <span class="p">{</span>
+					<span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+						<span class="k">if</span> <span class="p">(</span> <span class="nx">old</span> <span class="p">)</span> <span class="p">{</span>
+							<span class="nx">context</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">old</span><span class="p">;</span>
+
+						<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+							<span class="nx">context</span><span class="p">.</span><span class="nx">removeAttribute</span><span class="p">(</span> <span class="s2">&quot;id&quot;</span> <span class="p">);</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		
+			<span class="k">return</span> <span class="nx">oldSizzle</span><span class="p">(</span><span class="nx">query</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">extra</span><span class="p">,</span> <span class="nx">seed</span><span class="p">);</span>
+		<span class="p">};</span>
+
+		<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">prop</span> <span class="k">in</span> <span class="nx">oldSizzle</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">Sizzle</span><span class="p">[</span> <span class="nx">prop</span> <span class="p">]</span> <span class="o">=</span> <span class="nx">oldSizzle</span><span class="p">[</span> <span class="nx">prop</span> <span class="p">];</span>
+		<span class="p">}</span>
+
+		<span class="nx">div</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span> <span class="c1">// release memory in IE</span>
+	<span class="p">})();</span>
+<span class="p">}</span>
+
+<span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+	<span class="kd">var</span> <span class="nx">html</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">,</span>
+		<span class="nx">matches</span> <span class="o">=</span> <span class="nx">html</span><span class="p">.</span><span class="nx">matchesSelector</span> <span class="o">||</span> <span class="nx">html</span><span class="p">.</span><span class="nx">mozMatchesSelector</span> <span class="o">||</span> <span class="nx">html</span><span class="p">.</span><span class="nx">webkitMatchesSelector</span> <span class="o">||</span> <span class="nx">html</span><span class="p">.</span><span class="nx">msMatchesSelector</span><span class="p">,</span>
+		<span class="nx">pseudoWorks</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+
+	<span class="k">try</span> <span class="p">{</span>
+		<span class="c1">// This should fail with an exception</span>
+		<span class="c1">// Gecko does not error, returns false instead</span>
+		<span class="nx">matches</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span> <span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">,</span> <span class="s2">&quot;[test!=&#39;&#39;]:sizzle&quot;</span> <span class="p">);</span>
+	
+	<span class="p">}</span> <span class="k">catch</span><span class="p">(</span> <span class="nx">pseudoError</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">pseudoWorks</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="p">(</span> <span class="nx">matches</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">matchesSelector</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span> <span class="nx">node</span><span class="p">,</span> <span class="nx">expr</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">Sizzle</span><span class="p">.</span><span class="nx">isXML</span><span class="p">(</span> <span class="nx">node</span> <span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">try</span> <span class="p">{</span> 
+					<span class="k">if</span> <span class="p">(</span> <span class="nx">pseudoWorks</span> <span class="o">||</span> <span class="o">!</span><span class="nx">Expr</span><span class="p">.</span><span class="nx">match</span><span class="p">.</span><span class="nx">PSEUDO</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span> <span class="nx">expr</span> <span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="sr">/!=/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span> <span class="nx">expr</span> <span class="p">)</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="k">return</span> <span class="nx">matches</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span> <span class="nx">node</span><span class="p">,</span> <span class="nx">expr</span> <span class="p">);</span>
+					<span class="p">}</span>
+				<span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{}</span>
+			<span class="p">}</span>
+
+			<span class="k">return</span> <span class="nx">Sizzle</span><span class="p">(</span><span class="nx">expr</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="p">[</span><span class="nx">node</span><span class="p">]).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="p">};</span>
+	<span class="p">}</span>
+<span class="p">})();</span>
+
+<span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+	<span class="kd">var</span> <span class="nx">div</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s2">&quot;div&quot;</span><span class="p">);</span>
+
+	<span class="nx">div</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s2">&quot;&lt;div class=&#39;test e&#39;&gt;&lt;/div&gt;&lt;div class=&#39;test&#39;&gt;&lt;/div&gt;&quot;</span><span class="p">;</span>
+
+	<span class="c1">// Opera can&#39;t find a second classname (in 9.6)</span>
+	<span class="c1">// Also, make sure that getElementsByClassName actually exists</span>
+	<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">div</span><span class="p">.</span><span class="nx">getElementsByClassName</span> <span class="o">||</span> <span class="nx">div</span><span class="p">.</span><span class="nx">getElementsByClassName</span><span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">).</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="c1">// Safari caches class attributes, doesn&#39;t catch changes (in 3.2)</span>
+	<span class="nx">div</span><span class="p">.</span><span class="nx">lastChild</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="s2">&quot;e&quot;</span><span class="p">;</span>
+
+	<span class="k">if</span> <span class="p">(</span> <span class="nx">div</span><span class="p">.</span><span class="nx">getElementsByClassName</span><span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">).</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span><span class="p">;</span>
+	<span class="p">}</span>
+	
+	<span class="nx">Expr</span><span class="p">.</span><span class="nx">order</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;CLASS&quot;</span><span class="p">);</span>
+	<span class="nx">Expr</span><span class="p">.</span><span class="nx">find</span><span class="p">.</span><span class="nx">CLASS</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">match</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">isXML</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span> <span class="k">typeof</span> <span class="nx">context</span><span class="p">.</span><span class="nx">getElementsByClassName</span> <span class="o">!==</span> <span class="s2">&quot;undefined&quot;</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">isXML</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="k">return</span> <span class="nx">context</span><span class="p">.</span><span class="nx">getElementsByClassName</span><span class="p">(</span><span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+		<span class="p">}</span>
+	<span class="p">};</span>
+
+	<span class="nx">div</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span> <span class="c1">// release memory in IE</span>
+<span class="p">})();</span>
+
+<span class="kd">function</span> <span class="nx">dirNodeCheck</span><span class="p">(</span> <span class="nx">dir</span><span class="p">,</span> <span class="nx">cur</span><span class="p">,</span> <span class="nx">doneName</span><span class="p">,</span> <span class="nx">checkSet</span><span class="p">,</span> <span class="nx">nodeCheck</span><span class="p">,</span> <span class="nx">isXML</span> <span class="p">)</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">checkSet</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">elem</span> <span class="o">=</span> <span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+		<span class="k">if</span> <span class="p">(</span> <span class="nx">elem</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">elem</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">[</span><span class="nx">dir</span><span class="p">];</span>
+			<span class="kd">var</span> <span class="nx">match</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+
+			<span class="k">while</span> <span class="p">(</span> <span class="nx">elem</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">sizcache</span> <span class="o">===</span> <span class="nx">doneName</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">match</span> <span class="o">=</span> <span class="nx">checkSet</span><span class="p">[</span><span class="nx">elem</span><span class="p">.</span><span class="nx">sizset</span><span class="p">];</span>
+					<span class="k">break</span><span class="p">;</span>
+				<span class="p">}</span>
+
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">isXML</span> <span class="p">){</span>
+					<span class="nx">elem</span><span class="p">.</span><span class="nx">sizcache</span> <span class="o">=</span> <span class="nx">doneName</span><span class="p">;</span>
+					<span class="nx">elem</span><span class="p">.</span><span class="nx">sizset</span> <span class="o">=</span> <span class="nx">i</span><span class="p">;</span>
+				<span class="p">}</span>
+
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">nodeName</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()</span> <span class="o">===</span> <span class="nx">cur</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">match</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">;</span>
+					<span class="k">break</span><span class="p">;</span>
+				<span class="p">}</span>
+
+				<span class="nx">elem</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">[</span><span class="nx">dir</span><span class="p">];</span>
+			<span class="p">}</span>
+
+			<span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">match</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">dirCheck</span><span class="p">(</span> <span class="nx">dir</span><span class="p">,</span> <span class="nx">cur</span><span class="p">,</span> <span class="nx">doneName</span><span class="p">,</span> <span class="nx">checkSet</span><span class="p">,</span> <span class="nx">nodeCheck</span><span class="p">,</span> <span class="nx">isXML</span> <span class="p">)</span> <span class="p">{</span>
+	<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">checkSet</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="kd">var</span> <span class="nx">elem</span> <span class="o">=</span> <span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+		<span class="k">if</span> <span class="p">(</span> <span class="nx">elem</span> <span class="p">)</span> <span class="p">{</span>
+			<span class="nx">elem</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">[</span><span class="nx">dir</span><span class="p">];</span>
+			<span class="kd">var</span> <span class="nx">match</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+
+			<span class="k">while</span> <span class="p">(</span> <span class="nx">elem</span> <span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">sizcache</span> <span class="o">===</span> <span class="nx">doneName</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="nx">match</span> <span class="o">=</span> <span class="nx">checkSet</span><span class="p">[</span><span class="nx">elem</span><span class="p">.</span><span class="nx">sizset</span><span class="p">];</span>
+					<span class="k">break</span><span class="p">;</span>
+				<span class="p">}</span>
+
+				<span class="k">if</span> <span class="p">(</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">===</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">{</span>
+					<span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="nx">isXML</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="nx">elem</span><span class="p">.</span><span class="nx">sizcache</span> <span class="o">=</span> <span class="nx">doneName</span><span class="p">;</span>
+						<span class="nx">elem</span><span class="p">.</span><span class="nx">sizset</span> <span class="o">=</span> <span class="nx">i</span><span class="p">;</span>
+					<span class="p">}</span>
+					<span class="k">if</span> <span class="p">(</span> <span class="k">typeof</span> <span class="nx">cur</span> <span class="o">!==</span> <span class="s2">&quot;string&quot;</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="k">if</span> <span class="p">(</span> <span class="nx">elem</span> <span class="o">===</span> <span class="nx">cur</span> <span class="p">)</span> <span class="p">{</span>
+							<span class="nx">match</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+							<span class="k">break</span><span class="p">;</span>
+						<span class="p">}</span>
+
+					<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nx">Sizzle</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span> <span class="nx">cur</span><span class="p">,</span> <span class="p">[</span><span class="nx">elem</span><span class="p">]</span> <span class="p">).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
+						<span class="nx">match</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">;</span>
+						<span class="k">break</span><span class="p">;</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+
+				<span class="nx">elem</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">[</span><span class="nx">dir</span><span class="p">];</span>
+			<span class="p">}</span>
+
+			<span class="nx">checkSet</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">match</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="p">(</span> <span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">contains</span> <span class="p">)</span> <span class="p">{</span>
+	<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">contains</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">){</span>
+		<span class="k">return</span> <span class="nx">a</span> <span class="o">!==</span> <span class="nx">b</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">contains</span> <span class="o">?</span> <span class="nx">a</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="o">:</span> <span class="kc">true</span><span class="p">);</span>
+	<span class="p">};</span>
+
+<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">compareDocumentPosition</span> <span class="p">)</span> <span class="p">{</span>
+	<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">contains</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">){</span>
+		<span class="k">return</span> <span class="o">!!</span><span class="p">(</span><span class="nx">a</span><span class="p">.</span><span class="nx">compareDocumentPosition</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">16</span><span class="p">);</span>
+	<span class="p">};</span>
+
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+	<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">contains</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+	<span class="p">};</span>
+<span class="p">}</span>
+
+<span class="nx">Sizzle</span><span class="p">.</span><span class="nx">isXML</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">elem</span><span class="p">){</span>
+	<span class="c1">// documentElement is verified for cases where it doesn&#39;t yet exist</span>
+	<span class="c1">// (such as loading iframes in IE - #4833) </span>
+	<span class="kd">var</span> <span class="nx">documentElement</span> <span class="o">=</span> <span class="p">(</span><span class="nx">elem</span> <span class="o">?</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">ownerDocument</span> <span class="o">||</span> <span class="nx">elem</span> <span class="o">:</span> <span class="mi">0</span><span class="p">).</span><span class="nx">documentElement</span><span class="p">;</span>
+	<span class="k">return</span> <span class="nx">documentElement</span> <span class="o">?</span> <span class="nx">documentElement</span><span class="p">.</span><span class="nx">nodeName</span> <span class="o">!==</span> <span class="s2">&quot;HTML&quot;</span> <span class="o">:</span> <span class="kc">false</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">posProcess</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">selector</span><span class="p">,</span> <span class="nx">context</span><span class="p">){</span>
+	<span class="kd">var</span> <span class="nx">tmpSet</span> <span class="o">=</span> <span class="p">[],</span> <span class="nx">later</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nx">match</span><span class="p">,</span>
+		<span class="nx">root</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">nodeType</span> <span class="o">?</span> <span class="p">[</span><span class="nx">context</span><span class="p">]</span> <span class="o">:</span> <span class="nx">context</span><span class="p">;</span>
+
+	<span class="c1">// Position selectors must be done after the filter</span>
+	<span class="c1">// And so must :not(positional) so we move all PSEUDOs to the end</span>
+	<span class="k">while</span> <span class="p">(</span> <span class="p">(</span><span class="nx">match</span> <span class="o">=</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">match</span><span class="p">.</span><span class="nx">PSEUDO</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span> <span class="nx">selector</span> <span class="p">))</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">later</span> <span class="o">+=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+		<span class="nx">selector</span> <span class="o">=</span> <span class="nx">selector</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">match</span><span class="p">.</span><span class="nx">PSEUDO</span><span class="p">,</span> <span class="s2">&quot;&quot;</span> <span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="nx">selector</span> <span class="o">=</span> <span class="nx">Expr</span><span class="p">.</span><span class="nx">relative</span><span class="p">[</span><span class="nx">selector</span><span class="p">]</span> <span class="o">?</span> <span class="nx">selector</span> <span class="o">+</span> <span class="s2">&quot;*&quot;</span> <span class="o">:</span> <span class="nx">selector</span><span class="p">;</span>
+
+	<span class="k">for</span> <span class="p">(</span> <span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">l</span> <span class="o">=</span> <span class="nx">root</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+		<span class="nx">Sizzle</span><span class="p">(</span> <span class="nx">selector</span><span class="p">,</span> <span class="nx">root</span><span class="p">[</span><span class="nx">i</span><span class="p">],</span> <span class="nx">tmpSet</span> <span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="nx">Sizzle</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span> <span class="nx">later</span><span class="p">,</span> <span class="nx">tmpSet</span> <span class="p">);</span>
+<span class="p">};</span>
+
+<span class="c1">// EXPOSE</span>
+
+<span class="nb">window</span><span class="p">.</span><span class="nx">Sizzle</span> <span class="o">=</span> <span class="nx">Sizzle</span><span class="p">;</span>
+
+<span class="p">})();</span>
+</pre></div>
+
+                    </div>
+			</div>
+		</div>
+		<div class="yui-b">
+            <div class="nav">
+
+                    <div id="moduleList" class="module">
+                        <h4>Modules</h4>
+                        <ul class="content">
+                                <li class=""><a href="module_anim.html" title="anim">anim</a></li>
+                                <li class=""><a href="module_base.html" title="base">base</a></li>
+                                <li class=""><a href="module_button.html" title="button">button</a></li>
+                                <li class=""><a href="module_container.html" title="container">container</a></li>
+                                <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
+                                <li class=""><a href="module_datasource.html" title="datasource">datasource</a></li>
+                                <li class=""><a href="module_datatable.html" title="datatable">datatable</a></li>
+                                <li class=""><a href="module_dragdrop.html" title="dragdrop">dragdrop</a></li>
+                                <li class=""><a href="module_history.html" title="history">history</a></li>
+                                <li class=""><a href="module_imageloader.html" title="imageloader">imageloader</a></li>
+                                <li class=""><a href="module_io.html" title="io">io</a></li>
+                                <li class=""><a href="module_io-xdr.html" title="io-xdr">io-xdr</a></li>
+                                <li class=""><a href="module_json.html" title="json">json</a></li>
+                                <li class=""><a href="module_layout.html" title="layout">layout</a></li>
+                                <li class=""><a href="module_log.html" title="log">log</a></li>
+                                <li class=""><a href="module_menu.html" title="menu">menu</a></li>
+                                <li class=""><a href="module_node.html" title="node">node</a></li>
+                                <li class=""><a href="module_paginator.html" title="paginator">paginator</a></li>
+                                <li class=""><a href="module_progressbar.html" title="progressbar">progressbar</a></li>
+                                <li class="selected"><a href="module_resize.html" title="resize">resize</a></li>
+                                <li class=""><a href="module_swf.html" title="swf">swf</a></li>
+                                <li class=""><a href="module_tabs.html" title="tabs">tabs</a></li>
+                                <li class=""><a href="module_tabview.html" title="tabview">tabview</a></li>
+                                <li class=""><a href="module_treeview.html" title="treeview">treeview</a></li>
+                                <li class=""><a href="module_vector.html" title="vector">vector</a></li>
+                                <li class=""><a href="module_widget-alignment.html" title="widget-alignment">widget-alignment</a></li>
+                                <li class=""><a href="module_widget-parentchild.html" title="widget-parentchild">widget-parentchild</a></li>
+                                <li class=""><a href="module_widget-sandbox.html" title="widget-sandbox">widget-sandbox</a></li>
+                                <li class=""><a href="module_widget-stack.html" title="widget-stack">widget-stack</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="classList" class="module">
+                        <h4>Classes</h4>
+                        <ul class="content">
+                                <li class=""><a href="Resize.html" title="Resize">Resize</a></li>
+                        </ul>
+                    </div>
+
+
+
+
+
+            </div>
+		</div>
+	</div>
+	<div id="ft">
+        <hr />
+        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
+	</div>
+</div>
+<script type="text/javascript" src="assets/api.js"></script>
+<script type="text/javascript">
+
+    var ALL_YUI_PROPS = [{"url": "Resize.html#config_animate", "access": "", "host": "Resize", "type": "config", "name": "animate"}, {"url": "Resize.html#event_beforeResize", "access": "", "host": "Resize", "type": "event", "name": "beforeResize"}, {"url": "Resize.html#config_constrain", "access": "", "host": "Resize", "type": "config", "name": "constrain"}, {"url": "Resize.html#event_endResize", "access": "", "host": "Resize", "type": "event", "name": "endResize"}, {"url": "Resize.html#property_handles", "access": "", "host": "Resize", "type": "property", "name": "handles"}, {"url": "Resize.html#config_hiddenHandles", "access": "", "host": "Resize", "type": "config", "name": "hiddenHandles"}, {"url": "Resize.html#method_lock", "access": "", "host": "Resize", "type": "method", "name": "lock"}, {"url": "Resize.html#config_locked", "access": "", "host": "Resize", "type": "config", "name": "locked"}, {"url": "Resize.html#config_minHeight", "access": "", "host": "Resize", "type": "config", "name": "minHeight"}, {"url": "Resize.html#config_minWidth", "access": "", "host": "Resize", "type": "config", "name": "minWidth"}, {"url": "Resize.html#config_node", "access": "", "host": "Resize", "type": "config", "name": "node"}, {"url": "Resize.html#property_reposition", "access": "", "host": "Resize", "type": "property", "name": "reposition"}, {"url": "Resize.html#event_resize", "access": "", "host": "Resize", "type": "event", "name": "resize"}, {"url": "Resize.html#config_shim", "access": "", "host": "Resize", "type": "config", "name": "shim"}, {"url": "Resize.html#method_stop", "access": "", "host": "Resize", "type": "method", "name": "stop"}, {"url": "Resize.html#method_unlock", "access": "", "host": "Resize", "type": "method", "name": "unlock"}, {"url": "Resize.html#config_useProxy", "access": "", "host": "Resize", "type": "config", "name": "useProxy"}];
+</script>
+</body>
+</html>
