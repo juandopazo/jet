@@ -45,8 +45,16 @@ extend(Widget, Base, {
 	 * @chainable
 	 */
 	hide: function () {
+		/**
+		 * Preventing the default behavior will stop the show process
+		 * @event hide
+		 */
 		if (this.fire('hide')) {
 			this.get(BOUNDING_BOX).addClass(this.getClassName('hidden'));
+			/**
+			 * Fires after the widget was hidden
+			 * @event afterHide
+			 */
 			return this.fire('afterHide');
 		}
 		return this;
@@ -57,8 +65,16 @@ extend(Widget, Base, {
 	 * @chainable
 	 */
 	show: function () {
+		/**
+		 * Preventing the default behavior will stop the show process
+		 * @event show
+		 */
 		if (this.fire('show')) {
 			this.get(BOUNDING_BOX).removeClass(this.getClassName('hidden'));
+			/**
+			 * Fires after the widget was shown
+			 * @event afterShow
+			 */
 			return this.fire('afterShow');
 		}
 		return this;
@@ -69,6 +85,10 @@ extend(Widget, Base, {
 	 * @chainable
 	 */
 	focus: function () {
+		/**
+		 * Preventing the default behavior will stop the focus process
+		 * @event focus
+		 */
 		if (this.fire('focus')) {
 			this.set('focused', true);
 		}
@@ -80,6 +100,10 @@ extend(Widget, Base, {
 	 * @chainable
 	 */
 	blur: function () {
+		/**
+		 * Preventing the default behavior will stop the blur process
+		 * @event blur
+		 */
 		if (this.fire('blur')) {
 			this.set('focused', false);
 		}
@@ -161,6 +185,11 @@ extend(Widget, Base, {
 				 */
 				self.set('rendered', true).focus();
 				setTimeout(function () {
+					/**
+					 * Fires after the render lifecycle finished. It is also fired after a timeout of 0 milliseconds, 
+					 * so it is added to the execution queue rather than fired synchronously 
+					 * @event afterRender
+					 */
 					self.fire('afterRender');
 				}, 0);
 			}
@@ -227,10 +256,22 @@ extend(Widget, Base, {
 
 }, {
 	
+	/**
+	 * @property CSS_PREFIX
+	 * @description Default prefix for all css classes used in widget by the getClassName() method
+	 * @static
+	 * @default 'jet'
+	 */
 	CSS_PREFIX: 'jet',
 	
 	NAME: 'widget',
 	
+	/**
+	 * @property DOM_EVENTS
+	 * @description DOM events that are routed automatically to the widget instance
+	 * @static
+	 * @default { click: 1, keypress: 1, mousedown: 1, mouseup: 1, mouseover: 1, mouseout: 1 }
+	 */
 	DOM_EVENTS: {
 		click: 1,
 		keypress: 1,
@@ -254,7 +295,7 @@ extend(Widget, Base, {
 		/**
 		 * @config classPrefix
 		 * @description Prefix for all CSS clases. Useful for renaming the project
-		 * @default 'jet'
+		 * @default Widget.CSS_PREFIX
 		 * @writeOnce
 		 */
 		classPrefix: {
@@ -343,6 +384,11 @@ extend(Widget, Base, {
 		}
 	},
 	
+	/**
+	 * @method getByNode
+	 * @description Returns a widget instance based on a node
+	 * @static
+	 */
 	getByNode: function (node) {
 		node = $(node)._nodes[0];
 		var de = node.ownerDocument.documentElement;

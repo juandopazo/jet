@@ -21,6 +21,10 @@ extend(Utility, Base, {
 	 */
 	destroy: function () {
 		var self = this;
+		/**
+		 * Preventing the default behavior will stop the destroy process
+		 * @event destroy
+		 */
 		if (this.fire(DESTROY)) {
 			A.each(this._handlers, function (handler) {
 				handler.detach();
@@ -36,22 +40,14 @@ extend(Utility, Base, {
 	CSS_PREFIX: 'jet',
 	
 	ATTRS: {
+		/**
+		 * @config cssPrefix
+		 * @default Utility.CSS_PREFIX
+		 * @writeOnce
+		 */
 		cssPrefix: {
 			value: Utility.CSS_PREFIX,
 			writeOnce: true
-		},
-		win: {
-			value: $.win
-		},
-		
-		doc: {
-			getter: function () {
-				return this.get('win').document;
-			},
-			setter: function (val) {
-				this.set('win', val.parentWindow || val.defaultView);
-				return val;
-			}
 		}
 	}
 	

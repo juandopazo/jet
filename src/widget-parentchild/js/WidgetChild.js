@@ -3,7 +3,6 @@
  * An extension that turns a widget into a child widget
  * @class WidgetChild
  * @constructor
- * @extends Widget
  * @param {Object} config Object literal specifying widget configuration properties
  */
 function WidgetChild() {}
