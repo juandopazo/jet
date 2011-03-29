@@ -40,44 +40,36 @@ extend(Widget, Base, {
 	},
 	
 	/**
-	 * Hides the widget
-	 * @method hide
-	 * @chainable
-	 */
-	hide: function () {
-		/**
-		 * Preventing the default behavior will stop the show process
-		 * @event hide
-		 */
-		if (this.fire('hide')) {
-			this.get(BOUNDING_BOX).addClass(this.getClassName('hidden'));
-			/**
-			 * Fires after the widget was hidden
-			 * @event afterHide
-			 */
-			return this.fire('afterHide');
-		}
-		return this;
-	},
-	/**
 	 * Shows the widget
 	 * @method show
 	 * @chainable
 	 */
 	show: function () {
-		/**
-		 * Preventing the default behavior will stop the show process
-		 * @event show
-		 */
-		if (this.fire('show')) {
-			this.get(BOUNDING_BOX).removeClass(this.getClassName('hidden'));
-			/**
-			 * Fires after the widget was shown
-			 * @event afterShow
-			 */
-			return this.fire('afterShow');
-		}
-		return this;
+		return this.set('visible', true);
+	},
+	/**
+	 * Hides the widget
+	 * @method hide
+	 * @chainable
+	 */
+	hide: function () {
+		return this.set('visible', false);
+	},
+	/**
+	 * Enables the widget
+	 * @method enable
+	 * @chainable
+	 */
+	enable: function () {
+		return this.set('enabled', true);
+	},
+	/**
+	 * Disables the widget
+	 * @method enable
+	 * @chainable
+	 */
+	disable: function () {
+		return this.set('enabled', false);
 	},
 	/**
 	 * Focuses the widget
@@ -85,14 +77,7 @@ extend(Widget, Base, {
 	 * @chainable
 	 */
 	focus: function () {
-		/**
-		 * Preventing the default behavior will stop the focus process
-		 * @event focus
-		 */
-		if (this.fire('focus')) {
-			this.set('focused', true);
-		}
-		return this;
+		return this.set('focused', true);
 	},
 	/**
 	 * Blurrs the element
@@ -100,14 +85,7 @@ extend(Widget, Base, {
 	 * @chainable
 	 */
 	blur: function () {
-		/**
-		 * Preventing the default behavior will stop the blur process
-		 * @event blur
-		 */
-		if (this.fire('blur')) {
-			this.set('focused', false);
-		}
-		return this;
+		return this.set('focused', false);
 	},
 	/**
 	 * Starts the rendering process. The rendering process is based on custom events.
@@ -234,6 +212,26 @@ extend(Widget, Base, {
 		}
 	},
 	
+	_toggleVisibility: function (e, newVal) {
+		var visibilityClass = this.getClassName('hidden');
+		var boundingBox = this.get(BOUNDING_BOX);
+		if (newVal) {
+			boundingBox.removeClass(visibilityClass);
+		} else {
+			boundingBox.addClass(visibilityClass);
+		}
+	},
+	
+	_toggleDisabled: function (e, newVal) {
+		var disabledClass = this.getClassName('disabled');
+		var boundingBox = this.get(BOUNDING_BOX);
+		if (newVal) {
+			boundingBox.addClass(disabledClass);
+		} else {
+			boundingBox.removeClass(disabledClass);
+		}
+	},
+	
 	initializer: function () {
 		this._handlers = [$(this.get('win')).on(UNLOAD, this.destroy, this)];
 		
@@ -246,6 +244,9 @@ extend(Widget, Base, {
 		if (!this.get(CONTENT_BOX)) {
 			this.set(CONTENT_BOX, this.CONTENT_TEMPLATE || this.get(BOUNDING_BOX));
 		}
+		
+		this.after('visibleChange', this._toggleVisibility);
+		this.after('disabledChange', this._toggleDisabled);
 		
 		this._parseHTML();
 	},
@@ -333,18 +334,6 @@ extend(Widget, Base, {
 		contentBox: {
 			setter: $
 		},
-		win: {
-			value: $.win
-		},
-		doc: {
-			getter: function () {
-				return this.get('win').document;
-			},
-			setter: function (val) {
-				this.set('win', val.parentWindow || val.defaultView);
-				return val;
-			}
-		},
 		/**
 		 * @attribute width
 		 * @description The width of the overlay
@@ -372,6 +361,26 @@ extend(Widget, Base, {
 				return this.getClassName(this._uid);
 			},
 			readOnly: true
+		 },
+		 /**
+		  * @attribute visible
+		  * @description The visibility status of the widget
+		  * @default true
+		  * @type Boolean
+		  */
+		 visible: {
+		 	value: true,
+		 	validator: Lang.isBoolean
+		 },
+		 /**
+		  * @attribute disabled
+		  * @description The disabled status of the widget
+		  * @default false
+		  * @type Boolean
+		  */
+		 disabled: {
+		 	value: false,
+		 	validator: Lang.isBoolean
 		 }
 	},
 	
