@@ -1,11 +1,9 @@
 
-var NONE = "none",
-	ON = "on",
+var ON = "on",
 	Lang = $.Lang,
 	Hash = $.Hash,
 	A = $.Array,
-	AP = Array.prototype,
-	SLICE = AP.slice;
+	AP = Array.prototype;
 
 /**
  * Keeps a record of all listeners attached to the DOM in order to remove them when necessary

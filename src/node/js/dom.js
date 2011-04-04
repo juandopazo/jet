@@ -1,13 +1,8 @@
 
-var TEXT_NODE = 3;
 var DOCUMENT_ELEMENT = "documentElement";
 var GET_COMPUTED_STYLE = "getComputedStyle";
 var CURRENT_STYLE = "currentStyle";
-var rroot = /^(?:body|html)$/i;
 
-function classRE(name) {
-	return new RegExp("(^|\\s)" + name + "(\\s|$)");
-}
 /**
  * Bla
  * @class DOM

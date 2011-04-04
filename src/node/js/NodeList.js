@@ -11,6 +11,15 @@ var ready = function (fn) {
 	return this;
 };
 
+var Lang = $.Lang,
+	A = $.Array,
+	NONE = "none",
+	SLICE = Array.prototype.slice,
+	rroot = /^(?:body|html)$/i;
+
+function classRE(name) {
+	return new RegExp("(^|\\s)" + name + "(\\s|$)");
+}
 /**
  * A collection of DOM Nodes
  * @class NodeList
@@ -47,7 +56,7 @@ function NodeList(nodes, root) {
 		$.error("Wrong argument for NodeList");
 	}
 	this._nodes = nodes;
-};
+}
 NodeList.prototype = {
 	/**
 	 * Iterates through the NodeList
@@ -201,17 +210,16 @@ NodeList.prototype = {
 	/**
 	 * Adds/removes a certain class from all nodes in the collection
 	 * @method toggleClass
-	 * @param {String} sClass
+	 * @param {String} className
 	 * @chainable
 	 */
-	toggleClass: function (name) {
+	toggleClass: function (className, addOrRemove) {
 		return this.each(function (node) {
 			node = $(node);
-			if (!node.hasClass(name)) {
-				node.addClass(name);
-			} else {
-				node.removeClass(name);
+			if (!Lang.isBoolean(addOrRemove)) {
+				addOrRemove = !node.hasClass(className);
 			}
+			node[addOrRemove ? 'addClass' : 'removeClass'](className);
 		});
 	},
 	/**
@@ -480,7 +488,7 @@ NodeList.prototype = {
 			do {
 				previous = previous.previousSibling;
 			}
-			while (previous && previous.nodeType == TEXT_NODE);
+			while (previous && previous.nodeType == 3);
 			return previous;
 		});
 	},
