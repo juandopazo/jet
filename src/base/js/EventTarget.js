@@ -7,8 +7,18 @@ var TRACKING = "tracking",
 	HEIGHT = "height",
 	WIDTH = "width",
 	PROTO = 'prototype',
-	DASH = '-';
+	DASH = '-',
+	ONCE = '~ONCE~';
 
+function CustomEvent(type, target, onPrevented) {
+	this.type = type;
+	this.target = target;
+	this.preventDefault = function () {
+		if (onPrevented) {
+			onPrevented();
+		}
+	};
+}
 
 /**
  * <p>A class designed to be inherited or used by other classes to provide custom events.</p>
@@ -36,7 +46,6 @@ var TRACKING = "tracking",
 function EventTarget() {
 	
 	this._events = {};
-	this._onceEvents = {};
 	
 };
 EventTarget.prototype = {
@@ -50,13 +59,21 @@ EventTarget.prototype = {
 	 */
 	on: function (eventType, callback, thisp) {
 		var collection = this._events;
+		var once = false;
 		if (!collection[eventType]) {
 			collection[eventType] = [];
+		}
+		
+		if (eventType.indexOf(ONCE) > -1) {
+			once = true;
+			eventType = eventType.substr(ONCE.length);
+			console.log(eventType);
 		}
 		if (Lang.isObject(callback)) {
 			collection[eventType].push({
 				fn: callback,
-				o: thisp || this
+				o: thisp || this,
+				once: once
 			});
 		}
 		return this;
@@ -71,8 +88,7 @@ EventTarget.prototype = {
 	 * @chainable
 	 */
 	once: function (eventType, callback, thisp) {
-		this._onceEvents.push(callback);
-		return this.on(eventType, callback, thisp);
+		return this.on(ONCE * eventType, callback, thisp);
 	},
 	
 	/**
@@ -84,7 +100,7 @@ EventTarget.prototype = {
 	 * @chainable
 	 */
 	after: function (eventType, callback, thisp) {
-		return this.on('after' + eventType.substr(0, 1).toUpperCase() + eventType.substr(1), callback, thisp);
+		return this.on('after' + eventType.charAt(0).toUpperCase() + eventType.substr(1), callback, thisp);
 	},
 	/**
 	 * Removes and event listener
@@ -109,26 +125,17 @@ EventTarget.prototype = {
 	 */
 	fire: function (eventType) {
 		var collection = this._events;
-		var onceList = this._onceEvents;
 		var handlers = collection[eventType] || [];
 		var returnValue = true;
 		if (collection["*"]) {
 			handlers = handlers.concat(collection["*"]);
 		}
 		var i, collecLength = handlers.length;
-		var stop = false;
 		var args = SLICE.call(arguments, 1);
 		var callback;
-		args.unshift({
-			stopPropagation: function () {
-				stop = true;
-			},
-			preventDefault: function () {
-				returnValue = false;
-			},
-			type: eventType,
-			target: this
-		});
+		args.unshift(new CustomEvent(eventType, this, function () {
+			returnValue = false;
+		}));
 		for (i = 0; i < collecLength; i++) {
 			callback = handlers[i].fn;
 			if (Lang.isFunction(callback)) {
@@ -138,15 +145,11 @@ EventTarget.prototype = {
 			} else if (Lang.isObject(callback) && callback.handleEvent) {
 				callback.handleEvent.apply(handlers[i].o || callback, args);
 			}
-			if (A.indexOf(onceList, callback) > -1) {
-				A.remove(onceList, callback);
+			if (handlers[i].once) {
 				A.remove(handlers, handlers[i]);
 				i--;
 			}
-			if (stop) {
-				break;
-			}
 		}
-		return this;
+		return returnValue;
 	}
 };

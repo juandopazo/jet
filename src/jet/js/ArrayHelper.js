@@ -64,6 +64,20 @@ ArrayHelper = {
 		return -1;
 	},
 	/**
+	 * Creates a new array with the results of calling a provided function on every element in this array
+	 * @method map
+	 * @param {Array} arr
+	 * @param {Function} callback Function that produces an element of the new Array from an element of the current one
+	 * @param {Object} thisObject Object to use as 'this' when executing 'callback'
+	 */
+	map: function (arr, fn, thisp) {
+		var res = [];
+		ArrayHelper.each(arr || [], function (val, i, arr) {
+			res[i] = fn.call(thisp, val, i, arr);
+		});
+		return res;
+	},
+	/**
 	 * Returns whether needle is present in haystack
 	 * @method inArray
 	 * @param {Object} needle
