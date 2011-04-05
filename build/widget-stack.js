@@ -113,7 +113,7 @@ $.WidgetStack = $.mix(WidgetStack, {
 		},
 		
 		destroy: function () {
-			$.unbind(RESIZE, this.syncShim);
+			//$.unbind(RESIZE, this.syncShim);
 		}
 		
 	},

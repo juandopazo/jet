@@ -2,20 +2,22 @@
 <html xmlns:yui="http://yuilibrary.com/rdf/1.0/yui.rdf#">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-	<title>API: io   (Jet Library)</title>
+	<title>API: io   (YUI Library)</title>
 
-	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css" />
-	<link rel="stylesheet" type="text/css" href="assets/api.css" />
+	<link rel="stylesheet" type="text/css" href="assets/reset-fonts-grids-min.css?stamp=1301318423.39" />
+	<link rel="stylesheet" type="text/css" href="assets/api.css?stamp=1301318423.39" />
 
+    <script type="text/javascript" src="assets/api-js?stamp=1301318423.39"></script>
+    <script type="text/javascript" src="assets/ac-js?stamp=1301318423.39"></script>
 </head>
 
-<body>
+<body id="yahoo-com">
 
-<div id="doc4" class="yui-t2">
+<div id="doc3" class="yui-t2">
 	<div id="hd">
-        <h1><a href="https://github.com/juandopazo/jet" title="Javascript Extensible Toolkit">Javascript Extensible Toolkit</a></h1>
-        <h3>io&nbsp; <span class="subtitle">0.1</span></h3>
-        <a href="./index.html" title="Javascript Extensible Toolkit">Documentation</a>
+        <h1><a href="http://developer.yahoo.com/yui/" title="Yahoo! UI Library">Yahoo! UI Library</a></h1>
+        <h3>io&nbsp; <span class="subtitle">0.1.0</span></h3>
+        <a href="./index.html" title="Yahoo! UI Library">Yahoo! UI Library</a> 
             &gt; <a href="./module_io.html" title="io">io</a>
                 
                 
@@ -58,18 +60,11 @@
 
                             <p>This module contains the following classes:</p>
                             <script>
-                            //var YUI_CLASS_LIST = [{"extends": {"superclass": {}, "events": {}, "configs": {}, "properties": {}, "methods": {}}, "description": "Utilities for working with Arrays", "guessedname": "Array", "name": "Array"}, {"extends": {"superclass": {}, "events": {}, "configs": {}, "properties": {}, "methods": {}}, "description": "Core methods", "guessedname": "Core", "name": "Core"}, {"extends": {"superclass": {}, "events": {}, "configs": {}, "properties": {}, "methods": {}}, "description": "Loads scripts and CSS files.\r\nIncluded in the jet() core", "guessedname": "Get", "name": "Get"}, {"extends": {"superclass": {}, "events": {}, "configs": {}, "properties": {}, "methods": {}}, "description": "Utilities for working with object literals\r\nThroughout jet the Hash type means an object lieteral", "guessedname": "Hash", "name": "Hash"}, {"extends": {"superclass": {}, "events": {}, "configs": {}, "properties": {}, "methods": {}}, "description": "Handles AJAX and JSONP requests", "guessedname": "IO", "name": "IO"}, {"extends": {"superclass": {}, "events": {}, "configs": {}, "properties": {}, "methods": {}}, "description": "<p>Global function. Returns an object with 2 methods: use() and add().</p>\r\n<code>jet().use(\"node\", function ($) {\r\n//do something with $\r\n});</code>\r\n<p>This snippet will load the Node module, and when it finishes loading it'll execute\r\nthe function. Each module must call the jet.add() method to tell the loader\r\nit has finished loading:</p>\r\n<code>jet.add(\"node\", function ($) {\r\n$.method = function () {};\r\n});</code>\r\n<p>A variable is passed to every module and the function defined in the use() method. \r\nThis variable acts as a main library and is shared by each module and the main\r\nfunction, but not between different calls to the \"use\" method. Ie:</p>\r\n<code>jet().use(\"node\", function ($) {\r\n$.testProperty = \"test\";\r\n});\r\njet().use(\"node\", function ($) {\r\nalert($.testProperty); //alerts \"undefined\"\r\n});</code>\r\n<p>Since it is a parameter, it can have any name but it still acts the same way. Also,\r\neach module is called in the order defined by the \"use\" method. So:</p>\r\n<code>jet().use(\"node\", \"anim\", function (L) {\r\n// Here the L variable contains both Node and Anim\r\n// The Node module is called first on L and the Anim module after,\r\n// so it can overwrite anything Node did, extend classes, etc\r\n});</code>\r\n<p>New modules can be defined by passing an object literal instead of a string to the\r\n\"use\" method with a \"name\" property and a \"path\" or \"fullpath\" property.</p> \r\n<code>jet().use(\"node\", {name:\"myModule\", fullpath:\"http://localhost/myModule.js\"}, function ($) {\r\n//do something\r\n});</code>\r\n<p>If \"path\" is defined instead of \"fullpath\", the loader will append \"path\"\r\nto a predefined base URL. This base URL can be modified by passing\r\nthe jet() function an object literal with a \"base\" property:</p>\r\n<code>jet({\r\nbase: \"http://www.mydomain.com/modules/\"\r\n}).use(\"node\", function ($) {\r\n//in this case the \"core\" module is loaded from http://www.mydomain.com/modules/node.min.js\r\n});</code>", "guessedname": "jet", "name": "jet"}, {"extends": {"superclass": {}, "events": {}, "configs": {}, "properties": {}, "methods": {}}, "description": "Provides utility methods for finding object types and other\r\nmethods that javascript provides in some browsers but not in others such as trim()", "guessedname": "Lang", "name": "Lang"}, {"extends": {"superclass": {}, "events": {}, "configs": {}, "properties": {}, "methods": {}}, "description": "Browser sniffing", "guessedname": "UA", "name": "UA"}];
+                            //var YUI_CLASS_LIST = [{"extends": {"superclass": {}, "events": {}, "configs": {}, "properties": {}, "methods": {}}, "description": "Handles AJAX and JSONP requests", "guessedname": "IO", "name": "IO"}];
                             </script>
                             <div id="splash_classList">
                                 <ul>
-                                    <li><a href="Array.html" title="Array" id="class_0">Array</a></li>
-                                    <li><a href="Core.html" title="Core" id="class_1">Core</a></li>
-                                    <li><a href="Get.html" title="Get" id="class_2">Get</a></li>
-                                    <li><a href="Hash.html" title="Hash" id="class_3">Hash</a></li>
-                                    <li><a href="IO.html" title="IO" id="class_4">IO</a></li>
-                                    <li><a href="jet.html" title="jet" id="class_5">jet</a></li>
-                                    <li><a href="Lang.html" title="Lang" id="class_6">Lang</a></li>
-                                    <li><a href="UA.html" title="UA" id="class_7">UA</a></li>
+                                    <li><a href="IO.html" title="IO" id="class_0">IO</a></li>
                                 </ul>
                             </div>
                     </div>
@@ -87,7 +82,6 @@
                         <h4>Modules</h4>
                         <ul class="content">
                                 <li class=""><a href="module_anim.html" title="anim">anim</a></li>
-                                <li class=""><a href="module_base.html" title="base">base</a></li>
                                 <li class=""><a href="module_button.html" title="button">button</a></li>
                                 <li class=""><a href="module_container.html" title="container">container</a></li>
                                 <li class=""><a href="module_cookie.html" title="cookie">cookie</a></li>
@@ -120,14 +114,14 @@
                     <div id="classList" class="module">
                         <h4>Classes</h4>
                         <ul class="content">
-                                <li class=""><a href="Array.html" title="Array">Array</a></li>
-                                <li class=""><a href="Core.html" title="Core">Core</a></li>
-                                <li class=""><a href="Get.html" title="Get">Get</a></li>
-                                <li class=""><a href="Hash.html" title="Hash">Hash</a></li>
                                 <li class=""><a href="IO.html" title="IO">IO</a></li>
-                                <li class=""><a href="jet.html" title="jet">jet</a></li>
-                                <li class=""><a href="Lang.html" title="Lang">Lang</a></li>
-                                <li class=""><a href="UA.html" title="UA">UA</a></li>
+                        </ul>
+                    </div>
+
+                    <div id="fileList" class="module">
+                        <h4>Files</h4>
+                        <ul class="content">        
+                                <li class=""><a href="json.js.html" title="json.js">json.js</a></li>
                         </ul>
                     </div>
 
@@ -140,13 +134,11 @@
 	</div>
 	<div id="ft">
         <hr />
-        Copyright &copy; 2011 Juan Ignacio Dopazo All rights reserved.
+        Copyright &copy; 2011 Yahoo! Inc. All rights reserved.
 	</div>
 </div>
-<script type="text/javascript" src="assets/api.js"></script>
 <script type="text/javascript">
-
-    var ALL_YUI_PROPS = [{"url": "Core.html#method_$", "access": "", "host": "Core", "type": "method", "name": "$"}, {"url": "Core.html#method_add", "access": "", "host": "Core", "type": "method", "name": "add"}, {"url": "jet.html#method_add", "access": "", "host": "jet", "type": "method", "name": "add"}, {"url": "IO.html#method_ajax", "access": "", "host": "IO", "type": "method", "name": "ajax"}, {"url": "jet.html#config_base", "access": "", "host": "jet", "type": "config", "name": "base"}, {"url": "jet.html#event_baseChange", "access": "", "host": "jet", "type": "event", "name": "baseChange"}, {"url": "jet.html#config_before", "access": "", "host": "jet", "type": "config", "name": "before"}, {"url": "jet.html#event_beforeChange", "access": "", "host": "jet", "type": "event", "name": "beforeChange"}, {"url": "Lang.html#method_clone", "access": "", "host": "Lang", "type": "method", "name": "clone"}, {"url": "Core.html#property_context", "access": "", "host": "Core", "type": "property", "name": "context"}, {"url": "Get.html#method_css", "access": "", "host": "Get", "type": "method", "name": "css"}, {"url": "jet.html#config_doc", "access": "", "host": "jet", "type": "config", "name": "doc"}, {"url": "jet.html#event_docChange", "access": "", "host": "jet", "type": "event", "name": "docChange"}, {"url": "Array.html#method_each", "access": "", "host": "Array", "type": "method", "name": "each"}, {"url": "Hash.html#method_each", "access": "", "host": "Hash", "type": "method", "name": "each"}, {"url": "IO.html#method_flajax", "access": "", "host": "IO", "type": "method", "name": "flajax"}, {"url": "UA.html#property_gecko", "access": "", "host": "UA", "type": "property", "name": "gecko"}, {"url": "UA.html#property_ie", "access": "", "host": "UA", "type": "property", "name": "ie"}, {"url": "Array.html#method_inArray", "access": "", "host": "Array", "type": "method", "name": "inArray"}, {"url": "Array.html#method_indexOf", "access": "", "host": "Array", "type": "method", "name": "indexOf"}, {"url": "Lang.html#method_isArray", "access": "", "host": "Lang", "type": "method", "name": "isArray"}, {"url": "Lang.html#method_isBoolean", "access": "", "host": "Lang", "type": "method", "name": "isBoolean"}, {"url": "Lang.html#method_isFunction", "access": "", "host": "Lang", "type": "method", "name": "isFunction"}, {"url": "Lang.html#method_isNative", "access": "", "host": "Lang", "type": "method", "name": "isNative"}, {"url": "Lang.html#method_isNumber", "access": "", "host": "Lang", "type": "method", "name": "isNumber"}, {"url": "Lang.html#method_isString", "access": "", "host": "Lang", "type": "method", "name": "isString"}, {"url": "Lang.html#method_isUndefined", "access": "", "host": "Lang", "type": "method", "name": "isUndefined"}, {"url": "Lang.html#method_isValue", "access": "", "host": "Lang", "type": "method", "name": "isValue"}, {"url": "Hash.html#method_keys", "access": "", "host": "Hash", "type": "method", "name": "keys"}, {"url": "jet.html#config_loadCss", "access": "", "host": "jet", "type": "config", "name": "loadCss"}, {"url": "jet.html#event_loadCssChange", "access": "", "host": "jet", "type": "event", "name": "loadCssChange"}, {"url": "UA.html#property_mac", "access": "", "host": "UA", "type": "property", "name": "mac"}, {"url": "Core.html#method_mix", "access": "", "host": "Core", "type": "method", "name": "mix"}, {"url": "jet.html#config_modules", "access": "", "host": "jet", "type": "config", "name": "modules"}, {"url": "jet.html#event_modulesChange", "access": "", "host": "jet", "type": "event", "name": "modulesChange"}, {"url": "UA.html#property_opera", "access": "", "host": "UA", "type": "property", "name": "opera"}, {"url": "Core.html#method_parseQuery", "access": "protected", "host": "Core", "type": "method", "name": "parseQuery"}, {"url": "Lang.html#method_random", "access": "", "host": "Lang", "type": "method", "name": "random"}, {"url": "Array.html#method_remove", "access": "", "host": "Array", "type": "method", "name": "remove"}, {"url": "Get.html#method_script", "access": "", "host": "Get", "type": "method", "name": "script"}, {"url": "Lang.html#method_trim", "access": "", "host": "Lang", "type": "method", "name": "trim"}, {"url": "Lang.html#method_type", "access": "", "host": "Lang", "type": "method", "name": "type"}, {"url": "jet.html#method_use", "access": "", "host": "jet", "type": "method", "name": "use"}, {"url": "Hash.html#method_values", "access": "", "host": "Hash", "type": "method", "name": "values"}, {"url": "Core.html#method_walkTheDOM", "access": "", "host": "Core", "type": "method", "name": "walkTheDOM"}, {"url": "UA.html#property_webkit", "access": "", "host": "UA", "type": "property", "name": "webkit"}, {"url": "UA.html#property_win", "access": "", "host": "UA", "type": "property", "name": "win"}, {"url": "Core.html#property_win", "access": "", "host": "Core", "type": "property", "name": "win"}, {"url": "jet.html#config_win", "access": "", "host": "jet", "type": "config", "name": "win"}, {"url": "jet.html#event_winChange", "access": "", "host": "jet", "type": "event", "name": "winChange"}, {"url": "IO.html#method_xsl", "access": "", "host": "IO", "type": "method", "name": "xsl"}];
+    ALL_YUI_PROPS = [{"url": "IO.html#method_ajax", "access": "", "host": "IO", "type": "method", "name": "ajax"}, {"url": "IO.html#method_flajax", "access": "", "host": "IO", "type": "method", "name": "flajax"}, {"url": "IO.html#method_xsl", "access": "", "host": "IO", "type": "method", "name": "xsl"}];
 </script>
 </body>
 </html>

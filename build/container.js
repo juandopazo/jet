@@ -248,7 +248,7 @@ $.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment, $.WidgetStack],
 				visibility: !self.get("modal") ? "hidden" : "",
 				zIndex: Global.ovZindex + startZIndex - 1,
 				opacity: 0.4
-			}).width(screenSize.width).height(screenSize.height).appendTo(this.get('doc').body);
+			}).width(screenSize.width).height(screenSize.height).appendTo($.config.doc.body);
 			this._handlers.push(win.on(RESIZE, this._resizeModal, this));
 			boundingBox.css('zIndex', Global.ovZindex + startZIndex);
 			this.on("mousedown", this.focus, this);

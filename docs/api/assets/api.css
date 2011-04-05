@@ -1,55 +1,38 @@
 
 
-body { background-color: #f1f1f1; }
+body { background-color: #ECF0F6; }
 
 /* main page */
 a:link { color: #003399; }
 a:visited { color: #003399;}
 
-#hd {
-	position: relative;
-}
-#doc4 #hd { margin-bottom:1em; position: relative; zoom: 1; }
-#doc4 #hd h1 { color: #545454; font-size: 170%; padding: 0px 0 8px 200px; background: url(jet.jpg) 15px 9px no-repeat; height: 100px; font-weight: bold; }
-#doc4 #hd h1 a { position: relative; top: 14px; }
-#doc4 #hd a { text-decoration: none; color: black; }
-#doc4 #hd h3 {
-	background: #4c4c4c; /* old browsers */
-	background: -moz-linear-gradient(top, #4c4c4c 0%, #595959 12%, #666666 25%, #474747 39%, #2c2c2c 50%, #000000 51%, #111111 60%, #2b2b2b 76%, #1c1c1c 91%, #131313 100%); /* firefox */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4c4c4c), color-stop(12%,#595959), color-stop(25%,#666666), color-stop(39%,#474747), color-stop(50%,#2c2c2c), color-stop(51%,#000000), color-stop(60%,#111111), color-stop(76%,#2b2b2b), color-stop(91%,#1c1c1c), color-stop(100%,#131313)); /* webkit */
-	font-weight: bold;
-	color: #fff; font-size: 100%; padding: 4px 10px; margin: 0 0 7px 0;
+#doc3 #hd { margin-bottom:1em; position: relative; zoom: 1; }
+#doc3 #hd h1 { color: #545454; font-size: 170%; padding: 0px 0 8px 150px; background: url(yui.png) 15px 9px no-repeat; height: 60px; font-weight: bold; }
+#doc3 #hd h1 a { position: relative; top: 14px; }
+#doc3 #hd a { text-decoration: none; color: black; }
+#doc3 #hd h3 {
+    background: #98AAB1; background-image: url(bg_hd.gif); color: #000; font-size: 100%; padding: 4px 10px; margin: 0 0 7px 0;
     border: 1px solid #98AAB1;
-}
-#hd h2 {
-	font-size: 190%;
-	font-weight: bold;
-	position: absolute;
-	top: 50px;
-	left: 200px;
 }
 #ft hr {
     display: none;
 }
 #ft {
-	background: #4c4c4c; /* old browsers */
-	background: -moz-linear-gradient(top, #4c4c4c 0%, #595959 12%, #666666 25%, #474747 39%, #2c2c2c 50%, #000000 51%, #111111 60%, #2b2b2b 76%, #1c1c1c 91%, #131313 100%); /* firefox */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4c4c4c), color-stop(12%,#595959), color-stop(25%,#666666), color-stop(39%,#474747), color-stop(50%,#2c2c2c), color-stop(51%,#000000), color-stop(60%,#111111), color-stop(76%,#2b2b2b), color-stop(91%,#1c1c1c), color-stop(100%,#131313)); /* webkit */
-	color: #fff; font-size: 100%; padding: 4px 10px; margin: 7px 0 0 0; border: 1px solid #98AAB1;
+    background: #98AAB1; background-image: url(bg_hd.gif); color: #000; font-size: 100%; padding: 4px 10px; margin: 7px 0 0 0; border: 1px solid #98AAB1;
 }
-#doc4 #hd h3 A { color: #FFF; text-decoration: none; }
-#doc4 #hd .breadcrumbs { font-size: 85%; margin-bottom:10px;}
-#doc4 #hd .subtitle {position: absolute; right:1em; padding: 0px;margin:0px}
+#doc3 #hd h3 A { color: #FFF; text-decoration: none; }
+#doc3 #hd .breadcrumbs { font-size: 85%; margin-bottom:10px;}
+#doc3 #hd .subtitle {position: absolute; right:1em; padding: 0px;margin:0px}
 
-#doc4 dl { margin: 2px 0; }
-#doc4 dd { margin-left: 20px; }
-#doc4 .requires dt { font-style: italic; }
-#doc4 .default { margin-top:6px; }
-#doc4 .detail .deprecated { margin-top:4px; padding:4px; background-color: #EFECCA }
-#doc4 .detail .deprecated strong { color:#441054; }
-#doc4 code, pre {font-size:85%}
+#doc3 dl { margin: 2px 0; }
+#doc3 dd { margin-left: 20px; }
+#doc3 .requires dt { font-style: italic; }
+#doc3 .default { margin-top:6px; }
+#doc3 .detail .deprecated { margin-top:4px; padding:4px; background-color: #EFECCA }
+#doc3 .detail .deprecated strong { color:#441054; }
+#doc3 code, pre {font-size:85%}
 
-#doc4 #hd h1 {
+#doc3 #hd h1 {
     border: 1px solid #98AAB1;
     background-color: #fff;
     margin-bottom: .5em;
@@ -59,9 +42,6 @@ a:visited { color: #003399;}
     border: 1px solid #98AAB1;
     background-color: #fff;
 }
-#yui-main {
-	padding-top: 10px;
-}
 
 .submodules dd {
     font-size: 93%;
@@ -69,79 +49,64 @@ a:visited { color: #003399;}
 }
 
 
-#doc4 .classopts { font-size: 85%; float:right; margin:2px; padding: 2px; background-color:#ECF0F6;border: 1px solid #98AAB1;}
+#doc3 .classopts { font-size: 85%; float:right; margin:2px; padding: 2px; background-color:#ECF0F6;border: 1px solid #98AAB1;}
 #yui-classopts-form fieldset legend { display: none; }
-#yui-classopts-form { display: none; }
 
 /* undo reset.css styles for description block formatting */
-#doc4 .description dl { margin: 5px 0 10px 0; }
-#doc4 .description ul { padding: 10px 0 10px 28px; font-size: 90%; list-style: disc}
-#doc4 .description li { list-style: disc}
-#doc4 .description p { padding-bottom: 10px}
-#doc4 .description strong { font-weight: bold;}
-#doc4 .description em {padding: 2px; background-color: #EFECCA}
-#doc4 pre { padding: 10px;}
+#doc3 .description ul { padding: 10px 0 10px 28px; font-size: 90%; list-style: disc}
+#doc3 .description li { list-style: disc}
+#doc3 .description p { padding-bottom: 10px}
+#doc3 .description strong { font-weight: bold;}
+#doc3 .description em {padding: 2px; background-color: #EFECCA}
+#doc3 pre { padding: 10px;}
 
-#doc4 .summary { margin: 0px 10px 10px 0; padding:10px; background-color:#ECF0F6; border:1px solid #98AAB1; }
-#doc4 .extends {font-weight: normal; font-size: 90%}
+#doc3 .summary { margin: 0px 10px 10px 0; padding:10px; background-color:#ECF0F6; border:1px solid #98AAB1; }
+#doc3 .extends {font-weight: normal; font-size: 90%}
 
-#doc4 .nav {min-height: 400px;}
-#doc4 .nav .module {
+#doc3 .nav {min-height: 400px;}
+#doc3 .nav .module {
     width:100%;
     border-right: 1px solid #98AAB1;
     border-bottom: 1px solid #98AAB1;
     padding: 0; overflow:hidden;
 }
-#doc4 .nav .module h4 {
+#doc3 .nav .module h4 {
     padding: 3px 5px;
     border-bottom: 1px solid #98AAB1;
-	background: #4c4c4c; /* old browsers */
-	background: -moz-linear-gradient(top, #4c4c4c 0%, #595959 12%, #666666 25%, #474747 39%, #2c2c2c 50%, #000000 51%, #111111 60%, #2b2b2b 76%, #1c1c1c 91%, #131313 100%); /* firefox */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4c4c4c), color-stop(12%,#595959), color-stop(25%,#666666), color-stop(39%,#474747), color-stop(50%,#2c2c2c), color-stop(51%,#000000), color-stop(60%,#111111), color-stop(76%,#2b2b2b), color-stop(91%,#1c1c1c), color-stop(100%,#131313)); /* webkit */
-	font-weight: bold;
-	color: #fff;
+    background-image: url(bg_hd.gif);
 }
-#doc4 .nav .module h4 A { color: #000; text-decoration: none; }
-#doc4 .nav .module .content { padding: 2px; }
-#doc4 .nav .module UL.content LI { font-size: 90%; }
-#doc4 .nav .module UL.content A { text-decoration: none; color: black; display: block; padding: 2px 4px 2px 4px; }
-#doc4 .nav .module LI,
-#doc4 .nav .module LI A {
+#doc3 .nav .module h4 A { color: #000; text-decoration: none; }
+#doc3 .nav .module .content { padding: 2px; }
+#doc3 .nav .module UL.content LI { font-size: 90%; }
+#doc3 .nav .module UL.content A { text-decoration: none; color: black; display: block; padding: 2px 4px 2px 4px; }
+#doc3 .nav .module LI,
+#doc3 .nav .module LI A {
     zoom: 1; 
 }
-#doc4 .nav .module LI.selected A,
-#doc4 .nav .module LI A:hover {
+#doc3 .nav .module LI.selected A,
+#doc3 .nav .module LI A:hover {
     background-color: #ECF0F6;
     zoom: 1;
 }
 
-#doc4 .section { margin: 0 7px 7px 0; }
-#doc4 .section strong { font-weight: bold;}
-#doc4 .section hr { border: none 0; border-top: 1px solid #ccc; }
-#doc4 .section h4 { font-size:110%;}
-#doc4 .section h3 { 
-	color: white;
-	background: #4c4c4c; /* old browsers */
-	background: -moz-linear-gradient(top, #4c4c4c 0%, #595959 12%, #666666 25%, #474747 39%, #2c2c2c 50%, #000000 51%, #111111 60%, #2b2b2b 76%, #1c1c1c 91%, #131313 100%); /* firefox */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4c4c4c), color-stop(12%,#595959), color-stop(25%,#666666), color-stop(39%,#474747), color-stop(50%,#2c2c2c), color-stop(51%,#000000), color-stop(60%,#111111), color-stop(76%,#2b2b2b), color-stop(91%,#1c1c1c), color-stop(100%,#131313)); /* webkit */
-	font-weight: bold;
-	width: 98%; color: #000; padding: 3px; margin: 0 0 7px 0;
+#doc3 .section { margin: 0 7px 7px 0; }
+#doc3 .section strong { font-weight: bold;}
+#doc3 .section hr { border: none 0; border-top: 1px solid #ccc; }
+#doc3 .section h4 { font-size:110%;}
+#doc3 .section h3 { background: #98AAB1; background-image: url(bg_hd.gif); width: 98%; color: #000; padding: 3px; margin: 0 0 7px 0;
     border: 1px solid #98AAB1;
-	color: white;
-}
-#doc4 .section h3 { 
-	color: white;
-}
-#doc4 .section h3 .top { font-size: 60%; font-weight: normal; width: 100%; font-family: verdana; padding-left: 20px; }
-#doc4 .section h3 .top A { color: #000; text-decoration: none;  }
 
-#doc4 .section.details .content { padding: 0 0 0 10px; }
-#doc4 .section.details .description { padding: 10px 0 0 20px;  }
-#doc4 .section.details .description dt { font-weight: bold; }
-#doc4 .section.details .description td { border:1px solid #ccc; margin:2px;padding:2px;}
+}
+#doc3 .section h3 .top { font-size: 60%; font-weight: normal; width: 100%; font-family: verdana; padding-left: 20px; }
+#doc3 .section h3 .top A { color: #000; text-decoration: none;  }
 
-#doc4 .inheritance { padding:10px; background-color:#ECF0F6; border:1px solid #98AAB1; }
-#doc4 .inheritance h4 { font-size: 100%;}
+#doc3 .section.details .content { padding: 0 0 0 10px; }
+#doc3 .section.details .description { padding: 10px 0 0 20px;  }
+#doc3 .section.details .description dt { font-weight: bold; }
+#doc3 .section.details .description td { border:1px solid #ccc; margin:2px;padding:2px;}
+
+#doc3 .inheritance { padding:10px; background-color:#ECF0F6; border:1px solid #98AAB1; }
+#doc3 .inheritance h4 { font-size: 100%;}
 
 /* index page autocomplete */
 /*
@@ -201,7 +166,7 @@ a:visited { color: #003399;}
 body.show_deprecated .deprecated,
 body.show_private .private,
 body.show_protected .protected {
-    display: block;
+    display: inherit;
 }
 
 #splash_classList ul {

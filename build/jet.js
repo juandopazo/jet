@@ -376,6 +376,20 @@ ArrayHelper = {
 		return -1;
 	},
 	/**
+	 * Creates a new array with the results of calling a provided function on every element in this array
+	 * @method map
+	 * @param {Array} arr
+	 * @param {Function} callback Function that produces an element of the new Array from an element of the current one
+	 * @param {Object} thisObject Object to use as 'this' when executing 'callback'
+	 */
+	map: function (arr, fn, thisp) {
+		var res = [];
+		ArrayHelper.each(arr || [], function (val, i, arr) {
+			res[i] = fn.call(thisp, val, i, arr);
+		});
+		return res;
+	},
+	/**
 	 * Returns whether needle is present in haystack
 	 * @method inArray
 	 * @param {Object} needle
@@ -1186,13 +1200,11 @@ $.add({
 jet.add('node', function ($) {
 
 			
-var NONE = "none",
-	ON = "on",
+var ON = "on",
 	Lang = $.Lang,
 	Hash = $.Hash,
 	A = $.Array,
-	AP = Array.prototype,
-	SLICE = AP.slice;
+	AP = Array.prototype;
 
 /**
  * Keeps a record of all listeners attached to the DOM in order to remove them when necessary
@@ -1354,15 +1366,10 @@ var removeEvent = function (obj, type, callback) {
 	}
 	removeEvent(obj, type, callback);
 };
-var TEXT_NODE = 3;
 var DOCUMENT_ELEMENT = "documentElement";
 var GET_COMPUTED_STYLE = "getComputedStyle";
 var CURRENT_STYLE = "currentStyle";
-var rroot = /^(?:body|html)$/i;
 
-function classRE(name) {
-	return new RegExp("(^|\\s)" + name + "(\\s|$)");
-}
 /**
  * Bla
  * @class DOM
@@ -1456,6 +1463,15 @@ var ready = function (fn) {
 	return this;
 };
 
+var Lang = $.Lang,
+	A = $.Array,
+	NONE = "none",
+	SLICE = Array.prototype.slice,
+	rroot = /^(?:body|html)$/i;
+
+function classRE(name) {
+	return new RegExp("(^|\\s)" + name + "(\\s|$)");
+}
 /**
  * A collection of DOM Nodes
  * @class NodeList
@@ -1492,7 +1508,7 @@ function NodeList(nodes, root) {
 		$.error("Wrong argument for NodeList");
 	}
 	this._nodes = nodes;
-};
+}
 NodeList.prototype = {
 	/**
 	 * Iterates through the NodeList
@@ -1646,17 +1662,16 @@ NodeList.prototype = {
 	/**
 	 * Adds/removes a certain class from all nodes in the collection
 	 * @method toggleClass
-	 * @param {String} sClass
+	 * @param {String} className
 	 * @chainable
 	 */
-	toggleClass: function (name) {
+	toggleClass: function (className, addOrRemove) {
 		return this.each(function (node) {
 			node = $(node);
-			if (!node.hasClass(name)) {
-				node.addClass(name);
-			} else {
-				node.removeClass(name);
+			if (!Lang.isBoolean(addOrRemove)) {
+				addOrRemove = !node.hasClass(className);
 			}
+			node[addOrRemove ? 'addClass' : 'removeClass'](className);
 		});
 	},
 	/**
@@ -1925,7 +1940,7 @@ NodeList.prototype = {
 			do {
 				previous = previous.previousSibling;
 			}
-			while (previous && previous.nodeType == TEXT_NODE);
+			while (previous && previous.nodeType == 3);
 			return previous;
 		});
 	},
@@ -2032,7 +2047,7 @@ NodeList.prototype = {
 			var newChildren = [];
 			var length = children.length;
 			for (var i = 0; i < length; i++) {
-				if (children[i].nodeType != TEXT_NODE) {
+				if (children[i].nodeType != 3) {
 					newChildren[newChildren.length] = children[i];
 				}
 			}
@@ -2342,8 +2357,18 @@ var TRACKING = "tracking",
 	HEIGHT = "height",
 	WIDTH = "width",
 	PROTO = 'prototype',
-	DASH = '-';
+	DASH = '-',
+	ONCE = '~ONCE~';
 
+function CustomEvent(type, target, onPrevented) {
+	this.type = type;
+	this.target = target;
+	this.preventDefault = function () {
+		if (onPrevented) {
+			onPrevented();
+		}
+	};
+}
 
 /**
  * <p>A class designed to be inherited or used by other classes to provide custom events.</p>
@@ -2371,7 +2396,6 @@ var TRACKING = "tracking",
 function EventTarget() {
 	
 	this._events = {};
-	this._onceEvents = {};
 	
 };
 EventTarget.prototype = {
@@ -2385,13 +2409,21 @@ EventTarget.prototype = {
 	 */
 	on: function (eventType, callback, thisp) {
 		var collection = this._events;
+		var once = false;
 		if (!collection[eventType]) {
 			collection[eventType] = [];
+		}
+		
+		if (eventType.indexOf(ONCE) > -1) {
+			once = true;
+			eventType = eventType.substr(ONCE.length);
+			console.log(eventType);
 		}
 		if (Lang.isObject(callback)) {
 			collection[eventType].push({
 				fn: callback,
-				o: thisp || this
+				o: thisp || this,
+				once: once
 			});
 		}
 		return this;
@@ -2406,8 +2438,7 @@ EventTarget.prototype = {
 	 * @chainable
 	 */
 	once: function (eventType, callback, thisp) {
-		this._onceEvents.push(callback);
-		return this.on(eventType, callback, thisp);
+		return this.on(ONCE * eventType, callback, thisp);
 	},
 	
 	/**
@@ -2419,7 +2450,7 @@ EventTarget.prototype = {
 	 * @chainable
 	 */
 	after: function (eventType, callback, thisp) {
-		return this.on('after' + eventType.substr(0, 1).toUpperCase() + eventType.substr(1), callback, thisp);
+		return this.on('after' + eventType.charAt(0).toUpperCase() + eventType.substr(1), callback, thisp);
 	},
 	/**
 	 * Removes and event listener
@@ -2444,26 +2475,17 @@ EventTarget.prototype = {
 	 */
 	fire: function (eventType) {
 		var collection = this._events;
-		var onceList = this._onceEvents;
 		var handlers = collection[eventType] || [];
 		var returnValue = true;
 		if (collection["*"]) {
 			handlers = handlers.concat(collection["*"]);
 		}
 		var i, collecLength = handlers.length;
-		var stop = false;
 		var args = SLICE.call(arguments, 1);
 		var callback;
-		args.unshift({
-			stopPropagation: function () {
-				stop = true;
-			},
-			preventDefault: function () {
-				returnValue = false;
-			},
-			type: eventType,
-			target: this
-		});
+		args.unshift(new CustomEvent(eventType, this, function () {
+			returnValue = false;
+		}));
 		for (i = 0; i < collecLength; i++) {
 			callback = handlers[i].fn;
 			if (Lang.isFunction(callback)) {
@@ -2473,16 +2495,12 @@ EventTarget.prototype = {
 			} else if (Lang.isObject(callback) && callback.handleEvent) {
 				callback.handleEvent.apply(handlers[i].o || callback, args);
 			}
-			if (A.indexOf(onceList, callback) > -1) {
-				A.remove(onceList, callback);
+			if (handlers[i].once) {
 				A.remove(handlers, handlers[i]);
 				i--;
 			}
-			if (stop) {
-				break;
-			}
 		}
-		return this;
+		return returnValue;
 	}
 };
 /**
@@ -2656,8 +2674,12 @@ Base = function (config) {
 		constrct = constrct.superclass.constructor;
 	}
 	for (i = 0; i < classes.length; i++) {
-		this.addAttrs(classes[i].ATTRS || {});
-		Hash.each(classes[i].EVENTS || {}, attachEvent, this);
+		if (classes[i].ATTRS) {
+			this.addAttrs(classes[i].ATTRS);
+		}
+		if (classes[i].EVENTS) {
+			Hash.each(classes[i].EVENTS, attachEvent, this);
+		}
 		if (classes[i][PROTO].hasOwnProperty('initializer')) {
 			classes[i][PROTO].initializer.call(this, config);
 		}
@@ -2801,234 +2823,7 @@ if (!jet.Widget._instances) {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-function Widget() {
-	Widget.superclass.constructor.apply(this, arguments);
-}
-extend(Widget, Base, {
-	
-	BOUNDING_TEMPLATE: '<div/>',
-	CONTENT_TEMPLATE: '<div/>',
-
-	_domEventProxy: function (e) {
-		this.fire(e.type, e);
-	},
-	
-	/**
-	 * Hides the widget
-	 * @method hide
-	 * @chainable
-	 */
-	hide: function () {
-		/**
-		 * Preventing the default behavior will stop the show process
-		 * @event hide
-		 */
-		if (this.fire('hide')) {
-			this.get(BOUNDING_BOX).addClass(this.getClassName('hidden'));
-			/**
-			 * Fires after the widget was hidden
-			 * @event afterHide
-			 */
-			return this.fire('afterHide');
-		}
-		return this;
-	},
-	/**
-	 * Shows the widget
-	 * @method show
-	 * @chainable
-	 */
-	show: function () {
-		/**
-		 * Preventing the default behavior will stop the show process
-		 * @event show
-		 */
-		if (this.fire('show')) {
-			this.get(BOUNDING_BOX).removeClass(this.getClassName('hidden'));
-			/**
-			 * Fires after the widget was shown
-			 * @event afterShow
-			 */
-			return this.fire('afterShow');
-		}
-		return this;
-	},
-	/**
-	 * Focuses the widget
-	 * @method focus
-	 * @chainable
-	 */
-	focus: function () {
-		/**
-		 * Preventing the default behavior will stop the focus process
-		 * @event focus
-		 */
-		if (this.fire('focus')) {
-			this.set('focused', true);
-		}
-		return this;
-	},
-	/**
-	 * Blurrs the element
-	 * @method blur
-	 * @chainable
-	 */
-	blur: function () {
-		/**
-		 * Preventing the default behavior will stop the blur process
-		 * @event blur
-		 */
-		if (this.fire('blur')) {
-			this.set('focused', false);
-		}
-		return this;
-	},
-	/**
-	 * Starts the rendering process. The rendering process is based on custom events.
-	 * The widget class fires a 'render' event to which all subclasses must subscribe.
-	 * This way all listeners are fired in the order of the inheritance chain. ie:
-	 * In the Overlay class, the render process is:
-	 * <code>render() method -> Module listener -> Overlay listener -> rest of the render() method (appends the boundingBox to the srcNode)</code>
-	 * This helps to use an easy pattern of OOP CSS: each subclass adds a CSS class name to the boundingBox,
-	 * for example resulting in <div class="jet-module jet-overlay jet-panel"></div>. That way
-	 * a panel can inherit css properties from module and overlay.
-	 * @method render
-	 * @param {NodeList|HTMLElement} target
-	 * @chainable
-	 */
-	render: function (target) {
-		if (!this.get('rendered')) {
-			var self = this;
-			var boundingBox = this.get(BOUNDING_BOX);
-			var contentBox = this.get(CONTENT_BOX);
-			var srcNode = this.get(SRC_NODE);
-			var className, classPrefix = this.get(CLASS_PREFIX);
-			var classes = this._classes;
-			Hash.each(Widget.DOM_EVENTS, function (name, activated) {
-				if (activated) {
-					self._handlers.push(boundingBox.on(name, self._domEventProxy, self));
-				}
-			});
-			if (target) {
-				srcNode = target;
-				self.set(SRC_NODE, target);
-			}
-
-			if (this.constructor == Widget) {
-				classes = [Widget];
-			} else {
-				classes.shift();
-			}
-			
-			A.each([WIDTH, HEIGHT], function (size) {
-				var value = self.get(size);
-				if (Lang.isNumber(value)) {
-					boundingBox[size](value);
-				}
-				self.on(size + 'Change', function (e, newVal) {
-					newVal = Lang.isNumber(newVal) ? newVal : '';
-					self.get(BOUNDING_BOX)[size](newVal);
-				});
-			});
-			
-			A.each(classes, function (construct) {
-				className = [classPrefix, construct.NAME].join(DASH);
-				boundingBox.addClass(className);
-				contentBox.addClass([className, CONTENT].join(DASH));
-			});
-			
-			if (boundingBox._nodes[0] != contentBox._nodes[0]) {
-				boundingBox.append(contentBox.css(VISIBILITY, 'inherit'));
-			}
-			if (!boundingBox.attr('id')) {
-				boundingBox.attr('id', this.getClassName(self._uid));
-			}
-			/**
-			 * Render event. Preventing the default behavior will stop the rendering process
-			 * @event render
-			 * @see Widget.render()
-			 */
-			if (this.fire('render')) {
-				
-				if (!boundingBox.inDoc()) {
-					boundingBox.appendTo(srcNode);
-				}
-				/**
-				 * Fires after the render process is finished
-				 * @event afterRender
-				 */
-				self.set('rendered', true).focus();
-				setTimeout(function () {
-					/**
-					 * Fires after the render lifecycle finished. It is also fired after a timeout of 0 milliseconds, 
-					 * so it is added to the execution queue rather than fired synchronously 
-					 * @event afterRender
-					 */
-					self.fire('afterRender');
-				}, 0);
-			}
-		}
-		return this;
-	},
-	/**
-	 * Destroys the widget by removing the elements from the dom and cleaning all event listeners
-	 * @method destroy
-	 */
-	destroy: function () {
-		var self = this;
-		/**
-		 * Preventing the default behavior will stop the destroy process
-		 * @event destroy
-		 */
-		if (this.fire(DESTROY)) {
-			A.each(this._handlers, function (handler) {
-				if (handler.detach) {
-					handler.detach();
-				}
-			});
-			/*
-			 * Avoiding memory leaks, specially in IE
-			 */
-			this.get(BOUNDING_BOX).unbindAll(true).remove();
-		}
-	},
-	
-	_parseHTML: function () {
-		var self = this;
-		var boundingBox = this.get(BOUNDING_BOX);
-		if (boundingBox._nodes[0] && boundingBox.inDoc()) {
-			A.each(this._classes, function (someClass) {
-				Hash.each(someClass.HTML_PARSER || {}, function (attr, parser) {
-					var val = parser.call(self, boundingBox);
-					if (Lang.isValue(val) && (!(val instanceof $.NodeList) || val._nodes[0])) {
-						self.set(attr, val);
-					}
-				});
-			});
-		}
-	},
-	
-	initializer: function () {
-		this._handlers = [$(this.get('win')).on(UNLOAD, this.destroy, this)];
-		
-		this._uid = ++jet.Widget._uid;
-		jet.Widget._instances[this.getClassName(this._uid)] = this;
-		
-		if (!this.get(BOUNDING_BOX)) {
-			this.set(BOUNDING_BOX, this.BOUNDING_TEMPLATE);
-		}
-		if (!this.get(CONTENT_BOX)) {
-			this.set(CONTENT_BOX, this.CONTENT_TEMPLATE || this.get(BOUNDING_BOX));
-		}
-		
-		this._parseHTML();
-	},
-	
-	getClassName: function () {
-		return [this.get(CLASS_PREFIX), this.constructor.NAME].concat(SLICE.call(arguments)).join('-');
-	}
-
-}, {
+var Widget = Base.create('widget', Base, [], {
 	
 	/**
 	 * @property CSS_PREFIX
@@ -3107,18 +2902,6 @@ extend(Widget, Base, {
 		contentBox: {
 			setter: $
 		},
-		win: {
-			value: $.win
-		},
-		doc: {
-			getter: function () {
-				return this.get('win').document;
-			},
-			setter: function (val) {
-				this.set('win', val.parentWindow || val.defaultView);
-				return val;
-			}
-		},
 		/**
 		 * @attribute width
 		 * @description The width of the overlay
@@ -3146,6 +2929,26 @@ extend(Widget, Base, {
 				return this.getClassName(this._uid);
 			},
 			readOnly: true
+		 },
+		 /**
+		  * @attribute visible
+		  * @description The visibility status of the widget
+		  * @default true
+		  * @type Boolean
+		  */
+		 visible: {
+		 	value: true,
+		 	validator: Lang.isBoolean
+		 },
+		 /**
+		  * @attribute disabled
+		  * @description The disabled status of the widget
+		  * @default false
+		  * @type Boolean
+		  */
+		 disabled: {
+		 	value: false,
+		 	validator: Lang.isBoolean
 		 }
 	},
 	
@@ -3175,6 +2978,231 @@ extend(Widget, Base, {
 		return null;
 	}
 	
+}, {
+	
+	BOUNDING_TEMPLATE: '<div/>',
+	CONTENT_TEMPLATE: '<div/>',
+
+	_domEventProxy: function (e) {
+		this.fire(e.type, e);
+	},
+	
+	/**
+	 * Shows the widget
+	 * @method show
+	 * @chainable
+	 */
+	show: function () {
+		return this.set('visible', true);
+	},
+	/**
+	 * Hides the widget
+	 * @method hide
+	 * @chainable
+	 */
+	hide: function () {
+		return this.set('visible', false);
+	},
+	/**
+	 * Enables the widget
+	 * @method enable
+	 * @chainable
+	 */
+	enable: function () {
+		return this.set('enabled', true);
+	},
+	/**
+	 * Disables the widget
+	 * @method enable
+	 * @chainable
+	 */
+	disable: function () {
+		return this.set('enabled', false);
+	},
+	/**
+	 * Focuses the widget
+	 * @method focus
+	 * @chainable
+	 */
+	focus: function () {
+		return this.set('focused', true);
+	},
+	/**
+	 * Blurrs the element
+	 * @method blur
+	 * @chainable
+	 */
+	blur: function () {
+		return this.set('focused', false);
+	},
+	/**
+	 * Starts the rendering process. The rendering process is based on custom events.
+	 * The widget class fires a 'render' event to which all subclasses must subscribe.
+	 * This way all listeners are fired in the order of the inheritance chain. ie:
+	 * In the Overlay class, the render process is:
+	 * <code>render() method -> Module listener -> Overlay listener -> rest of the render() method (appends the boundingBox to the srcNode)</code>
+	 * This helps to use an easy pattern of OOP CSS: each subclass adds a CSS class name to the boundingBox,
+	 * for example resulting in <div class="jet-module jet-overlay jet-panel"></div>. That way
+	 * a panel can inherit css properties from module and overlay.
+	 * @method render
+	 * @param {NodeList|HTMLElement} target
+	 * @chainable
+	 */
+	render: function (target) {
+		if (!this.get('rendered')) {
+			var self = this;
+			var boundingBox = this.get(BOUNDING_BOX);
+			var contentBox = this.get(CONTENT_BOX);
+			var srcNode = this.get(SRC_NODE);
+			var className, classPrefix = this.get(CLASS_PREFIX);
+			var classes = this._classes;
+			Hash.each(Widget.DOM_EVENTS, function (name, activated) {
+				if (activated) {
+					self._handlers.push(boundingBox.on(name, self._domEventProxy, self));
+				}
+			});
+			if (target) {
+				srcNode = target;
+				self.set(SRC_NODE, target);
+			}
+
+			if (this.constructor == Widget) {
+				classes = [Widget];
+			} else {
+				classes.shift();
+			}
+			
+			A.each([WIDTH, HEIGHT], function (size) {
+				var value = self.get(size);
+				if (Lang.isNumber(value)) {
+					boundingBox[size](value);
+				}
+				self.on(size + 'Change', function (e, newVal) {
+					newVal = Lang.isNumber(newVal) ? newVal : '';
+					self.get(BOUNDING_BOX)[size](newVal);
+				});
+			});
+			
+			A.each(classes, function (construct) {
+				className = [classPrefix, construct.NAME].join(DASH);
+				boundingBox.addClass(className);
+				contentBox.addClass([className, CONTENT].join(DASH));
+			});
+			
+			if (boundingBox._nodes[0] != contentBox._nodes[0]) {
+				boundingBox.append(contentBox.css(VISIBILITY, 'inherit'));
+			}
+			if (!boundingBox.attr('id')) {
+				boundingBox.attr('id', this.get('id'));
+			}
+			/**
+			 * Render event. Preventing the default behavior will stop the rendering process
+			 * @event render
+			 * @see Widget.render()
+			 */
+			if (this.fire('render')) {
+				
+				if (!boundingBox.inDoc()) {
+					boundingBox.appendTo(srcNode);
+				}
+				/**
+				 * Fires after the render process is finished
+				 * @event afterRender
+				 */
+				this.set('rendered', true).focus();
+				setTimeout(function () {
+					/**
+					 * Fires after the render lifecycle finished. It is also fired after a timeout of 0 milliseconds, 
+					 * so it is added to the execution queue rather than fired synchronously 
+					 * @event afterRender
+					 */
+					self.fire('afterRender');
+				}, 0);
+			}
+		}
+		return this;
+	},
+	/**
+	 * Destroys the widget by removing the elements from the dom and cleaning all event listeners
+	 * @method destroy
+	 */
+	destroy: function () {
+		var self = this;
+		/**
+		 * Preventing the default behavior will stop the destroy process
+		 * @event destroy
+		 */
+		if (this.fire(DESTROY)) {
+			A.each(this._handlers, function (handler) {
+				if (handler.detach) {
+					handler.detach();
+				}
+			});
+			/*
+			 * Avoiding memory leaks, specially in IE
+			 */
+			this.get(BOUNDING_BOX).unbindAll(true).remove();
+		}
+	},
+	
+	_parseHTML: function () {
+		var self = this;
+		var boundingBox = this.get(BOUNDING_BOX);
+		if (boundingBox._nodes[0] && boundingBox.inDoc()) {
+			A.each(this._classes, function (someClass) {
+				Hash.each(someClass.HTML_PARSER || {}, function (attr, parser) {
+					var val = parser.call(self, boundingBox);
+					if (Lang.isValue(val) && (!(val instanceof $.NodeList) || val._nodes[0])) {
+						self.set(attr, val);
+					}
+				});
+			});
+		}
+	},
+	
+	_toggleVisibility: function (e, newVal) {
+		var visibilityClass = this.getClassName('hidden');
+		var boundingBox = this.get(BOUNDING_BOX);
+		if (newVal) {
+			boundingBox.removeClass(visibilityClass);
+		} else {
+			boundingBox.addClass(visibilityClass);
+		}
+	},
+	
+	_toggleDisabled: function (e, newVal) {
+		var disabledClass = this.getClassName('disabled');
+		var boundingBox = this.get(BOUNDING_BOX);
+		if (newVal) {
+			boundingBox.addClass(disabledClass);
+		} else {
+			boundingBox.removeClass(disabledClass);
+		}
+	},
+	
+	initializer: function () {
+		this._handlers = [$($.config.win).on(UNLOAD, this.destroy, this)];
+		
+		this._uid = ++jet.Widget._uid;
+		jet.Widget._instances[this.getClassName(this._uid)] = this;
+		
+		if (!this.get(BOUNDING_BOX)) {
+			this.set(BOUNDING_BOX, this.BOUNDING_TEMPLATE);
+		}
+		if (!this.get(CONTENT_BOX)) {
+			this.set(CONTENT_BOX, this.CONTENT_TEMPLATE || this.get(BOUNDING_BOX));
+		}
+		
+		this.after('visibleChange', this._toggleVisibility);
+		this.after('disabledChange', this._toggleDisabled);
+		
+		this._parseHTML();
+	},
+	
+	getClassName: function () {
+		return [this.get(CLASS_PREFIX), this.constructor.NAME].concat(SLICE.call(arguments)).join('-');
+	}
+
 });
 /**
  * A utility for tracking the mouse movement without crashing the browser rendering engine.
@@ -3184,33 +3212,9 @@ extend(Widget, Base, {
  * @extends Utility
  * @param {Object} config Object literal specifying configuration properties
  */
-var Mouse = function () {
-	Mouse.superclass.constructor.apply(this, arguments);
-
-	var clientX, clientY;
-	var prevX, prevY;
-	var interval;
-	var capturing = false;
-	var pageSize = $.DOM.pageSize();
+var Mouse = Base.create('mouse', Utility, [], {
 	
-	if (!Mouse.shim) {
-		Mouse.shim = $('<iframe/>').attr({
-			frameborder: '0',
-			src: 'javascript:;'
-		}).css({
-			opacity: 0,
-			position: 'absolute',
-			top: '0px',
-			left: '0px',
-			width: pageSize.width,
-			height: pageSize.height,
-			border: 0,
-			zIndex: 20000000
-		}).appendTo(this.get('doc').body).hide();
-	}
-	var shim = Mouse.shim;
-	
-	var self = this.addAttrs({
+	ATTRS: {
 		/**
 		 * Frequency at which the tracker updates
 		 * @attribute frequency
@@ -3220,94 +3224,136 @@ var Mouse = function () {
 		frequency: {
 			value: 20
 		},
+		/**
+		 * Tracking status. Set it to true to start tracking
+		 * @attribute tracking
+		 * @type Boolean
+		 * @default false
+		 */
+		tracking: {
+			value: false,
+			validator: Lang.isBoolean
+		},
+		capturing: {
+			value: false,
+			validator: Lang.isBoolean
+		},
 		shields: {
 			readOnly: true,
 			getter: function () {
 				return shim;
 			}
+		},
+		shim: {
+			value: false,
+			validator: Lang.isBoolean
+		},
+		prevX: {
+			value: 0
+		},
+		prevY: {
+			value: 0
 		}
-	});
+	}
 	
-	/**
-	 * Tracking status. Set it to true to start tracking
-	 * @attribute tracking
-	 * @type Boolean
-	 * @default false
-	 */
-	this.addAttr(TRACKING, {
-		value: false,
-		validator: Lang.isBoolean
-		
-	}).on(TRACKING + "Change", function (e, value) {
+}, {
+	
+	_buildShim: function () {
+		if (!Mouse.shim) {
+			var pageSize = this.get('pageSize');
+			Mouse.shim = $('<iframe/>').attr({
+				frameborder: '0',
+				src: 'javascript:;'
+			}).css({
+				opacity: 0,
+				position: 'absolute',
+				top: '0px',
+				left: '0px',
+				width: pageSize.width,
+				height: pageSize.height,
+				border: 0,
+				zIndex: 20000000
+			}).appendTo($.config.doc.body).hide();
+		}
+		return Mouse.shim;
+	},
+	
+	_onTrackingChange: function (e, value) {
+		var self = this;
 		if (value) {
-			if (!capturing) {
-				if (self.get('shim')) {
-					shim.show();
+			if (!this.get('capturing')) {
+				if (this.get('shim')) {
+					this.shim.show();
 				}
-				interval = setInterval(function () {
-					if (prevX != clientX || prevY != clientY) {
+				this.interval = setInterval(function () {
+					var clientX = this.get('clientX');
+					var clientY = this.get('clientY');
+					if (this.get('prevX') != clientX || this.get('prevY') != clientY) {
 						self.fire(MOUSEMOVE, clientX, clientY);
-						prevX = clientX;
-						prevY = clientY;
+						self.set({
+							prevX: clientX,
+							prevY: clientY
+						});
 					}
-				}, self.get(FREQUENCY));
-				capturing = true;
+				}, this.get(FREQUENCY));
+				this.set('interval', interval);
+				this.set('capturing', true);
 			}
 		} else {
-			shim.hide();
-			clearInterval(interval);
-			capturing = false;
+			this.shim.hide();
+			clearInterval(this.interval);
+			this.set('capturing', false);
 		}
-	});
+	},
 	
-	function onSelectStart(e) {
-		if (capturing) {
+	_onSelectStart: function (e) {
+		if (this.get('capturing')) {
 			e.preventDefault();
 		}
-	}
+	},
 	
-	function onMouseMove(e) {
-		clientX = e.clientX;
-		clientY = e.clientY;
-	}
+	_onMouseMove: function (e) {
+		this.set({
+			clientX: e.clientX,
+			clientY: e.clientY
+		});
+	},
 	
-	function onMouseUp() {
+	_onMouseUp: function () {
 		/**
 		 * Fires when the mouse button is released
 		 * @event up
 		 */
-		self.set(TRACKING, false).fire("up", clientX, clientY);
-	}
+		this.set(TRACKING, false).fire('mouseup', this.get('clientX'), this.get('clientY'));
+	},
 	
+	initializer: function () {
+		this.set('pageSize', $.DOM.pageSize());
+		
+		var shim = this.shim = this._buildShim();
+		
+		/**
+		 * Fires not when the mouse moves, but in an interval defined by the frequency attribute
+		 * This way you can track the mouse position without breakin the browser's rendering engine
+		 * because the native mousemove event fires too quickly
+		 * @event move
+		 */
+		var shimDoc = $(shim._nodes[0].contentWindow.document); 
+		shimDoc.find('body').css({
+			margin: 0,
+			padding: 0
+		});
+		shimDoc.on(MOUSEMOVE, this._onMouseMove, this);
+		shimDoc.on(MOUSEUP, this._onMouseUp, this);
+		
+		var context = $($.config.doc);
+		context.on("selectstart", this._onSelectStart, this);
+		context.on(MOUSEMOVE, this._onMouseMove, this);
+		context.on(MOUSEUP, this._onMouseUp, this);
+
+		this.on('destroy', shim.unbindAll, shim);
+	},
 	
-	/**
-	 * Fires not when the mouse moves, but in an interval defined by the frequency attribute
-	 * This way you can track the mouse position without breakin the browser's rendering engine
-	 * because the native mousemove event fires too quickly
-	 * @event move
-	 */
-	var shimDoc = shim._nodes[0].contentWindow.document; 
-	$(shimDoc.body).css({
-		margin: 0,
-		padding: 0
-	});
-	shimDoc = $(shimDoc);
-	shimDoc.on(MOUSEMOVE, onMouseMove);
-	shimDoc.on(MOUSEUP, onMouseUp);
-	
-	var context = $(this.get('doc')); 
-	context.on("selectstart", onSelectStart);
-	context.on(MOUSEMOVE, onMouseMove);
-	context.on(MOUSEUP, onMouseUp);
-	self.on('contextChange', function (e, newVal, prevVal) {
-		$(prevVal).unbind("selectstart", onSelectStart).unbind(MOUSEMOVE, onMouseMove).unbind(MOUSEUP, onMouseUp);
-		$(newVal).on("selectstart", onSelectStart).on(MOUSEMOVE, onMouseMove).on(MOUSEUP, onMouseUp);
-	});
-	self.on(DESTROY, function () {
-		shim.unbindAll();
-	});
-};
-extend(Mouse, Utility, {
 	/**
 	 * Start tracking. Equivalent to setting the tracking attribute to true.
 	 * Simulates the mousedown event
@@ -3327,7 +3373,6 @@ extend(Mouse, Utility, {
 		return this.set(TRACKING, false);
 	}
 });
-
 (function () {
 	
 	var $_event = new EventTarget();

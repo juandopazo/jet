@@ -1,0 +1,57 @@
+/*
+ Copyright (c) 2010, Juan Ignacio Dopazo. All rights reserved.
+ Code licensed under the BSD License
+ http://code.google.com/p/jet-js/wiki/Licence
+*/
+.jet-tabview {
+}
+.jet-tabview-content, .jet-tab {
+	list-style: none;
+}
+.jet-tabview-content:after {
+	content: '';
+	height: 0;
+	visibility: hidden;
+	display: block;
+	clear: both;
+}
+.jet-tabview-content {
+	zoom: 1;
+	border-bottom: 1px solid #6B90DA;
+	background: #EBEFF9;
+	padding: 5px 10px 0 5px;
+}
+
+.jet-tab {
+	position: relative;
+	top: 1px;
+	float: left;
+	margin: 0 5px -1px 0;
+}
+.jet-tab-selected {
+	background: #fff;
+	border: 1px solid #6B90DA;
+	border-bottom: none;
+}
+.jet-tab-content {
+	display: inline-block;
+	padding: 5px 9px 6px;
+}
+.jet-tab-selected .jet-tab-content {
+	color: #000;
+	font-weight: bold;
+	cursor: default;
+	text-decoration: none;
+}
+
+.jet-tab-panel {
+	display: none;
+	padding: 5px;
+}
+.jet-tab-panel-selected {
+	display: block;
+}
+
+#jet-tracker {
+	display: none; 
+}

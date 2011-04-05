@@ -14,21 +14,14 @@ var Lang = $.Lang,
 	Hash = $.Hash,
 	A = $.Array;
 	
-var RECORDSET = "recordSet",
-	NEW_SPAN = "<span/>",
-	ACTIVE = "active",
-	INACTIVE = "inactive",
-	CLICK = "click",
-	ID = "id",
-	CURRENT_PAGE = "currentPage";
+var RECORDSET = 'recordSet',
+	NEW_SPAN = '<span/>',
+	ACTIVE = 'active',
+	INACTIVE = 'inactive',
+	CLICK = 'click',
+	ID = 'id',
+	CURRENT_PAGE = 'currentPage';
 	
-if (!jet.Paginator) {
-	jet.Paginator = {};
-}
-if (!Lang.isNumber(jet.Paginator.ids)) {
-	jet.Paginator.ids = 0;
-}
-
 /**
  * A simple paginator that works on top of a data source
  * @class Paginator
@@ -36,13 +29,9 @@ if (!Lang.isNumber(jet.Paginator.ids)) {
  * @constructor
  * @param {Object} config Object literal specifying configuration properties
  */	
-var Paginator = function () {
-	Paginator.superclass.constructor.apply(this, arguments);
+$.Paginator = $.Base.create('paginator', $.Widget, [], {
 	
-	var currentPage = 0;
-	var pageCount = 0;
-	
-	var myself = this.addAttrs({
+	ATTRS: {
 		/**
 		 * @attribute recordSet
 		 * @description A RecordSet with the data the paginator should handle
@@ -63,7 +52,7 @@ var Paginator = function () {
 		},
 		/**
 		 * @attribute firstLast
-		 * @description Wheter the "First" and "Last" buttons should appear
+		 * @description Wheter the 'First' and 'Last' buttons should appear
 		 * @type Boolean
 		 * @default true
 		 */
@@ -72,7 +61,7 @@ var Paginator = function () {
 		},
 		/**
 		 * @attribute prevNext
-		 * @description Wheter the "previous" and "next" buttons should appear
+		 * @description Wheter the 'previous' and 'next' buttons should appear
 		 * @type Boolean
 		 * @default true
 		 */
@@ -90,51 +79,51 @@ var Paginator = function () {
 		},
 		/**
 		 * @attribute firstText
-		 * @description The text of the "first" button
+		 * @description The text of the 'first' button
 		 * @writeOnce
-		 * @default "<< first"
+		 * @default '<< first'
 		 * @type String
 		 */
 		firstText: {
 			writeOnce: true,
-			value: "<< first"
+			value: '<< first'
 		},
 		/**
 		 * @attribute prevText
-		 * @description The text of the "previous" button
+		 * @description The text of the 'previous' button
 		 * @writeOnce
-		 * @default "< prev"
+		 * @default '< prev'
 		 * @type String
 		 */
 		prevText: {
 			writeOnce: true,
-			value: "< prev"
+			value: '< prev'
 		},
 		/**
 		 * @attribute nextText
-		 * @description The text of the "next" button
+		 * @description The text of the 'next' button
 		 * @writeOnce
-		 * @default "next >"
+		 * @default 'next >'
 		 * @type String
 		 */
 		nextText: {
 			writeOnce: true,
-			value: "next >"
+			value: 'next >'
 		},
 		/**
 		 * @attribute lastText
-		 * @description The text of the "last" button
+		 * @description The text of the 'last' button
 		 * @writeOnce
-		 * @default "last >>"
+		 * @default 'last >>'
 		 * @type String
 		 */
 		lastText: {
 			writeOnce: true,
-			value: "last >>"
+			value: 'last >>'
 		},
 		className: {
 			writeOnce: true,
-			value: "pg"
+			value: 'pg'
 		},
 		/**
 		 * @attribute currentPage
@@ -145,7 +134,7 @@ var Paginator = function () {
 		 */
 		currentPage: {
 			writeOnce: true,
-			value: currentPage
+			value: 0
 		},
 		/**
 		 * @attribute pageCount
@@ -155,20 +144,26 @@ var Paginator = function () {
 		 */
 		pageCount: {
 			readOnly: true,
-			value: pageCount
+			value: 0
 		}
-	});
-	currentPage = myself.get(CURRENT_PAGE);
+	},
 	
-	var id = jet.Paginator.ids++;
+	EVENTS: {
+		render: '_renderUI'
+	}
 	
-	var recordSet = myself.get(RECORDSET);
-	pageCount = Math.ceil(recordSet.getRecords().length / myself.get("recordsPerPage")) + 1;
+}, {
 	
-	var recalculate = function (e, newRecordSet) {
+	initializer: function () {
+		var recordSet = this.get('recordSet');
+		recordSet.on('replace', this._recalculate, this);
 		
-	};
-	myself.get(RECORDSET).on("replace", recalculate);
+		this.set('pageCount', Math.ceil(recordSet.getRecords().length / this.get('recordsPerPage')) + 1);
+	},
+	
+	_recalculate: function (e, newRecordSet) {
+		
+	},
 	
 	/**
 	 * Go to a certain page
@@ -176,64 +171,79 @@ var Paginator = function () {
 	 * @param {Number} page
 	 * @chainable
 	 */
-	var goTo = function (page) {
+	goTo: function (page) {
 		
-		return myself;
-	};
+		return this;
+	},
 	
-	var onPageSelectorClick = function (e) {
-		goTo(parseInt($(e.target).html(), 10));
-	};
+	_onFirstClick: function (e) {
+		if (e.target.hasClass(ACTIVE)) {
+			this.goTo(0);
+		}
+	},
 	
-	myself.goTo = goTo;
+	_onPrevClick: function (e) {
+		if (e.target.hasClass(ACTIVE)) {
+			this.goTo(this.get(CURRENT_PAGE) - 1);
+		}
+	},
 	
-	myself.on("render", function () {
-		var prefix = myself.get("classPrefix");
-		var className = myself.get("className");
-		var spanFirst, spanPrev, spanNext, spanLast, pagesContainer, pageSpan;
-		prefix += className;
+	_onPageSelectorClick: function (e) {
+		this.goTo(parseInt($(e.target).html(), 10));
+	},
+	
+	_onNextClick: function (e) {
+		if (e.target.hasClass(ACTIVE)) {
+			this.goTo(this.get(CURRENT_PAGE) + 1);
+		}
+	},
+	
+	_onLastClick: function (e) {
+		if (e.target.hasClass(ACTIVE)) {
+			this.goTo(this.get('pageCount') - 1);
+		}
+	},
+	
+	_createButton: function (className, callback, text, container) {
+		var id = this.get('id');
+		var btn = $(NEW_SPAN).attr(ID, this.getClassName(id, className)).addClass(this.getClassName(className), INACTIVE).html(text);
+		btn.on(CLICK, callback, this);
+		btn.appendTo(container);
+		return btn;
+	},
+	
+	_renderUI: function () {
+		var pagesContainer, pageSpan;
+		var pageCount = this.get('pageCount');
+		var currentPage = this.get('currentPage');
+		var id = this.get('id'), i;
+		var boundingBox = this.get('boundingBox');
+		var getClassName = $.bind(this.getClassName, this);
 		
-		var boundingBox = myself.get("boundingBox");
+		// the 'first' button object
+		this._createButton('first', this._onFirstClick, this.get('firstText'), boundingBox);
 		
-		// the "first" button object
-		spanFirst = $(NEW_SPAN).attr(ID, prefix + id + "-first").addClass(prefix + "-first", INACTIVE).on(CLICK, function () {
-			if ($(this).hasClass(ACTIVE)) {
-				goTo(0);
-			}
-		}).html(myself.get("firstText")).appendTo(boundingBox);
-		
-		// the "previous" button object
-		spanPrev = $(NEW_SPAN).attr(ID, prefix + id + "-previous").addClass(prefix + "-previous", INACTIVE).on(CLICK, function () {
-			if ($(this).hasClass(ACTIVE)) {
-				goTo(myself.get(CURRENT_PAGE) - 1);
-			}
-		}).html(myself.get("prevText")).appendTo(boundingBox);
+		// the 'previous' button object
+		this._createButton('previous', this._onPrevClick, this.get('prevText'), boundingBox);
 		
 		// the pages are inside a container
-		pagesContainer = $(NEW_SPAN).addClass(prefix + "-pages").appendTo(boundingBox);
-		for (var i = currentPage + 1; i < currentPage + pageCount + 1; i++) {
-			// create each "page" button
-			pageSpan = $(NEW_SPAN).addClass(prefix + "-page", i == currentPage + 1 ? prefix + "-current-page" : "", i == currentPage + 1 ? ACTIVE : INACTIVE);
-			pageSpan.attr(ID, prefix + "-page" + i).html(i);
-			pageSpan.on(CLICK, onPageSelectorClick).appendTo(pagesContainer);
+		pagesContainer = $(NEW_SPAN).addClass(getClassName('pages')).appendTo(boundingBox);
+		
+		for (i = currentPage + 1; i < currentPage + pageCount + 1; i++) {
+			// create each 'page' button
+			pageSpan = this._createButton('page', this._onPageSelectorClick, i, pagesContainer);
+			pageSpan.removeClass(INACTIVE);
+			pageSpan.addClass(i == currentPage + 1 ? getClassName('current', 'page') : '', i == currentPage + 1 ? ACTIVE : INACTIVE);
 		}
 		
-		// the "next" button object
-		spanNext = $(NEW_SPAN).attr(ID, prefix + id + "-next").addClass(prefix + "-next", INACTIVE).on(CLICK, function () {
-			if ($(this).hasClass(ACTIVE)) {
-				goTo(myself.get(CURRENT_PAGE) + 1);
-			}
-		}).html(myself.get("nextText")).appendTo(boundingBox);
+		// the 'next' button object
+		this._createButton('next', this._onNextClick, this.get('nextText'), boundingBox);
 		
-		// the "last" button object
-		spanLast = $(NEW_SPAN).attr(ID, prefix + id + "-last").addClass(prefix + "-last", INACTIVE).on(CLICK, function () {
-			if ($(this).hasClass(ACTIVE)) {
-				goTo(myself.get("pageCount") - 1);
-			}
-		}).html(myself.get("lastText")).appendTo(boundingBox);
+		// the 'last' button object
+		this._createButton('last', this._onLastClick, this.get('lastText'), boundingBox);
 		
-	});
-};
-$.Paginator = $.extend(Paginator, $.Widget);
+	}
+	
+});
 			
 });
