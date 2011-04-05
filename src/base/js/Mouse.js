@@ -35,9 +35,7 @@ var Mouse = Base.create('mouse', Utility, [], {
 		},
 		shields: {
 			readOnly: true,
-			getter: function () {
-				return shim;
-			}
+			getter: '_buildShim'
 		},
 		shim: {
 			value: false,
@@ -81,9 +79,9 @@ var Mouse = Base.create('mouse', Utility, [], {
 					this.shim.show();
 				}
 				this.interval = setInterval(function () {
-					var clientX = this.get('clientX');
-					var clientY = this.get('clientY');
-					if (this.get('prevX') != clientX || this.get('prevY') != clientY) {
+					var clientX = self.get('clientX');
+					var clientY = self.get('clientY');
+					if (self.get('prevX') != clientX || self.get('prevY') != clientY) {
 						self.fire(MOUSEMOVE, clientX, clientY);
 						self.set({
 							prevX: clientX,
@@ -91,7 +89,6 @@ var Mouse = Base.create('mouse', Utility, [], {
 						});
 					}
 				}, this.get(FREQUENCY));
-				this.set('interval', interval);
 				this.set('capturing', true);
 			}
 		} else {
@@ -117,7 +114,7 @@ var Mouse = Base.create('mouse', Utility, [], {
 	_onMouseUp: function () {
 		/**
 		 * Fires when the mouse button is released
-		 * @event up
+		 * @event mouseup
 		 */
 		this.set(TRACKING, false).fire('mouseup', this.get('clientX'), this.get('clientY'));
 	},
@@ -126,6 +123,8 @@ var Mouse = Base.create('mouse', Utility, [], {
 		this.set('pageSize', $.DOM.pageSize());
 		
 		var shim = this.shim = this._buildShim();
+		
+		this.after('trackingChange', this._onTrackingChange);
 		
 		/**
 		 * Fires not when the mouse moves, but in an interval defined by the frequency attribute
