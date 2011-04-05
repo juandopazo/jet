@@ -7,7 +7,7 @@
  * @extends Utility
  * @param {Object} config Object literal specifying configuration properties
  */
-var Mouse = Base.create('mouse', Base, [], {
+var Mouse = Base.create('mouse', Utility, [], {
 	
 	ATTRS: {
 		/**
