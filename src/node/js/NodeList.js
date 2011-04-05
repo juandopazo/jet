@@ -595,7 +595,7 @@ NodeList.prototype = {
 			var newChildren = [];
 			var length = children.length;
 			for (var i = 0; i < length; i++) {
-				if (children[i].nodeType != TEXT_NODE) {
+				if (children[i].nodeType != 3) {
 					newChildren[newChildren.length] = children[i];
 				}
 			}
