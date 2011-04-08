@@ -56,20 +56,16 @@ $.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 				align: {
 					node: boundingBox,
 					points: this.get('align')
-				}
+				},
+				visible: this.get('selected')
 			});
 			this.get(LABEL_NODE).addClass(this.getClassName('label')).html(this.get('labelContent')).appendTo(contentBox);
 			if (this.get(CHILDREN).length > 0) {
 				olay.render(boundingBox);
-			}
-			this.get('childrenContainer').appendTo(olay.get('body'));
-			if (this.get(CHILDREN).length > 0) {
 				boundingBox.addClass(this.getClassName('submenu'));
 			}
-			if (!this.get('selected')) {
-				olay.hide();
-			}
-			boundingBox.on('click', this._toggleSelected, this);
+			this.get('childrenContainer').addClass(this.getClassName('container')).appendTo(olay.get('body'));
+			contentBox.on('click', this._toggleSelected, this);
 		},
 		mouseover: function () {
 			var parent = this.get('parent');
@@ -86,13 +82,11 @@ $.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 		},
 		afterSelectedChange: function (e, newVal) {
 			var olay = this._olay;
-			if (newVal && this.get(CHILDREN).length > 0) {
+			if (this.get(CHILDREN).length > 0) {
 				if (!olay.get('rendered')) {
 					olay.render(this.get(BOUNDING_BOX));
 				}
-				olay.show();
-			} else {
-				olay.hide();
+				olay.set('visible', newVal);
 			}
 		}
 	}
@@ -100,16 +94,15 @@ $.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 }, {
 	BOUNDING_TEMPLATE: '<li/>',
 	CONTENT_TEMPLATE: '<a/>',
+	CONTAINER_TEMPLATE: '<ul/>',
 	
 	initializer: function () {
-		this.set('childrenContainer', '<ul/>');
+		this.set('childrenContainer', this.CONTAINER_TEMPLATE);
 		this.set(LABEL_NODE, this.get(LABEL_NODE));
 	},
 	
 	_toggleSelected: function (e) {
-		if (e.target == this.get(LABEL_NODE)[0]) {
-			e.preventDefault();
-			this.toggle();
-		}
+		e.preventDefault();
+		this.toggle();
 	}
 });
