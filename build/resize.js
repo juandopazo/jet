@@ -178,7 +178,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 		this._setupProxy();
 		this._setupHandlers();
 
-		tracker.on('up', this._stop, this);
+		tracker.on('mouseup', this._stop, this);
 		tracker.on('mousemove', this._during, this);
 	},
 	
