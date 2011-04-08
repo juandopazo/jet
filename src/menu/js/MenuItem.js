@@ -16,7 +16,8 @@ var BOUNDING_BOX = 'boundingBox',
  * A menu item
  * @class MenuItem
  * @extends Widget
- * @uses WidgetParent, WidgetChild
+ * @uses WidgetParent
+ * @uses WidgetChild
  * @constructor
  * @param {Object} config Object literal specifying configuration properties
  */
