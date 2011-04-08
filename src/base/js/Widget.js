@@ -126,13 +126,11 @@ var Widget = Base.create('widget', Base, [], {
 		/**
 		 * @attribute id
 		 * @description The id of the widget
-		 * @readOnly
+		 * @default class prefix + widget count
+		 * @writeOnce
 		 */
 		 id: {
-			getter: function () {
-				return this.getClassName(this._uid);
-			},
-			readOnly: true
+		 	writeOnce: true
 		 },
 		 /**
 		  * @attribute visible
@@ -388,7 +386,14 @@ var Widget = Base.create('widget', Base, [], {
 		this._handlers = [$($.config.win).on(UNLOAD, this.destroy, this)];
 		
 		this._uid = ++jet.Widget._uid;
-		jet.Widget._instances[this.getClassName(this._uid)] = this;
+		
+		var id = this.get('id');
+		if (!id) {
+			id = this.getClassName(this._uid);
+			this.set('id', id);
+		}
+				
+		jet.Widget._instances[id] = this;
 		
 		if (!this.get(BOUNDING_BOX)) {
 			this.set(BOUNDING_BOX, this.BOUNDING_TEMPLATE);
