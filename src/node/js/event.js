@@ -165,3 +165,25 @@ var removeEvent = function (obj, type, callback) {
 	}
 	removeEvent(obj, type, callback);
 };
+
+/**
+ * A collection of DOM Event handlers for later detaching
+ * @class DOMEventHandler
+ * @constructor
+ * @param {Array} handlers
+ */
+function DOMEventHandler(handlers) {
+	this._handlers = handlers || [];
+}
+DOMEventHandler.prototype = {
+	/**
+	 * Unbinds all event handlers from their hosts
+	 * @method detach
+	 */
+	detach: function () {
+		for (var handlers = this._handlers, i = 0, length = handlers.length; i < length; i++) {
+			removeEvent(handlers[i].obj, handlers[i].type, handlers[i].fn);
+		}
+		this._handlers = [];
+	}
+};

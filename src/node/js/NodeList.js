@@ -618,19 +618,14 @@ NodeList.prototype = {
 	 * @param {String} type
 	 * @param {Function} callback
 	 * @param {Object} thisp
+	 * @return {DOMEventHandler} handler
 	 */
 	on: function (type, callback, thisp) {
 		var handlers = [];
 		this.each(function (node) {
 			handlers.push(addEvent(node, type, callback, thisp));
 		});
-		return {
-			detach: function () {
-				for (var i = 0, length = handlers.length; i < length; i++) {
-					removeEvent(handlers[i].obj, handlers[i].type, handlers[i].fn);
-				}
-			}
-		};
+		return new DOMEventHandler(handlers);
 	},
 	/**
 	 * Removes an event listener from all the nodes
