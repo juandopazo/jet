@@ -305,6 +305,14 @@ var Widget = Base.create('widget', Base, [], {
 			 */
 			if (this.fire('render')) {
 				
+				A.each(['renderUI', 'bindUI', 'syncUI'], function (method) {
+					A.each(classes, function (constructor) {
+						if (constructor.prototype.hasOwnProperty(method)) {
+							constructor.prototype[method].call(self, boundingBox);
+						}
+					});
+				});
+				
 				if (!boundingBox.inDoc()) {
 					boundingBox.appendTo(srcNode);
 				}
@@ -336,6 +344,13 @@ var Widget = Base.create('widget', Base, [], {
 		 * @event destroy
 		 */
 		if (this.fire(DESTROY)) {
+			
+			A.each(this._classes, function (constructor) {
+				if (constructor.prototype.hasOwnProperty('destructor')) {
+					constructor.prototype.destructor.call(this);
+				}
+			}, this);
+			
 			A.each(this._handlers, function (handler) {
 				if (handler.detach) {
 					handler.detach();

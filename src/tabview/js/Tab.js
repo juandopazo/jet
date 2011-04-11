@@ -68,61 +68,6 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 		}
 	},
 	
-	EVENTS: {
-		
-		triggerEventChange: function (e, oldVal, newVal) {
-			this.unbind(oldVal, this._selectHandler).on(newVal, this._selectHandler);
-		},
-		
-		labelContentChange: function (e, newVal) {
-			var label = this.get(CONTENT_BOX);
-			label.children().remove();
-			if (newVal instanceof $.NodeList) {
-				label.append(newVal);
-			} else {
-				label.html(newVal);
-			}
-		},
-		
-		panelContentChange: function (e, newVal) {
-			var panel = this.get('panelNode');
-			panel.children().remove();
-			if (newVal instanceof $.NodeList) {
-				panel.append(newVal);
-			} else {
-				panel.html(newVal);
-			}
-		},
-		
-		selectedChange: function (e, newVal) {
-			var selectedClass = this.getClassName(PANEL, SELECTED);
-			var panel = this.get('panelNode');
-			if (newVal) {
-				panel.addClass(selectedClass);
-			} else {
-				panel.removeClass(selectedClass);
-			}
-		},
-		
-		render: function () {
-			this.get(CONTENT_BOX).attr(HREF, this.get(HREF)).html(this.get('labelContent'));
-			this.on(this.get('triggerEvent'), this._selectHandler);
-			var panel = this.get('panelNode').html(this.get('panelContent')).addClass(this.getClassName(PANEL));
-			var panelContainer = this.get(PARENT).get(PANEL_CONTAINER);
-			if (panel.parent()._nodes[0] != panelContainer._nodes[0]) {
-				panel.appendTo(this.get(PARENT).get(PANEL_CONTAINER));					
-			}
-			if (this.get(SELECTED)) {
-				panel.addClass(this.getClassName(PANEL, SELECTED));
-			}
-		},
-		
-		destroy: function () {
-			this.get('panelNode').remove();
-		}
-		
-	},
-	
 	HTML_PARSER: {
 		panel: function () {
 			return this.get(PARENT).get('panelContainer').children(this.get('index'));
@@ -146,6 +91,40 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 	CONTENT_TEMPLATE: '<a/>',
 	PANEL_TEMPLATE: DIV,
 	
+	_uiTriggerEventChange: function (e, oldVal, newVal) {
+		this.unbind(oldVal, this._selectHandler).on(newVal, this._selectHandler);
+	},
+	
+	_uiTabLabelContentChange: function (e, newVal) {
+		var label = this.get(CONTENT_BOX);
+		label.children().remove();
+		if (newVal instanceof $.NodeList) {
+			label.append(newVal);
+		} else {
+			label.html(newVal);
+		}
+	},
+	
+	_uiTabPanelContentChange: function (e, newVal) {
+		var panel = this.get('panelNode');
+		panel.children().remove();
+		if (newVal instanceof $.NodeList) {
+			panel.append(newVal);
+		} else {
+			panel.html(newVal);
+		}
+	},
+	
+	_uiTabSelectedChange: function (e, newVal) {
+		var selectedClass = this.getClassName(PANEL, SELECTED);
+		var panel = this.get('panelNode');
+		if (newVal) {
+			panel.addClass(selectedClass);
+		} else {
+			panel.removeClass(selectedClass);
+		}
+	},
+	
 	initializer: function () {
 		if (!this.get('panelNode')) {
 			this.set('panelNode', this.PANEL_TEMPLATE);
@@ -154,6 +133,31 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 		if (parent) {
 			this.set('cssPrefix', parent.get('cssPrefix'));
 		}
+	},
+	
+	renderUI: function () {
+		this.get(CONTENT_BOX).attr(HREF, this.get(HREF)).html(this.get('labelContent'));
+		var panel = this.get('panelNode').html(this.get('panelContent')).addClass(this.getClassName(PANEL));
+		var panelContainer = this.get(PARENT).get(PANEL_CONTAINER);
+		if (panel.parent()._nodes[0] != panelContainer._nodes[0]) {
+			panel.appendTo(panelContainer);					
+		}
+	},
+	
+	bindUI: function () {
+		this.on(this.get('triggerEvent'), this._selectHandler);
+		this.after('triggerEventChange', this._uiTriggerEventChange);
+		this.after('labelContentChange', this._uiTabLabelContentChange);
+		this.after('panelContentChange', this._uiTabPanelContentChange);
+		this.after('selectedChange', this._uiTabSelectedChange);
+	},
+	
+	syncUI: function () {
+		this.get('panelNode').toggleClass(this.getClassName(PANEL, SELECTED), this.get(SELECTED));
+	},
+	
+	destructor: function () {
+		this.get('panelNode').remove();
 	},
 	
 	_selectHandler: function (e, domEvent) {

@@ -27,12 +27,6 @@ $.TabView = Base.create('tabview', Widget, [$.WidgetParent], {
 		}
 	},
 	
-	EVENTS: {
-		render: function () {
-			this.get(PANEL_CONTAINER).addClass(this.getClassName(PANEL, 'container')).appendTo(this.get(BOUNDING_BOX));
-		}
-	},
-	
 	HTML_PARSER: {
 		panelContainer: function (boundingBox) {
 			return $(boundingBox.children('div')._nodes[0]);
@@ -42,6 +36,10 @@ $.TabView = Base.create('tabview', Widget, [$.WidgetParent], {
 	
 	CONTENT_TEMPLATE: '<ul/>',
 	CONTAINER_TEMPLATE: DIV,
+	
+	renderUI: function () {
+		this.get(PANEL_CONTAINER).addClass(this.getClassName(PANEL, 'container')).appendTo(this.get(BOUNDING_BOX));
+	},
 	
 	initializer: function () {
 		if (!this.get(PANEL_CONTAINER)) {
