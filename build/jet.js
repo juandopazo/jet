@@ -85,8 +85,15 @@ var GlobalConfig = {
 				value: "none"
 			}
 		},
+		'treeview-styles': {
+			type: CSS,
+			beacon: {
+				name: 'visibility',
+				value: 'hidden'
+			}
+		},
 		tabview: [WIDGET_PARENTCHILD, 'tabview-styles'],
-		treeview: [WIDGET_PARENTCHILD],
+		treeview: [WIDGET_PARENTCHILD, 'treeview-styles'],
 		'widget-alignment': [BASE],
 		'widget-stack': [BASE],
 		'widget-parentchild': [BASE],
@@ -2923,10 +2930,8 @@ var Widget = Base.create('widget', Base, [], {
 		 * @attribute id
 		 * @description The id of the widget
 		 * @default class prefix + widget count
-		 * @writeOnce
 		 */
 		 id: {
-		 	writeOnce: true
 		 },
 		 /**
 		  * @attribute visible
@@ -3093,6 +3098,9 @@ var Widget = Base.create('widget', Base, [], {
 			if (!boundingBox.attr('id')) {
 				boundingBox.attr('id', this.get('id'));
 			}
+			
+			this._toggleVisibility({}, this.get('visible'));
+			this._toggleDisabled({}, this.get('disabled'));
 			/**
 			 * Render event. Preventing the default behavior will stop the rendering process
 			 * @event render
@@ -3178,6 +3186,12 @@ var Widget = Base.create('widget', Base, [], {
 		}
 	},
 	
+	_widgetIdChange: function (e, newVal, prevVal) {
+		this.get('boundingBox').attr('id', newVal);
+		jet.Widget._instances[newVal] = this;
+		delete jet.Widget._instances[prevVal];
+	},
+	
 	initializer: function () {
 		this._handlers = [$($.config.win).on(UNLOAD, this.destroy, this)];
 		
@@ -3188,6 +3202,7 @@ var Widget = Base.create('widget', Base, [], {
 			id = this.getClassName(this._uid);
 			this.set('id', id);
 		}
+		this.after('idChange', this._widgetIdChange);
 				
 		jet.Widget._instances[id] = this;
 		
