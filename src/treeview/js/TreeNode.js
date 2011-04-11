@@ -88,58 +88,6 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 		
 	},
 	
-	EVENTS: {
-		
-		labelChange: function (e, newVal) {
-			var label = this.get(LABEL_NODE);
-			if (Lang.isString(newVal)) {
-				label.html(newVal);
-			} else {
-				label.append(newVal);
-			}
-		},
-		
-		titleChange: function (e, newVal) {
-			this.get(CONTROL_NODE).attr(TITLE, newVal);
-		},
-		
-		selectedChange: function (e, newVal, oldVal) {
-			this._expandedChange.call(this, newVal, oldVal);
-		},
-		
-		click: function (e, domEvent) {
-			if (domEvent.target == this.get(LABEL_NODE)) {
-				this.set(SELECTED, !this.get(SELECTED));
-			}
-		},
-		
-		render: function () {
-			this._nodeToggle = $.bind(this.toggle, this);
-			var boundingBox = this.get(BOUNDING_BOX);
-			var contentBox = this.get(CONTENT_BOX);
-			var labelNode = this.get(LABEL_NODE).html(this.get(LABEL)).addClass(this.getClassName(LABEL));
-			var controlNode = this.get(CONTROL_NODE).addClass(this.getClassName(CONTROL));
-			var expanded = this.get(SELECTED);
-			var title = this.get(TITLE);
-			labelNode.prependTo(boundingBox);
-			controlNode.prependTo(boundingBox);
-			if (title) {
-				controlNode.attr(TITLE, title);
-			}
-			if (this.get('children').length > 0) {
-				labelNode.addClass(this.getClassName(LABEL, 'selectable'));
-			}
-			labelNode.link(controlNode).on(CLICK, this._nodeToggle);
-			this._expandedChange(expanded, expanded);
-		},
-		
-		destroy: function () {
-			this.get(LABEL_NODE).unbind(CLICK, this._nodeToggle);
-			this.get(CONTROL_NODE).unbind(CLICK, this._nodeToggle);
-		}
-		
-	},
-	
 	HTML_PARSER: {
 		labelNode: function () {
 			
@@ -154,9 +102,62 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 	LABEL_TEMPLATE: '<span/>',
 	CONTROL_TEMPLATE: '<span/>',
 	
+	_uiTNLabelChange: function (e, newVal) {
+		var label = this.get(LABEL_NODE);
+		if (Lang.isString(newVal)) {
+			label.html(newVal);
+		} else {
+			label.append(newVal);
+		}
+	},
+	
+	_uiTNTitleChange: function (e, newVal) {
+		this.get(CONTROL_NODE).attr(TITLE, newVal);
+	},
+	
+	_uiTNSelectedChange: function (e, newVal, oldVal) {
+		this._expandedChange.call(this, newVal, oldVal);
+	},
+	
+	_uiTNClick: function (e, domEvent) {
+		if (domEvent.target == this.get(LABEL_NODE)) {
+			this.set(SELECTED, !this.get(SELECTED));
+		}
+	},
+	
 	initializer: function () {
 		this.set(LABEL_NODE, this.LABEL_TEMPLATE);
 		this.set(CONTROL_NODE, this.CONTROL_TEMPLATE);
+	},
+	
+	renderUI: function (boundingBox) {
+		var contentBox = this.get(CONTENT_BOX);
+		var labelNode = this.get(LABEL_NODE).html(this.get(LABEL)).addClass(this.getClassName(LABEL));
+		var controlNode = this.get(CONTROL_NODE).addClass(this.getClassName(CONTROL));
+		labelNode.prependTo(boundingBox);
+		controlNode.prependTo(boundingBox);
+	},
+	
+	bindUI: function () {
+		var clickableNodes = this.get(LABEL_NODE).link(this.get(CONTROL_NODE));
+		this._handlers.push(clickableNodes.on(CLICK, $.bind(this.toggle, this)));
+		
+		this.after('labelChange', this._uiTNLabelChange);
+		this.after('titleChange', this._uiTNTitleChange);
+		this.after('selectedChange', this._uiTNSelectedChange);
+		this.on('click', this._uiTNClick);
+	},
+	
+	syncUI: function () {
+		var title = this.get(TITLE);
+		var expanded = this.get(SELECTED);
+		if (title) {
+			this.get(CONTROL_NODE).attr(TITLE, title);
+		}
+		if (this.get('children').length > 0) {
+			this.get(LABEL_NODE).addClass(this.getClassName(LABEL, 'selectable'));
+		}
+		this._expandedChange(expanded, expanded);
 	},
 	
 	_expandedChange: function (newVal, oldVal) {
@@ -169,13 +170,8 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 		var expandedContentClass = this.getClassName(CONTENT, EXPANDED); 
 		var collapsedContentClass = this.getClassName(CONTENT, COLLAPSED); 
 		if (this.get(CHILDREN).length > 0 && this.fire(eventType) && this.get('root').fire("node:" + eventType, this)) {
-			if (newVal) {
-				controlNode.addClass(expandedControlClass).removeClass(collapsedControlClass);
-				contentBox.addClass(expandedContentClass).removeClass(collapsedContentClass);
-			} else {
-				controlNode.addClass(collapsedControlClass).removeClass(expandedControlClass);
-				contentBox.addClass(collapsedContentClass).removeClass(expandedContentClass);
-			}
+			controlNode.toggleClass(expandedControlClass, newVal).toggleClass(collapsedControlClass, !newVal);
+			contentBox.toggleClass(expandedContentClass, newVal).toggleClass(collapsedContentClass, !newVal);
 		}
 	}
 	
