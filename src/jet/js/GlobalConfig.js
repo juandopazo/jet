@@ -73,8 +73,15 @@ var GlobalConfig = {
 				value: "none"
 			}
 		},
+		'treeview-styles': {
+			type: CSS,
+			beacon: {
+				name: 'visibility',
+				value: 'hidden'
+			}
+		},
 		tabview: [WIDGET_PARENTCHILD, 'tabview-styles'],
-		treeview: [WIDGET_PARENTCHILD],
+		treeview: [WIDGET_PARENTCHILD, 'treeview-styles'],
 		'widget-alignment': [BASE],
 		'widget-stack': [BASE],
 		'widget-parentchild': [BASE],
