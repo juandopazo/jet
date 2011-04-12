@@ -45,6 +45,9 @@ $.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 		},
 		align: {
 			value: [$.WidgetAlignment.TopLeft, $.WidgetAlignment.TopRight]
+		},
+		atLeastOne: {
+			value: false
 		}
 	}
 	
@@ -93,7 +96,7 @@ $.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 			},
 			visible: this.get('selected')
 		});
-		this.get(LABEL_NODE).addClass(this.getClassName('label')).html(this.get('labelContent')).appendTo(contentBox);
+		this.get(LABEL_NODE).addClass(this.getClassName('label')).appendTo(contentBox);
 		if (this.get(CHILDREN).length > 0) {
 			olay.render(boundingBox);
 			boundingBox.addClass(this.getClassName('submenu'));
@@ -108,6 +111,10 @@ $.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 		this.on('mouseout', this._uiMenuMouseout);
 		this.after('labelContentChange', this._uiMenuLabelContentChange);
 		this.after('selectedChange', this._uiMenuAfterSelected);
+	},
+	
+	syncUI: function () {
+		this.get(LABEL_NODE).setContent(this.get('labelContent'));
 	},
 	
 	_toggleSelected: function (e) {
