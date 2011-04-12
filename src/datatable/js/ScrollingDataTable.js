@@ -23,7 +23,7 @@ $.ScrollingDataTable = Base.create('dt', DataTable, [], {
 	
 	EVENTS: {
 		afterRender: function () {
-			var boundingBox = this.get(BOUNDING_BOX);
+			var boundingBox = this.get('boundingBox');
 			var table = $("<table/>").addClass(this.getClassName('content'));
 			var tbody = this.get(TBODY);
 			var thead = this.get(THEAD);
@@ -37,15 +37,8 @@ $.ScrollingDataTable = Base.create('dt', DataTable, [], {
 			table.append(tbody.detach()).appendTo(container);
 			
 			this._syncColumnWidths();
-			this.on('afterAddRow', this._syncColumnWidths, this);
-			this.on('afterAddRows', this._syncColumnWidths, this);
-			this._handlers.push($($.win).on('resize', this._syncColumnWidths, this));
-		},
+		}
 		
-		addRow: '_autoScrollBefore',
-		afterAddRow: '_autoScrollAfter',
-		addRows: '_autoScrollBefore',
-		afterAddRows: '_autoScrollAfter'
 	}
 	
 }, {
@@ -72,8 +65,20 @@ $.ScrollingDataTable = Base.create('dt', DataTable, [], {
 			this._firstTr = this.getFirstTr();
 		}
 		this._firstTr.children().each(function (td, i) {
+			console.log(ths._nodes, i, ths.item(i)._nodes[0], ths.item(i).width());
 			$(td).width(ths.item(i).width());
 		});
+	},
+	
+	bindUI: function () {
+		this.after('addRow', this._syncColumnWidths);
+		this.after('addRows', this._syncColumnWidths);
+		this.on('addRow', this._autoScrollBefore);
+		this.after('addRow', this._autoScrollAfter);
+		this.on('addRows', this._autoScrollBefore);
+		this.after('addRows', this._autoScrollAfter);
+
+		this._handlers.push($($.config.win).on('resize', this._syncColumnWidths, this));
 	}
 	
 });
