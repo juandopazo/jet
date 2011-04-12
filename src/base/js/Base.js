@@ -66,7 +66,7 @@ extend(Base, Attribute, {}, {
 			var args = arguments;
 			var self = this;
 			BuiltClass.superclass.constructor.apply(this, args);
-			A.each(BuiltClass.exts, function (extension) {
+			$_Array.each(BuiltClass.exts, function (extension) {
 				extension.apply(self, args);
 				Hash.each(extension.EVENTS || {}, function (type, fn) {
 					self.on(type, fn);
@@ -78,7 +78,7 @@ extend(Base, Attribute, {}, {
 			NAME: name,
 			exts: extensions
 		}, true);
-		A.each(extensions, function (extension) {
+		$_Array.each(extensions, function (extension) {
 			$.mix(BuiltClass[PROTO], extension[PROTO]);
 			Hash.each(extension, function (prop, val) {
 				if (!BuiltClass[prop]) {

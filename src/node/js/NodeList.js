@@ -55,81 +55,9 @@ function NodeList(nodes, root) {
 	} else {
 		$.error("Wrong argument for NodeList");
 	}
-	this._nodes = nodes;
+	this._nodes = this._items = nodes;
 }
-NodeList.prototype = {
-	/**
-	 * Iterates through the NodeList
-	 * The callback is passed a reference to the node and an iteration index. 
-	 * The "this" keyword also refers to the node. ie:<br/>
-	 * <code>$("div").each(function (node, i) {<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;if (i % 2 == 1) {<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(node).addClass("even");<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;} else {<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(node).addClass("odd");<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-	 * });</code>
-	 * @method each
-	 * @param {Function} callback
-	 * @chainable
-	 */
-	each: function (fn, thisp) {
-		var i, nodes = this._nodes, length = nodes.length;
-		for (i = 0; i < length; i++) {
-			fn.call(thisp || nodes[i], nodes[i], i, nodes);
-		}
-		return this;
-	},
-	/**
-	 * Returns the length of this NodeList
-	 * @method size
-	 * @return Number
-	 */
-	size: function() {
-		return this._nodes.length;
-	},
-	/**
-	 * Iterates through the nodelist, returning a new nodelist with all the elements
-	 * return by the callback function
-	 * @method map
-	 * @param {Function} fn
-	 * @return NodeList
-	 */
-	map: function (fn) {
-		var results = [];
-		this.each(function (node) {
-			var output = fn(node);
-			if (Lang.isValue(output)) {
-				if (Lang.isArray(output)) {
-					results.push.apply(results, output);
-				} else if (output instanceof NodeList) {
-					output.each(function (node) {
-						if (A.indexOf(node, results) == -1) {
-							results[results.length] = node;
-						}
-					});
-				} else if (A.indexOf(output, results) == -1){
-					results[results.length] = output;
-				}
-			}
-		});
-		return new NodeList(results);
-	},
-	/**
-	 * Returns a new nodelist with only the nodes for which the provided function returns true
-	 * @method filter
-	 * @param {Function} fn
-	 * @return NodeList
-	 */
-	filter: function (fn) {
-		var results = [];
-		this.each(function (node) {
-			if (fn.call(this)) {
-				results[results.length] = node;
-			}
-		});
-		return new NodeList(results);
-	},
+$.extend(NodeList, $.ArrayList, {
 	/**
 	 * Hides all nodes
 	 * @method hide
@@ -778,17 +706,8 @@ NodeList.prototype = {
 	 */
 	value: function (val) {
 		return this.attr("value", val);
-	},
-	/**
-	 * @method eq
-	 * @description Returns a new NodeList with the nth element of the current list
-	 * @param {Number} nth
-	 */
-	eq: function (nth) {
-		return new NodeList(this._nodes[nth]);
 	}
-};
-NodeList.is = Lang.is;
+});
 
 A.each(['Left', 'Top'], function (direction) {
 	NodeList.prototype['offset' + direction] = function (val) {

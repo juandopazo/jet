@@ -12,6 +12,7 @@
 		<subant target="init" inheritAll="false" inheritrefs="false">
 	    	<fileset dir="../base/" includes="build.xml"/>
 	    	<fileset dir="../log/" includes="build.xml"/>
+	    	<fileset dir="../oop/" includes="build.xml"/>
 	    	<fileset dir="../node/" includes="build.xml"/>
 	    </subant>
 		<!-- Create the time stamp -->
@@ -32,7 +33,7 @@
 			(function () {
 			
 			</header>
-			<filelist dir="./js" files="GlobalConfig.js,Lang.js,ArrayHelper.js,Hash.js,ua.js,Get.js,Core.js,jet.js"/>
+			<filelist dir="./js" files="GlobalConfig.js,Lang.js,ArrayHelper.js,ArrayList.js,Hash.js,ua.js,Get.js,Core.js,jet.js"/>
 			<footer trimleading="yes">
 			
 			}());
@@ -67,7 +68,7 @@
 			*/
 			</header>
 			<filelist dir="${tmpdir}" files="${filename}"/>
-			<filelist dir="${builddir}" files="log.js,node.js,base.js"/>
+			<filelist dir="${builddir}" files="log.js,oop.js,node.js,base.js"/>
 		</concat>
 		<concat destfile="${builddir}/${ant.project.name}.min.js" append="yes">
 			<header trimleading="yes">/*
@@ -79,10 +80,10 @@
 			*/
 			</header>
 			<filelist dir="${tmpdir}" files="${ant.project.name}.min.js"/>
-			<filelist dir="${builddir}" files="log.min.js,node.min.js,base.min.js"/>
+			<filelist dir="${builddir}" files="log.min.js,oop.min.js,node.min.js,base.min.js"/>
 		</concat>
 		<delete>
-			<filelist dir="${builddir}" files="log.js,node.js,base.js"/>
+			<filelist dir="${builddir}" files="log.js,oop.js,node.js,base.js"/>
 			<filelist dir="${builddir}" files="log.min.js,node.min.js,base.min.js"/>
 		</delete>
 	</target>

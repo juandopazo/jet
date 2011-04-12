@@ -26,7 +26,7 @@ extend(Utility, Base, {
 		 * @event destroy
 		 */
 		if (this.fire(DESTROY)) {
-			A.each(this._handlers, function (handler) {
+			$_Array.each(this._handlers, function (handler) {
 				handler.detach();
 			});
 		}

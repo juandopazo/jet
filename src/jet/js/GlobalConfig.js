@@ -12,7 +12,8 @@ var GlobalConfig = {
 	base: location.protocol + '//github.com/juandopazo/jet/raw/master/build/',
 	modules: {
 		log: {},
-		node: ['log'],
+		oop: {},
+		node: ['log', 'oop'],
 		xsl: [NODE],
 		swf: {},
 		json: [NODE],

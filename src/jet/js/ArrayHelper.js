@@ -71,11 +71,24 @@ ArrayHelper = {
 	 * @param {Object} thisObject Object to use as 'this' when executing 'callback'
 	 */
 	map: function (arr, fn, thisp) {
-		var res = [];
-		ArrayHelper.each(arr || [], function (val, i, arr) {
-			res[i] = fn.call(thisp, val, i, arr);
+		var results = [];
+		ArrayHelper.each(arr || [], function (item) {
+			var output = fn.call(thisp, item);
+			if (Lang.isValue(output)) {
+				if (Lang.isArray(output)) {
+					results.push.apply(results, output);
+				} else if (output instanceof ArrayList) {
+					output.each(function (item) {
+						if (ArrayHelper.indexOf(item, results) == -1) {
+							results[results.length] = item;
+						}
+					});
+				} else if (ArrayHelper.indexOf(output, results) == -1){
+					results[results.length] = output;
+				}
+			}
 		});
-		return res;
+		return results;
 	},
 	/**
 	 * Returns whether needle is present in haystack

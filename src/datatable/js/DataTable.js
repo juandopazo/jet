@@ -173,7 +173,7 @@ var DataTable = Base.create('dt', Widget, [], {
 		}
 		children = tbody.children();
 		for (i = 0; i < length; i++) {
-			children.eq(i).addClass(i % 2 === 0 ? even : odd).removeClass(i % 2 === 0 ? odd : even);
+			children.item(i).addClass(i % 2 === 0 ? even : odd).removeClass(i % 2 === 0 ? odd : even);
 		}
 		tbody.find(DOT + classNameDESC).removeClass(classNameDESC);
 		tbody.find(DOT + getClassName('col', key)).addClass(classNameDESC);
@@ -279,7 +279,7 @@ var DataTable = Base.create('dt', Widget, [], {
 		for (i = 0; i < length; i++) {
 			cells[cells.length] = new Cell({
 				record: records[i],
-				td: rows.eq(i).children().eq(index),
+				td: rows.item(i).children().item(index),
 				value: records[i].get(key)
 			});
 		}
@@ -294,7 +294,7 @@ var DataTable = Base.create('dt', Widget, [], {
 	 * @return NodeList
 	 */
 	getFirstTr: function () {
-		return this.get(TBODY).children().eq(0);
+		return this.get(TBODY).children().item(0);
 	},
 	
 	/**
@@ -326,7 +326,7 @@ var DataTable = Base.create('dt', Widget, [], {
 		if (Lang.isNumber(row)) {
 			row = this.get(TBODY).find(NUMERAL + this.get(RECORD_ID_PREFIX) + row);
 		}
-		return row.children().eq(0);
+		return row.children().item(0);
 	},
 	
 	/**

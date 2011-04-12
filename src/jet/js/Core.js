@@ -148,6 +148,8 @@ function buildJet(config) {
 		
 		"Array": ArrayHelper,
 		
+		ArrayList: ArrayList,
+		
 		Hash: Hash,
 		
 		config: config,

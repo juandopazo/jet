@@ -261,7 +261,7 @@ WidgetParent.prototype = {
 	 * @chainable
 	 */
 	remove: function (child) {
-		if (this.fire('removeChild', child)) {
+		if (child && this.fire('removeChild', child)) {
 			var children = this.get(CHILDREN);
 			if (Lang.isNumber(child)) {
 				child = children[child];
@@ -282,6 +282,15 @@ WidgetParent.prototype = {
 	each: function (fn, thisp) {
 		A.each(this.get(CHILDREN), fn, thisp || this);
 		return this;
-	}
+	},
+	
+	/**
+	 * @method size
+	 * @description Returns the ammount of children of this parent widget
+	 * @return Number
+	 */
+	 size: function () {
+	 	return (this.get(CHILDREN) || []).length;
+	 }
 	
 };

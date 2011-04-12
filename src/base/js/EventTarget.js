@@ -1,4 +1,12 @@
 
+var Hash = $.Hash,
+	Lang = $.Lang,
+	$_Array = $.Array,
+	SLICE = Array.prototype.slice,
+	extend = $.extend;
+	
+var Base;
+
 var TRACKING = "tracking",
 	MOUSEMOVE = "mousemove",
 	MOUSEUP = "mouseup",
@@ -10,9 +18,26 @@ var TRACKING = "tracking",
 	DASH = '-',
 	ONCE = '~ONCE~';
 
+/**
+ * A custom event object, only to be used by EventTarget
+ * @class CustomEvent
+ * @constructor
+ */
 function CustomEvent(type, target, onPrevented) {
+	/**
+	 * @property type
+	 * @description The type of the event
+	 */
 	this.type = type;
+	/**
+	 * @property target
+	 * @description The target of the event
+	 */
 	this.target = target;
+	/**
+	 * @method preventDefault
+	 * @description Prevents the default behavior of the event
+	 */
 	this.preventDefault = function () {
 		if (onPrevented) {
 			onPrevented();
@@ -67,7 +92,6 @@ EventTarget.prototype = {
 		if (eventType.indexOf(ONCE) > -1) {
 			once = true;
 			eventType = eventType.substr(ONCE.length);
-			console.log(eventType);
 		}
 		if (Lang.isObject(callback)) {
 			collection[eventType].push({
@@ -111,7 +135,7 @@ EventTarget.prototype = {
 	 */
 	unbind: function (eventType, callback) {
 		if (eventType) {
-			$.Array.remove(callback, this._events[eventType] || []);
+			$_Array.remove(callback, this._events[eventType] || []);
 		} else {
 			this._events = {};
 		}
@@ -146,7 +170,7 @@ EventTarget.prototype = {
 				callback.handleEvent.apply(handlers[i].o || callback, args);
 			}
 			if (handlers[i].once) {
-				A.remove(handlers, handlers[i]);
+				$_Array.remove(handlers, handlers[i]);
 				i--;
 			}
 		}

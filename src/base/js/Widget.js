@@ -272,7 +272,7 @@ var Widget = Base.create('widget', Base, [], {
 				classes.shift();
 			}
 			
-			A.each([WIDTH, HEIGHT], function (size) {
+			$_Array.each([WIDTH, HEIGHT], function (size) {
 				var value = self.get(size);
 				if (Lang.isNumber(value)) {
 					boundingBox[size](value);
@@ -283,7 +283,7 @@ var Widget = Base.create('widget', Base, [], {
 				});
 			});
 			
-			A.each(classes, function (construct) {
+			$_Array.each(classes, function (construct) {
 				className = [classPrefix, construct.NAME].join(DASH);
 				boundingBox.addClass(className);
 				contentBox.addClass([className, CONTENT].join(DASH));
@@ -305,8 +305,8 @@ var Widget = Base.create('widget', Base, [], {
 			 */
 			if (this.fire('render')) {
 				
-				A.each(['renderUI', 'bindUI', 'syncUI'], function (method) {
-					A.each(classes, function (constructor) {
+				$_Array.each(['renderUI', 'bindUI', 'syncUI'], function (method) {
+					$_Array.each(classes, function (constructor) {
 						if (constructor.prototype.hasOwnProperty(method)) {
 							constructor.prototype[method].call(self, boundingBox);
 						}
@@ -345,13 +345,13 @@ var Widget = Base.create('widget', Base, [], {
 		 */
 		if (this.fire(DESTROY)) {
 			
-			A.each(this._classes, function (constructor) {
+			$_Array.each(this._classes, function (constructor) {
 				if (constructor.prototype.hasOwnProperty('destructor')) {
 					constructor.prototype.destructor.call(this);
 				}
 			}, this);
 			
-			A.each(this._handlers, function (handler) {
+			$_Array.each(this._handlers, function (handler) {
 				if (handler.detach) {
 					handler.detach();
 				}
@@ -367,7 +367,7 @@ var Widget = Base.create('widget', Base, [], {
 		var self = this;
 		var boundingBox = this.get(BOUNDING_BOX);
 		if (boundingBox._nodes[0] && boundingBox.inDoc()) {
-			A.each(this._classes, function (someClass) {
+			$_Array.each(this._classes, function (someClass) {
 				Hash.each(someClass.HTML_PARSER || {}, function (attr, parser) {
 					var val = parser.call(self, boundingBox);
 					if (Lang.isValue(val) && (!(val instanceof $.NodeList) || val._nodes[0])) {

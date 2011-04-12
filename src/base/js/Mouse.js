@@ -195,7 +195,7 @@ var Mouse = Base.create('mouse', Utility, [], {
 	
 	$.on = $.bind($_event.on, $_event);
 	
-	A.each(['load', 'unload'], function (name) {
+	$_Array.each(['load', 'unload'], function (name) {
 		$(win).on(name, function () {
 			$_event.fire(name);
 		});

@@ -1,3 +1,5 @@
+var OP = Object.prototype;
+
 /**
  * Utilities for object oriented programming in JavaScript.
  * JET doesn't provide a classical OOP environment like Prototype with Class methods,
@@ -23,9 +25,10 @@ var toObj = function (o) {
  * @method extend
  * @param {Function} subclass
  * @param {Function} superclass
- * @param {Hash} optional - An object literal with methods to overwrite in the subclass' prototype
+ * @param {Hash} px optional - An object literal with methods to overwrite in the subclass' prototype
+ * @param {Hash} ax optional - An object literal with properties to add to the subclass' constructor
  */
-var extend = function (r, s, px, ax) {
+$.extend = function (r, s, px, ax) {
 	// From the guys at YUI. This function is GENIUS!
 	
 	if (!s || !r) {
