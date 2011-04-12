@@ -63,7 +63,7 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 		 * @description This node's label or title
 		 * @type String|HTMLElement
 		 */
-		label: {
+		labelContent: {
 			value: ''
 		},
 		/**
@@ -142,7 +142,7 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 		var clickableNodes = this.get(LABEL_NODE).link(this.get(CONTROL_NODE));
 		this._handlers.push(clickableNodes.on(CLICK, $.bind(this.toggle, this)));
 		
-		this.after('labelChange', this._uiTNLabelChange);
+		this.after('labelContentChange', this._uiTNLabelChange);
 		this.after('titleChange', this._uiTNTitleChange);
 		this.after('selectedChange', this._uiTNSelectedChange);
 		this.on('click', this._uiTNClick);
