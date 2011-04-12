@@ -77,8 +77,8 @@ $.mix(WidgetChild, {
 	},
 	
 	HTML_PARSER: {
-		selected: function () {
-			return this.get(BOUNDING_BOX).hasClass(this.getClassName(SELECTED));
+		selected: function (boundingBox) {
+			return boundingBox.hasClass(this.getClassName(SELECTED));
 		}
 	}
 	
