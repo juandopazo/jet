@@ -64,15 +64,15 @@ $.mix(WidgetChild, {
 			}
 		},
 		
-		afterSelectedChange: function (e, newVal) {
-			var selectedClass = this.getClassName(SELECTED);
-			var boundingBox = this.get(BOUNDING_BOX);
-			if (newVal) {
-				boundingBox.addClass(selectedClass);
-				this.fire(SELECT);
-			} else {
-				boundingBox.removeClass(selectedClass);
+		selectedChange: function (e, newVal) {
+			var parent = this.get(PARENT);
+			if (!newVal && parent && parent.size() > 1 && parent.get('selection') == this && !parent.get('multiple') && parent.get('atLeastOne')) {
+				e.preventDefault();
 			}
+		},
+		
+		afterSelectedChange: function (e, newVal) {
+			this.get(BOUNDING_BOX).toggleClass(this.getClassName(SELECTED), newVal);
 		}
 	},
 	

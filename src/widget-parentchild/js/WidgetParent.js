@@ -81,6 +81,10 @@ $.mix(WidgetParent, {
 			value: false,
 			wriceOnce: true
 		},
+		
+		atLeastOne: {
+			value: true
+		},
 		/**
 		 * @attribute selectedIndex
 		 * @description The index of the currently selected item
