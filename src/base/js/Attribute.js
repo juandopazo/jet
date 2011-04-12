@@ -25,15 +25,15 @@ extend(Attribute, EventTarget, {
 		this._stateConf[attrName] = config;
 		var state = this._state;
 		var isValue = Lang.isValue(state[attrName]);
-		if (config.required && config.readOnly) {
+		/*if (config.required && config.readOnly) {
 			$.error("You can't have both 'required' and 'readOnly'");
-		}
+		}*/
 		if (config.readOnly && isValue) {
 			delete state[attrName];
 		}
-		if (config.required && !isValue) {
+		/*if (config.required && !isValue) {
 			$.error("Missing required attribute: " + attrName);
-		}
+		}*/
 		if (Lang.isString(config.setter)) {
 			config.setter = this[config.setter];
 		}
@@ -56,21 +56,19 @@ extend(Attribute, EventTarget, {
 			if (!config.validator || config.validator.call(this, attrValue)) {
 				attrValue = config.setter ? config.setter.call(this, attrValue) : attrValue;
 				if (!Lang.isValue(state[attrName]) && config.value) {
-					state[attrName] = config.value;
+					state[attrName] = attrValue = oldValue = config.value;
 				}
-				if (attrValue !== oldValue) {
-					state[attrName] = state[attrName] == attrValue ? attrValue :
-											this.fire(attrName + "Change", attrValue, state[attrName]) ? attrValue :
-											state[attrName];
+				if (attrValue !== oldValue && this.fire(attrName + "Change", attrValue, oldValue)) {
+					state[attrName] = attrValue;
 					this.fire('after' + Lang.capitalize(attrName) + 'Change', attrValue, oldValue);
 				}
 			}
 			if (config.writeOnce && !config.readOnly) {
 				attrConfig[attrName].readOnly = true;
 			}
-		} else {
+		} /*else {
 			$.error(attrName + " is a " + (config.writeOnce ? "write-once" : "read-only") + " attribute");
-		}
+		}*/
 		return this;
 	},
 	/**
