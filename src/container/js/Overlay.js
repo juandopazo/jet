@@ -57,69 +57,6 @@ $.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment, $.WidgetStack],
 		modalBox: {
 			setter: $
 		}
-	},
-	
-	EVENTS: {
-		
-		render: function (e) {
-			var win = $(this.get('win'));
-			var self = this;
-			var boundingBox = this.get(BOUNDING_BOX);
-			var screenSize = DOM.screenSize();
-			var startZIndex = this.get('startZIndex');
-			var modal = this.get(MODAL_BOX).css({
-				position: 'absolute',
-				top: "0px",
-				left: "0px",
-				background: "#000",
-				visibility: !self.get("modal") ? "hidden" : "",
-				zIndex: Global.ovZindex + startZIndex - 1,
-				opacity: 0.4
-			}).width(screenSize.width).height(screenSize.height).appendTo($.config.doc.body);
-			this._handlers.push(win.on(RESIZE, this._resizeModal, this));
-			boundingBox.css('zIndex', Global.ovZindex + startZIndex);
-			this.on("mousedown", this.focus, this);
-		},
-		
-		afterRender: function () {
-			var boundingBox = this.get(BOUNDING_BOX);
-			var head = this.get(HEADER);
-			if (this.get("draggable")) {
-				this.dd = new $.Drag({
-					node: boundingBox,
-					handlers: head
-				});
-			}	
-		},
-		
-		focus: function () {
-			A.remove(this, Global.overlays);
-			Global.overlays.push(this);
-			var olays = Global.overlays, i, length = olays.length;
-			for (i = 0; i < length; i++) {
-				olays[i].get(BOUNDING_BOX).css("zIndex", Global.ovZindex + i);
-			}
-		},
-		
-		hide: function () {
-			this.get(MODAL_BOX).hide();
-		},
-		
-		show: function () {
-			if (this.get("modal")) {
-				this.get(MODAL_BOX).show();
-			}
-		},
-		
-		destroy: function () {
-			var win = $(this.get('win')).unbind(RESIZE, this._centerUI).unbind(SCROLL, this._centerUI);
-			win.unbind(RESIZE, this._repositionUI);
-			win.unbind(SCROLL, this._repositionUI);
-			if (this.dd) {
-				this.dd.destroy();
-			}
-			this.get(BOUNDING_BOX).unbind("mousedown", this.focus);
-		}
 	}
 	
 }, {
@@ -130,10 +67,55 @@ $.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment, $.WidgetStack],
 		var screenSize = DOM.screenSize();
 		this.get(MODAL_BOX).width(screenSize.width).height(screenSize.height);
 	},
-
+	_showModal: function () {
+		if (this.get('modal')) {
+			this.get(MODAL_BOX).show();
+		}
+	},
+	_hideModal: function () {
+		this.get(MODAL_BOX).hide();
+	},
+	
 	initializer: function () {
-		var self = this;
-		Global.overlays.push(this);
-		this.set(MODAL_BOX, this.MODAL_TEMPLATE);
+		if (!this.get(MODAL_BOX)) {
+			this.set(MODAL_BOX, this.MODAL_TEMPLATE);
+		}
+	},
+	
+	renderUI: function (boundingBox) {
+		var screenSize = DOM.screenSize();
+		var startZIndex = this.get('startZIndex');
+		var modal = this.get(MODAL_BOX).css({
+			position: 'absolute',
+			top: "0px",
+			left: "0px",
+			background: "#000",
+			visibility: !this.get("modal") ? "hidden" : "",
+			zIndex: this.get('zIndex') - 1,
+			opacity: 0.4
+		}).width(screenSize.width).height(screenSize.height).appendTo($.config.doc.body);
+	},
+	
+	bindUI: function () {
+		this.after('show', this._showModal);
+		this.after('hide', this._hideModal);
+		this.on('mousedown', this.focus);
+		this._handlers.push($($.config.win).on(RESIZE, this._resizeModal, this));
+	},
+	
+	syncUI: function (boundingBox) {
+		var head = this.get(HEADER);
+		if (this.get('draggable')) {
+			this.dd = new $.Drag({
+				node: boundingBox,
+				handlers: head
+			});
+		}
+	},
+	
+	destructor: function () {
+		if (this.dd) {
+			this.dd.destroy();
+		}
 	}
 });

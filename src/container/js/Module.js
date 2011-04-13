@@ -116,42 +116,8 @@ $.Module = Base.create('module', Widget, [], {
 		footerContent: {
 			validator: Lang.isValue
 		}
-	},
-	
-	EVENTS: {
-	
-		render: function () {
-			var self = this;
-			var contentBox = this.get(CONTENT_BOX);
-			// append the header, body and footer to the bounding box if present
-			A.each([HEADER, BODY, FOOTER], function (name) {
-				var value = self.get(name + 'Content');
-				var node = self.get(name).addClass(name);
-				if (Lang.isValue(value)) {
-					if (value.nodeType) {
-						value = $(value);
-					}
-					if (value instanceof $.NodeList) {
-						node.append(value);
-					} else {
-						node.html(value);
-					}
-					node.appendTo(contentBox);
-				}
-			});
-		},
-		
-		headerContentChange: function (e, newVal) {
-			this.get(HEADER).setContent(newVal);
-		},
-		bodyContentChange: function (e, newVal) {
-			this.get(BODY).setContent(newVal);
-		},
-		footerContentChange: function (e, newVal) {
-			this.get(FOOTER).setContent(newVal);
-		}
-		
 	}
+	
 }, {
 	CONTENT_TEMPLATE: null,
 	
@@ -159,5 +125,42 @@ $.Module = Base.create('module', Widget, [], {
 		this.set(HEADER, this.get(HEADER));
 		this.set(BODY, this.get(BODY));
 		this.set(FOOTER, this.get(FOOTER));
+	},
+	
+	_uiHeaderChange: function (e) {
+		this.get(HEADER).setContent(e.newVal);
+	},
+	_uiBodyChange: function (e) {
+		this.get(BODY).setContent(e.newVal);
+	},
+	_uiFooterChange: function (e) {
+		this.get(FOOTER).setContent(e.newVal);
+	},
+	
+	renderUI: function () {
+		var self = this;
+		var contentBox = this.get(CONTENT_BOX);
+		// append the header, body and footer to the bounding box if present
+		A.each([HEADER, BODY, FOOTER], function (name) {
+			var value = self.get(name + 'Content');
+			var node = self.get(name).addClass(name);
+			if (Lang.isValue(value)) {
+				if (value.nodeType) {
+					value = $(value);
+				}
+				if (value instanceof $.NodeList) {
+					node.append(value);
+				} else {
+					node.html(value);
+				}
+				node.appendTo(contentBox);
+			}
+		});
+	},
+	
+	bindUI: function () {
+		A.each(['Header', 'Body', 'Footer'], function (section) {
+			this.after(section.toLowerCase() + 'ContentChange', this['_ui' + section + 'Change']);
+		}, this);
 	}
 });

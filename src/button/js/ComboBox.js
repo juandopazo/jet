@@ -60,8 +60,8 @@ $.ComboBox = Base.create('combobox', Button, [WidgetParent], {
 		}
 	},
 	EVENTS: {
-		selectionChange: function (e, val) {
-			this.get(CONTENT_BOX)._nodes[0].selectedIndex = val.get('index');
+		afterSelectionChange: function (e) {
+			this.get(CONTENT_BOX)._nodes[0].selectedIndex = e.newVal.get('index');
 		}
 	}
 }, {

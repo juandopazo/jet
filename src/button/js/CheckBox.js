@@ -10,20 +10,23 @@ if (!Lang.isNumber(jet.Button.checkbox)) {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.CheckBox = Base.create('checkbox', Button, [], {
-	EVENTS: {
-		selectedChange: function (e, val) {
-			this.get(CONTENT_BOX)._nodes[0].checked = !!val;
-		},
-		render: function () {
-			this.get(CONTENT_BOX).attr({
-				type: 'checkbox',
-				name: this.get(PARENT).get(NAME)
-			});
-		}
+$.CheckBox = Base.create('checkbox', Button, [], {}, {
+	CONTENT_TEMPLATE: '<input/>',
+	
+	_uiCheckBoxSelect: function (e) {
+		this.get(CONTENT_BOX)._nodes[0].checked = !!e.newVal;
+	},
+	
+	renderUI: function () {
+		this.get(CONTENT_BOX).attr({
+			type: 'checkbox',
+			name: this.get(PARENT).get(NAME)
+		});
+	},
+	
+	bindUI: function () {
+		this.after('selectedChange', this._uiCheckBoxSelect);
 	}
-}, {
-	CONTENT_TEMPLATE: '<input/>'
 });
 
 /**
@@ -45,7 +48,7 @@ $.CheckBoxGroup = Base.create('checkbox-group', Widget, [WidgetParent], {
 			writeOnce: true
 		},
 		defaultChildType: {
-			value: $.CheckBox
+			value: 'CheckBox'
 		}
 	}
 }, {

@@ -56,20 +56,11 @@ var PanelBase = $.mix(function () {
 			if (this.get(SHADOW)) {
 				boundingBox.addClass(SHADOW);
 			}
-			$(this.get('doc')).on('keyup', this._onContextKeyUp);
+			this._handlers.push($($.config.doc).on('keyup', this._onContextKeyUp, this));
 		},
 		
-		destroy: function () {
-			$(this.get('doc')).unbind('keyup', this._onContextKeyUp);
-		},
-		
-		afterCloseChange: function (e, newVal) {
-			var closeButton = this.get('closeButton');
-			if (newVal) {
-				closeButton.show();
-			} else {
-				closeButton.hide();
-			}
+		afterCloseChange: function (e) {
+			this.get('closeButton').toggle(e.newVal);
 		}
 		
 	}
@@ -105,12 +96,14 @@ PanelBase.prototype = {
  */
 $.Panel = Base.create('panel', $.Overlay, [PanelBase], {}, {
 	initializer: function () {
-		var self = this;
 		this.set('closeButton', this.get('closeButton'));
-		this.on(HEIGHT + "Change", function (e, height) {
-			self.get(CONTENT_BOX).height(height);
-		});
 		this.set(UNDERLAY, $(NEW_DIV).addClass(UNDERLAY));
+	},
+	
+	bindUI: function () {
+		this.after('heightChange', function (e) {
+			this.get(CONTENT_BOX).height(e.newVal);
+		}, this);
 	}
 });
 
@@ -124,11 +117,13 @@ $.Panel = Base.create('panel', $.Overlay, [PanelBase], {}, {
  */
 $.StaticPanel = Base.create('panel', $.Module, [PanelBase], {}, {
 	initializer: function () {
-		var self = this;
 		this.set('closeButton', this.get('closeButton'));
-		this.on(HEIGHT + "Change", function (e, height) {
-			self.get(CONTENT_BOX).height(height);
-		});
 		this.set(UNDERLAY, $(NEW_DIV).addClass(UNDERLAY));
+	},
+	
+	bindUI: function () {
+		this.after('heightChange', function (e) {
+			this.get(CONTENT_BOX).height(e.newVal);
+		}, this);
 	}
 });

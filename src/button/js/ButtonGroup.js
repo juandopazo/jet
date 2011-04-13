@@ -22,27 +22,14 @@ $.ButtonGroup = Base.create('button-group', Widget, [WidgetParent], {
 			value: false,
 			validator: Lang.isBoolean
 		}
+	}
+}, {
+	
+	_uiPillChange: function (e) {
+		this.get(BOUNDING_BOX).toggleClass(this.getClassName(PILL), e.newVal);
 	},
 	
-	EVENTS: {
-		pillChange: function (e, pill) {
-			var boundingBox = this.get(BOUNDING_BOX);
-			var pillClass = this.getClassName(PILL);
-			if (pill) {
-				boundingBox.addClass(pillClass);
-			} else {
-				boundingBox.removeClass(pillClass);
-			}
-		},
-		
-		render: function () {
-			var boundingBox = this.get(BOUNDING_BOX);
-			var pillClass = this.getClassName(PILL);
-			if (this.get(PILL)) {
-				boundingBox.addClass(pillClass);
-			} else {
-				boundingBox.removeClass(pillClass);
-			}
-		}
+	renderUI: function (boundingBox) {
+		boundingBox.toggleClass(this.getClassName(PILL), this.get(PILL));
 	}
 });

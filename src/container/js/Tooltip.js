@@ -9,7 +9,9 @@
 $.Tooltip = Base.create('tooltip', Widget, [$.WidgetAlignment], {
 	ATTRS: {
 		align: {
-			points: ['tl', 'bl']
+			value: {
+				points: ['tl', 'bl']
+			}
 		},
 		/**
 		 * @attribute fadeIn
@@ -22,26 +24,33 @@ $.Tooltip = Base.create('tooltip', Widget, [$.WidgetAlignment], {
 				return !!$.Tween;
 			}
 		}
+	}
+}, {
+	
+	_uiShowTooltip: function () {
+		var offset = this.get("srcNode").offset();
+		var fadeIn = this.get("fadeIn");
+		this.set("left", offset.left).set("top", offset.top + offset.height);
+		if (fadeIn) {
+			this.get(BOUNDING_BOX).css("opacity", 0).fadeIn(fadeIn);
+		}
 	},
 	
-	EVENTS: {
-		render: function () {
-			var srcNode = this.get('srcNode');
-			var points = this.get('align').points;
-			this.set('align', {
-				node: srcNode,
-				points: points
-			});
-			this.hide().set("bodyContent", this.get("bodyContent") || srcNode.attr("title"));
-			srcNode.on("mouseover", this.show).on("mouseout", this.hide);
-		},
-		show: function () {
-			var offset = this.get("srcNode").offset();
-			var fadeIn = this.get("fadeIn");
-			this.set("left", offset.left).set("top", offset.top + offset.height);
-			if (fadeIn) {
-				this.get(BOUNDING_BOX).css("opacity", 0).fadeIn(fadeIn);
-			}
-		}
+	renderUI: function () {
+		this.set('align', {
+			node: this.get('srcNode'),
+			points: this.get('align').points
+		});
+	},
+	
+	bindUI: function () {
+		var srcNode = this.get('srcNode');
+		this.after('show', this._uiShowTooltip);
+		this._handlers.push(srcNode.on('mouseover', this.show, this), srcNode.on('mouseout', this.hide, this));
+	},
+	
+	syncUI: function () {
+		this.hide().set('bodyContent', this.get('bodyContent') || this.get('srcNode').attr('title'));
 	}
+	
 });

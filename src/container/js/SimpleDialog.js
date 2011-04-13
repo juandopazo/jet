@@ -23,26 +23,27 @@ $.SimpleDialog = Base.create('dialog', $.Panel, [], {
 			readOnly: true
 		}
 		
-	},
-	EVENTS: {
-		render: function (e) {
-			var buttonGroup = this.bg = new $.ButtonGroup({
-				children: this.get('buttons')
-			});
-			buttonGroup.render(this.get(FOOTER));
-			buttonGroup.get(BOUNDING_BOX).css(VISIBILITY, 'inherit');
-		},
-		afterHide: function () {
-			this.bg.hide();
-			this.bg.each(function (button) {
-				button.hide();
-			});
-		},
-		afterShow: function () {
-			this.bg.show();
-			this.bg.each(function (button) {
-				button.show();
-			});
-		}
 	}
+}, {
+	
+	_bgVisibleChange: function (e) {
+		var action = e.newVal ? 'show' : 'hide';
+		this.bg[action]();
+		this.bg.each(function (button) {
+			button[action]();
+		});
+	},
+	
+	renderUI: function () {
+		var buttonGroup = this.bg = new $.ButtonGroup({
+			children: this.get('buttons')
+		});
+		buttonGroup.render(this.get(FOOTER));
+		buttonGroup.get(BOUNDING_BOX).css(VISIBILITY, 'inherit');
+	},
+	
+	bindUI: function () {
+		this.after('visibleChange', this._bgVisibleChange);
+	}
+	
 });
