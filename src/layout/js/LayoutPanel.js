@@ -91,13 +91,14 @@ LayoutPanelBase.prototype = {
 		});
 	},
 	
-	_setupChildResize: function (e, child, index) {
+	_setupChildResize: function (e) {
 		
 		var Resize = $.Resize;
 		var minSize = this.get('minSize');
 		var direction = this.get('direction');
+		var child = e.child;
 			
-		if (index > 0) {
+		if (e.index > 0) {
 			
 			child.resize = new Resize({
 				node: child.get('boundingBox'),
@@ -115,10 +116,10 @@ LayoutPanelBase.prototype = {
 		child.get('boundingBox').addClass(child.getClassName('child', direction));
 	},
 	
-	_destroyChildResize: function (e, child) {
+	_destroyChildResize: function (e) {
 		
-		child.resize.destroy();
-		child.resize = null;
+		e.child.resize.destroy();
+		e.child.resize = null;
 		
 	},
 	
@@ -132,18 +133,18 @@ LayoutPanelBase.prototype = {
 		
 	},
 	
-	_onChildResize: function (e, currentWidth, currentHeight) {
+	_onChildResize: function (e) {
 		var childResize = e.target;
 		var previous = this.previous();
 		var previousBoundingBox = previous.get('boundingBox');
 		
 		if (this.get('parent').get('direction') == LayoutPanelBase.Horizontal) {
 			
-			previousBoundingBox.width(childResize.get('originalWidth') - currentWidth + previous._originalWidth);
+			previousBoundingBox.width(childResize.get('originalWidth') - e.width + previous._originalWidth);
 			
 		} else {
 			
-			previousBoundingBox.height(childResize.get('originalHeight') - currentHeight + previous._originalHeight);
+			previousBoundingBox.height(childResize.get('originalHeight') - e.height + previous._originalHeight);
 			
 		}
 	}

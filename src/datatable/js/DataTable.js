@@ -64,22 +64,6 @@ var DataTable = Base.create('dt', Widget, [], {
 				return this.getClassName(this._uid + REC);
 			}
 		}
-	},
-	
-	EVENTS: {
-		render: function () {
-			var contentBox = this.get('contentBox');
-			contentBox._nodes[0].setAttribute('cellspacing', '0px');
-			var thead = this.get(THEAD);
-			var tbody = this.get(TBODY);
-			
-			this._setupTableHeaders();
-			
-			this.onDataReturnAddRows(null, this.get(RECORDSET));
-			
-			thead.appendTo(contentBox);
-			tbody.addClass(this.getClassName(DATA)).appendTo(contentBox);
-		}
 	}
 	
 }, {
@@ -89,6 +73,22 @@ var DataTable = Base.create('dt', Widget, [], {
 	initializer: function () {
 		this.set(THEAD, this.get(THEAD));
 		this.set(TBODY, this.get(TBODY));
+	},
+	
+	renderUI: function () {
+		var contentBox = this.get('contentBox');
+		contentBox._nodes[0].setAttribute('cellspacing', '0px');
+		var thead = this.get(THEAD);
+		var tbody = this.get(TBODY);
+		
+		this._setupTableHeaders();
+		
+		thead.appendTo(contentBox);
+		tbody.addClass(this.getClassName(DATA)).appendTo(contentBox);
+	},
+	
+	syncUI: function () {
+		this.onDataReturnAddRows(null, this.get(RECORDSET));
 	},
 	
 	_onThClick: function (e) {
@@ -392,10 +392,10 @@ var DataTable = Base.create('dt', Widget, [], {
 	 * @param {EventFacade} e
 	 * @param {RecordSet} recordSet
 	 */
-	onDataReturnReplaceRows: function (e, newRecordSet) {
+	onDataReturnReplaceRows: function (e) {
 		this.get(TBODY).children().remove();
-		this.get(RECORDSET).replace(newRecordSet);
-		this.addRows(newRecordSet);
+		this.get(RECORDSET).replace(e.data);
+		this.addRows(e.data);
 	},
 	
 	/**
@@ -404,9 +404,10 @@ var DataTable = Base.create('dt', Widget, [], {
 	 * @param {EventFacade} e
 	 * @param {RecordSet} newRecordSet
 	 */
-	onDataReturnAddRows: function (e, newRecordSet) {
-		this.get(RECORDSET).push(newRecordSet);
-		this.addRows(newRecordSet);
+	onDataReturnAddRows: function (e) {
+		console.log('onDataReturnAddRows', e);
+		this.get(RECORDSET).push(e.data);
+		this.addRows(e.data);
 	}
 	
 });

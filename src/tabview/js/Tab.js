@@ -91,38 +91,32 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 	CONTENT_TEMPLATE: '<a/>',
 	PANEL_TEMPLATE: DIV,
 	
-	_uiTriggerEventChange: function (e, oldVal, newVal) {
-		this.unbind(oldVal, this._selectHandler).on(newVal, this._selectHandler);
+	_uiTriggerEventChange: function (e) {
+		this.unbind(e.prevVal, this._selectHandler).on(e.newVal, this._selectHandler);
 	},
 	
-	_uiTabLabelContentChange: function (e, newVal) {
+	_uiTabLabelContentChange: function (e) {
 		var label = this.get(CONTENT_BOX);
 		label.children().remove();
-		if (newVal instanceof $.NodeList) {
-			label.append(newVal);
+		if (e.newVal instanceof $.NodeList) {
+			label.append(e.newVal);
 		} else {
-			label.html(newVal);
+			label.html(e.newVal);
 		}
 	},
 	
-	_uiTabPanelContentChange: function (e, newVal) {
+	_uiTabPanelContentChange: function (e) {
 		var panel = this.get('panelNode');
 		panel.children().remove();
-		if (newVal instanceof $.NodeList) {
-			panel.append(newVal);
+		if (e.newVal instanceof $.NodeList) {
+			panel.append(e.newVal);
 		} else {
-			panel.html(newVal);
+			panel.html(e.newVal);
 		}
 	},
 	
-	_uiTabSelectedChange: function (e, newVal) {
-		var selectedClass = this.getClassName(PANEL, SELECTED);
-		var panel = this.get('panelNode');
-		if (newVal) {
-			panel.addClass(selectedClass);
-		} else {
-			panel.removeClass(selectedClass);
-		}
+	_uiTabSelectedChange: function (e) {
+		this.get('panelNode').toggleClass(this.getClassName(PANEL, SELECTED), e.newVal);
 	},
 	
 	initializer: function () {
@@ -160,9 +154,9 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 		this.get('panelNode').remove();
 	},
 	
-	_selectHandler: function (e, domEvent) {
-		domEvent.preventDefault();
-		domEvent.stopPropagation();
+	_selectHandler: function (e) {
+		e.domEvent.preventDefault();
+		e.domEvent.stopPropagation();
 		this.select();
 	}
 });

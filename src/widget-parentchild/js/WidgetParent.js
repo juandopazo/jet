@@ -173,7 +173,7 @@ $.mix(WidgetParent, {
 });
 WidgetParent.prototype = {
 	
-	_onChildSelect: function (e, newVal) {
+	_onChildSelect: function (e) {
 		var selection = null;
 		var multiple = this.get(MULTIPLE);
 		if (multiple) {
@@ -184,7 +184,7 @@ WidgetParent.prototype = {
 				}
 			});
 		} else {
-			if (newVal) {
+			if (e.newVal) {
 				selection = e.target;
 				this.each(function (child) {
 					if (child != e.target && child.get(SELECTED)) {
@@ -207,10 +207,10 @@ WidgetParent.prototype = {
 		});
 	},
 	
-	_domEventChildrenProxy: function (e, domEvent) {
-		var targetWidget = Widget.getByNode(domEvent.target);
+	_domEventChildrenProxy: function (e) {
+		var targetWidget = Widget.getByNode(e.domEvent.target);
 		if (targetWidget && A.indexOf(targetWidget, this.get(CHILDREN)) > -1) {
-			targetWidget.fire(e.type, domEvent);
+			targetWidget.fire(e.type, { domEvent: e.domEvent });
 		}
 	},
 	
@@ -222,7 +222,7 @@ WidgetParent.prototype = {
 	 * @chainable
 	 */
 	add: function (child, index) {
-		if (this.fire('addChild', child, index)) {
+		if (this.fire('addChild', { child: child, index: index })) {
 			var ChildType = this.get('childType');
 			var children = this.get(CHILDREN);
 			var childrenLength = children.length;
@@ -243,7 +243,7 @@ WidgetParent.prototype = {
 			});
 			
 			children[Lang.isNumber(index) ? index : children.length] = child;
-			this.fire('afterAddChild', child, index);
+			this.fire('afterAddChild', { child: child, index: index });
 		}
 		return this;
 	},
@@ -265,14 +265,14 @@ WidgetParent.prototype = {
 	 * @chainable
 	 */
 	remove: function (child) {
-		if (child && this.fire('removeChild', child)) {
+		if (child && this.fire('removeChild', { child: child })) {
 			var children = this.get(CHILDREN);
 			if (Lang.isNumber(child)) {
 				child = children[child];
 			}
 			this._unHookChild(child);
 			child.destroy();
-			this.fire('afterRemoveChild', child);
+			this.fire('afterRemoveChild', { child: child });
 		}
 		return this;
 	},

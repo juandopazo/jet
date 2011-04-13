@@ -71,8 +71,9 @@ var Mouse = Base.create('mouse', Utility, [], {
 		return Mouse.shim;
 	},
 	
-	_onTrackingChange: function (e, value) {
+	_onTrackingChange: function (e) {
 		var self = this;
+		var value = e.newVal;
 		if (value) {
 			if (!this.get('capturing')) {
 				if (this.get('shim')) {
@@ -82,7 +83,10 @@ var Mouse = Base.create('mouse', Utility, [], {
 					var clientX = self.get('clientX');
 					var clientY = self.get('clientY');
 					if (self.get('prevX') != clientX || self.get('prevY') != clientY) {
-						self.fire(MOUSEMOVE, clientX, clientY);
+						self.fire(MOUSEMOVE, {
+							clientX: clientX,
+							clientY: clientY
+						});
 						self.set({
 							prevX: clientX,
 							prevY: clientY
@@ -116,7 +120,7 @@ var Mouse = Base.create('mouse', Utility, [], {
 		 * Fires when the mouse button is released
 		 * @event mouseup
 		 */
-		this.set(TRACKING, false).fire('mouseup', this.get('clientX'), this.get('clientY'));
+		this.set(TRACKING, false).fire('mouseup', { clientX: this.get('clientX'), clientY: this.get('clientY') });
 	},
 	
 	initializer: function () {
@@ -178,7 +182,7 @@ var Mouse = Base.create('mouse', Utility, [], {
 		var scrollLeft = $.DOM.scrollLeft();
 		var scrollTop = $.DOM.scrollTop();
 		if (scrollLeft != lastScrollLeft || scrollTop != lastScrollTop) {
-			$_event.fire('scroll', scrollLeft, scrollTop);
+			$_event.fire('scroll', { scrollLeft: scrollLeft, scrollTop: scrollTop });
 		} else {
 			clearInterval(interval);
 			interval = null;

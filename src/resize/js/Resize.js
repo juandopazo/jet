@@ -214,7 +214,13 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 			tracker.get('shields').css('cursor', handle.currentStyle().cursor);
 			tracker.set('tracking', true);
 			this._start(e.clientX, e.clientY, offset.left, offset.top, type);
-			this.fire('resize:start', this.get('currentWidth'), this.get('currentHeight'), offset.left, offset.top, type);
+			this.fire('resize:start', {
+				width: this.get('currentWidth'),
+				height: this.get('currentHeight'),
+				left: offset.left,
+				top: offset.top,
+				direction: type
+			});
 		}
 	},
 	
@@ -344,7 +350,9 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 		}
 	},
 	
-	_during: function (e, x, y) {
+	_during: function (e) {
+		var x = e.clientX,
+			y = e.clientY;
 		this.set({
 			lastX: x,
 			lastY: y
@@ -364,7 +372,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 			 * @param {Number} offsetLeft
 			 * @param {Number} offsetTop 
 			 */
-			if (this.fire('beforeResize', currentWidth, currentHeight, offset.left, offset.top)) {
+			if (this.fire('beforeResize', { width: currentWidth, height: currentHeight, left: offset.left, top: offset.top })) {
 				var screenSize = DOM.screenSize();
 				if (resizeVertical) {
 					this.set('currentHeight', currentHeight = this._getNew(HEIGHT, x, y));
@@ -380,7 +388,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 				 * @param {Number} offsetLeft
 				 * @param {Number} offsetTop 
 				 */
-				if (this.fire('resize', currentWidth, currentHeight, offset.left, offset.top)) {
+				if (this.fire('resize', { width: currentWidth, height: currentHeight, left: offset.left, top: offset.top })) {
 					if (resizeVertical && Lang.isNumber(currentHeight)) {
 						proxy.height(currentHeight);
 					}
@@ -389,12 +397,17 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 					}
 				}
 			} else {
-				this._stop(null, x, y);
+				this._stop({
+					clientX: x,
+					clientY: y
+				});
 			}
 		}
 	},
 	
-	_stop: function (e, x, y) {
+	_stop: function (e) {
+		var x = e.clientX,
+			y = e.clientY;
 		if (!this.get(LOCKED)) {
 			var node = this.get('node');
 			var currentWidth = this._getNew(WIDTH, x, y);
@@ -438,7 +451,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 			 * @event endResize
 			 * @description Fires when the resize action ends
 			 */
-			this.fire('resize:end', currentWidth, currentHeight, offset.left, offset.top);
+			this.fire('resize:end', { width: currentWidth, height: currentHeight, left: offset.left, top: offset.top });
 		}
 	},
 	

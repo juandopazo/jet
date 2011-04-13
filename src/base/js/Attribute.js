@@ -52,15 +52,20 @@ extend(Attribute, EventTarget, {
 		attrConfig[attrName] = attrConfig[attrName] || {};
 		var config = attrConfig[attrName];
 		var oldValue = state[attrName];
+		var args;
 		if (!config.readOnly) {
 			if (!config.validator || config.validator.call(this, attrValue)) {
 				attrValue = config.setter ? config.setter.call(this, attrValue) : attrValue;
 				if (!Lang.isValue(state[attrName]) && config.value) {
 					state[attrName] = oldValue = config.value;
 				}
-				if (attrValue !== oldValue && this.fire(attrName + "Change", attrValue, oldValue)) {
+				args = {
+					newVal: attrValue,
+					prevVal: oldValue
+				};
+				if (attrValue !== oldValue && this.fire(attrName + "Change", args)) {
 					state[attrName] = attrValue;
-					this.fire('after' + Lang.capitalize(attrName) + 'Change', attrValue, oldValue);
+					this.fire('after' + Lang.capitalize(attrName) + 'Change', args);
 				}
 			}
 			if (config.writeOnce && !config.readOnly) {

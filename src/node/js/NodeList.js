@@ -39,7 +39,7 @@ function NodeList(nodes, root) {
 		nodes = [nodes];
 	} else if (Lang.isArray(nodes)) {
 		while (i < nodes.length) {
-			if (!(nodes[i].nodeType || nodes[i].body || nodes[i].navigator)) {
+			if (!nodes[i] || !(nodes[i].nodeType || nodes[i].body || nodes[i].navigator)) {
 				nodes.splice(i, 1);
 			} else {
 				i++;
@@ -87,11 +87,12 @@ $.extend(NodeList, $.ArrayList, {
 	 * @method toggle
 	 * @chainable
 	 */
-	toggle: function () {
+	toggle: function (showHide) {
 		return this.each(function (node) {
 			var ns = node.style;
 			var oDisplay = node.LIB_oDisplay;
-			ns.display = ns.display != NONE ? NONE :
+			ns.display = Lang.isBoolean(showHide) ? (showHide ? oDisplay : NONE) :
+						ns.display != NONE ? NONE :
 						oDisplay ? oDisplay :
 						"";
 		});

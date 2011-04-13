@@ -102,25 +102,25 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 	LABEL_TEMPLATE: '<span/>',
 	CONTROL_TEMPLATE: '<span/>',
 	
-	_uiTNLabelChange: function (e, newVal) {
+	_uiTNLabelChange: function (e) {
 		var label = this.get(LABEL_NODE);
-		if (Lang.isString(newVal)) {
-			label.html(newVal);
+		if (Lang.isString(e.newVal)) {
+			label.html(e.newVal);
 		} else {
-			label.append(newVal);
+			label.append(e.newVal);
 		}
 	},
 	
-	_uiTNTitleChange: function (e, newVal) {
-		this.get(CONTROL_NODE).attr(TITLE, newVal);
+	_uiTNTitleChange: function (e) {
+		this.get(CONTROL_NODE).attr(TITLE, e.newVal);
 	},
 	
-	_uiTNSelectedChange: function (e, newVal, oldVal) {
-		this._expandedChange.call(this, newVal, oldVal);
+	_uiTNSelectedChange: function (e) {
+		this._expandedChange.call(this, e.newVal, e.oldVal);
 	},
 	
-	_uiTNClick: function (e, domEvent) {
-		if (domEvent.target == this.get(LABEL_NODE)) {
+	_uiTNClick: function (e) {
+		if (e.domEvent.target == this.get(LABEL_NODE)) {
 			this.set(SELECTED, !this.get(SELECTED));
 		}
 	},

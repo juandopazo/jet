@@ -23,7 +23,10 @@ var TRACKING = "tracking",
  * @class CustomEvent
  * @constructor
  */
-function CustomEvent(type, target, onPrevented) {
+function CustomEvent(type, target, onPrevented, args) {
+	
+	var self = this;
+	
 	/**
 	 * @property type
 	 * @description The type of the event
@@ -43,6 +46,12 @@ function CustomEvent(type, target, onPrevented) {
 			onPrevented();
 		}
 	};
+	
+	Hash.each(args || {}, function (name, val) {
+		if (!Lang.isValue(self[name])) {
+			self[name] = val;
+		}
+	});
 }
 
 /**
@@ -147,7 +156,7 @@ EventTarget.prototype = {
 	 * @param {String} eventType
 	 * Extra parameters will be passed to all event listeners
 	 */
-	fire: function (eventType) {
+	fire: function (eventType, args) {
 		var collection = this._events;
 		var handlers = collection[eventType] || [];
 		var returnValue = true;
@@ -155,19 +164,18 @@ EventTarget.prototype = {
 			handlers = handlers.concat(collection["*"]);
 		}
 		var i, collecLength = handlers.length;
-		var args = SLICE.call(arguments, 1);
 		var callback;
-		args.unshift(new CustomEvent(eventType, this, function () {
+		var e = new CustomEvent(eventType, this, function () {
 			returnValue = false;
-		}));
+		}, args);
 		for (i = 0; i < collecLength; i++) {
 			callback = handlers[i].fn;
 			if (Lang.isFunction(callback)) {
-				callback.apply(handlers[i].o, args);
+				callback.call(handlers[i].o, e);
 			// if the event handler is an object with a handleEvent method,
 			// that method is used but the context is the object itself
 			} else if (Lang.isObject(callback) && callback.handleEvent) {
-				callback.handleEvent.apply(handlers[i].o || callback, args);
+				callback.handleEvent.call(handlers[i].o || callback, e);
 			}
 			if (handlers[i].once) {
 				$_Array.remove(handlers, handlers[i]);

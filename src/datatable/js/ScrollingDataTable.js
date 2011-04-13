@@ -19,26 +19,6 @@ $.ScrollingDataTable = Base.create('dt', DataTable, [], {
 		autoScrollStatus: {
 			value: false
 		}
-	},
-	
-	EVENTS: {
-		afterRender: function () {
-			var boundingBox = this.get('boundingBox');
-			var table = $("<table/>").addClass(this.getClassName('content'));
-			var tbody = this.get(TBODY);
-			var thead = this.get(THEAD);
-			var height = this.get('height');
-			var container = this.get('tbodyContainer').appendTo(boundingBox).css("overflowY", "auto");
-			if (height) {
-				container.height(height - thead.height());
-			}
-			table._nodes[0].setAttribute('cellspacing', '0');
-			container.addClass(this.getClassName('table', 'body'));
-			table.append(tbody.detach()).appendTo(container);
-			
-			this._syncColumnWidths();
-		}
-		
 	}
 	
 }, {
@@ -65,9 +45,26 @@ $.ScrollingDataTable = Base.create('dt', DataTable, [], {
 			this._firstTr = this.getFirstTr();
 		}
 		this._firstTr.children().each(function (td, i) {
-			console.log(ths._nodes, i, ths.item(i)._nodes[0], ths.item(i).width());
 			$(td).width(ths.item(i).width());
 		});
+	},
+	
+	_sdtAfterRender: function () {
+		var height = this.get('height');
+		var container = this.get('tbodyContainer');
+		if (height) {
+			container.height(height - this.get(THEAD).height());
+		}
+		this._contentTable.append(this.get(TBODY).detach()).appendTo(container);
+		this._syncColumnWidths();
+	},
+	
+	renderUI: function (boundingBox) {
+		var table = this._contentTable = $("<table/>").addClass(this.getClassName('content'));
+		table._nodes[0].setAttribute('cellspacing', '0');
+		this.get('tbodyContainer').addClass(this.getClassName('table', 'body')).appendTo(boundingBox).css("overflowY", "auto");
+		
+		this.after('render', this._sdtAfterRender);
 	},
 	
 	bindUI: function () {

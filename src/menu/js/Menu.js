@@ -26,19 +26,21 @@ $.Menu = Base.create('menu', Widget, [$.WidgetParent], {
 	},
 	
 	EVENTS: {
-		addChild: function (e, child) {
+		addChild: function (e) {
+			var child = e.child;
 			if (!(child instanceof $.MenuItem)) {
 				child.align = child.align || this.get('align');
 			}
 		},
-		afterAddChild: function (e, child) {
+		afterAddChild: function (e) {
+			var child = e.child;
 			if (this.get('interaction') == OS_INTERACTION) {
 				child._handlers.push(child.on('mouseover', $.bind(this._onMenuMouseOver, this)));
 				child._handlers.push(child.on('mouseout', $.bind(this._onMenuMouseOut, this)));
 			}
 		},
-		click: function (e, domEvent) {
-			var target = domEvent.target;
+		click: function (e) {
+			var target = e.domEvent.target;
 			var selection;
 			if (!this.get('multiple') && target == this.get(BOUNDING_BOX)[0] || target == this.get(CONTENT_BOX)[0]) {
 				selection = this.get('selection');

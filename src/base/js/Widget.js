@@ -184,7 +184,7 @@ var Widget = Base.create('widget', Base, [], {
 	CONTENT_TEMPLATE: '<div/>',
 
 	_domEventProxy: function (e) {
-		this.fire(e.type, e);
+		this.fire(e.type, { domEvent: e });
 	},
 	
 	/**
@@ -378,30 +378,18 @@ var Widget = Base.create('widget', Base, [], {
 		}
 	},
 	
-	_toggleVisibility: function (e, newVal) {
-		var visibilityClass = this.getClassName('hidden');
-		var boundingBox = this.get(BOUNDING_BOX);
-		if (newVal) {
-			boundingBox.removeClass(visibilityClass);
-		} else {
-			boundingBox.addClass(visibilityClass);
-		}
+	_toggleVisibility: function (e) {
+		this.get(BOUNDING_BOX).toggleClass(this.getClassName('hidden'), !e.newVal);
 	},
 	
-	_toggleDisabled: function (e, newVal) {
-		var disabledClass = this.getClassName('disabled');
-		var boundingBox = this.get(BOUNDING_BOX);
-		if (newVal) {
-			boundingBox.addClass(disabledClass);
-		} else {
-			boundingBox.removeClass(disabledClass);
-		}
+	_toggleDisabled: function (e) {
+		this.get(BOUNDING_BOX).toggleClass(this.getClassName('disabled'), e.newVal);
 	},
 	
-	_widgetIdChange: function (e, newVal, prevVal) {
-		this.get('boundingBox').attr('id', newVal);
-		jet.Widget._instances[newVal] = this;
-		delete jet.Widget._instances[prevVal];
+	_widgetIdChange: function (e) {
+		this.get('boundingBox').attr('id', e.newVal);
+		jet.Widget._instances[e.newVal] = this;
+		delete jet.Widget._instances[e.prevVal];
 	},
 	
 	initializer: function () {

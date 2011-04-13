@@ -68,7 +68,7 @@ var RecordSet = function (data) {
 	 */
 	this.replace = function (data) {
 		data = toData(data);
-		self.fire("replace", data);
+		self.fire('replace', { data: data });
 		return sortedBy ? self.sortBy(sortedBy, order) : self;
 	};
 	
@@ -80,7 +80,7 @@ var RecordSet = function (data) {
 	 */
 	this.push = function (data) {
 		records = records.concat(toData(data));
-		self.fire("push", records, data);
+		self.fire('push', { records: records, data: data });
 		return sortedBy ? self.sortBy(sortedBy, order) : self;
 	};
 };

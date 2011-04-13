@@ -73,17 +73,17 @@ $.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 		this.get(BOUNDING_BOX).removeClass(this.getClassName(HOVER));
 	},
 	
-	_uiMenuLabelContentChange: function (e, newVal) {
-		this.get(LABEL_NODE).setContent(newVal);
+	_uiMenuLabelContentChange: function (e) {
+		this.get(LABEL_NODE).setContent(e.newVal);
 	},
 	
-	_uiMenuAfterSelected: function (e, newVal) {
+	_uiMenuAfterSelected: function (e) {
 		var olay = this._olay;
 		if (this.get(CHILDREN).length > 0) {
 			if (!olay.get('rendered')) {
 				olay.render(this.get(BOUNDING_BOX));
 			}
-			olay.set('visible', newVal);
+			olay.set('visible', e.newVal);
 		}
 	},
 	
