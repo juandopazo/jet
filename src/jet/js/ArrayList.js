@@ -67,6 +67,6 @@ ArrayList.prototype = {
 	 * @return ArrayList
 	 */
 	item: function (index) {
-		return new (this.constructor)([this._items[0]]);
+		return new (this.constructor)([this._items[index]]);
 	}
 };

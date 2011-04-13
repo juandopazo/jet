@@ -56,7 +56,7 @@ extend(Attribute, EventTarget, {
 			if (!config.validator || config.validator.call(this, attrValue)) {
 				attrValue = config.setter ? config.setter.call(this, attrValue) : attrValue;
 				if (!Lang.isValue(state[attrName]) && config.value) {
-					state[attrName] = attrValue = oldValue = config.value;
+					state[attrName] = oldValue = config.value;
 				}
 				if (attrValue !== oldValue && this.fire(attrName + "Change", attrValue, oldValue)) {
 					state[attrName] = attrValue;
