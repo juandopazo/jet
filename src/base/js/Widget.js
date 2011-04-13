@@ -296,8 +296,12 @@ var Widget = Base.create('widget', Base, [], {
 				boundingBox.attr('id', this.get('id'));
 			}
 			
-			this._toggleVisibility({}, this.get('visible'));
-			this._toggleDisabled({}, this.get('disabled'));
+			this._toggleVisibility({
+				newVal: this.get('visible')
+			});
+			this._toggleDisabled({
+				newVal: this.get('disabled')
+			});
 			/**
 			 * Render event. Preventing the default behavior will stop the rendering process
 			 * @event render
