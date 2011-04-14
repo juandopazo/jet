@@ -88,7 +88,11 @@ var DataTable = Base.create('dt', Widget, [], {
 	},
 	
 	syncUI: function () {
-		this.onDataReturnAddRows(null, this.get(RECORDSET));
+		this.onDataReturnAddRows({
+			target: this,
+			type: 'update',
+			data: this.get(RECORDSET)
+		});
 	},
 	
 	_onThClick: function (e) {
@@ -405,7 +409,6 @@ var DataTable = Base.create('dt', Widget, [], {
 	 * @param {RecordSet} newRecordSet
 	 */
 	onDataReturnAddRows: function (e) {
-		console.log('onDataReturnAddRows', e);
 		this.get(RECORDSET).push(e.data);
 		this.addRows(e.data);
 	}
