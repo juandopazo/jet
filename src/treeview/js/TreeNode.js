@@ -120,6 +120,7 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 	},
 	
 	_uiTNClick: function (e) {
+		console.log(e.domEvent.target);
 		if (e.domEvent.target == this.get(LABEL_NODE)) {
 			this.set(SELECTED, !this.get(SELECTED));
 		}

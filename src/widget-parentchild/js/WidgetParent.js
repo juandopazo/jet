@@ -83,7 +83,7 @@ $.mix(WidgetParent, {
 		},
 		
 		atLeastOne: {
-			value: true
+			value: false
 		},
 		/**
 		 * @attribute selectedIndex
