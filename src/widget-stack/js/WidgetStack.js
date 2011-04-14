@@ -51,7 +51,7 @@ $.WidgetStack = $.mix(WidgetStack, {
 		
 		/**
 		 * @attribute zIndex
-		 * @description The current zIndex value of the widget
+		 * @description The current relative zIndex value of the widget
 		 * @default 0
 		 */
 		zIndex: {
@@ -68,7 +68,19 @@ $.WidgetStack = $.mix(WidgetStack, {
 		}
 	},
 	
+	/**
+	 * @static
+	 * @property MIN_ZINDEX
+	 * @description The min zIndex to apply to the widget. This value is added to the zIndex attribute
+	 * @default 1
+	 */
+	MIN_ZINDEX: 1,
+		
 	EVENTS: {
+		
+		render: function () {
+			this.get(BOUNDING_BOX).css(ZINDEX, WidgetStack.MIN_ZINDEX + this.get(ZINDEX));
+		},
 		
 		afterRender: function () {
 			if (this.get(SHIM)) {
@@ -78,9 +90,9 @@ $.WidgetStack = $.mix(WidgetStack, {
 			}
 		},
 		
-		afterShimChange: function (e, newVal) {
+		afterShimChange: function (e) {
 			var shim = this._shim;
-			if (newVal) {
+			if (e.newVal) {
 				shim.insertBefore(this.get(BOUNDING_BOX));
 				$.on(RESIZE, this.syncShim, this);
 			} else {
@@ -89,8 +101,9 @@ $.WidgetStack = $.mix(WidgetStack, {
 			}
 		},
 		
-		afterZIndexChange: function (e, newVal) {
-			this.get(BOUNDING_BOX).css(ZINDEX, newVal);
+		afterZIndexChange: function (e) {
+			console.log(e);
+			this.get(BOUNDING_BOX).css(ZINDEX, e.newVal);
 		},
 		
 		focus: function () {
@@ -117,8 +130,8 @@ $.WidgetStack = $.mix(WidgetStack, {
 WidgetStack.prototype = {
 	
 	_refreshZIndex: function () {
-		for (var i = 0, length = layers.length; i < length; i++) {
-			layers[i].set(ZINDEX, i);
+		for (var i = 0, minZIndex = WidgetStack.MIN_ZINDEX, length = layers.length; i < length; i++) {
+			layers[i].set(ZINDEX, minZIndex + i);
 		}
 		return this;
 	},
