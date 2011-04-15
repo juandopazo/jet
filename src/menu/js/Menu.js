@@ -13,7 +13,9 @@ $.Menu = Base.create('menu', Widget, [$.WidgetParent], {
 			value: 'MenuItem'
 		},
 		align: {
-			value: [$.WidgetAlignment.TopLeft, $.WidgetAlignment.BottomLeft]
+			value: {
+				align: [$.WidgetAlignment.TopLeft, $.WidgetAlignment.BottomLeft]
+			}
 		},
 		multiple: {
 			value: false,

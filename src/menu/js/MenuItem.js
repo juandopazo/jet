@@ -44,7 +44,9 @@ $.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 			value: 'MenuItem'
 		},
 		align: {
-			value: [$.WidgetAlignment.TopLeft, $.WidgetAlignment.TopRight]
+			value: {
+				align: [$.WidgetAlignment.TopLeft, $.WidgetAlignment.TopRight]
+			}
 		},
 		atLeastOne: {
 			value: false
@@ -89,11 +91,10 @@ $.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 	
 	renderUI: function (boundingBox) {
 		var contentBox = this.get(CONTENT_BOX).attr('href', '#');
+		var align = this.get('align');
+		align.node = boundingBox;
 		var olay = this._olay =  new $.Overlay({
-			align: {
-				node: boundingBox,
-				points: this.get('align')
-			},
+			align: align,
 			visible: this.get('selected')
 		});
 		this.get(LABEL_NODE).addClass(this.getClassName('label')).appendTo(contentBox);
