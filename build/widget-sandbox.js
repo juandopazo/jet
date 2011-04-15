@@ -163,9 +163,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 		*/
 		container: {
 			value: 'body',
-			setter: function(n) {
-				return $($(n)._nodes[0]);
-			}
+			setter: $
 		},
 		/**
 		* @attribute node

@@ -55,50 +55,12 @@ $.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 			value: 'MenuItem'
 		},
 		align: {
-			value: [$.WidgetAlignment.TopLeft, $.WidgetAlignment.TopRight]
-		}
-	},
-	
-	EVENTS: {
-		render: function () {
-			var boundingBox = this.get(BOUNDING_BOX);
-			var contentBox = this.get(CONTENT_BOX).attr('href', '#');
-			var olay = this._olay =  new $.Overlay({
-				align: {
-					node: boundingBox,
-					points: this.get('align')
-				},
-				visible: this.get('selected')
-			});
-			this.get(LABEL_NODE).addClass(this.getClassName('label')).html(this.get('labelContent')).appendTo(contentBox);
-			if (this.get(CHILDREN).length > 0) {
-				olay.render(boundingBox);
-				boundingBox.addClass(this.getClassName('submenu'));
-			}
-			this.get('childrenContainer').addClass(this.getClassName('container')).appendTo(olay.get('body'));
-			contentBox.on('click', this._toggleSelected, this);
-		},
-		mouseover: function () {
-			var parent = this.get('parent');
-			this.get(BOUNDING_BOX).addClass(this.getClassName(HOVER));
-			if (parent.get('interaction') == OS_INTERACTION && parent.get('selection')) {
-				this.select();
+			value: {
+				align: [$.WidgetAlignment.TopLeft, $.WidgetAlignment.TopRight]
 			}
 		},
-		mouseout: function () {
-			this.get(BOUNDING_BOX).removeClass(this.getClassName(HOVER));
-		},
-		afterLabelContentChange: function (e, newVal) {
-			this.get(LABEL_NODE).setContent(newVal);
-		},
-		afterSelectedChange: function (e, newVal) {
-			var olay = this._olay;
-			if (this.get(CHILDREN).length > 0) {
-				if (!olay.get('rendered')) {
-					olay.render(this.get(BOUNDING_BOX));
-				}
-				olay.set('visible', newVal);
-			}
+		atLeastOne: {
+			value: false
 		}
 	}
 	
@@ -110,6 +72,61 @@ $.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 	initializer: function () {
 		this.set('childrenContainer', this.CONTAINER_TEMPLATE);
 		this.set(LABEL_NODE, this.get(LABEL_NODE));
+	},
+	
+	_uiMenuMouseover: function () {
+		var parent = this.get('parent');
+		this.get(BOUNDING_BOX).addClass(this.getClassName(HOVER));
+		if (parent.get('interaction') == OS_INTERACTION && parent.get('selection')) {
+			this.select();
+		}
+	},
+	
+	_uiMenuMouseout: function () {
+		this.get(BOUNDING_BOX).removeClass(this.getClassName(HOVER));
+	},
+	
+	_uiMenuLabelContentChange: function (e) {
+		this.get(LABEL_NODE).setContent(e.newVal);
+	},
+	
+	_uiMenuAfterSelected: function (e) {
+		var olay = this._olay;
+		if (this.get(CHILDREN).length > 0) {
+			if (!olay.get('rendered')) {
+				olay.render(this.get(BOUNDING_BOX));
+			}
+			olay.set('visible', e.newVal);
+		}
+	},
+	
+	renderUI: function (boundingBox) {
+		var contentBox = this.get(CONTENT_BOX).attr('href', '#');
+		var align = this.get('align');
+		align.node = boundingBox;
+		var olay = this._olay =  new $.Overlay({
+			align: align,
+			visible: this.get('selected')
+		});
+		this.get(LABEL_NODE).addClass(this.getClassName('label')).appendTo(contentBox);
+		if (this.get(CHILDREN).length > 0) {
+			olay.render(boundingBox);
+			boundingBox.addClass(this.getClassName('submenu'));
+		}
+		this.get('childrenContainer').addClass(this.getClassName('container')).appendTo(olay.get('body'));
+	},
+	
+	bindUI: function () {
+		this._handlers.push(this.get(CONTENT_BOX).on('click', this._toggleSelected, this));
+		
+		this.on('mouseover', this._uiMenuMouseover);
+		this.on('mouseout', this._uiMenuMouseout);
+		this.after('labelContentChange', this._uiMenuLabelContentChange);
+		this.after('selectedChange', this._uiMenuAfterSelected);
+	},
+	
+	syncUI: function () {
+		this.get(LABEL_NODE).setContent(this.get('labelContent'));
 	},
 	
 	_toggleSelected: function (e) {
@@ -131,7 +148,9 @@ $.Menu = Base.create('menu', Widget, [$.WidgetParent], {
 			value: 'MenuItem'
 		},
 		align: {
-			value: [$.WidgetAlignment.TopLeft, $.WidgetAlignment.BottomLeft]
+			value: {
+				align: [$.WidgetAlignment.TopLeft, $.WidgetAlignment.BottomLeft]
+			}
 		},
 		multiple: {
 			value: false,
@@ -144,19 +163,21 @@ $.Menu = Base.create('menu', Widget, [$.WidgetParent], {
 	},
 	
 	EVENTS: {
-		addChild: function (e, child) {
+		addChild: function (e) {
+			var child = e.child;
 			if (!(child instanceof $.MenuItem)) {
 				child.align = child.align || this.get('align');
 			}
 		},
-		afterAddChild: function (e, child) {
+		afterAddChild: function (e) {
+			var child = e.child;
 			if (this.get('interaction') == OS_INTERACTION) {
 				child._handlers.push(child.on('mouseover', $.bind(this._onMenuMouseOver, this)));
 				child._handlers.push(child.on('mouseout', $.bind(this._onMenuMouseOut, this)));
 			}
 		},
-		click: function (e, domEvent) {
-			var target = domEvent.target;
+		click: function (e) {
+			var target = e.domEvent.target;
 			var selection;
 			if (!this.get('multiple') && target == this.get(BOUNDING_BOX)[0] || target == this.get(CONTENT_BOX)[0]) {
 				selection = this.get('selection');

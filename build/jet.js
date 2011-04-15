@@ -24,7 +24,8 @@ var GlobalConfig = {
 	base: location.protocol + '//github.com/juandopazo/jet/raw/master/build/',
 	modules: {
 		log: {},
-		node: ['log'],
+		oop: {},
+		node: ['log', 'oop'],
 		xsl: [NODE],
 		swf: {},
 		json: [NODE],
@@ -390,11 +391,24 @@ ArrayHelper = {
 	 * @param {Object} thisObject Object to use as 'this' when executing 'callback'
 	 */
 	map: function (arr, fn, thisp) {
-		var res = [];
-		ArrayHelper.each(arr || [], function (val, i, arr) {
-			res[i] = fn.call(thisp, val, i, arr);
+		var results = [];
+		ArrayHelper.each(arr || [], function (item) {
+			var output = fn.call(thisp, item);
+			if (Lang.isValue(output)) {
+				if (Lang.isArray(output)) {
+					results.push.apply(results, output);
+				} else if (output instanceof ArrayList) {
+					output.each(function (item) {
+						if (ArrayHelper.indexOf(item, results) == -1) {
+							results[results.length] = item;
+						}
+					});
+				} else if (ArrayHelper.indexOf(output, results) == -1){
+					results[results.length] = output;
+				}
+			}
 		});
-		return res;
+		return results;
 	},
 	/**
 	 * Returns whether needle is present in haystack
@@ -406,7 +420,79 @@ ArrayHelper = {
 	inArray: function (needle, haystack) {
 		return this.indexOf(needle, haystack) > -1;
 	}
+};/**
+ * A collection of elements
+ * @class ArrayList
+ * @constructor
+ * @param {Array|Object} items An element or an array of elements 
+ */
+var ArrayList = function (items) {
+	this._items = !Lang.isValue(items) ? [] : Lang.isArray(items) ? items : [items];
+}
+ArrayList.prototype = {
+	/**
+	 * Iterates through the ArrayList
+	 * The callback is passed a reference to the element and an iteration index. 
+	 * The "this" keyword also refers to the node. ie:<br/>
+	 * <code>$("div").each(function (node, i) {<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;if (i % 2 == 1) {<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(node).addClass("even");<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;} else {<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(node).addClass("odd");<br/>
+	 * &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+	 * });</code>
+	 * @method each
+	 * @param {Function} callback
+	 * @chainable
+	 */
+	each: function (fn, thisp) {
+		ArrayHelper.each.call(ArrayHelper, this._items, fn, thisp);
+		return this;
+	},
+	/**
+	 * Creates a new ArrayList with the results of calling a provided function on every element in this array
+	 * @method map
+	 * @param {Function} callback Function that produces an element of the new Array from an element of the current one
+	 * @param {Object} thisp Object to use as 'this' when executing 'callback'
+	 * @return ArrayList
+	 */
+	map: function (fn, thisp) {
+		return new (this.constructor)(ArrayHelper.map(this._items, fn, thisp));
+	},
+	/**
+	 * Returns the length of this ArrayList
+	 * @method size
+	 * @return Number
+	 */
+	size: function () {
+		return this._items.length;
+	},
+	/**
+	 * Returns a new ArrayList with only the elements for which the provided function returns true
+	 * @method filter
+	 * @param {Function} fn
+	 * @return ArrayList
+	 */
+	filter: function (fn, thisp) {
+		var results = [];
+		this.each(function (node) {
+			if (fn.call(thisp || this, node)) {
+				results[results.length] = node;
+			}
+		});
+		return new (this.constructor)(results);
+	},
+	/**
+	 * @method eq
+	 * @description Returns a new ArrayList with the nth element of the current list
+	 * @param {Number} nth
+	 * @return ArrayList
+	 */
+	item: function (index) {
+		return new (this.constructor)([this._items[index]]);
+	}
 };
+
 /**
  * Utilities for working with object literals
  * Throughout jet the Hash type means an object lieteral
@@ -797,6 +883,8 @@ function buildJet(config) {
 		Lang: Lang,
 		
 		"Array": ArrayHelper,
+		
+		ArrayList: ArrayList,
 		
 		Hash: Hash,
 		
@@ -1196,9 +1284,81 @@ $.add({
 });
 			
 });/**
+ * The OOP module provides utilities for working with object oriented programming
+ * @module oop
+ * @requires 
+ * 
+ * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
+ * Code licensed under the BSD License
+ * https://github.com/juandopazo/jet/blob/master/LICENSE.md
+*/
+jet.add('oop', function ($) {
+
+			var OP = Object.prototype;
+
+/**
+ * Utilities for object oriented programming in JavaScript.
+ * JET doesn't provide a classical OOP environment like Prototype with Class methods,
+ * but instead it helps you take advantage of JavaScript's own prototypical OOP strategy
+ * @class OOP
+ * @static
+ */
+/**
+ * Object function by Douglas Crockford
+ * <a href="https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1">link</a>
+ * @private
+ * @param {Object} o
+ */
+var toObj = function (o) {
+	var F = function () {};
+	F.prototype = o;
+	return new F();
+};
+
+/**
+ * Allows for an inheritance strategy based on prototype chaining.
+ * When exteiding a class with extend, you keep all prototypic methods from all superclasses
+ * @method extend
+ * @param {Function} subclass
+ * @param {Function} superclass
+ * @param {Hash} px optional - An object literal with methods to overwrite in the subclass' prototype
+ * @param {Hash} ax optional - An object literal with properties to add to the subclass' constructor
+ */
+$.extend = function (r, s, px, ax) {
+	// From the guys at YUI. This function is GENIUS!
+	
+	if (!s || !r) {
+		// @TODO error symbols
+		$.error("extend failed, verify dependencies");
+	}
+
+	var sp = s.prototype, rp = toObj(sp);
+	r.prototype = rp;
+
+	rp.constructor = r;
+	r.superclass = sp;
+
+	// assign constructor property
+	if (s != Object && sp.constructor == OP.constructor) {
+		sp.constructor = s;
+	}
+
+	// add prototype overrides
+	if (px) {
+		$.mix(rp, px, true);
+	}
+	// add attributes
+	if (ax) {
+		$.mix(r, ax, true);
+	}
+	
+	return r;
+};
+			
+});/**
  * Node collections and DOM abstraction
  * @module node
- * @requires ua
+ * @requires oop
  * 
  * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
  * Code licensed under the BSD License
@@ -1373,6 +1533,29 @@ var removeEvent = function (obj, type, callback) {
 	}
 	removeEvent(obj, type, callback);
 };
+
+/**
+ * A collection of DOM Event handlers for later detaching
+ * @class DOMEventHandler
+ * @constructor
+ * @param {Array} handlers
+ */
+function DOMEventHandler(handlers) {
+	this._handlers = handlers || [];
+}
+DOMEventHandler.prototype = {
+	/**
+	 * Unbinds all event handlers from their hosts
+	 * @method detach
+	 */
+	detach: function () {
+		for (var handlers = this._handlers, i = 0, length = handlers.length; i < length; i++) {
+			removeEvent(handlers[i].obj, handlers[i].type, handlers[i].fn);
+		}
+		this._handlers = [];
+	}
+};
+
 var DOCUMENT_ELEMENT = "documentElement";
 var GET_COMPUTED_STYLE = "getComputedStyle";
 var CURRENT_STYLE = "currentStyle";
@@ -1498,7 +1681,7 @@ function NodeList(nodes, root) {
 		nodes = [nodes];
 	} else if (Lang.isArray(nodes)) {
 		while (i < nodes.length) {
-			if (!(nodes[i].nodeType || nodes[i].body || nodes[i].navigator)) {
+			if (!nodes[i] || !(nodes[i].nodeType || nodes[i].body || nodes[i].navigator)) {
 				nodes.splice(i, 1);
 			} else {
 				i++;
@@ -1514,81 +1697,9 @@ function NodeList(nodes, root) {
 	} else {
 		$.error("Wrong argument for NodeList");
 	}
-	this._nodes = nodes;
+	this._nodes = this._items = nodes;
 }
-NodeList.prototype = {
-	/**
-	 * Iterates through the NodeList
-	 * The callback is passed a reference to the node and an iteration index. 
-	 * The "this" keyword also refers to the node. ie:<br/>
-	 * <code>$("div").each(function (node, i) {<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;if (i % 2 == 1) {<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(node).addClass("even");<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;} else {<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(node).addClass("odd");<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-	 * });</code>
-	 * @method each
-	 * @param {Function} callback
-	 * @chainable
-	 */
-	each: function (fn, thisp) {
-		var i, nodes = this._nodes, length = nodes.length;
-		for (i = 0; i < length; i++) {
-			fn.call(thisp || nodes[i], nodes[i], i, nodes);
-		}
-		return this;
-	},
-	/**
-	 * Returns the length of this NodeList
-	 * @method size
-	 * @return Number
-	 */
-	size: function() {
-		return this._nodes.length;
-	},
-	/**
-	 * Iterates through the nodelist, returning a new nodelist with all the elements
-	 * return by the callback function
-	 * @method map
-	 * @param {Function} fn
-	 * @return NodeList
-	 */
-	map: function (fn) {
-		var results = [];
-		this.each(function (node) {
-			var output = fn(node);
-			if (Lang.isValue(output)) {
-				if (Lang.isArray(output)) {
-					results.push.apply(results, output);
-				} else if (output instanceof NodeList) {
-					output.each(function (node) {
-						if (A.indexOf(node, results) == -1) {
-							results[results.length] = node;
-						}
-					});
-				} else if (A.indexOf(output, results) == -1){
-					results[results.length] = output;
-				}
-			}
-		});
-		return new NodeList(results);
-	},
-	/**
-	 * Returns a new nodelist with only the nodes for which the provided function returns true
-	 * @method filter
-	 * @param {Function} fn
-	 * @return NodeList
-	 */
-	filter: function (fn) {
-		var results = [];
-		this.each(function (node) {
-			if (fn.call(this)) {
-				results[results.length] = node;
-			}
-		});
-		return new NodeList(results);
-	},
+$.extend(NodeList, $.ArrayList, {
 	/**
 	 * Hides all nodes
 	 * @method hide
@@ -1618,11 +1729,12 @@ NodeList.prototype = {
 	 * @method toggle
 	 * @chainable
 	 */
-	toggle: function () {
+	toggle: function (showHide) {
 		return this.each(function (node) {
 			var ns = node.style;
 			var oDisplay = node.LIB_oDisplay;
-			ns.display = ns.display != NONE ? NONE :
+			ns.display = Lang.isBoolean(showHide) ? (showHide ? oDisplay : NONE) :
+						ns.display != NONE ? NONE :
 						oDisplay ? oDisplay :
 						"";
 		});
@@ -2077,19 +2189,14 @@ NodeList.prototype = {
 	 * @param {String} type
 	 * @param {Function} callback
 	 * @param {Object} thisp
+	 * @return {DOMEventHandler} handler
 	 */
 	on: function (type, callback, thisp) {
 		var handlers = [];
 		this.each(function (node) {
 			handlers.push(addEvent(node, type, callback, thisp));
 		});
-		return {
-			detach: function () {
-				for (var i = 0, length = handlers.length; i < length; i++) {
-					removeEvent(handlers[i].obj, handlers[i].type, handlers[i].fn);
-				}
-			}
-		};
+		return new DOMEventHandler(handlers);
 	},
 	/**
 	 * Removes an event listener from all the nodes
@@ -2242,17 +2349,8 @@ NodeList.prototype = {
 	 */
 	value: function (val) {
 		return this.attr("value", val);
-	},
-	/**
-	 * @method eq
-	 * @description Returns a new NodeList with the nth element of the current list
-	 * @param {Number} nth
-	 */
-	eq: function (nth) {
-		return new NodeList(this._nodes[nth]);
 	}
-};
-NodeList.is = Lang.is;
+});
 
 A.each(['Left', 'Top'], function (direction) {
 	NodeList.prototype['offset' + direction] = function (val) {
@@ -2290,72 +2388,14 @@ addEvent($.win, "unload", EventCache.flush);
 jet.add('base', function ($) {
 
 			
-var OP = Object.prototype;
-
 var Hash = $.Hash,
 	Lang = $.Lang,
-	A = $.Array,
-	SLICE = Array.prototype.slice;
+	$_Array = $.Array,
+	SLICE = Array.prototype.slice,
+	extend = $.extend;
 	
 var Base;
 
-/**
- * Utilities for object oriented programming in JavaScript.
- * JET doesn't provide a classical OOP environment like Prototype with Class methods,
- * but instead it helps you take advantage of JavaScript's own prototypical OOP strategy
- * @class OOP
- * @static
- */
-/**
- * Object function by Douglas Crockford
- * <a href="https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1">link</a>
- * @private
- * @param {Object} o
- */
-var toObj = function (o) {
-	var F = function () {};
-	F.prototype = o;
-	return new F();
-};
-
-/**
- * Allows for an inheritance strategy based on prototype chaining.
- * When exteiding a class with extend, you keep all prototypic methods from all superclasses
- * @method extend
- * @param {Function} subclass
- * @param {Function} superclass
- * @param {Hash} optional - An object literal with methods to overwrite in the subclass' prototype
- */
-var extend = function (r, s, px, ax) {
-	// From the guys at YUI. This function is GENIUS!
-	
-	if (!s || !r) {
-		// @TODO error symbols
-		$.error("extend failed, verify dependencies");
-	}
-
-	var sp = s.prototype, rp = toObj(sp);
-	r.prototype = rp;
-
-	rp.constructor = r;
-	r.superclass = sp;
-
-	// assign constructor property
-	if (s != Object && sp.constructor == OP.constructor) {
-		sp.constructor = s;
-	}
-
-	// add prototype overrides
-	if (px) {
-		$.mix(rp, px, true);
-	}
-	// add attributes
-	if (ax) {
-		$.mix(r, ax, true);
-	}
-	
-	return r;
-};
 var TRACKING = "tracking",
 	MOUSEMOVE = "mousemove",
 	MOUSEUP = "mouseup",
@@ -2367,14 +2407,40 @@ var TRACKING = "tracking",
 	DASH = '-',
 	ONCE = '~ONCE~';
 
-function CustomEvent(type, target, onPrevented) {
+/**
+ * A custom event object, only to be used by EventTarget
+ * @class CustomEvent
+ * @constructor
+ */
+function CustomEvent(type, target, onPrevented, args) {
+	
+	var self = this;
+	
+	/**
+	 * @property type
+	 * @description The type of the event
+	 */
 	this.type = type;
+	/**
+	 * @property target
+	 * @description The target of the event
+	 */
 	this.target = target;
+	/**
+	 * @method preventDefault
+	 * @description Prevents the default behavior of the event
+	 */
 	this.preventDefault = function () {
 		if (onPrevented) {
 			onPrevented();
 		}
 	};
+	
+	Hash.each(args || {}, function (name, val) {
+		if (!Lang.isValue(self[name])) {
+			self[name] = val;
+		}
+	});
 }
 
 /**
@@ -2424,7 +2490,6 @@ EventTarget.prototype = {
 		if (eventType.indexOf(ONCE) > -1) {
 			once = true;
 			eventType = eventType.substr(ONCE.length);
-			console.log(eventType);
 		}
 		if (Lang.isObject(callback)) {
 			collection[eventType].push({
@@ -2468,7 +2533,7 @@ EventTarget.prototype = {
 	 */
 	unbind: function (eventType, callback) {
 		if (eventType) {
-			$.Array.remove(callback, this._events[eventType] || []);
+			$_Array.remove(callback, this._events[eventType] || []);
 		} else {
 			this._events = {};
 		}
@@ -2480,7 +2545,7 @@ EventTarget.prototype = {
 	 * @param {String} eventType
 	 * Extra parameters will be passed to all event listeners
 	 */
-	fire: function (eventType) {
+	fire: function (eventType, args) {
 		var collection = this._events;
 		var handlers = collection[eventType] || [];
 		var returnValue = true;
@@ -2488,22 +2553,21 @@ EventTarget.prototype = {
 			handlers = handlers.concat(collection["*"]);
 		}
 		var i, collecLength = handlers.length;
-		var args = SLICE.call(arguments, 1);
 		var callback;
-		args.unshift(new CustomEvent(eventType, this, function () {
+		var e = new CustomEvent(eventType, this, function () {
 			returnValue = false;
-		}));
+		}, args);
 		for (i = 0; i < collecLength; i++) {
 			callback = handlers[i].fn;
 			if (Lang.isFunction(callback)) {
-				callback.apply(handlers[i].o, args);
+				callback.call(handlers[i].o, e);
 			// if the event handler is an object with a handleEvent method,
 			// that method is used but the context is the object itself
 			} else if (Lang.isObject(callback) && callback.handleEvent) {
-				callback.handleEvent.apply(handlers[i].o || callback, args);
+				callback.handleEvent.call(handlers[i].o || callback, e);
 			}
 			if (handlers[i].once) {
-				A.remove(handlers, handlers[i]);
+				$_Array.remove(handlers, handlers[i]);
 				i--;
 			}
 		}
@@ -2536,15 +2600,15 @@ extend(Attribute, EventTarget, {
 		this._stateConf[attrName] = config;
 		var state = this._state;
 		var isValue = Lang.isValue(state[attrName]);
-		if (config.required && config.readOnly) {
+		/*if (config.required && config.readOnly) {
 			$.error("You can't have both 'required' and 'readOnly'");
-		}
+		}*/
 		if (config.readOnly && isValue) {
 			delete state[attrName];
 		}
-		if (config.required && !isValue) {
+		/*if (config.required && !isValue) {
 			$.error("Missing required attribute: " + attrName);
-		}
+		}*/
 		if (Lang.isString(config.setter)) {
 			config.setter = this[config.setter];
 		}
@@ -2563,25 +2627,28 @@ extend(Attribute, EventTarget, {
 		attrConfig[attrName] = attrConfig[attrName] || {};
 		var config = attrConfig[attrName];
 		var oldValue = state[attrName];
+		var args;
 		if (!config.readOnly) {
 			if (!config.validator || config.validator.call(this, attrValue)) {
 				attrValue = config.setter ? config.setter.call(this, attrValue) : attrValue;
 				if (!Lang.isValue(state[attrName]) && config.value) {
-					state[attrName] = config.value;
+					state[attrName] = oldValue = config.value;
 				}
-				if (attrValue !== oldValue) {
-					state[attrName] = state[attrName] == attrValue ? attrValue :
-											this.fire(attrName + "Change", attrValue, state[attrName]) ? attrValue :
-											state[attrName];
-					this.fire('after' + Lang.capitalize(attrName) + 'Change', attrValue, oldValue);
+				args = {
+					newVal: attrValue,
+					prevVal: oldValue
+				};
+				if (attrValue !== oldValue && this.fire(attrName + "Change", args)) {
+					state[attrName] = attrValue;
+					this.fire('after' + Lang.capitalize(attrName) + 'Change', args);
 				}
 			}
 			if (config.writeOnce && !config.readOnly) {
 				attrConfig[attrName].readOnly = true;
 			}
-		} else {
+		} /*else {
 			$.error(attrName + " is a " + (config.writeOnce ? "write-once" : "read-only") + " attribute");
-		}
+		}*/
 		return this;
 	},
 	/**
@@ -2723,7 +2790,7 @@ extend(Base, Attribute, {}, {
 			var args = arguments;
 			var self = this;
 			BuiltClass.superclass.constructor.apply(this, args);
-			A.each(BuiltClass.exts, function (extension) {
+			$_Array.each(BuiltClass.exts, function (extension) {
 				extension.apply(self, args);
 				Hash.each(extension.EVENTS || {}, function (type, fn) {
 					self.on(type, fn);
@@ -2735,7 +2802,7 @@ extend(Base, Attribute, {}, {
 			NAME: name,
 			exts: extensions
 		}, true);
-		A.each(extensions, function (extension) {
+		$_Array.each(extensions, function (extension) {
 			$.mix(BuiltClass[PROTO], extension[PROTO]);
 			Hash.each(extension, function (prop, val) {
 				if (!BuiltClass[prop]) {
@@ -2776,7 +2843,7 @@ extend(Utility, Base, {
 		 * @event destroy
 		 */
 		if (this.fire(DESTROY)) {
-			A.each(this._handlers, function (handler) {
+			$_Array.each(this._handlers, function (handler) {
 				handler.detach();
 			});
 		}
@@ -2987,7 +3054,7 @@ var Widget = Base.create('widget', Base, [], {
 	CONTENT_TEMPLATE: '<div/>',
 
 	_domEventProxy: function (e) {
-		this.fire(e.type, e);
+		this.fire(e.type, { domEvent: e });
 	},
 	
 	/**
@@ -3075,18 +3142,18 @@ var Widget = Base.create('widget', Base, [], {
 				classes.shift();
 			}
 			
-			A.each([WIDTH, HEIGHT], function (size) {
+			$_Array.each([WIDTH, HEIGHT], function (size) {
 				var value = self.get(size);
 				if (Lang.isNumber(value)) {
 					boundingBox[size](value);
 				}
-				self.on(size + 'Change', function (e, newVal) {
-					newVal = Lang.isNumber(newVal) ? newVal : '';
-					self.get(BOUNDING_BOX)[size](newVal);
+				self.after(size + 'Change', function (e) {
+					newVal = Lang.isNumber(e.newVal) ? e.newVal : '';
+					self.get(BOUNDING_BOX)[size](e.newVal);
 				});
 			});
 			
-			A.each(classes, function (construct) {
+			$_Array.each(classes, function (construct) {
 				className = [classPrefix, construct.NAME].join(DASH);
 				boundingBox.addClass(className);
 				contentBox.addClass([className, CONTENT].join(DASH));
@@ -3099,14 +3166,26 @@ var Widget = Base.create('widget', Base, [], {
 				boundingBox.attr('id', this.get('id'));
 			}
 			
-			this._toggleVisibility({}, this.get('visible'));
-			this._toggleDisabled({}, this.get('disabled'));
+			this._toggleVisibility({
+				newVal: this.get('visible')
+			});
+			this._toggleDisabled({
+				newVal: this.get('disabled')
+			});
 			/**
 			 * Render event. Preventing the default behavior will stop the rendering process
 			 * @event render
 			 * @see Widget.render()
 			 */
 			if (this.fire('render')) {
+				
+				$_Array.each(['renderUI', 'bindUI', 'syncUI'], function (method) {
+					$_Array.each(classes, function (constructor) {
+						if (constructor.prototype.hasOwnProperty(method)) {
+							constructor.prototype[method].call(self, boundingBox);
+						}
+					});
+				});
 				
 				if (!boundingBox.inDoc()) {
 					boundingBox.appendTo(srcNode);
@@ -3139,7 +3218,14 @@ var Widget = Base.create('widget', Base, [], {
 		 * @event destroy
 		 */
 		if (this.fire(DESTROY)) {
-			A.each(this._handlers, function (handler) {
+			
+			$_Array.each(this._classes, function (constructor) {
+				if (constructor.prototype.hasOwnProperty('destructor')) {
+					constructor.prototype.destructor.call(this);
+				}
+			}, this);
+			
+			$_Array.each(this._handlers, function (handler) {
 				if (handler.detach) {
 					handler.detach();
 				}
@@ -3155,7 +3241,7 @@ var Widget = Base.create('widget', Base, [], {
 		var self = this;
 		var boundingBox = this.get(BOUNDING_BOX);
 		if (boundingBox._nodes[0] && boundingBox.inDoc()) {
-			A.each(this._classes, function (someClass) {
+			$_Array.each(this._classes, function (someClass) {
 				Hash.each(someClass.HTML_PARSER || {}, function (attr, parser) {
 					var val = parser.call(self, boundingBox);
 					if (Lang.isValue(val) && (!(val instanceof $.NodeList) || val._nodes[0])) {
@@ -3166,30 +3252,18 @@ var Widget = Base.create('widget', Base, [], {
 		}
 	},
 	
-	_toggleVisibility: function (e, newVal) {
-		var visibilityClass = this.getClassName('hidden');
-		var boundingBox = this.get(BOUNDING_BOX);
-		if (newVal) {
-			boundingBox.removeClass(visibilityClass);
-		} else {
-			boundingBox.addClass(visibilityClass);
-		}
+	_toggleVisibility: function (e) {
+		this.get(BOUNDING_BOX).toggleClass(this.getClassName('hidden'), !e.newVal);
 	},
 	
-	_toggleDisabled: function (e, newVal) {
-		var disabledClass = this.getClassName('disabled');
-		var boundingBox = this.get(BOUNDING_BOX);
-		if (newVal) {
-			boundingBox.addClass(disabledClass);
-		} else {
-			boundingBox.removeClass(disabledClass);
-		}
+	_toggleDisabled: function (e) {
+		this.get(BOUNDING_BOX).toggleClass(this.getClassName('disabled'), e.newVal);
 	},
 	
-	_widgetIdChange: function (e, newVal, prevVal) {
-		this.get('boundingBox').attr('id', newVal);
-		jet.Widget._instances[newVal] = this;
-		delete jet.Widget._instances[prevVal];
+	_widgetIdChange: function (e) {
+		this.get('boundingBox').attr('id', e.newVal);
+		jet.Widget._instances[e.newVal] = this;
+		delete jet.Widget._instances[e.prevVal];
 	},
 	
 	initializer: function () {
@@ -3296,8 +3370,9 @@ var Mouse = Base.create('mouse', Utility, [], {
 		return Mouse.shim;
 	},
 	
-	_onTrackingChange: function (e, value) {
+	_onTrackingChange: function (e) {
 		var self = this;
+		var value = e.newVal;
 		if (value) {
 			if (!this.get('capturing')) {
 				if (this.get('shim')) {
@@ -3307,7 +3382,10 @@ var Mouse = Base.create('mouse', Utility, [], {
 					var clientX = self.get('clientX');
 					var clientY = self.get('clientY');
 					if (self.get('prevX') != clientX || self.get('prevY') != clientY) {
-						self.fire(MOUSEMOVE, clientX, clientY);
+						self.fire(MOUSEMOVE, {
+							clientX: clientX,
+							clientY: clientY
+						});
 						self.set({
 							prevX: clientX,
 							prevY: clientY
@@ -3341,7 +3419,7 @@ var Mouse = Base.create('mouse', Utility, [], {
 		 * Fires when the mouse button is released
 		 * @event mouseup
 		 */
-		this.set(TRACKING, false).fire('mouseup', this.get('clientX'), this.get('clientY'));
+		this.set(TRACKING, false).fire('mouseup', { clientX: this.get('clientX'), clientY: this.get('clientY') });
 	},
 	
 	initializer: function () {
@@ -3403,7 +3481,7 @@ var Mouse = Base.create('mouse', Utility, [], {
 		var scrollLeft = $.DOM.scrollLeft();
 		var scrollTop = $.DOM.scrollTop();
 		if (scrollLeft != lastScrollLeft || scrollTop != lastScrollTop) {
-			$_event.fire('scroll', scrollLeft, scrollTop);
+			$_event.fire('scroll', { scrollLeft: scrollLeft, scrollTop: scrollTop });
 		} else {
 			clearInterval(interval);
 			interval = null;
@@ -3418,9 +3496,11 @@ var Mouse = Base.create('mouse', Utility, [], {
 		}
 	});
 	
-	$.on = $.bind($_event.on, $_event);
+	$_Array.each(['on', 'once', 'fire'], function (eventMethod) {
+		$[eventMethod] = $.bind($_event[eventMethod], $_event);
+	});
 	
-	A.each(['load', 'unload'], function (name) {
+	$_Array.each(['load', 'unload'], function (name) {
 		$(win).on(name, function () {
 			$_event.fire(name);
 		});

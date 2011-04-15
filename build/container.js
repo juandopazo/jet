@@ -127,42 +127,8 @@ $.Module = Base.create('module', Widget, [], {
 		footerContent: {
 			validator: Lang.isValue
 		}
-	},
-	
-	EVENTS: {
-	
-		render: function () {
-			var self = this;
-			var contentBox = this.get(CONTENT_BOX);
-			// append the header, body and footer to the bounding box if present
-			A.each([HEADER, BODY, FOOTER], function (name) {
-				var value = self.get(name + 'Content');
-				var node = self.get(name).addClass(name);
-				if (Lang.isValue(value)) {
-					if (value.nodeType) {
-						value = $(value);
-					}
-					if (value instanceof $.NodeList) {
-						node.append(value);
-					} else {
-						node.html(value);
-					}
-					node.appendTo(contentBox);
-				}
-			});
-		},
-		
-		headerContentChange: function (e, newVal) {
-			this.get(HEADER).setContent(newVal);
-		},
-		bodyContentChange: function (e, newVal) {
-			this.get(BODY).setContent(newVal);
-		},
-		footerContentChange: function (e, newVal) {
-			this.get(FOOTER).setContent(newVal);
-		}
-		
 	}
+	
 }, {
 	CONTENT_TEMPLATE: null,
 	
@@ -170,6 +136,43 @@ $.Module = Base.create('module', Widget, [], {
 		this.set(HEADER, this.get(HEADER));
 		this.set(BODY, this.get(BODY));
 		this.set(FOOTER, this.get(FOOTER));
+	},
+	
+	_uiHeaderChange: function (e) {
+		this.get(HEADER).setContent(e.newVal);
+	},
+	_uiBodyChange: function (e) {
+		this.get(BODY).setContent(e.newVal);
+	},
+	_uiFooterChange: function (e) {
+		this.get(FOOTER).setContent(e.newVal);
+	},
+	
+	renderUI: function () {
+		var self = this;
+		var contentBox = this.get(CONTENT_BOX);
+		// append the header, body and footer to the bounding box if present
+		A.each([HEADER, BODY, FOOTER], function (name) {
+			var value = self.get(name + 'Content');
+			var node = self.get(name).addClass(name);
+			if (Lang.isValue(value)) {
+				if (value.nodeType) {
+					value = $(value);
+				}
+				if (value instanceof $.NodeList) {
+					node.append(value);
+				} else {
+					node.html(value);
+				}
+				node.appendTo(contentBox);
+			}
+		});
+	},
+	
+	bindUI: function () {
+		A.each(['Header', 'Body', 'Footer'], function (section) {
+			this.after(section.toLowerCase() + 'ContentChange', this['_ui' + section + 'Change']);
+		}, this);
 	}
 });
 if (!Global.overlays) {
@@ -230,69 +233,6 @@ $.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment, $.WidgetStack],
 		modalBox: {
 			setter: $
 		}
-	},
-	
-	EVENTS: {
-		
-		render: function (e) {
-			var win = $(this.get('win'));
-			var self = this;
-			var boundingBox = this.get(BOUNDING_BOX);
-			var screenSize = DOM.screenSize();
-			var startZIndex = this.get('startZIndex');
-			var modal = this.get(MODAL_BOX).css({
-				position: 'absolute',
-				top: "0px",
-				left: "0px",
-				background: "#000",
-				visibility: !self.get("modal") ? "hidden" : "",
-				zIndex: Global.ovZindex + startZIndex - 1,
-				opacity: 0.4
-			}).width(screenSize.width).height(screenSize.height).appendTo($.config.doc.body);
-			this._handlers.push(win.on(RESIZE, this._resizeModal, this));
-			boundingBox.css('zIndex', Global.ovZindex + startZIndex);
-			this.on("mousedown", this.focus, this);
-		},
-		
-		afterRender: function () {
-			var boundingBox = this.get(BOUNDING_BOX);
-			var head = this.get(HEADER);
-			if (this.get("draggable")) {
-				this.dd = new $.Drag({
-					node: boundingBox,
-					handlers: head
-				});
-			}	
-		},
-		
-		focus: function () {
-			A.remove(this, Global.overlays);
-			Global.overlays.push(this);
-			var olays = Global.overlays, i, length = olays.length;
-			for (i = 0; i < length; i++) {
-				olays[i].get(BOUNDING_BOX).css("zIndex", Global.ovZindex + i);
-			}
-		},
-		
-		hide: function () {
-			this.get(MODAL_BOX).hide();
-		},
-		
-		show: function () {
-			if (this.get("modal")) {
-				this.get(MODAL_BOX).show();
-			}
-		},
-		
-		destroy: function () {
-			var win = $(this.get('win')).unbind(RESIZE, this._centerUI).unbind(SCROLL, this._centerUI);
-			win.unbind(RESIZE, this._repositionUI);
-			win.unbind(SCROLL, this._repositionUI);
-			if (this.dd) {
-				this.dd.destroy();
-			}
-			this.get(BOUNDING_BOX).unbind("mousedown", this.focus);
-		}
 	}
 	
 }, {
@@ -303,11 +243,56 @@ $.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment, $.WidgetStack],
 		var screenSize = DOM.screenSize();
 		this.get(MODAL_BOX).width(screenSize.width).height(screenSize.height);
 	},
-
+	_showModal: function () {
+		if (this.get('modal')) {
+			this.get(MODAL_BOX).show();
+		}
+	},
+	_hideModal: function () {
+		this.get(MODAL_BOX).hide();
+	},
+	
 	initializer: function () {
-		var self = this;
-		Global.overlays.push(this);
-		this.set(MODAL_BOX, this.MODAL_TEMPLATE);
+		if (!this.get(MODAL_BOX)) {
+			this.set(MODAL_BOX, this.MODAL_TEMPLATE);
+		}
+	},
+	
+	renderUI: function (boundingBox) {
+		var screenSize = DOM.screenSize();
+		var startZIndex = this.get('startZIndex');
+		var modal = this.get(MODAL_BOX).css({
+			position: 'absolute',
+			top: "0px",
+			left: "0px",
+			background: "#000",
+			visibility: !this.get("modal") ? "hidden" : "",
+			zIndex: this.get('zIndex') - 1,
+			opacity: 0.4
+		}).width(screenSize.width).height(screenSize.height).appendTo($.config.doc.body);
+	},
+	
+	bindUI: function () {
+		this.after('show', this._showModal);
+		this.after('hide', this._hideModal);
+		this.on('mousedown', this.focus);
+		this._handlers.push($($.config.win).on(RESIZE, this._resizeModal, this));
+	},
+	
+	syncUI: function (boundingBox) {
+		var head = this.get(HEADER);
+		if (this.get('draggable')) {
+			this.dd = new $.Drag({
+				node: boundingBox,
+				handlers: head
+			});
+		}
+	},
+	
+	destructor: function () {
+		if (this.dd) {
+			this.dd.destroy();
+		}
 	}
 });
 /**
@@ -320,7 +305,9 @@ $.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment, $.WidgetStack],
 $.Tooltip = Base.create('tooltip', Widget, [$.WidgetAlignment], {
 	ATTRS: {
 		align: {
-			points: ['tl', 'bl']
+			value: {
+				points: ['tl', 'bl']
+			}
 		},
 		/**
 		 * @attribute fadeIn
@@ -333,28 +320,35 @@ $.Tooltip = Base.create('tooltip', Widget, [$.WidgetAlignment], {
 				return !!$.Tween;
 			}
 		}
+	}
+}, {
+	
+	_uiShowTooltip: function () {
+		var offset = this.get("srcNode").offset();
+		var fadeIn = this.get("fadeIn");
+		this.set("left", offset.left).set("top", offset.top + offset.height);
+		if (fadeIn) {
+			this.get(BOUNDING_BOX).css("opacity", 0).fadeIn(fadeIn);
+		}
 	},
 	
-	EVENTS: {
-		render: function () {
-			var srcNode = this.get('srcNode');
-			var points = this.get('align').points;
-			this.set('align', {
-				node: srcNode,
-				points: points
-			});
-			this.hide().set("bodyContent", this.get("bodyContent") || srcNode.attr("title"));
-			srcNode.on("mouseover", this.show).on("mouseout", this.hide);
-		},
-		show: function () {
-			var offset = this.get("srcNode").offset();
-			var fadeIn = this.get("fadeIn");
-			this.set("left", offset.left).set("top", offset.top + offset.height);
-			if (fadeIn) {
-				this.get(BOUNDING_BOX).css("opacity", 0).fadeIn(fadeIn);
-			}
-		}
+	renderUI: function () {
+		this.set('align', {
+			node: this.get('srcNode'),
+			points: this.get('align').points
+		});
+	},
+	
+	bindUI: function () {
+		var srcNode = this.get('srcNode');
+		this.after('show', this._uiShowTooltip);
+		this._handlers.push(srcNode.on('mouseover', this.show, this), srcNode.on('mouseout', this.hide, this));
+	},
+	
+	syncUI: function () {
+		this.hide().set('bodyContent', this.get('bodyContent') || this.get('srcNode').attr('title'));
 	}
+	
 });
 /**
  * A panel is an overlay that resembles an OS window without actually being one,
@@ -413,20 +407,11 @@ var PanelBase = $.mix(function () {
 			if (this.get(SHADOW)) {
 				boundingBox.addClass(SHADOW);
 			}
-			$(this.get('doc')).on('keyup', this._onContextKeyUp);
+			this._handlers.push($($.config.doc).on('keyup', this._onContextKeyUp, this));
 		},
 		
-		destroy: function () {
-			$(this.get('doc')).unbind('keyup', this._onContextKeyUp);
-		},
-		
-		afterCloseChange: function (e, newVal) {
-			var closeButton = this.get('closeButton');
-			if (newVal) {
-				closeButton.show();
-			} else {
-				closeButton.hide();
-			}
+		afterCloseChange: function (e) {
+			this.get('closeButton').toggle(e.newVal);
 		}
 		
 	}
@@ -462,12 +447,14 @@ PanelBase.prototype = {
  */
 $.Panel = Base.create('panel', $.Overlay, [PanelBase], {}, {
 	initializer: function () {
-		var self = this;
 		this.set('closeButton', this.get('closeButton'));
-		this.on(HEIGHT + "Change", function (e, height) {
-			self.get(CONTENT_BOX).height(height);
-		});
 		this.set(UNDERLAY, $(NEW_DIV).addClass(UNDERLAY));
+	},
+	
+	bindUI: function () {
+		this.after('heightChange', function (e) {
+			this.get(CONTENT_BOX).height(e.newVal);
+		}, this);
 	}
 });
 
@@ -481,12 +468,14 @@ $.Panel = Base.create('panel', $.Overlay, [PanelBase], {}, {
  */
 $.StaticPanel = Base.create('panel', $.Module, [PanelBase], {}, {
 	initializer: function () {
-		var self = this;
 		this.set('closeButton', this.get('closeButton'));
-		this.on(HEIGHT + "Change", function (e, height) {
-			self.get(CONTENT_BOX).height(height);
-		});
 		this.set(UNDERLAY, $(NEW_DIV).addClass(UNDERLAY));
+	},
+	
+	bindUI: function () {
+		this.after('heightChange', function (e) {
+			this.get(CONTENT_BOX).height(e.newVal);
+		}, this);
 	}
 });
 /**
@@ -513,28 +502,29 @@ $.SimpleDialog = Base.create('dialog', $.Panel, [], {
 			readOnly: true
 		}
 		
-	},
-	EVENTS: {
-		render: function (e) {
-			var buttonGroup = this.bg = new $.ButtonGroup({
-				children: this.get('buttons')
-			});
-			buttonGroup.render(this.get(FOOTER));
-			buttonGroup.get(BOUNDING_BOX).css(VISIBILITY, 'inherit');
-		},
-		afterHide: function () {
-			this.bg.hide();
-			this.bg.each(function (button) {
-				button.hide();
-			});
-		},
-		afterShow: function () {
-			this.bg.show();
-			this.bg.each(function (button) {
-				button.show();
-			});
-		}
 	}
+}, {
+	
+	_bgVisibleChange: function (e) {
+		var action = e.newVal ? 'show' : 'hide';
+		this.bg[action]();
+		this.bg.each(function (button) {
+			button[action]();
+		});
+	},
+	
+	renderUI: function () {
+		var buttonGroup = this.bg = new $.ButtonGroup({
+			children: this.get('buttons')
+		});
+		buttonGroup.render(this.get(FOOTER));
+		buttonGroup.get(BOUNDING_BOX).css(VISIBILITY, 'inherit');
+	},
+	
+	bindUI: function () {
+		this.after('visibleChange', this._bgVisibleChange);
+	}
+	
 });
 			
 });

@@ -147,7 +147,7 @@ var RecordSet = function (data) {
 	 */
 	this.replace = function (data) {
 		data = toData(data);
-		self.fire("replace", data);
+		self.fire('replace', { data: data });
 		return sortedBy ? self.sortBy(sortedBy, order) : self;
 	};
 	
@@ -159,7 +159,7 @@ var RecordSet = function (data) {
 	 */
 	this.push = function (data) {
 		records = records.concat(toData(data));
-		self.fire("push", records, data);
+		self.fire('push', { records: records, data: data });
 		return sortedBy ? self.sortBy(sortedBy, order) : self;
 	};
 };
@@ -383,7 +383,7 @@ var DataSource = Base.create('datasource', $.Utility, [], {
 					});
 				});
 			} else {
-				this.fire("parserError", "Result list not found");
+				this.fire("parserError", { message: "Result list not found" });
 			}
 		}
 		/*
@@ -455,11 +455,11 @@ var DataSource = Base.create('datasource', $.Utility, [], {
 		this.handleRequest(request, function (rawData) {
 			self.set(TEMP_DATA, rawData);
 			var tempData = rawData;
-			if (internalEvents.fire("beforeParse", rawData)) {
+			if (internalEvents.fire('beforeParse', { data: rawData })) {
 				tempData = self._parser(self.get(TEMP_DATA));
 			}
 			self.set('recordSet', tempData);
-			self.fire("update", tempData);
+			self.fire('update', { data: tempData, request: request });
 			/*Hash.each(tempData, function (key, val) {
 				if (!recordSet[key]) {
 					recordSet[key] = val;
@@ -495,8 +495,8 @@ var DataSource = Base.create('datasource', $.Utility, [], {
 	 */
 	onBeforeParse: function (callback) {
 		var self = this;
-		this._events.on("beforeParse", function (e, rawData) {
-			self.set(TEMP_DATA, callback(rawData));
+		this._events.on("beforeParse", function (e) {
+			self.set(TEMP_DATA, callback(e.data));
 		});
 		return this;
 	},

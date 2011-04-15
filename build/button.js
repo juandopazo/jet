@@ -34,10 +34,6 @@ if (!jet.Button) {
 	jet.Button = {};
 }
 
-if (!jet.Button.buttons) {
-	jet.Button.buttons = 1;
-}
-
 /**
  * A button widget
  * @class Button
@@ -45,7 +41,7 @@ if (!jet.Button.buttons) {
  * @uses WidgetChild
  * @param {Object} config Object literal specifying widget configuration properties
  */
-var Button = Base.create('button', Widget, [WidgetChild], {
+var Button = $.Button = Base.create('button', Widget, [WidgetChild], {
 	
 	ATTRS: {
 		/**
@@ -89,99 +85,83 @@ var Button = Base.create('button', Widget, [WidgetChild], {
 	},
 	
 	EVENTS: {
-		enabledChange: function (e, val) {
-			var boundingBox = this.get(BOUNDING_BOX);
-			var disabledClass = this.getClassName('disabled');
-			if (!val) {
-				boundingBox.addClass(disabledClass);
-			} else {
-				disabledClass.removeClass(disabledClass);
-			}
-			this.get(CONTENT_BOX)._nodes[0].disabled = !val;
-		},
-		
-		labelContentChange: function (e, val) {
-			var labelNode = this.get(LABEL_NODE);
-			if (Lang.isString(val)) {
-				labelNode.html(val);
-				if (!labelNode.parent()._nodes[0]) {
-					this.get(BOUNDING_BOX).prepend(labelNode);
-				}
-			} else {
-				labelNode.remove();
-			}
-		},
-		
-		textChange: function (e, val) {
-			this.get(CONTENT_BOX).html(val);
-		},
-		
-		afterFocus: function (e) {
-			this.get(BOUNDING_BOX).addClass(this.getClassName(FOCUS));
-			this.get(CONTENT_BOX).focus();
-		},
-		
-		afterBlur: function (e) {
-			this.get(BOUNDING_BOX).removeClass(this.getClassName(FOCUS));
-			this.get(CONTENT_BOX).blur();
-		},
-		
-		mouseover: function (e, domEvent) {
+		mouseover: function (e) {
 			this.get(BOUNDING_BOX).addClass(this.getClassName(HOVER));
 		},
-		
-		mouseout: function (e, domEvent) {
+		mouseout: function (e) {
 			this.get(BOUNDING_BOX).removeClass(this.getClassName(HOVER));
-		},
-		
-		render: function () {
-			var id = this.getClassName('content', this._uid);
-			var contentBox = this.get(CONTENT_BOX).attr(ID, id).html(this.get('text'));
-			var labelNode = this.get(LABEL_NODE);
-			var label = this.get('labelContent');
-			labelNode._nodes[0].setAttribute('for', id);
-			if (Lang.isString(label)) {
-				this.get(BOUNDING_BOX).prepend(labelNode.html(label));
-			}
-			contentBox._nodes[0].disabled = !this.get(ENABLED);
-			this._handlers.push(contentBox.on(FOCUS, this._onDomFocus, this));
-			this._handlers.push(contentBox.on(BLUR, this._onDomBlur, this));
-		},
-		
-		destroy: function () {
-			this.get(CONTENT_BOX).unbind(FOCUS, this._onDomFocus).unbind(BLUR, this._onDomBlur);
-			this.get(LABEL_NODE).remove();
 		}
 	}
 	
 }, {
 	CONTENT_TEMPLATE: '<button/>',
 	LABEL_TEMPLATE: '<label/>',
-	/**
-	 * Disables the button
-	 * @method disable
-	 * @chainable
-	 */
-	disable: function () {
-		return this.set(ENABLED, false);
+	
+	_uiFocusedChange: function (e) {
+		this.get(BOUNDING_BOX).toggleClass(this.getClassName(FOCUS), e.newVal);
+		this.get(CONTENT_BOX)[e.newVal ? 'focus' : 'blur']();
 	},
-	/**
-	 * Enables the button
-	 * @method enable
-	 * @chainable
-	 */
-	enable: function () {
-		return this.set(ENABLED, true);
+	
+	_uiTextChange: function (e) {
+		this.get(CONTENT_BOX).html(e.val);
+	},
+	
+	_uiLabelChange: function (e) {
+		var labelNode = this.get(LABEL_NODE);
+		var val = e.newVal;
+		if (Lang.isString(val)) {
+			labelNode.html(val);
+			if (!labelNode.parent()._nodes[0]) {
+				this.get(BOUNDING_BOX).prepend(labelNode);
+			}
+		} else {
+			labelNode.remove();
+		}
+	},
+	
+	_uiEnabledChange: function (e, val) {
+		this.get(BOUNDING_BOX).toggleClass(this.getClassName('disabled'), !e.newVal);
+		this.get(CONTENT_BOX)._nodes[0].disabled = !e.newVal;
 	},
 	
 	initializer: function () {
 		this.set(LABEL_NODE, this.get(LABEL_NODE) || this.LABEL_TEMPLATE);
 		this._onDomFocus = $.bind(this.focus, this);
 		this._onDomBlur = $.bind(this.blur, this);
+	},
+	
+	renderUI: function (boundingBox) {
+		var id = this.getClassName('content', this._uid);
+		var labelNode = this.get(LABEL_NODE);
+		var label = this.get('labelContent');
+		this.get(CONTENT_BOX).attr(ID, id).html(this.get('text'));
+		labelNode._nodes[0].setAttribute('for', id);
+		if (Lang.isString(label)) {
+			boundingBox.prepend(labelNode.html(label));
+		}
+	},
+	
+	bindUI: function () {
+		var contentBox = this.get('contentBox');
+		
+		this.after('enabledChange', this._uiEnabledChange);
+		this.after('labelContentChange', this._uiLabelChange);
+		this.after('textChange', this._uiTextChange);
+		this.after('focusedChange', this._uiFocusedChange);
+
+		this._handlers.push(contentBox.on(FOCUS, this._onDomFocus, this), contentBox.on(BLUR, this._onDomBlur, this));
+	},
+	
+	syncUI: function () {
+		this.get('contentBox')._nodes[0].disabled = !this.get(ENABLED);
+	},
+	
+	destructor: function () {
+		this.get(CONTENT_BOX).unbind(FOCUS, this._onDomFocus).unbind(BLUR, this._onDomBlur);
+		this.get(LABEL_NODE).remove();
 	}
 	
 });
-$.Button = Button;
 /**
  * A button widget that selects/unselects itself when clicked
  * @class ToggleButton
@@ -218,28 +198,15 @@ $.ButtonGroup = Base.create('button-group', Widget, [WidgetParent], {
 			value: false,
 			validator: Lang.isBoolean
 		}
+	}
+}, {
+	
+	_uiPillChange: function (e) {
+		this.get(BOUNDING_BOX).toggleClass(this.getClassName(PILL), e.newVal);
 	},
 	
-	EVENTS: {
-		pillChange: function (e, pill) {
-			var boundingBox = this.get(BOUNDING_BOX);
-			var pillClass = this.getClassName(PILL);
-			if (pill) {
-				boundingBox.addClass(pillClass);
-			} else {
-				boundingBox.removeClass(pillClass);
-			}
-		},
-		
-		render: function () {
-			var boundingBox = this.get(BOUNDING_BOX);
-			var pillClass = this.getClassName(PILL);
-			if (this.get(PILL)) {
-				boundingBox.addClass(pillClass);
-			} else {
-				boundingBox.removeClass(pillClass);
-			}
-		}
+	renderUI: function (boundingBox) {
+		boundingBox.toggleClass(this.getClassName(PILL), this.get(PILL));
 	}
 });
 /**
@@ -303,8 +270,8 @@ $.ComboBox = Base.create('combobox', Button, [WidgetParent], {
 		}
 	},
 	EVENTS: {
-		selectionChange: function (e, val) {
-			this.get(CONTENT_BOX)._nodes[0].selectedIndex = val.get('index');
+		afterSelectionChange: function (e) {
+			this.get(CONTENT_BOX)._nodes[0].selectedIndex = e.newVal.get('index');
 		}
 	}
 }, {
@@ -323,8 +290,8 @@ if (!Lang.isNumber(jet.Button.radio)) {
  */
 $.RadioButton = Base.create('radio', Button, [], {
 	EVENTS: {
-		selectedChange: function (e, val) {
-			this.get(CONTENT_BOX)._nodes[0].checked = !!val;
+		afterSelectionChange: function (e) {
+			this.get(CONTENT_BOX)._nodes[0].checked = !!e.newVal;
 		},
 		render: function () {
 			this.get(CONTENT_BOX).attr({
@@ -385,20 +352,23 @@ if (!Lang.isNumber(jet.Button.checkbox)) {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.CheckBox = Base.create('checkbox', Button, [], {
-	EVENTS: {
-		selectedChange: function (e, val) {
-			this.get(CONTENT_BOX)._nodes[0].checked = !!val;
-		},
-		render: function () {
-			this.get(CONTENT_BOX).attr({
-				type: 'checkbox',
-				name: this.get(PARENT).get(NAME)
-			});
-		}
+$.CheckBox = Base.create('checkbox', Button, [], {}, {
+	CONTENT_TEMPLATE: '<input/>',
+	
+	_uiCheckBoxSelect: function (e) {
+		this.get(CONTENT_BOX)._nodes[0].checked = !!e.newVal;
+	},
+	
+	renderUI: function () {
+		this.get(CONTENT_BOX).attr({
+			type: 'checkbox',
+			name: this.get(PARENT).get(NAME)
+		});
+	},
+	
+	bindUI: function () {
+		this.after('selectedChange', this._uiCheckBoxSelect);
 	}
-}, {
-	CONTENT_TEMPLATE: '<input/>'
 });
 
 /**
@@ -420,7 +390,7 @@ $.CheckBoxGroup = Base.create('checkbox-group', Widget, [WidgetParent], {
 			writeOnce: true
 		},
 		defaultChildType: {
-			value: $.CheckBox
+			value: 'CheckBox'
 		}
 	}
 }, {

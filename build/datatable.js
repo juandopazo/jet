@@ -198,22 +198,6 @@ var DataTable = Base.create('dt', Widget, [], {
 				return this.getClassName(this._uid + REC);
 			}
 		}
-	},
-	
-	EVENTS: {
-		render: function () {
-			var contentBox = this.get('contentBox');
-			contentBox._nodes[0].setAttribute('cellspacing', '0px');
-			var thead = this.get(THEAD);
-			var tbody = this.get(TBODY);
-			
-			this._setupTableHeaders();
-			
-			this.onDataReturnAddRows(null, this.get(RECORDSET));
-			
-			thead.appendTo(contentBox);
-			tbody.addClass(this.getClassName(DATA)).appendTo(contentBox);
-		}
 	}
 	
 }, {
@@ -223,6 +207,26 @@ var DataTable = Base.create('dt', Widget, [], {
 	initializer: function () {
 		this.set(THEAD, this.get(THEAD));
 		this.set(TBODY, this.get(TBODY));
+	},
+	
+	renderUI: function () {
+		var contentBox = this.get('contentBox');
+		contentBox._nodes[0].setAttribute('cellspacing', '0px');
+		var thead = this.get(THEAD);
+		var tbody = this.get(TBODY);
+		
+		this._setupTableHeaders();
+		
+		thead.appendTo(contentBox);
+		tbody.addClass(this.getClassName(DATA)).appendTo(contentBox);
+	},
+	
+	syncUI: function () {
+		this.onDataReturnAddRows({
+			target: this,
+			type: 'update',
+			data: this.get(RECORDSET)
+		});
 	},
 	
 	_onThClick: function (e) {
@@ -307,7 +311,7 @@ var DataTable = Base.create('dt', Widget, [], {
 		}
 		children = tbody.children();
 		for (i = 0; i < length; i++) {
-			children.eq(i).addClass(i % 2 === 0 ? even : odd).removeClass(i % 2 === 0 ? odd : even);
+			children.item(i).addClass(i % 2 === 0 ? even : odd).removeClass(i % 2 === 0 ? odd : even);
 		}
 		tbody.find(DOT + classNameDESC).removeClass(classNameDESC);
 		tbody.find(DOT + getClassName('col', key)).addClass(classNameDESC);
@@ -413,7 +417,7 @@ var DataTable = Base.create('dt', Widget, [], {
 		for (i = 0; i < length; i++) {
 			cells[cells.length] = new Cell({
 				record: records[i],
-				td: rows.eq(i).children().eq(index),
+				td: rows.item(i).children().item(index),
 				value: records[i].get(key)
 			});
 		}
@@ -428,7 +432,7 @@ var DataTable = Base.create('dt', Widget, [], {
 	 * @return NodeList
 	 */
 	getFirstTr: function () {
-		return this.get(TBODY).children().eq(0);
+		return this.get(TBODY).children().item(0);
 	},
 	
 	/**
@@ -460,7 +464,7 @@ var DataTable = Base.create('dt', Widget, [], {
 		if (Lang.isNumber(row)) {
 			row = this.get(TBODY).find(NUMERAL + this.get(RECORD_ID_PREFIX) + row);
 		}
-		return row.children().eq(0);
+		return row.children().item(0);
 	},
 	
 	/**
@@ -526,10 +530,10 @@ var DataTable = Base.create('dt', Widget, [], {
 	 * @param {EventFacade} e
 	 * @param {RecordSet} recordSet
 	 */
-	onDataReturnReplaceRows: function (e, newRecordSet) {
+	onDataReturnReplaceRows: function (e) {
 		this.get(TBODY).children().remove();
-		this.get(RECORDSET).replace(newRecordSet);
-		this.addRows(newRecordSet);
+		this.get(RECORDSET).replace(e.data);
+		this.addRows(e.data);
 	},
 	
 	/**
@@ -538,9 +542,9 @@ var DataTable = Base.create('dt', Widget, [], {
 	 * @param {EventFacade} e
 	 * @param {RecordSet} newRecordSet
 	 */
-	onDataReturnAddRows: function (e, newRecordSet) {
-		this.get(RECORDSET).push(newRecordSet);
-		this.addRows(newRecordSet);
+	onDataReturnAddRows: function (e) {
+		this.get(RECORDSET).push(e.data);
+		this.addRows(e.data);
 	}
 	
 });
@@ -564,33 +568,6 @@ $.ScrollingDataTable = Base.create('dt', DataTable, [], {
 		autoScrollStatus: {
 			value: false
 		}
-	},
-	
-	EVENTS: {
-		afterRender: function () {
-			var boundingBox = this.get(BOUNDING_BOX);
-			var table = $("<table/>").addClass(this.getClassName('content'));
-			var tbody = this.get(TBODY);
-			var thead = this.get(THEAD);
-			var height = this.get('height');
-			var container = this.get('tbodyContainer').appendTo(boundingBox).css("overflowY", "auto");
-			if (height) {
-				container.height(height - thead.height());
-			}
-			table._nodes[0].setAttribute('cellspacing', '0');
-			container.addClass(this.getClassName('table', 'body'));
-			table.append(tbody.detach()).appendTo(container);
-			
-			this._syncColumnWidths();
-			this.on('afterAddRow', this._syncColumnWidths, this);
-			this.on('afterAddRows', this._syncColumnWidths, this);
-			this._handlers.push($($.win).on('resize', this._syncColumnWidths, this));
-		},
-		
-		addRow: '_autoScrollBefore',
-		afterAddRow: '_autoScrollAfter',
-		addRows: '_autoScrollBefore',
-		afterAddRows: '_autoScrollAfter'
 	}
 	
 }, {
@@ -617,8 +594,37 @@ $.ScrollingDataTable = Base.create('dt', DataTable, [], {
 			this._firstTr = this.getFirstTr();
 		}
 		this._firstTr.children().each(function (td, i) {
-			$(td).width(ths.eq(i).width());
+			$(td).width(ths.item(i).width());
 		});
+	},
+	
+	_sdtAfterRender: function () {
+		var height = this.get('height');
+		var container = this.get('tbodyContainer');
+		if (height) {
+			container.height(height - this.get(THEAD).height());
+		}
+		this._contentTable.append(this.get(TBODY).detach()).appendTo(container);
+		this._syncColumnWidths();
+	},
+	
+	renderUI: function (boundingBox) {
+		var table = this._contentTable = $("<table/>").addClass(this.getClassName('content'));
+		table._nodes[0].setAttribute('cellspacing', '0');
+		this.get('tbodyContainer').addClass(this.getClassName('table', 'body')).appendTo(boundingBox).css("overflowY", "auto");
+		
+		this.after('render', this._sdtAfterRender);
+	},
+	
+	bindUI: function () {
+		this.after('addRow', this._syncColumnWidths);
+		this.after('addRows', this._syncColumnWidths);
+		this.on('addRow', this._autoScrollBefore);
+		this.after('addRow', this._autoScrollAfter);
+		this.on('addRows', this._autoScrollBefore);
+		this.after('addRows', this._autoScrollAfter);
+
+		this._handlers.push($($.config.win).on('resize', this._syncColumnWidths, this));
 	}
 	
 });
