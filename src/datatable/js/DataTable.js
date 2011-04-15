@@ -35,9 +35,7 @@ var DataTable = Base.create('dt', Widget, [], {
 		 * @description The data table's associated recordSet
 		 * @type RecordSet
 		 */
-		recordSet: {
-			value: new $.RecordSet()
-		},
+		recordSet: {},
 		/**
 		 * @attribute columnDefinitions
 		 * @description An array mapping record keys to columns
@@ -73,6 +71,9 @@ var DataTable = Base.create('dt', Widget, [], {
 	initializer: function () {
 		this.set(THEAD, this.get(THEAD));
 		this.set(TBODY, this.get(TBODY));
+		if (!this.get(RECORDSET)) {
+			this.set(RECORDSET, new $.RecordSet());
+		}
 	},
 	
 	renderUI: function () {
