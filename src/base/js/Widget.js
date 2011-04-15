@@ -277,9 +277,9 @@ var Widget = Base.create('widget', Base, [], {
 				if (Lang.isNumber(value)) {
 					boundingBox[size](value);
 				}
-				self.on(size + 'Change', function (e, newVal) {
-					newVal = Lang.isNumber(newVal) ? newVal : '';
-					self.get(BOUNDING_BOX)[size](newVal);
+				self.after(size + 'Change', function (e) {
+					newVal = Lang.isNumber(e.newVal) ? e.newVal : '';
+					self.get(BOUNDING_BOX)[size](e.newVal);
 				});
 			});
 			
