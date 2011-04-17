@@ -81,7 +81,7 @@ $.WidgetStack = $.mix(WidgetStack, {
 	
 	/**
 	 * @static
-	 * @property minZIndex
+	 * @property MIN_ZINDEX
 	 * @description The min zIndex to apply to the widget. This value is added to the zIndex attribute
 	 * @default 1
 	 */

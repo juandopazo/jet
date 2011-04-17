@@ -233,15 +233,17 @@ WidgetParent.prototype = {
 	 * @chainable
 	 */
 	add: function (child, index) {
-		if (this.fire('addChild', { child: child, index: index })) {
-			var ChildType = this.get('childType');
-			var children = this.get(CHILDREN);
-			var childrenLength = children.length;
-			var self = this;
+		var ChildType = this.get('childType');
+		var self = this;
+		var children = this.get(CHILDREN);
+		if (!Lang.isNumber(index)) {
+			index = children.length;
+		}
+		if (child && this.fire('addChild', { child: child, index: index })) {
 			if (!(child instanceof ChildType)) {
 				child.parent = this;
 				child.index = index;
-				child = new ChildType(child);
+				child = new (ChildType)(child);
 			} else {
 				child.set(PARENT, this);
 			}
@@ -253,7 +255,6 @@ WidgetParent.prototype = {
 				self._unHookChild(e.target);
 			});
 			
-			children[Lang.isNumber(index) ? index : children.length] = child;
 			this.fire('afterAddChild', { child: child, index: index });
 		}
 		return this;
@@ -276,6 +277,9 @@ WidgetParent.prototype = {
 	 * @chainable
 	 */
 	remove: function (child) {
+		if (Lang.isNumber(child)) {
+			child = this.item(child);
+		}
 		if (child && this.fire('removeChild', { child: child })) {
 			var children = this.get(CHILDREN);
 			if (Lang.isNumber(child)) {

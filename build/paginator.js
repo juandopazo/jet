@@ -146,10 +146,6 @@ $.Paginator = $.Base.create('paginator', $.Widget, [], {
 			readOnly: true,
 			value: 0
 		}
-	},
-	
-	EVENTS: {
-		render: '_renderUI'
 	}
 	
 }, {
@@ -161,8 +157,8 @@ $.Paginator = $.Base.create('paginator', $.Widget, [], {
 		this.set('pageCount', Math.ceil(recordSet.getRecords().length / this.get('recordsPerPage')) + 1);
 	},
 	
-	_recalculate: function (e, newRecordSet) {
-		
+	_recalculate: function (e) {
+		//e.data
 	},
 	
 	/**
@@ -212,7 +208,7 @@ $.Paginator = $.Base.create('paginator', $.Widget, [], {
 		return btn;
 	},
 	
-	_renderUI: function () {
+	renderUI: function () {
 		var pagesContainer, pageSpan;
 		var pageCount = this.get('pageCount');
 		var currentPage = this.get('currentPage');

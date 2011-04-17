@@ -10,14 +10,14 @@
 jet.add('dragdrop', function ($) {
 
 			
-var ArrayHelper = $.Array,
+var $Array = $.Array,
 	Lang = $.Lang;
 	
-var TRACKING = "tracking",
-	HANDLERS = "handlers",
-	NODE = "node",
-	CURSOR = "cursor",
-	PX = "px";
+var TRACKING = 'tracking',
+	HANDLERS = 'handlers',
+	NODE = 'node',
+	CURSOR = 'cursor',
+	PX = 'px';
 
 /**
  * Makes an element draggable
@@ -26,9 +26,9 @@ var TRACKING = "tracking",
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-var Drag = function () {
-	Drag.superclass.constructor.apply(this, arguments);
-	var myself = this.addAttrs({
+var Drag = $.Drag = $.Base.create('drag', $.Base, [], {
+	
+	ATTRS: {
 		/**
 		 * @attribute node
 		 * @description node to be dragged
@@ -36,9 +36,7 @@ var Drag = function () {
 		 */
 		node: {
 			required: true,
-			setter: function (value) {
-				return $(value);
-			}
+			setter: $
 		},
 		/**
 		 * @attribute cursor
@@ -46,7 +44,7 @@ var Drag = function () {
 		 * @type String
 		 */
 		cursor: {
-			value: "move"
+			value: 'move'
 		},
 		/**
 		 * @attribute tracking
@@ -56,46 +54,97 @@ var Drag = function () {
 		tracking: {
 			value: false
 		},
-		context: {
-			value: $.context
-		}
-	});
-	/**
-	 * @attribute handlers
-	 * @description A list of elements that will start the dragging
-	 * @type Array | NodeList 
-	 */
-	myself.addAttr(HANDLERS, {
-		setter: function (value) {
-			return $(value);
-		}
-	});
+		/**
+		 * @attribute handlers
+		 * @description A list of elements that will start the dragging
+		 * @type Array | NodeList 
+		 */
+		handlers: {
+			setter: $
+		},
+		
+		startX: { value: 0 },
+		startY: { value: 0 },
+		startLeft: { value: 0 },
+		startTop: { value: 0 },
+		currentX: { value: 0 },
+		currentY: { value: 0 }
+	}
 	
-	var startX, startY, startLeft, startTop;
-	var currentX, currentY;
+}, {
 	
-	var tracker = new $.Mouse({
-		shim: myself.get("shim"),
-		context: myself.get("context")
-	});
-	
-	var setupHandler = function (list) {
-		list.css(CURSOR, myself.get(CURSOR)).on("mousedown", function (e) {
-			e.preventDefault();
-			startX = e.clientX;
-			startY = e.clientY;
-			/**
-			 * First when the dragging starts
-			 * @event drag:start
-			 */
-			if (myself.fire("drag:start", startX, startY)) {
-				var offset = $(this).offset();
-				startLeft = offset.left;
-				startTop = offset.top;
-				tracker.set(TRACKING, true);
+	initializer: function () {
+		var mouse = this.mouse = new $.Mouse({
+			shim: this.get('shim'),
+			on: {
+				trackingChange: $.bind(this._onMouseStatusChange, this),
+				mousemove: $.bind(this._onMouseMove, this)
 			}
 		});
-	};
+		var handlers = this.get(HANDLERS);
+		if (handlers) {
+			this._setupHandler(handlers);
+		} else {
+			this._setupHandler(this.get(NODE));
+		}
+
+		mouse.firstTime = true;
+	},
+	
+	_onMouseMove: function (e) {
+		var currentX = this.get('startLeft') + e.clientX - this.get('startX');
+		var currentY = this.get('startTop') + e.clientY - this.get('startY');
+		
+		this.set({
+			currentX: currentX,
+			currentY: currentY
+		});
+		/**
+		 * Fires during the drag movement
+		 * @event drag
+		 */
+		if (this.fire('drag', { x: currentX, y: currentY })) {
+			this.get(NODE).css({
+				left: currentX + PX,
+				top: currentY + PX
+			});
+		}
+	},
+	
+	_onMouseStatusChange: function (e) {
+		if (!this.mouse.firstTime && e.newVal === false) {
+			/**
+			 * Fires when the drag ends
+			 * @event drag:end
+			 */
+			this.fire('drag:end', { x: this.get('currentX'), y: this.get('currentY') });
+		}
+		this.mouse.firstTime = false;
+	},
+	
+	_onHandlerMouseDown: function (e) {
+		e.preventDefault();
+		this.set({
+			startX: e.clientX,
+			startY: e.clientY
+		});
+		/**
+		 * First when the dragging starts
+		 * @event drag:start
+		 */
+		if (this.fire('drag:start', { x: e.clientX, y: e.clientY })) {
+			var offset = $(e.target).offset();
+			this.set({
+				startLeft: offset.left,
+				startTop: offset.top
+			});
+			this.mouse.down();
+		}
+	},
+	
+	_setupHandler: function (list) {
+		list.css(CURSOR, this.get(CURSOR)).on('mousedown', this._onHandlerMouseDown, this);
+	},
 	
 	/**
 	 * Adds a handler to the handler list
@@ -103,50 +152,13 @@ var Drag = function () {
 	 * @param {HTMLElement | NodeList} handler
 	 * @chainable
 	 */
-	myself.addHandler = function (handler) {
-		setupHandler($(handler));
-		return myself;
-	};
-	
-	var handlers = myself.get(HANDLERS);
-	if (handlers) {
-		setupHandler(handlers);
-	} else {
-		setupHandler(myself.get(NODE));
+	addHandler: function (handler) {
+		this._setupHandler($(handler));
+		return this;
 	}
 	
-	var firstTime = true;
-	tracker.on("trackingChange", function (e, value) {
-		if (!firstTime && value === false) {
-			/**
-			 * Fires when the drag ends
-			 * @event drag:end
-			 */
-			myself.fire("drag:end", currentX, currentY);
-		}
-		firstTime = false;
-	});
-	var node = myself.get(NODE);
-	tracker.on("mousemove", function (e, clientX, clientY) {
-		currentX = startLeft + clientX - startX;
-		currentY = startTop + clientY - startY;
-		/**
-		 * Fires during the drag movement
-		 * @event drag
-		 */
-		if (myself.fire("drag", currentX, currentY)) {
-			node.css({
-				left: currentX + PX,
-				top: currentY + PX
-			});
-		}
-	});
-	myself.on("contextChange", function (e, newVal) {
-		tracker.set("context", newVal);
-	});
-};
-Drag.NAME = "drag";
-$.extend(Drag, $.Base);
+});
+
 /**
  * DragDrop class
  * @class DragDrop
@@ -154,26 +166,50 @@ $.extend(Drag, $.Base);
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-var DragDrop = function () {
-	DragDrop.superclass.constructor.apply(this, arguments);
-	var myself = this.addAttrs({
+$.DragDrop = $.Base.create('dragdrop', Drag, [], {
+	
+	ATTRS: {
 		targets: {
 			validator: Lang.isArray,
-			value: [],
 			setter: function (value) {
-				ArrayHelper.each(value, function (target, i) {
+				$Array.each(value, function (target, i) {
 					value[i] = $(target);
 				});
 				return value;
 			}
 		}
-	});
+	}
 	
-	var insideOffset = function (x, y, offset) {
+}, {
+	
+	initializer: function () {
+		this.after('drag:end', this._ddOnDragEnd);
+	},
+	
+	_ddOnDragEnd: function (e) {
+		var hit = false;
+		$Array.each(this.get('targets'), function (target) {
+			if (this._insideOffset(e.clientX, e.clientY, target.offset())) {
+				/**
+				 * Fires when a draggable object is drop into a target
+				 * @event drop:hit
+				 */
+				this.fire("drop:hit", { ddtarget: target });
+				hit = true;
+			}
+		}, this);
+		if (!hit) {
+			/**
+			 * Fires when a draggable object is release but not over any target
+			 * @event drop:miss
+			 */
+			this.fire("drop:miss");
+		}
+	},
+	
+	_insideOffset: function (x, y, offset) {
 		return x > offset.left && x < (offset.left + offset.width) && y > offset.top && y < (offset.top + offset.height);
-	};
-	
-	var myTargets = [];
+	},
 	
 	/**
 	 * Adds a drop target
@@ -181,38 +217,11 @@ var DragDrop = function () {
 	 * @param {HTMLElement | NodeList} target
 	 * @chainable
 	 */
-	myself.addTarget = function (target) {
-		myTargets[myTargets.length] = $(target);
-		return myself;
-	};
+	addTarget: function (target) {
+		this.get('targets').push($(target));
+		return this;
+	}
 	
-	myself.on("end", function (e, clientX, clientY) {
-		var targets = myself.get("targets").concat(myTargets);
-		var hit = false;
-		ArrayHelper.each(targets, function (target) {
-			if (insideOffset(clientX, clientY, target.offset())) {
-				/**
-				 * Fires when a draggable object is drop into a target
-				 * @event drop:hit
-				 */
-				myself.fire("drop:hit", target);
-				hit = true;
-			}
-		});
-		if (!hit) {
-			/**
-			 * Fires when a draggable object is release but not over any target
-			 * @event drop:miss
-			 */
-			myself.fire("drop:miss");
-		}
-	});
-};
-$.extend(DragDrop, Drag);
-
-$.add({
-	Drag: Drag,
-	DragDrop: DragDrop
 });
 			
 });
