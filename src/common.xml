@@ -79,6 +79,7 @@
 			<filelist dir="${tmpdir}" files="${ant.project.name}.min.js"/>
 		</concat>
 		
+		<delete dir="${tmpdir}"/>
 	</target>
 	
 </project>
