@@ -22,43 +22,43 @@
 		base: '../../build'
 	}).use('button', 'datatable', function ($) {
 		
-		var body = $("#bd");
+		var body = $('#bd');
 		
 		var button = new $.Button({
-			text: "Update"
+			text: 'Update'
 		});
 		button.render(body);
 
 		var recentPhotosRequest = {
-			q: "select * from flickr.photos.recent",
-			format: "json",
-			diagnostics: "true",
+			q: 'select * from flickr.photos.recent',
+			format: 'json',
+			diagnostics: 'true',
 			numeroAlAzar: Math.ceil(Math.random() * 1000)
 		};
 		
 		var dataTable = new $.DataTable({
 			columnDefinitions: [
-				{ key: "title", label: "Title", sortable: true },
-				{ key: "owner", label: "Photographer", sortable: true },
-				{ key: "id", label: "Thumbnail", formatter: function (val, data) {
+				{ key: 'title', label: 'Title', sortable: true },
+				{ key: 'owner', label: 'Photographer', sortable: true },
+				{ key: 'id', label: 'Thumbnail', formatter: function (val, data) {
 					return '<a href="http://www.flickr.com/photos/' + data.owner + '/' + data.id + '/"><img src="http://farm' + data.farm + '.static.flickr.com/' + data.server + '/' + data.id + '_' + data.secret + '_t.jpg" /></a>';
 				}}
 			]
 		});
 		dataTable.render(body);
 		var dataSource = new $.DataSource.Get({
-			url: "http://query.yahooapis.com/v1/public/yql?",
-			jsonCallbackParam: "callback",
-			responseType: "json",
+			url: 'http://query.yahooapis.com/v1/public/yql?',
+			jsonCallbackParam: 'callback',
+			responseType: 'json',
 			responseSchema: {
-				resultList: "query.results.photo",
+				resultList: 'query.results.photo',
 				fields: [
-					{ key: "title" },
-					{ key: "owner" },
-					{ key: "id" },
-					{ key: "farm" },
-					{ key: "server" },
-					{ key: "secret" }
+					{ key: 'title' },
+					{ key: 'owner' },
+					{ key: 'id' },
+					{ key: 'farm' },
+					{ key: 'server' },
+					{ key: 'secret' }
 				]
 			},
 			initialRequest: recentPhotosRequest,
@@ -66,7 +66,7 @@
 				update: $.bind(dataTable.onDataReturnAddRows, dataTable)
 			}
 		});
-		button.on("pressed", function () {
+		button.on('click', function () {
 			dataSource.sendRequest(recentPhotosRequest);
 		});
 	});

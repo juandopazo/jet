@@ -19,19 +19,23 @@
 	</style>
 </head>
 
-<body class="yui-skin-sam">
-	<script type="text/javascript" src="../../build/jet.min.js"></script>
+<body class="jet-skin-sam">
+	<script type="text/javascript" src="../../build/jet.js"></script>
 	<script type="text/javascript">
 		jet({
 			base: '../../build'
 		}).use('button', 'dragdrop', 'container', function ($) {
-			
-			for (var i = 0; i < 10; i++) {
-				(new $.Panel({
-					header: "Panel " + i,
-					body: "Hello world!",
-					draggable: true
-				})).render(document.body);
+
+			for (var i = 0, panel; i < 10; i++) {
+				panel = (function (index) {
+					return new $.Panel({
+						headerContent: "Panel " + index,
+						bodyContent: "Hello world!",
+						draggable: true,
+						width: 300
+					});
+				}(i));
+				panel.render();
 			}
 			
 		});

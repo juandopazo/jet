@@ -435,9 +435,9 @@ var History = function () {
 		 * Fires when the history changes
 		 * @event change
 		 * @param {Hash} hashData A hash with the URI data
-		 * @param {Object} Additional data associated with the current state
+		 * @param {Object} data Additional data associated with the current state
 		 */
-		myself.changeTitle(historyData).fire("change", hashData, historyData);
+		myself.changeTitle(historyData).fire("change", { uri: hashData, data: historyData });
 	};
 	
 	/*Private: Get the current location of IE's hidden iframe.*/

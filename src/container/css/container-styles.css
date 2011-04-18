@@ -17,7 +17,7 @@
     margin: 0;
 }
 
-.jet-overlay-hidden {
+.jet-overlay-hidden, .jet-panel-hidden, .jet-dialog-hidden {
 	visibility: hidden;
 }
 

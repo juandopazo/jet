@@ -15,10 +15,12 @@
 	}).use('history', function ($) {
 		
 		var myHistory = new $.History({
-			baseTitle: "Foo [@@@]"
-		});
-		myHistory.on("change", function (data, query) {
-			$(document.body).append($("<p/>").html($.JSON.stringify(query)));
+			baseTitle: "Foo [@@@]",
+			on: {
+				change: function (e) {
+					$(document.body).append($("<p/>").html($.JSON.stringify(e.uri)));
+				}
+			}
 		});
 		$(window).on("load", myHistory.initialize);
 		

@@ -4,18 +4,21 @@
  http://developer.yahoo.com/yui/license.html
  version: 2.8.1
  */
-.yui-overlay, .yui-panel-container {
-    visibility: hidden;
+.jet-overlay {
     position: absolute;
     z-index: 2;
 }
 
-.yui-panel {
+.jet-panel {
     position: relative;
 }
 
-.yui-panel-container form {
+.jet-panel-content form {
     margin: 0;
+}
+
+.jet-overlay-hidden, .jet-panel-hidden, .jet-dialog-hidden {
+	visibility: hidden;
 }
 
 .mask {
@@ -36,7 +39,7 @@
     _visibility: hidden;
 }
 
-.yui-panel-container select {
+.jet-panel-content select {
     _visibility: inherit;
 }
 
@@ -52,52 +55,52 @@
     overflow: auto;
 }
 
-.yui-panel-container.show-scrollbars, .yui-tt.show-scrollbars {
+.jet-panel-content.show-scrollbars, .jet-tt.show-scrollbars {
     overflow: visible;
 }
 
-.yui-panel-container.show-scrollbars .underlay, .yui-tt.show-scrollbars .yui-tt-shadow {
+.jet-panel-content.show-scrollbars .underlay, .jet-tt.show-scrollbars .jet-tt-shadow {
     overflow: auto;
 }
 
-.yui-panel-container.shadow .underlay.yui-force-redraw {
+.jet-panel-content.shadow .underlay.jet-force-redraw {
     padding-bottom: 1px;
 }
 
-.yui-effect-fade .underlay, .yui-effect-fade .yui-tt-shadow {
+.jet-effect-fade .underlay, .jet-effect-fade .jet-tt-shadow {
     display: none;
 }
 
-.yui-tt-shadow {
+.jet-tt-shadow {
     position: absolute;
 }
 
-.yui-override-padding {
+.jet-override-padding {
     padding: 0 !important;
 }
 
-.yui-panel-container .container-close {
+.jet-panel-content .container-close {
     overflow: hidden;
     text-indent: -10000em;
     text-decoration: none;
 }
 
-.yui-overlay.yui-force-redraw, .yui-panel-container.yui-force-redraw {
+.jet-overlay.jet-force-redraw, .jet-panel-content.jet-force-redraw {
     margin-bottom: 1px;
 }
 
-.yui-skin-sam .mask {
+.jet-skin-sam .mask {
     background-color: #000;
     opacity: .25;
     filter: alpha(opacity = 25);
 }
 
-.yui-skin-sam .yui-panel-container {
+.jet-skin-sam .jet-panel-content {
     padding: 0 1px;
     *padding: 2px;
 }
 
-.yui-skin-sam .yui-panel {
+.jet-skin-sam .jet-panel {
     position: relative;
     left: 0;
     top: 0;
@@ -110,7 +113,7 @@
     _zoom: normal;
 }
 
-.yui-skin-sam .yui-panel .header, .yui-skin-sam .yui-panel .body, .yui-skin-sam .yui-panel .footer {
+.jet-skin-sam .jet-panel .header, .jet-skin-sam .jet-panel .body, .jet-skin-sam .jet-panel .footer {
     border-style: solid;
     border-width: 0 1px;
     border-color: #808080;
@@ -119,15 +122,15 @@
     * border: 0;
 }
 
-.yui-skin-sam .yui-panel .header {
+.jet-skin-sam .jet-panel .header {
     border-bottom: solid 1px #ccc;
 }
 
-.yui-skin-sam .yui-panel .body, .yui-skin-sam .yui-panel .footer {
+.jet-skin-sam .jet-panel .body, .jet-skin-sam .jet-panel .footer {
     background-color: #F2F2F2;
 }
 
-.yui-skin-sam .yui-panel .header {
+.jet-skin-sam .jet-panel .header {
     padding: 0 10px;
     font-size: 93%;
     line-height: 2;
@@ -138,17 +141,17 @@
     background: url(http://yui.yahooapis.com/2.8.1/build/assets/skins/sam/sprite.png) repeat-x 0 -200px;
 }
 
-.yui-skin-sam .yui-panel .body {
+.jet-skin-sam .jet-panel .body {
     padding: 10px;
 }
 
-.yui-skin-sam .yui-panel .footer {
+.jet-skin-sam .jet-panel .footer {
     border-top: solid 1px #808080;
     padding: 5px 10px;
     font-size: 77%;
 }
 
-.yui-skin-sam .container-close {
+.jet-skin-sam .container-close {
     position: absolute;
     top: 5px;
     right: 6px;
@@ -158,21 +161,21 @@
     cursor: pointer;
 }
 
-.yui-skin-sam .yui-panel-container .underlay {
+.jet-skin-sam .jet-panel-content .underlay {
     right: -1px;
     left: -1px;
 }
 
-.yui-skin-sam .yui-panel-container.matte {
+.jet-skin-sam .jet-panel-content.matte {
     padding: 9px 10px;
     background-color: #fff;
 }
 
-.yui-skin-sam .yui-panel-container.shadow {
+.jet-skin-sam .jet-panel-content.shadow {
     _padding: 2px 4px 0 2px;
 }
 
-.yui-skin-sam .yui-panel-container.shadow .underlay {
+.jet-skin-sam .jet-panel-content.shadow .underlay {
     position: absolute;
     top: 2px;
     left: -3px;
@@ -202,48 +205,48 @@
     alpha(opacity = 12);
 }
 
-.yui-skin-sam .yui-dialog .footer {
+.jet-skin-sam .jet-dialog .footer {
     border-top: none;
     padding: 0 10px 10px 10px;
     font-size: 100%;
 }
 
-.yui-skin-sam .yui-dialog .footer .button-group {
+.jet-skin-sam .jet-dialog .footer .button-group {
     display: block;
     text-align: right;
 }
 
-.yui-skin-sam .yui-dialog .footer button.default {
+.jet-skin-sam .jet-dialog .footer button.default {
     font-weight: bold;
 }
 
-.yui-skin-sam .yui-dialog .footer span.default {
+.jet-skin-sam .jet-dialog .footer span.default {
     border-color: #304369;
     background-position: 0 -1400px;
 }
 
-.yui-skin-sam .yui-dialog .footer span.default .first-child {
+.jet-skin-sam .jet-dialog .footer span.default .first-child {
     border-color: #304369;
 }
 
-.yui-skin-sam .yui-dialog .footer span.default button {
+.jet-skin-sam .jet-dialog .footer span.default button {
     color: #fff;
 }
 
-.yui-skin-sam .yui-dialog .footer span.yui-button-disabled {
+.jet-skin-sam .jet-dialog .footer span.jet-button-disabled {
     background-position: 0 -1500px;
     border-color: #ccc;
 }
 
-.yui-skin-sam .yui-dialog .footer span.yui-button-disabled .first-child {
+.jet-skin-sam .jet-dialog .footer span.jet-button-disabled .first-child {
     border-color: #ccc;
 }
 
-.yui-skin-sam .yui-dialog .footer span.yui-button-disabled button {
+.jet-skin-sam .jet-dialog .footer span.jet-button-disabled button {
     color: #a6a6a6;
 }
 
-.yui-skin-sam .yui-simple-dialog .body .yui-icon {
+.jet-skin-sam .jet-simple-dialog .body .jet-icon {
     background: url(http://yui.yahooapis.com/2.8.1/build/assets/skins/sam/sprite.png) no-repeat 0 0;
     width: 16px;
     height: 16px;
@@ -251,31 +254,31 @@
     float: left;
 }
 
-.yui-skin-sam .yui-simple-dialog .body span.blckicon {
+.jet-skin-sam .jet-simple-dialog .body span.blckicon {
     background-position: 0 -1100px;
 }
 
-.yui-skin-sam .yui-simple-dialog .body span.alrticon {
+.jet-skin-sam .jet-simple-dialog .body span.alrticon {
     background-position: 0 -1050px;
 }
 
-.yui-skin-sam .yui-simple-dialog .body span.hlpicon {
+.jet-skin-sam .jet-simple-dialog .body span.hlpicon {
     background-position: 0 -1150px;
 }
 
-.yui-skin-sam .yui-simple-dialog .body span.infoicon {
+.jet-skin-sam .jet-simple-dialog .body span.infoicon {
     background-position: 0 -1200px;
 }
 
-.yui-skin-sam .yui-simple-dialog .body span.warnicon {
+.jet-skin-sam .jet-simple-dialog .body span.warnicon {
     background-position: 0 -1900px;
 }
 
-.yui-skin-sam .yui-simple-dialog .body span.tipicon {
+.jet-skin-sam .jet-simple-dialog .body span.tipicon {
     background-position: 0 -1250px;
 }
 
-.yui-skin-sam .yui-tt .body {
+.jet-skin-sam .jet-tt .body {
     position: relative;
     top: 0;
     left: 0;
@@ -288,11 +291,11 @@
     background-color: #FFEE69;
 }
 
-.yui-skin-sam .yui-tt.show-scrollbars .body {
+.jet-skin-sam .jet-tt.show-scrollbars .body {
     overflow: auto;
 }
 
-.yui-skin-sam .yui-tt-shadow {
+.jet-skin-sam .jet-tt-shadow {
     top: 2px;
     right: -3px;
     left: -3px;
@@ -300,7 +303,7 @@
     background-color: #000;
 }
 
-.yui-skin-sam .yui-tt-shadow-visible {
+.jet-skin-sam .jet-tt-shadow-visible {
     opacity: .12;
     filter: alpha(opacity = 12);
 }

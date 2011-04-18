@@ -1,0 +1,69 @@
+
+.jet-menu-content:after {
+	content: '';
+	display: block;
+	height: 0;
+	visibility: hidden;
+	clear: both;
+}
+.jet-menu-content {
+	margin: 0;
+	padding: 0;
+	background: #e3e9ff;
+	border-top: 2px solid #bbccff;
+	height: 26px;
+	line-height: 26px;
+	zoom: 1;
+}
+
+.jet-menuitem {
+	float: left;
+	list-style: none;
+}
+.jet-menuitem-content {
+	display: inline-block;
+	text-decoration: none;
+}
+.jet-menuitem-hover, .jet-menuitem-selected {
+	background: #6688ee;
+}
+.jet-menuitem-hover .jet-menuitem-content,
+.jet-menuitem-selected .jet-menuitem-content {
+	color: #fff;
+}
+.jet-menuitem-hover .jet-menuitem .jet-menuitem-content,
+.jet-menuitem-selected .jet-menuitem .jet-menuitem-content {
+	color: #000;
+}
+.jet-menuitem-hover .jet-menuitem .jet-menuitem-hover {
+	background: #6688ee;
+}
+.jet-menuitem-hover .jet-menuitem-hover .jet-menuitem-content {
+	color: #fff;
+}
+
+.jet-menuitem .jet-overlay {
+	min-width: 100px;
+	border: 1px solid #a9a9a9;
+	-webkit-box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+	-moz-box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+	box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+}
+.jet-menuitem .jet-overlay ul {
+	margin: 0;
+	padding: 0;
+}
+
+.jet-menuitem .jet-menuitem {
+	float: none;
+	width: 100%;
+}
+
+.jet-menuitem-label {
+	display: block;
+	padding: 0px 15px;
+}
+
+#jet-tracker {
+	font-weight: bold;
+}

@@ -159,11 +159,11 @@ $.mix(WidgetParent, {
 			var children;
 			//@TODO: check the use of childrenContainer
 			var childrenContainer = this.get(CONTENT_BOX);
-			childrenContainer.children().each(function () {
+			childrenContainer.children().each(function (node) {
 				children = children || [];
 				children.push({
 					srcNode: childrenContainer,
-					boundingBox: this
+					boundingBox: node
 				});
 			});
 			return children;
