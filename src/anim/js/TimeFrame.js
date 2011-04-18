@@ -34,7 +34,7 @@ if (!jet.TimeFrame) {
 					}
 					var frameLength = Math.round(1000 / self.fps);
 					interval = setInterval(function () {
-						self.fire(ENTER_FRAME, (new Date()).getTime());
+						self.fire(ENTER_FRAME, { time: (new Date()).getTime() });
 					}, frameLength);
 					playing = true;
 				}

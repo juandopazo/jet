@@ -66,8 +66,8 @@ var Tween = Base.create('tween', Base, [], {
 		duration: {
 			value: 1000,
 			setter: function (value) {
-				return value == "fast" ? 500 :
-					   value == "slow" ? 4000 :
+				return value == 'fast' ? 500 :
+					   value == 'slow' ? 4000 :
 					   Lang.isNumber(value) ? value :
 					   1000; 
 			}
@@ -104,7 +104,8 @@ var Tween = Base.create('tween', Base, [], {
 	}
 	
 }, {
-	_enterFrame: function (e, time) {
+	_enterFrame: function (e) {
+		var time = e.time;
 		if (this.get('playing')) {
 			if (!this.get('startTime')) {
 				this.set('startTime', time);
@@ -123,7 +124,7 @@ var Tween = Base.create('tween', Base, [], {
 					if ((val > from[name] && go > val) || (val < from[name] && go < val)) {
 						go = val;
 					}
-					if (self.fire("tween", go)) {
+					if (self.fire('tween', { property: name, value: go })) {
 						node.css(name, go);
 					} else {
 						elapsed = duration;
@@ -132,7 +133,7 @@ var Tween = Base.create('tween', Base, [], {
 			} else {
 				self.stop();
 				setTimeout(function () {
-					self.fire("end");
+					self.fire('end');
 				}, 0); 
 			}
 		}
@@ -147,8 +148,8 @@ var Tween = Base.create('tween', Base, [], {
 	play: function () {
 		var node = this.get('node');
 		var startStyle = node.currentStyle();
-		var from = this.get("from") || {};
-		var to = this.get("to");
+		var from = this.get('from') || {};
+		var to = this.get('to');
 		var offset;
 		var timeframe = jet.TimeFrame;
 		if (to.left || to.top) {
@@ -161,16 +162,16 @@ var Tween = Base.create('tween', Base, [], {
 				// they might have non numeric values such as "auto"
 				// @TODO: handle "auto" for margin, padding, etc
 				switch (name) {
-					case "left":
+					case 'left':
 						from[name] = offset.left;
 						break;
-					case "top":
+					case 'top':
 						from[name] = offset.top;
 						break;
-					case "width":
+					case 'width':
 						from[name] = node.attr('offsetWidth');
 						break;
-					case "height":
+					case 'height':
 						from[name] = node.attr('offsetHeight');
 						break;
 					default:
@@ -179,7 +180,7 @@ var Tween = Base.create('tween', Base, [], {
 			} 
 		});
 		this.set('from', from);
-		if (this.fire("start")) {
+		if (this.fire('start')) {
 			this.set('playing', true);
 			timeframe.on(ENTER_FRAME, this._enterFrame, this);
 			timeframe.addTween(this).play();
