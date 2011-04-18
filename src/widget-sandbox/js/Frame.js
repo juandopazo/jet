@@ -330,10 +330,10 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 				args = this.get('use');
 			
 			/**
-			 * @event contentready
+			 * @event contentReady
 			 * @description Fires when the content is ready to use
 			 */
-			this.fire('contentready');
+			this.fire('contentReady');
 
 			if (e) {
 				inst.config.doc = e.target._nodes[0] || e.target;
@@ -373,8 +373,8 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 			var inst = this.getInstance();
 			inst('body').html(html);
 		} else {
-			//This needs to be wrapped in a contentready callback for the !_ready state
-			this.on('contentready', $.bind(function(html, e) {
+			//This needs to be wrapped in a contentReady callback for the !_ready state
+			this.on('contentReady', $.bind(function(html, e) {
 				var inst = this.getInstance();
 				inst('body').html(html);
 			}, this, html));
@@ -433,7 +433,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 	* @private
 	* @method _instanceLoaded
 	* @description Called from the first YUI instance that sets up the internal instance.
-	* This loads the content into the window/frame and attaches the contentready event.
+	* This loads the content into the window/frame and attaches the contentReady event.
 	* @param {jet} inst The internal YUI instance bound to the frame/window
 	*/
 	_instanceLoaded: function(inst) {

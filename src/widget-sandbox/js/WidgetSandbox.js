@@ -33,7 +33,7 @@ $.WidgetSandbox = $.mix(WidgetSandbox, {
 		
 		afterRender: function () {
 			var frame = this.frame;
-			frame.on('contentready', this._onFrameReady, this);
+			frame.on('contentReady', this._onFrameReady, this);
 			frame.render(this.get('boundingBox'));
 		}
 		
