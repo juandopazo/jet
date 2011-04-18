@@ -312,7 +312,7 @@ var Widget = Base.create('widget', Base, [], {
 				$_Array.each(['renderUI', 'bindUI', 'syncUI'], function (method) {
 					$_Array.each(classes, function (constructor) {
 						if (constructor.prototype.hasOwnProperty(method)) {
-							constructor.prototype[method].call(self, boundingBox);
+							constructor.prototype[method].call(self, boundingBox, contentBox);
 						}
 					});
 				});
