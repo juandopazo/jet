@@ -79,7 +79,7 @@ $.extend(NodeList, $.ArrayList, {
 	 */
 	show: function () {
 		return this.each(function (node) {
-			node.style.display = node.JET_oDisplay || "";
+			node.style.display = node.JET_oDisplay || '';
 		});
 	},
 	/**
@@ -90,11 +90,11 @@ $.extend(NodeList, $.ArrayList, {
 	toggle: function (showHide) {
 		return this.each(function (node) {
 			var ns = node.style;
-			var oDisplay = node.LIB_oDisplay;
+			var oDisplay = node.LIB_oDisplay || '';
 			ns.display = Lang.isBoolean(showHide) ? (showHide ? oDisplay : NONE) :
 						ns.display != NONE ? NONE :
 						oDisplay ? oDisplay :
-						"";
+						'';
 		});
 	},
 	/**

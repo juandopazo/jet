@@ -286,6 +286,7 @@ window.jet = function (o) {
 	 */
 	
 	var get = new Get(config);
+	var use = makeUse(config, get);
 	
 	/*
 	 * Allows for the following pattern:
@@ -306,7 +307,7 @@ window.jet = function (o) {
 		 * that contains the main logic of the application.
 		 * @method use 
 		 */
-		use: makeUse(config, get)
+		use: use
 	};
 };
 /**

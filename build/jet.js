@@ -1185,6 +1185,7 @@ window.jet = function (o) {
 	 */
 	
 	var get = new Get(config);
+	var use = makeUse(config, get);
 	
 	/*
 	 * Allows for the following pattern:
@@ -1205,7 +1206,7 @@ window.jet = function (o) {
 		 * that contains the main logic of the application.
 		 * @method use 
 		 */
-		use: makeUse(config, get)
+		use: use
 	};
 };
 /**
@@ -1721,7 +1722,7 @@ $.extend(NodeList, $.ArrayList, {
 	 */
 	show: function () {
 		return this.each(function (node) {
-			node.style.display = node.JET_oDisplay || "";
+			node.style.display = node.JET_oDisplay || '';
 		});
 	},
 	/**
@@ -1732,11 +1733,11 @@ $.extend(NodeList, $.ArrayList, {
 	toggle: function (showHide) {
 		return this.each(function (node) {
 			var ns = node.style;
-			var oDisplay = node.LIB_oDisplay;
+			var oDisplay = node.LIB_oDisplay || '';
 			ns.display = Lang.isBoolean(showHide) ? (showHide ? oDisplay : NONE) :
 						ns.display != NONE ? NONE :
 						oDisplay ? oDisplay :
-						"";
+						'';
 		});
 	},
 	/**
