@@ -1612,8 +1612,8 @@ var DOM = {
 	 * Returns the inner size of the screen
 	 * @method screenSize
 	 */
-	screenSize: function () {
-		var doc = $.context,
+	screenSize: function (win) {
+		var doc = win ? win.document : $.config.doc,
 			de = doc.documentElement,
 			db = doc.body;
 		return {
