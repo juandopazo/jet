@@ -232,7 +232,7 @@ var DataTable = Base.create('dt', Widget, [], {
 	 * @chainable
 	 */
 	addRows: function (rows) {
-		if (this.fire('addRows', rows)) {
+		if (this.fire('addRows', { rows: rows })) {
 			if (Lang.isArray(rows)) {
 				A.each(rows, function (row) {
 					if (!Record.hasInstance(row)) {
@@ -247,7 +247,7 @@ var DataTable = Base.create('dt', Widget, [], {
 			if (sortedBy) {
 				this._sort($(NUMERAL + this.getClassName(this._uid, 'th', sortedBy)), true);
 			}
-			this.fire('afterAddRows');
+			this.fire('afterAddRows', { rows: rows });
 		}
 		return this;
 	},

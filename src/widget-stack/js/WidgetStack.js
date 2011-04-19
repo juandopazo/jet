@@ -102,7 +102,6 @@ $.WidgetStack = $.mix(WidgetStack, {
 		},
 		
 		afterZIndexChange: function (e) {
-			console.log(e);
 			this.get(BOUNDING_BOX).css(ZINDEX, e.newVal);
 		},
 		
