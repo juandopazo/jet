@@ -202,6 +202,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 	
 	_onHandleMouseDown: function (e) {
 		if (!this.get(LOCKED)) {
+			e.preventDefault();
 			var handle = $(e.target);
 			if (handle.hasClass(this.get('prefix') + '-resize-handle-inner')) {
 				handle = handle.parent();
