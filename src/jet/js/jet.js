@@ -167,7 +167,7 @@ var buildConfig = function (config, next) {
 		next.modules[name] = opts;
 	});
 	Hash.each(next, function (name, opts) {
-		if (Lang.isObject(opts) && name != 'win' && name != 'doc') {
+		if (Lang.isObject(opts) && name != 'win' && name != 'doc' && opts.hasOwnProperty) {
 			if (!Lang.isObject(config[name])) {
 				config[name] = {};
 			}

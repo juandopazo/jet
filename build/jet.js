@@ -610,9 +610,11 @@ var domReady = function (fn, lib, _doc) {
 var mix = function (a, b, overwrite) {
 	a = a || {};
 	b = b || {};
-	for (var x in b) {
-		if (b.hasOwnProperty(x) && (!a[x] || overwrite)) {
-			a[x] = b[x];
+	if (b.hasOwnProperty) {
+		for (var x in b) {
+			if (b.hasOwnProperty(x) && (!a[x] || overwrite)) {
+				a[x] = b[x];
+			}
 		}
 	}
 	return a;
@@ -1066,7 +1068,7 @@ var buildConfig = function (config, next) {
 		next.modules[name] = opts;
 	});
 	Hash.each(next, function (name, opts) {
-		if (Lang.isObject(opts) && name != 'win' && name != 'doc') {
+		if (Lang.isObject(opts) && name != 'win' && name != 'doc' && opts.hasOwnProperty) {
 			if (!Lang.isObject(config[name])) {
 				config[name] = {};
 			}
