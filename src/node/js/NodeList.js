@@ -378,6 +378,18 @@ $.extend(NodeList, $.ArrayList, {
 			}
 		});
 	},
+	ancestor: function (fn) {
+		return this.map(function (node) {
+			var parent = node;
+			while (parent) {
+				if (fn(parent)) {
+					break;
+				}
+				parent = parent.parentNode;
+			}
+			return parent;
+		});
+	},
 	/**
 	 * Returns a new NodeList with all the first children of the nodes in the collection
 	 * @method first

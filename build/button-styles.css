@@ -163,6 +163,86 @@
     background-image: url(http://yui.yahooapis.com/2.8.1/build/button/assets/skins/sam/split-button-arrow-disabled.png);
 }
 
+.jet-combobox, .jet-combobox-content {
+	background:#fff;
+	border: 1px solid #ccc;
+	padding: 0px 3px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+}
+.jet-combobox {
+	display: inline-block;
+	position: relative;
+	height: 16px;
+	line-height: 16px;
+	padding-right: 21px;
+}
+.jet-combobox-content, .jet-combobox-arrow-container, .jet-combobox-arrow {
+	position: absolute;
+}
+.jet-combobox-content, .jet-combo-option {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+} 
+.jet-combobox-content {
+	top: 17px;
+	left: -1px;
+	max-height: 200px;
+	border-right-color: #000;
+	border-bottom-color: #000;
+	display: none;
+}
+.jet-combobox-arrow-container {
+	display: block;
+	width: 14px;
+	height: 14px;
+	right: 1px;
+	top: 1px;
+}
+.jet-combobox-arrow {
+	display: inline-block;
+	width: 0;
+	height: 0;
+	top: 5px;
+	left: 3px;
+	border: 4px solid transparent;
+	border-top-color: #000;
+}
+.jet-combobox-expanded .jet-combobox-content {
+	display: block;
+}
+.jet-combobox-expanded .jet-combobox-arrow-container, .jet-combobox-arrow-container:hover {
+	background: #EAF6FD; /* old browsers */
+	background: -moz-linear-gradient(top, #EAF6FD 0%, #D9F0FD 50%, #BEE6FD 51%, #A9DBF6 100%); /* firefox */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#EAF6FD), color-stop(50%,#D9F0FD), color-stop(51%,#BEE6FD), color-stop(100%,#A9DBF6)); /* webkit */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#EAF6FD', endColorstr='#A9DBF6',GradientType=0 ); /* ie */
+	background: -o-linear-gradient(top, #EAF6FD 0%,#D9F0FD 50%,#BEE6FD 51%,#A9DBF6 100%); /* opera */
+}
+.jet-combobox-expanded .jet-combobox-arrow-container:before, .jet-combobox-arrow-container:hover:before {
+	content: '';
+	width: 1px;
+	height: 17px;
+	position: absolute;
+	display: block;
+	background: #5794bf;
+	left: -2px;
+	top: -1px;
+}
+.jet-combobox-expanded, .jet-combobox:hover {
+	border-top-color: #5794bf;
+	border-right-color: #5794bf;
+	border-bottom-color: #c5daed;
+	border-left-color: #c5daed;
+}
+.jet-combo-option-hover {
+	color: #fff;
+	background: #3399ff;
+}
+.jet-combo-option-content {
+	cursor: default;
+}
+
 #jet-tracker {
 	border-bottom-style: solid; 
 }
