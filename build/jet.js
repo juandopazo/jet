@@ -1839,7 +1839,7 @@ $.extend(NodeList, $.ArrayList, {
 				height: node.offsetHeight
 			};
 			var doc = node.ownerDocument;
-			if (node && doc) {
+			try {
 				if (node.getBoundingClientRect) {
 					var box  = node.getBoundingClientRect();
 					var body = doc.body;
@@ -1854,9 +1854,7 @@ $.extend(NodeList, $.ArrayList, {
 						node = node.offsetParent;
 					} while (node);
 				}
-			} else {
-				offset = null;
-			}
+			} catch (e) {}
 			
 			return offset;
 		}
