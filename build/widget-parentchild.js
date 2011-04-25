@@ -36,7 +36,11 @@ var SELECTED = 'selected',
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-function WidgetParent() {}
+function WidgetParent() {
+	if (!this.get(CHILDREN)) {
+		this.set(CHILDREN, []);
+	}
+}
 $.mix(WidgetParent, {
 	
 	NAME: 'widget-parent',
@@ -70,7 +74,6 @@ $.mix(WidgetParent, {
 		 * @default []
 		 */
 		children: {
-			value: []
 		},
 		
 		/**
