@@ -14,6 +14,7 @@ Hash = {
 	 * @param {Object} [thisp] Sets the value of the this keyword 
 	 */
 	each: function (hash, fn, thisp) {
+		hash = hash || {};
 		for (var x in hash) {
 			if (hash.hasOwnProperty(x)) {
 				if (fn.call(thisp || hash, x, hash[x], hash) === false) {

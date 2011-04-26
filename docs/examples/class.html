@@ -10,9 +10,9 @@
 	</style>
 </head>
 <body>
-	<script src="../../build/jet.min.js"></script>
+	<script src="../../build/jet.js"></script>
 	<script>
-		jet().use(function ($) {
+		jet(function ($) {
 			
 			var Class = $.Class;
 			
@@ -20,6 +20,9 @@
 			
 			var MyClass = Class.create('MyClass', Class, [Mixin1]);
 			console.log(MyClass);
+			
+			var widget = new $.Widget();
+			widget.render();
 			
 		});
 	</script>

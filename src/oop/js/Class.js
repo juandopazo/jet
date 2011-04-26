@@ -31,7 +31,7 @@ $.mix(Class, {
 		extensions = extensions || [];
 		
 		function BuiltClass() {
-			BuiltClass.superclass.constructor.apply(this, args);
+			BuiltClass.superclass.constructor.apply(this, arguments);
 		}
 		$.extend(BuiltClass, superclass || Class, proto, attrs);
 		
@@ -58,7 +58,7 @@ $.mix(Class, {
 		constructor.EXTS.push.apply(constructor.EXTS, extensions);
 		
 		$_Array.each(extensions, function (extension) {
-			//$.mix(BuiltClass.prototype, extension.prototype);
+			$.mix(constructor.prototype, extension.prototype);
 			$.Hash.each(extension, function (prop, val) {
 				if (!constructor[prop]) {
 					constructor[prop] = val;

@@ -6,10 +6,25 @@
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-function Utility() {
-	Utility.superclass.constructor.apply(this, arguments);
-}
-extend(Utility, Base, {
+$.Utility = Class.create('utility', $.Base, [], {
+	
+	CSS_PREFIX: 'jet',
+	
+	ATTRS: {
+		/**
+		 * @attribute cssPrefix
+		 * @default Utility.CSS_PREFIX
+		 * @writeOnce
+		 */
+		cssPrefix: {
+			getter: function (val) {
+				return val || $.Utility.CSS_PREFIX;
+			},
+			writeOnce: true
+		}
+	}
+	
+}, {
 	
 	initializer: function () {
 		this._handlers = [$(this.get('win')).on(UNLOAD, this.destroy, this)];
@@ -35,20 +50,4 @@ extend(Utility, Base, {
 	getClassName: function () {
 		return [this.get(CLASS_PREFIX), this.constructor.NAME].concat(SLICE.call(arguments)).join(DASH);
 	}
-}, {
-	
-	CSS_PREFIX: 'jet',
-	
-	ATTRS: {
-		/**
-		 * @attribute cssPrefix
-		 * @default Utility.CSS_PREFIX
-		 * @writeOnce
-		 */
-		cssPrefix: {
-			value: Utility.CSS_PREFIX,
-			writeOnce: true
-		}
-	}
-	
 });

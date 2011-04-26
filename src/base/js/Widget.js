@@ -27,7 +27,7 @@ if (!jet.Widget._instances) {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-var Widget = Base.create('widget', Base, [], {
+$.Widget = Class.create('widget', $.Base, [], {
 	
 	/**
 	 * @property CSS_PREFIX
@@ -74,7 +74,7 @@ var Widget = Base.create('widget', Base, [], {
 		classPrefix: {
 			writeOnce: true,
 			getter: function (val) {
-				return val || Widget.CSS_PREFIX;
+				return val || $.Widget.CSS_PREFIX;
 			}
 		},
 		/**
@@ -255,8 +255,8 @@ var Widget = Base.create('widget', Base, [], {
 			var contentBox = this.get(CONTENT_BOX);
 			var srcNode = this.get(SRC_NODE);
 			var className, classPrefix = this.get(CLASS_PREFIX);
-			var classes = this._classes;
-			Hash.each(Widget.DOM_EVENTS, function (name, activated) {
+			var classes = [].concat(this._classes);
+			Hash.each($.Widget.DOM_EVENTS, function (name, activated) {
 				if (activated) {
 					self._handlers.push(boundingBox.on(name, self._domEventProxy, self));
 				}
@@ -266,10 +266,10 @@ var Widget = Base.create('widget', Base, [], {
 				self.set(SRC_NODE, target);
 			}
 
-			if (this.constructor == Widget) {
-				classes = [Widget];
+			if (this.constructor == $.Widget) {
+				classes = [$.Widget];
 			} else {
-				classes.shift();
+				classes.splice(0, 4);
 			}
 			
 			$_Array.each([WIDTH, HEIGHT], function (size) {

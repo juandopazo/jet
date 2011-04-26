@@ -5,7 +5,7 @@ var Hash = $.Hash,
 	SLICE = Array.prototype.slice,
 	extend = $.extend;
 	
-var Base;
+var Class = $.Class;
 
 var TRACKING = "tracking",
 	MOUSEMOVE = "mousemove",
@@ -77,12 +77,12 @@ function CustomEvent(type, target, onPrevented, args) {
  * @class EventTarget
  * @constructor
  */
-function EventTarget() {
+$.EventTarget = Class.create('EventTarget', Class, [], {}, {
 	
-	this._events = {};
+	initializer: function () {
+		this._events = {};
+	},
 	
-};
-EventTarget.prototype = {
 	/**
 	 * Adds an event listener 
 	 * @method on
@@ -184,4 +184,4 @@ EventTarget.prototype = {
 		}
 		return returnValue;
 	}
-};
+});

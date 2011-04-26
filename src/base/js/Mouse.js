@@ -7,7 +7,7 @@
  * @extends Utility
  * @param {Object} config Object literal specifying configuration properties
  */
-var Mouse = Base.create('mouse', Utility, [], {
+var Mouse = $.Mouse = $.Utility.create('mouse', [], {
 	
 	ATTRS: {
 		/**
@@ -173,7 +173,7 @@ var Mouse = Base.create('mouse', Utility, [], {
 });
 (function () {
 	
-	var $_event = new EventTarget();
+	var $_event = new $.EventTarget();
 	var interval, timeout;
 	var lastScrollLeft, lastScrollTop;
 	var win = $.config.win;
@@ -212,13 +212,3 @@ var Mouse = Base.create('mouse', Utility, [], {
 	});
 	
 }());
-
-$.add({
-	Mouse: Mouse,
-	Attribute: Attribute,
-	Base: Base,
-	Utility: Utility,
-	Widget: Widget,
-	EventTarget: EventTarget,
-	extend: extend
-});

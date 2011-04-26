@@ -5,15 +5,19 @@
  * @extends EventTarget
  * @constructor
  */
-function Attribute(state) {
+$.Attribute = Class.create('Attribute', $.EventTarget, [], {}, {
 	
-	Attribute.superclass.constructor.call(this);
+	initializer: function (state) {
+		this._state = state || {};
+		this._stateConf = {};
+		
+		$_Array.each(this._classes, function (constructor) {
+			if (constructor.ATTRS) {
+				this.addAttrs(constructor.ATTRS);
+			}
+		}, this);
+	},
 	
-	this._state = state || {};
-	this._stateConf = {};
-	
-};
-extend(Attribute, EventTarget, {
 	/**
 	 * Adds a configuration attribute, along with its options
 	 * @method addAttr

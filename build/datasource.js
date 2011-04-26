@@ -451,7 +451,7 @@ var DataSource = Base.create('datasource', $.Utility, [], {
 	 */
 	sendRequest: function (request, ignoreCache) {
 		var self = this;
-		var internalEvents = this._events;
+		var internalEvents = this._dsEvents;
 		this.handleRequest(request, function (rawData) {
 			self.set(TEMP_DATA, rawData);
 			var tempData = rawData;
@@ -495,14 +495,14 @@ var DataSource = Base.create('datasource', $.Utility, [], {
 	 */
 	onBeforeParse: function (callback) {
 		var self = this;
-		this._events.on("beforeParse", function (e) {
+		this._dsEvents.on("beforeParse", function (e) {
 			self.set(TEMP_DATA, callback(e.data));
 		});
 		return this;
 	},
 	
 	initializer: function () {
-		this._events = new $.EventTarget();
+		this._dsEvents = new $.EventTarget();
 		this.sendRequest(this.get(INITIAL_REQUEST));
 	}
 });

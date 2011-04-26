@@ -508,6 +508,7 @@ Hash = {
 	 * @param {Object} [thisp] Sets the value of the this keyword 
 	 */
 	each: function (hash, fn, thisp) {
+		hash = hash || {};
 		for (var x in hash) {
 			if (hash.hasOwnProperty(x)) {
 				if (fn.call(thisp || hash, x, hash[x], hash) === false) {
@@ -1390,7 +1391,7 @@ $.mix(Class, {
 		extensions = extensions || [];
 		
 		function BuiltClass() {
-			BuiltClass.superclass.constructor.apply(this, args);
+			BuiltClass.superclass.constructor.apply(this, arguments);
 		}
 		$.extend(BuiltClass, superclass || Class, proto, attrs);
 		
@@ -1417,7 +1418,7 @@ $.mix(Class, {
 		constructor.EXTS.push.apply(constructor.EXTS, extensions);
 		
 		$_Array.each(extensions, function (extension) {
-			//$.mix(BuiltClass.prototype, extension.prototype);
+			$.mix(constructor.prototype, extension.prototype);
 			$.Hash.each(extension, function (prop, val) {
 				if (!constructor[prop]) {
 					constructor[prop] = val;
@@ -2481,7 +2482,7 @@ var Hash = $.Hash,
 	SLICE = Array.prototype.slice,
 	extend = $.extend;
 	
-var Base;
+var Class = $.Class;
 
 var TRACKING = "tracking",
 	MOUSEMOVE = "mousemove",
@@ -2553,12 +2554,12 @@ function CustomEvent(type, target, onPrevented, args) {
  * @class EventTarget
  * @constructor
  */
-function EventTarget() {
+$.EventTarget = Class.create('EventTarget', Class, [], {}, {
 	
-	this._events = {};
+	initializer: function () {
+		this._events = {};
+	},
 	
-};
-EventTarget.prototype = {
 	/**
 	 * Adds an event listener 
 	 * @method on
@@ -2660,22 +2661,26 @@ EventTarget.prototype = {
 		}
 		return returnValue;
 	}
-};
+});
 /**
  * Provides get() and set() methods, along with getters, setters and options for configuration attributres
  * @class Attribute
  * @extends EventTarget
  * @constructor
  */
-function Attribute(state) {
+$.Attribute = Class.create('Attribute', $.EventTarget, [], {}, {
 	
-	Attribute.superclass.constructor.call(this);
+	initializer: function (state) {
+		this._state = state || {};
+		this._stateConf = {};
+		
+		$_Array.each(this._classes, function (constructor) {
+			if (constructor.ATTRS) {
+				this.addAttrs(constructor.ATTRS);
+			}
+		}, this);
+	},
 	
-	this._state = state || {};
-	this._stateConf = {};
-	
-};
-extend(Attribute, EventTarget, {
 	/**
 	 * Adds a configuration attribute, along with its options
 	 * @method addAttr
@@ -2817,37 +2822,7 @@ extend(Attribute, EventTarget, {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-Base = function (config) {
-	/*
-	 * Base should hold basic logic shared among a lot of classes, 
-	 * to avoid having to extend the Attribute class which is very specific in what it does
-	 */
-	Base.superclass.constructor.apply(this, arguments);
-	
-	var constrct = this.constructor;
-	var classes = this._classes = [];
-	var i;
-	function attachEvent(name, fn) {
-		this.on(name, Lang.isString(fn) ? this[fn] : fn);
-	}
-	while (constrct != Base) {
-		classes.unshift(constrct);
-		constrct = constrct.superclass.constructor;
-	}
-	for (i = 0; i < classes.length; i++) {
-		if (classes[i].ATTRS) {
-			this.addAttrs(classes[i].ATTRS);
-		}
-		if (classes[i].EVENTS) {
-			Hash.each(classes[i].EVENTS, attachEvent, this);
-		}
-		if (classes[i][PROTO].hasOwnProperty('initializer')) {
-			classes[i][PROTO].initializer.call(this, config);
-		}
-	}
-	Hash.each(this.get("on"), attachEvent, this);
-};
-extend(Base, Attribute, {}, {
+$.Base = Class.create('Base', $.Attribute, [], {
 	
 	ATTRS: {
 		/**
@@ -2857,52 +2832,33 @@ extend(Base, Attribute, {}, {
 		 */
 		on: {
 			writeOnce: true,
-			value: {}
+			getter: function (val) {
+				return val || {};
+			}
 		}
-	},
+	}
 	
-	/**
-	 * @method create
-	 * @description creates a new base class
-	 * @static
-	 * @param {String} name Name of the base class to create
-	 * @param {Function} superclass [Optional] The superclass for this new class. Defaults to Base
-	 * @param {Array} extensions [Optional] A list of extensions to apply to the created class
-	 * @param {Hash} attrs [Optional] Static properties of the class. Recommended order: ATTRS, EVENTS, HTML_PARSER
-	 * @param {Hash} proto [Optional] Prototype properties to add to the class
-	 */
-	create: function (name, superclass, extensions, attrs, proto) {
-		extensions = extensions || [];
-		function BuiltClass() {
-			var args = arguments;
-			var self = this;
-			BuiltClass.superclass.constructor.apply(this, args);
-			$_Array.each(BuiltClass.exts, function (extension) {
-				extension.apply(self, args);
-				Hash.each(extension.EVENTS || {}, function (type, fn) {
-					self.on(type, fn);
-				});
-			});
+}, {
+	
+	initializer: function (config) {
+		config = config || {};
+		function attachEvent(name, fn) {
+			this.on(name, Lang.isString(fn) ? this[fn] : fn);
 		}
-		extend(BuiltClass, superclass || Base, proto, attrs || {});
-		$.mix(BuiltClass, {
-			NAME: name,
-			exts: extensions
-		}, true);
-		$_Array.each(extensions, function (extension) {
-			$.mix(BuiltClass[PROTO], extension[PROTO]);
-			Hash.each(extension, function (prop, val) {
-				if (!BuiltClass[prop]) {
-					BuiltClass[prop] = val;
-				} else if (Lang.isObject(BuiltClass[prop]) && Lang.isObject(val)) {
-					$.mix(BuiltClass[prop], val);
-				}
-			});
-		});
-		return BuiltClass;
+		
+		$_Array.each(this._classes, function (constructor) {
+			$_Array.each(constructor.EXTS, function (extension) {
+				Hash.each(extension.EVENTS, attachEvent, this);
+			}, this);
+			Hash.each(constructor.EVENTS, attachEvent, this);
+		}, this);
+		
+		Hash.each(config.on, attachEvent, this);
 	}
 	
 });
+
+$.Base.create = Class.create;
 /**
  * Basic class for all utilities
  * @class Utility
@@ -2910,10 +2866,25 @@ extend(Base, Attribute, {}, {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-function Utility() {
-	Utility.superclass.constructor.apply(this, arguments);
-}
-extend(Utility, Base, {
+$.Utility = Class.create('utility', $.Base, [], {
+	
+	CSS_PREFIX: 'jet',
+	
+	ATTRS: {
+		/**
+		 * @attribute cssPrefix
+		 * @default Utility.CSS_PREFIX
+		 * @writeOnce
+		 */
+		cssPrefix: {
+			getter: function (val) {
+				return val || $.Utility.CSS_PREFIX;
+			},
+			writeOnce: true
+		}
+	}
+	
+}, {
 	
 	initializer: function () {
 		this._handlers = [$(this.get('win')).on(UNLOAD, this.destroy, this)];
@@ -2939,22 +2910,6 @@ extend(Utility, Base, {
 	getClassName: function () {
 		return [this.get(CLASS_PREFIX), this.constructor.NAME].concat(SLICE.call(arguments)).join(DASH);
 	}
-}, {
-	
-	CSS_PREFIX: 'jet',
-	
-	ATTRS: {
-		/**
-		 * @attribute cssPrefix
-		 * @default Utility.CSS_PREFIX
-		 * @writeOnce
-		 */
-		cssPrefix: {
-			value: Utility.CSS_PREFIX,
-			writeOnce: true
-		}
-	}
-	
 });
 var BOUNDING_BOX = 'boundingBox',
 	CONTENT_BOX = 'contentBox',
@@ -2984,7 +2939,7 @@ if (!jet.Widget._instances) {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-var Widget = Base.create('widget', Base, [], {
+$.Widget = Class.create('widget', $.Base, [], {
 	
 	/**
 	 * @property CSS_PREFIX
@@ -3031,7 +2986,7 @@ var Widget = Base.create('widget', Base, [], {
 		classPrefix: {
 			writeOnce: true,
 			getter: function (val) {
-				return val || Widget.CSS_PREFIX;
+				return val || $.Widget.CSS_PREFIX;
 			}
 		},
 		/**
@@ -3212,8 +3167,8 @@ var Widget = Base.create('widget', Base, [], {
 			var contentBox = this.get(CONTENT_BOX);
 			var srcNode = this.get(SRC_NODE);
 			var className, classPrefix = this.get(CLASS_PREFIX);
-			var classes = this._classes;
-			Hash.each(Widget.DOM_EVENTS, function (name, activated) {
+			var classes = [].concat(this._classes);
+			Hash.each($.Widget.DOM_EVENTS, function (name, activated) {
 				if (activated) {
 					self._handlers.push(boundingBox.on(name, self._domEventProxy, self));
 				}
@@ -3223,10 +3178,10 @@ var Widget = Base.create('widget', Base, [], {
 				self.set(SRC_NODE, target);
 			}
 
-			if (this.constructor == Widget) {
-				classes = [Widget];
+			if (this.constructor == $.Widget) {
+				classes = [$.Widget];
 			} else {
-				classes.shift();
+				classes.splice(0, 4);
 			}
 			
 			$_Array.each([WIDTH, HEIGHT], function (size) {
@@ -3393,7 +3348,7 @@ var Widget = Base.create('widget', Base, [], {
  * @extends Utility
  * @param {Object} config Object literal specifying configuration properties
  */
-var Mouse = Base.create('mouse', Utility, [], {
+var Mouse = $.Mouse = $.Utility.create('mouse', [], {
 	
 	ATTRS: {
 		/**
@@ -3559,7 +3514,7 @@ var Mouse = Base.create('mouse', Utility, [], {
 });
 (function () {
 	
-	var $_event = new EventTarget();
+	var $_event = new $.EventTarget();
 	var interval, timeout;
 	var lastScrollLeft, lastScrollTop;
 	var win = $.config.win;
@@ -3598,15 +3553,5 @@ var Mouse = Base.create('mouse', Utility, [], {
 	});
 	
 }());
-
-$.add({
-	Mouse: Mouse,
-	Attribute: Attribute,
-	Base: Base,
-	Utility: Utility,
-	Widget: Widget,
-	EventTarget: EventTarget,
-	extend: extend
-});
 			
 });
