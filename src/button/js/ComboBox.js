@@ -112,8 +112,13 @@ $.ComboBox = Base.create('combobox', Widget, [WidgetParent], {
 		}
 	},
 	
-	_toggleContent: function () {
-		this.get('boundingBox').toggleClass(this.getClassName('expanded'));
+	_toggleContent: function (e) {
+		var contentBox = this.get('contentBox')._nodes[0];
+		if ($(e.domEvent.target).ancestor(function (node) {
+			return node == contentBox;
+		}).size() === 0) {
+			this.get('boundingBox').toggleClass(this.getClassName('expanded'));
+		}
 	},
 	
 	_uiComboHide: function (e) {
@@ -153,7 +158,7 @@ $.ComboBox = Base.create('combobox', Widget, [WidgetParent], {
 	
 	bindUI: function () {
 		this.after('selectionChange', this._uiComboSelectionChange);
-		this.get('arrowContainer').on('click', this._toggleContent, this);
+		this.on('click', this._toggleContent);
 		
 		this._handlers.push($($.config.doc).on('click', this._uiComboHide, this));
 	},

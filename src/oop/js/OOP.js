@@ -1,4 +1,5 @@
-var OP = Object.prototype;
+var OP = Object.prototype,
+	$_Array = $.Array;
 
 /**
  * Utilities for object oriented programming in JavaScript.
