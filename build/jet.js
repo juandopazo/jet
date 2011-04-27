@@ -1299,7 +1299,8 @@ $.add({
 jet.add('oop', function ($) {
 
 			var OP = Object.prototype,
-	$_Array = $.Array;
+	$_Array = $.Array,
+	Lang = $.Lang;
 
 /**
  * Utilities for object oriented programming in JavaScript.
@@ -1359,6 +1360,27 @@ $.extend = function (r, s, px, ax) {
 	
 	return r;
 };
+
+$.clone = function (o, deep) {
+	var n;
+	if (Lang.isArray(o)) {
+		n = [].concat(o);
+		if (deep) {
+			$_Array.each(n, function (val, i) {
+				n[i] = deep ? $.clone(val, deep) : val;
+			});
+		}
+	} else if (o.hasOwnProperty && Lang.isObject(o, true)) {
+		n = {};
+		$.Hash.each(o, function (prop, val) {
+			n[prop] = deep ? $.clone(val, deep) : val;
+		});
+	} else {
+		n = o;
+	}
+	return n;
+};
+
 var Class = $.Class = function Class() {
 	var args = arguments;
 	
