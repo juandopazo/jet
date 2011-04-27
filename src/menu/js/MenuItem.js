@@ -89,8 +89,7 @@ $.MenuItem = Base.create('menuitem', Widget, [$.WidgetParent, $.WidgetChild], {
 		}
 	},
 	
-	renderUI: function (boundingBox) {
-		var contentBox = this.get(CONTENT_BOX).attr('href', '#');
+	renderUI: function (boundingBox, contentBox) {
 		var align = this.get('align');
 		align.node = boundingBox;
 		var olay = this._olay =  new $.Overlay({

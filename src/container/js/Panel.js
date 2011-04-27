@@ -48,7 +48,7 @@ var PanelBase = $.mix(function () {
 		render: function (e) {
 			var height = this.get(HEIGHT);
 			var contentBox = this.get(CONTENT_BOX);
-			var closeButton = this.get('closeButton').attr("href", "#").addClass("container-close");
+			var closeButton = this.get('closeButton').addClass("container-close");
 			var boundingBox = this.get(BOUNDING_BOX);
 			closeButton.on(CLICK, this._onCloseButton, this);
 			closeButton.appendTo(contentBox);
