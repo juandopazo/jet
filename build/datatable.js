@@ -319,26 +319,30 @@ var DataTable = Base.create('dt', Widget, [], {
 	},
 	
 	_addRow: function (row) {
-		if (!Record.hasInstance(row)) {
-			row = new $.Record(row);
-		}
-		var recordIdPrefix = this.get(RECORD_ID_PREFIX);
-		var tr = $("<tr/>").attr(ID, recordIdPrefix + row.getId());
-		var getClassName = $.bind(this.getClassName, this);
-		var tbody = this.get(TBODY);
-		A.each(this.get(COLUMN_DEFINITIONS), function (colDef) {
-			var text = row.get(colDef.key);
-			var td = $("<td/>").addClass(getClassName('col', colDef.key));
-			var content = colDef.formatter ? colDef.formatter(text, row.getData(), td) : text;
-			var liner = $(NEW_DIV).addClass(getClassName(LINER));
-			if (Lang.isString(content)) {
-				liner.html(content);
-			} else {
-				liner.append(content);
+		if (this.fire('addRow', { data: row })) {
+			if (!Record.hasInstance(row)) {
+				row = new $.Record(row);
 			}
-			td.append(liner).appendTo(tr);
-		});
-		tr.addClass(getClassName(tbody.children().size() % 2 === 0 ? EVEN : ODD)).appendTo(tbody);
+			var recordIdPrefix = this.get(RECORD_ID_PREFIX);
+			var tr = $("<tr/>").attr(ID, recordIdPrefix + row.getId());
+			var getClassName = $.bind(this.getClassName, this);
+			var tbody = this.get(TBODY);
+			A.each(this.get(COLUMN_DEFINITIONS), function (colDef) {
+				var text = row.get(colDef.key);
+				var td = $("<td/>").addClass(getClassName('col', colDef.key));
+				var content = colDef.formatter ? colDef.formatter.call(this, text, row.getData(), td) : text;
+				var liner = $(NEW_DIV).addClass(getClassName(LINER));
+				if (Lang.isString(content)) {
+					liner.html(content);
+				} else {
+					liner.append(content);
+				}
+				td.append(liner).appendTo(tr);
+			}, this);
+			tr.addClass(getClassName(tbody.children().size() % 2 === 0 ? EVEN : ODD)).appendTo(tbody);
+			this.fire('afterAddRow', { tr: tr, data: row });
+		}
+		return tr;
 	},
 	
 	/**
@@ -348,13 +352,10 @@ var DataTable = Base.create('dt', Widget, [], {
 	 * @chainable
 	 */
 	addRow: function (row) {
-		if (this.fire('addRow', row)) {
-			this._addRow(row);
-			var sortedBy = this.get(SORTED_BY);
-			if (sortedBy) {
-				this._sort($(NUMERAL + this.getClassName(this._uid, 'th', sortedBy)));
-			}
-			this.fire('afterAddRow');
+		this._addRow(row);
+		var sortedBy = this.get(SORTED_BY);
+		if (sortedBy) {
+			this._sort($(NUMERAL + this.getClassName(this._uid, 'th', sortedBy)));
 		}
 		return this;
 	},
@@ -366,7 +367,7 @@ var DataTable = Base.create('dt', Widget, [], {
 	 * @chainable
 	 */
 	addRows: function (rows) {
-		if (this.fire('addRows', { rows: rows })) {
+		if (this.fire('addRows', { data: rows })) {
 			if (Lang.isArray(rows)) {
 				A.each(rows, function (row) {
 					if (!Record.hasInstance(row)) {
@@ -376,12 +377,15 @@ var DataTable = Base.create('dt', Widget, [], {
 			} else if (RecordSet.hasInstance(rows)) {
 				rows = rows.getRecords();
 			}
-			A.each(rows, this._addRow, this);
+			var trs = [];
+			A.each(rows, function (row) {
+				trs.push(this._addRow(row));
+			}, this);
 			var sortedBy = this.get(SORTED_BY);
 			if (sortedBy) {
 				this._sort($(NUMERAL + this.getClassName(this._uid, 'th', sortedBy)), true);
 			}
-			this.fire('afterAddRows', { rows: rows });
+			this.fire('afterAddRows', { data: rows, trs: trs });
 		}
 		return this;
 	},

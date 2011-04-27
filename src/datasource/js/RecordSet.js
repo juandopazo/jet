@@ -23,6 +23,15 @@ var RecordSet = function (data) {
 	
 	var self = this;
 	
+	var toData = function (data) {
+		if (RecordSet.hasInstance(data)) {
+			data = data.getRecords();
+		} else if (!Lang.isArray(data)) {
+			data = [data];
+		}
+		return data;
+	};
+	
 	A.each(data, function (recordData) {
 		records[records.length] = new Record(recordData);
 	});
@@ -31,7 +40,7 @@ var RecordSet = function (data) {
 	 * Returns all records in the set
 	 * @method getRecords
 	 */
-	self.getRecords = function () {
+	this.getRecords = function () {
 		return records;
 	};
 			
@@ -49,15 +58,6 @@ var RecordSet = function (data) {
 			order = newOrder;
 		}
 		return self;
-	};
-	
-	var toData = function (data) {
-		if (RecordSet.hasInstance(data)) {
-			data = data.getRecords();
-		} else if (!Lang.isArray(data)) {
-			data = [data];
-		}
-		return data;
 	};
 	
 	/**
@@ -122,8 +122,7 @@ $.extend(RecordSet, $.EventTarget, {
 	
 	getRecordById: function (id) {
 		var requiredRecord;
-		var records = this.getRecords();
-		A.each(records, function (record) {
+		A.each(this.getRecords(), function (record) {
 			if (record.getId() == id) {
 				requiredRecord = record;
 				return false;

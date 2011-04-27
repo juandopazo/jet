@@ -40,7 +40,6 @@ if (!jet.Record.ids) {
  */
 var Record = function (data) {
 	var id = jet.Record.ids++;
-	var self = this;
 	
 	/**
 	 * Returns the id of the record. Each record has a unique id globally.alert
@@ -48,14 +47,14 @@ var Record = function (data) {
 	 * @method getId
 	 * @return Number
 	 */
-	self.getId = function () {
+	this.getId = function () {
 		return id;
 	};
 	/**
 	 * Returns the data of the record. Must be an object literal
 	 * @method getData
 	 */
-	self.getData = function () {
+	this.getData = function () {
 		return data;
 	};
 	/**
@@ -63,7 +62,7 @@ var Record = function (data) {
 	 * @method get
 	 * @param {String} key
 	 */
-	self.get = function (key) {
+	this.get = function (key) {
 		return data[key];
 	};
 };
