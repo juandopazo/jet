@@ -6,23 +6,7 @@
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.Base = Class.create('Base', $.Attribute, [], {
-	
-	ATTRS: {
-		/**
-		 * Allows quick setting of custom events in the constructor
-		 * @attribute on
-		 * @writeOnce
-		 */
-		on: {
-			writeOnce: true,
-			getter: function (val) {
-				return val || {};
-			}
-		}
-	}
-	
-}, {
+$.Base = Class.create('Base', $.Attribute, {
 	
 	initializer: function (config) {
 		config = config || {};
@@ -40,8 +24,24 @@ $.Base = Class.create('Base', $.Attribute, [], {
 		Hash.each(config.on, attachEvent, this);
 	}
 	
+}, {
+	
+	ATTRS: {
+		/**
+		 * Allows quick setting of custom events in the constructor
+		 * @attribute on
+		 * @writeOnce
+		 */
+		on: {
+			writeOnce: true,
+			getter: function (val) {
+				return val || {};
+			}
+		}
+	},
+	
+	create: function (name, superclass, extensions, attrs, proto) {
+		return Class.create(name, superclass || $.Base, proto, attrs).mixin(extensions || []);
+	}
+	
 });
-
-$.Base.create = function (name, superclass, extensions, attrs, proto) {
-	return Class.create(name, superclass || $.Base, extensions, attrs, proto);
-};

@@ -6,7 +6,7 @@
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.Utility = Class.create('utility', $.Base, [], {
+$.Utility = $.Base.create('utility', $.Base, [], {
 	
 	CSS_PREFIX: 'jet',
 	

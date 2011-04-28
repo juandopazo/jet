@@ -27,7 +27,7 @@ if (!jet.Widget._instances) {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.Widget = Class.create('widget', $.Base, [], {
+$.Widget = $.Base.create('widget', $.Base, [], {
 	
 	/**
 	 * @property CSS_PREFIX
@@ -255,7 +255,7 @@ $.Widget = Class.create('widget', $.Base, [], {
 			var contentBox = this.get(CONTENT_BOX);
 			var srcNode = this.get(SRC_NODE);
 			var className, classPrefix = this.get(CLASS_PREFIX);
-			var classes = [].concat(this._classes);
+			var classes = Class.getClasses(this);
 			Hash.each($.Widget.DOM_EVENTS, function (name, activated) {
 				if (activated) {
 					self._handlers.push(boundingBox.on(name, self._domEventProxy, self));
@@ -349,11 +349,11 @@ $.Widget = Class.create('widget', $.Base, [], {
 		 */
 		if (this.fire(DESTROY)) {
 			
-			$_Array.each(this._classes, function (constructor) {
+			Class.walk(this, function (constructor) {
 				if (constructor.prototype.hasOwnProperty('destructor')) {
 					constructor.prototype.destructor.call(this);
 				}
-			}, this);
+			});
 			
 			$_Array.each(this._handlers, function (handler) {
 				if (handler.detach) {

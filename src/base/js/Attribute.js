@@ -5,17 +5,17 @@
  * @extends EventTarget
  * @constructor
  */
-$.Attribute = Class.create('Attribute', $.EventTarget, [], {}, {
+$.Attribute = Class.create('Attribute', $.EventTarget, {
 	
 	initializer: function (state) {
 		this._state = state || {};
 		this._stateConf = {};
 		
-		$_Array.each(this._classes, function (constructor) {
+		Class.walk(this, function (constructor) {
 			if (constructor.ATTRS) {
 				this.addAttrs(constructor.ATTRS);
 			}
-		}, this);
+		});
 	},
 	
 	/**
@@ -53,13 +53,14 @@ $.Attribute = Class.create('Attribute', $.EventTarget, [], {}, {
 	_set: function (attrName, attrValue) {
 		var attrConfig = this._stateConf;
 		var state = this._state;
-		attrConfig[attrName] = attrConfig[attrName] || {};
-		var config = attrConfig[attrName];
+		var config = attrConfig[attrName] = attrConfig[attrName] || {};
 		var oldValue = state[attrName];
 		var args;
 		if (!config.readOnly) {
 			if (!config.validator || config.validator.call(this, attrValue)) {
-				attrValue = config.setter ? config.setter.call(this, attrValue) : attrValue;
+				if (config.setter) {
+					attrValue = config.setter.call(this, attrValue);
+				}
 				if (!Lang.isValue(state[attrName]) && config.value) {
 					state[attrName] = oldValue = config.value;
 				}
@@ -99,8 +100,7 @@ $.Attribute = Class.create('Attribute', $.EventTarget, [], {}, {
 		if (!Lang.isValue(state[attrName])) {
 			state[attrName] = config.value;
 		}
-		return	config.getter ? config.getter.call(this, state[attrName], attrName) :
-				state[attrName];
+		return config.getter ? config.getter.call(this, state[attrName], attrName) : state[attrName];
 	},
 	/**
 	 * Sets a configuration attribute

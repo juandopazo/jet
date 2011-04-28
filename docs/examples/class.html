@@ -19,11 +19,11 @@
 			var Mixin1 = Class.create('Mixin1');
 			
 			var MyClass = Class.create('MyClass', Class, [Mixin1]);
-			console.log(MyClass);
 			
 			var widget = new $.Widget();
 			widget.render();
 			
+			console.log('widget', widget);
 		});
 	</script>
 </body>

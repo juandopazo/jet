@@ -1,53 +1,36 @@
 
 var Class = $.Class = function Class() {
 	var args = arguments;
+	var self = this;
 	
-	var classes = this._classes = [];
-	var constructor = this.constructor;
-	while (constructor !== Class) {
-		classes.unshift(constructor);
-		constructor = constructor.superclass.constructor;
-	}
-	
-	$_Array.each(classes, function (constructor) {
+	$_Array.each(Class.getClasses(this), function (constructor) {
 		$_Array.each(constructor.EXTS || [], function (extension) {
-			extension.apply(this, args);
-		}, this);
+			extension.apply(self, args);
+		});
 		if (constructor.prototype.hasOwnProperty('initializer')) {
-			constructor.prototype.initializer.apply(this, args);
+			constructor.prototype.initializer.apply(self, args);
 		}
-	}, this);
+	});
 }
 
 $.mix(Class, {
 	
-	NAME: 'Class',
-	
-	toString: function () {
-		return 'class ' + Class.NAME;
-	},
-	
-	create: function (name, superclass, extensions, attrs, proto) {
+	create: function (name, superclass, proto, attrs) {
 		
 		function BuiltClass() {
 			BuiltClass.superclass.constructor.apply(this, arguments);
 		}
 		$.extend(BuiltClass, superclass || Class, proto, attrs);
 		
-		$.mix(BuiltClass, {
+		return $.mix(BuiltClass, {
 			NAME: name,
-			inherit: function (_name, _extensions, _attrs, _proto) {
-				return Class.create(_name, BuiltClass, _extensions, _attrs, _proto);
+			inherit: function (_name, _proto, _attrs) {
+				return Class.create(_name, BuiltClass, _proto, _attrs);
 			},
-			mixin: function () {
-				return Class.mixin(BuiltClass, Array.prototype.slice.call(arguments));
-			},
-			toString: function () {
-				return 'class ' + BuiltClass.NAME;
+			mixin: function (exts) {
+				return Class.mixin(BuiltClass, exts);
 			}
 		}, true);
-		
-		return Class.mixin(BuiltClass, extensions || []);
 	},
 	
 	mixin: function (constructor, extensions) {
@@ -68,6 +51,20 @@ $.mix(Class, {
 		});
 		
 		return constructor;
+	},
+	
+	getClasses: function (instance) {
+		var classes = [];
+		var constructor = instance.constructor;
+		while (constructor && constructor !== Class) {
+			classes.unshift(constructor);
+			constructor = constructor.superclass.constructor;
+		}
+		return classes;
+	},
+	
+	walk: function (instance, fn, thisp) {
+		$.Array.each(Class.getClasses(instance), fn, thisp || instance);
 	}
 	
 }, true);

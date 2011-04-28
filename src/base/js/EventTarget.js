@@ -77,7 +77,7 @@ function CustomEvent(type, target, onPrevented, args) {
  * @class EventTarget
  * @constructor
  */
-$.EventTarget = Class.create('EventTarget', Class, [], {}, {
+$.EventTarget = Class.create('EventTarget', null, {
 	
 	initializer: function () {
 		this._events = {};
