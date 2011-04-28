@@ -7,7 +7,7 @@
  * @extends Utility
  * @param {Object} config Object literal specifying configuration properties
  */
-var Mouse = $.Mouse = $.Utility.create('mouse', [], {
+var Mouse = $.Mouse = Class.create('mouse', $.Utility, [], {
 	
 	ATTRS: {
 		/**

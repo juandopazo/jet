@@ -28,7 +28,6 @@ $.mix(Class, {
 	},
 	
 	create: function (name, superclass, extensions, attrs, proto) {
-		extensions = extensions || [];
 		
 		function BuiltClass() {
 			BuiltClass.superclass.constructor.apply(this, arguments);
@@ -37,7 +36,7 @@ $.mix(Class, {
 		
 		$.mix(BuiltClass, {
 			NAME: name,
-			create: function (_name, _extensions, _attrs, _proto) {
+			inherit: function (_name, _extensions, _attrs, _proto) {
 				return Class.create(_name, BuiltClass, _extensions, _attrs, _proto);
 			},
 			mixin: function () {
@@ -48,7 +47,7 @@ $.mix(Class, {
 			}
 		}, true);
 		
-		return Class.mixin(BuiltClass, extensions);
+		return Class.mixin(BuiltClass, extensions || []);
 	},
 	
 	mixin: function (constructor, extensions) {

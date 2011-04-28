@@ -42,4 +42,6 @@ $.Base = Class.create('Base', $.Attribute, [], {
 	
 });
 
-$.Base.create = Class.create;
+$.Base.create = function (name, superclass, extensions, attrs, proto) {
+	return Class.create(name, superclass || $.Base, extensions, attrs, proto);
+};
