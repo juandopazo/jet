@@ -40,6 +40,9 @@
 
 			}
 			</footer>
+			<filterchain>
+				<fixcrlf eol="crlf"/>
+			</filterchain>
 		</concat>
 		
 		<apply executable="java">
@@ -67,6 +70,9 @@
 			 @module jet
 			*/
 			</header>
+			<filterchain>
+				<fixcrlf eol="crlf"/>
+			</filterchain>
 			<filelist dir="${tmpdir}" files="${filename}"/>
 			<filelist dir="${builddir}" files="log.js,oop.js,node.js,base.js"/>
 		</concat>
@@ -79,6 +85,9 @@
 			 @module jet
 			*/
 			</header>
+			<filterchain>
+				<fixcrlf eol="crlf"/>
+			</filterchain>
 			<filelist dir="${tmpdir}" files="${ant.project.name}.min.js"/>
 			<filelist dir="${builddir}" files="log.min.js,oop.min.js,node.min.js,base.min.js"/>
 		</concat>
@@ -86,5 +95,6 @@
 			<filelist dir="${builddir}" files="log.js,oop.js,node.js,base.js"/>
 			<filelist dir="${builddir}" files="log.min.js,node.min.js,base.min.js"/>
 		</delete>
+		<delete dir="${tmpdir}"/>
 	</target>
 </project>
