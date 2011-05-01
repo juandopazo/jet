@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+
+	<!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame 
+			 Remove this if you use the .htaccess -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<title>test</title>
+	<meta name="description" content="" />
+	
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+		}
+		.container {
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			height: 100%;
+		}
+		#box1 {
+			height: 50px;
+			background: #F00;
+		}
+		#box2 {
+			background: #0F0;
+			-webkit-box-flex: 1;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<div id="box1"></div>
+		<div id="box2"></div>
+	</div>
+	<script>
+		document.body.style.height = window.innerHeight + 'px';
+	</script>
+</body>
+</html>
