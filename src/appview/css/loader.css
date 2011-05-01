@@ -1,0 +1,23 @@
+@-webkit-keyframes jet-loader-fan-spin {
+	0% { background-color: #000; }
+	100% { background-color: #eee; }
+}
+.jet-loader-fan {
+	display: inline-block;
+	width: 40px;
+	height: 40px;
+}
+.jet-loader-fan b {
+	display: block;
+	width: 4px;
+	height: 11px;
+	border-radius: 3px;
+	position: absolute;
+	left: 19px;
+	-webkit-transform-origin: 2px 20px;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+}
+.jet-loader-fan.loading b {
+	-webkit-animation-name: jet-loader-fan-spin;
+}
