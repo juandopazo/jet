@@ -64,6 +64,9 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 </header>
+			<filterchain>
+				<fixcrlf eol="crlf"/>
+			</filterchain>
 			<filelist dir="${tmpdir}" files="${filename}"/>
 		</concat>
 		<concat destfile="${builddir}/${ant.project.name}.min.js" append="yes">
@@ -76,6 +79,9 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 </header>
+			<filterchain>
+				<fixcrlf eol="crlf"/>
+			</filterchain>
 			<filelist dir="${tmpdir}" files="${ant.project.name}.min.js"/>
 		</concat>
 		

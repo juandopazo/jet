@@ -1229,6 +1229,7 @@ jet.add = function (moduleName, expose) {
 	update();
 };
 
+
 }());
 
 }
@@ -1287,7 +1288,8 @@ $.add({
 	}
 });
 			
-});/**
+});
+/**
  * The OOP module provides utilities for working with object oriented programming
  * @module oop
  * @requires 
@@ -1451,7 +1453,8 @@ $.mix(Class, {
 	
 }, true);
 			
-});/**
+});
+/**
  * Node collections and DOM abstraction
  * @module node
  * @requires oop
@@ -2482,7 +2485,8 @@ $.add({
 
 addEvent($.win, "unload", EventCache.flush);
 			
-});/**
+});
+/**
  * The Base module provides base classes for Utilities and Widgets
  * @module base
  * @requires node
@@ -2848,12 +2852,12 @@ $.Base = Class.create('Base', $.Attribute, {
 			this.on(name, Lang.isString(fn) ? this[fn] : fn);
 		}
 		
-		$_Array.each(this._classes, function (constructor) {
+		Class.walk(this, function (constructor) {
 			$_Array.each(constructor.EXTS, function (extension) {
 				Hash.each(extension.EVENTS, attachEvent, this);
 			}, this);
 			Hash.each(constructor.EVENTS, attachEvent, this);
-		}, this);
+		});
 		
 		Hash.each(config.on, attachEvent, this);
 	}
