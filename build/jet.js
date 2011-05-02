@@ -1252,7 +1252,7 @@ jet.add('oop', function ($) {
  * Utilities for object oriented programming in JavaScript.
  * JET doesn't provide a classical OOP environment like Prototype with Class methods,
  * but instead it helps you take advantage of JavaScript's own prototypical OOP strategy
- * @class OOP
+ * @class jet~oop
  * @static
  */
 /**
@@ -1327,6 +1327,12 @@ $.clone = function (o, deep) {
 	return n;
 };
 
+/**
+ * Basic class from which all classes should inherit
+ * Provides the functionality for the 'initializer' method and mixins
+ * @class Class
+ * @constructor
+ */
 var Class = $.Class = function Class() {
 	var args = arguments;
 	var self = this;
@@ -1342,7 +1348,17 @@ var Class = $.Class = function Class() {
 }
 
 $.mix(Class, {
-	
+
+	/**
+	 * @method create
+	 * @description Shortcut for creating a new class that extends Class
+	 * @static
+	 * @param {String} name Required. Name of the new class
+	 * @param {Class} superclass Optional. Superclass to extend. Default is Class
+	 * @param {Object} proto Optional. An object to map to the created class' prototype
+	 * @param {Object} attrs Optional. An object to map to the created class as static properties
+	 * @return {BuiltClass} built class
+	 */
 	create: function (name, superclass, proto, attrs) {
 		
 		function BuiltClass() {
@@ -1361,6 +1377,14 @@ $.mix(Class, {
 		}, true);
 	},
 	
+	/**
+	 * @method mixin
+	 * @description Mixes in a number of classes into another
+	 * @static
+	 * @param {Class} constructor Class into which to mix the others in
+	 * @param {Array} extensions A list of the classes to mix in
+	 * @return {Class} the mixed class
+	 */
 	mixin: function (constructor, extensions) {
 		if (!constructor.EXTS) {
 			constructor.EXTS = [];
@@ -1381,6 +1405,13 @@ $.mix(Class, {
 		return constructor;
 	},
 	
+	/**
+	 * @method getClasses
+	 * @description Returns an array with all the classes in the prototype chain, from the inner most one to the outer most one
+	 * @static
+	 * @param {Object} instance The instance from which to get all constructors
+	 * @return {Array}
+	 */
 	getClasses: function (instance) {
 		var classes = [];
 		var constructor = instance.constructor;
@@ -1391,11 +1422,39 @@ $.mix(Class, {
 		return classes;
 	},
 	
+	/**
+	 * @method walk
+	 * @description Runs a function through all the classes returned by Class.getClasses()
+	 * @static
+	 * @param {Object} instance The instance from which to get all constructors
+	 * @param {Function} fn The function to execute on these constructors
+	 * @param {Object} thisp The object to use as context. Default is the instance 
+	 */
 	walk: function (instance, fn, thisp) {
 		$.Array.each(Class.getClasses(instance), fn, thisp || instance);
 	}
 	
 }, true);
+
+/**
+ * Every class created with Class.create() shares this properties
+ * @class BuiltClass
+ * @constructor
+ */
+/**
+ * @method inherit
+ * @description Creates a new class that inherits from this one
+ * @param {String} name Required. The name of the new class
+ * @param {Object} proto Optional. Prototype properties of the new class
+ * @param {Object} attrs Optional. Static properties of the new class
+ * @return BuiltClass
+ */
+/**
+ * @method mixin
+ * @description Mixes other classes into this one
+ * @param {Array} exts A list of classes to mix in
+ * @return BuiltClass
+ */
 			
 });
 /**

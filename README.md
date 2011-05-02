@@ -23,6 +23,7 @@ Jet comes with a lot of optional modules that you can load dinamically. The comp
 * **Lang** type determining functions, and utilities for working with Arrays and Hashes
 * **Node** chainable and powerful DOM interface
 * **UA** browser sniffing
+* **OOP** Prototypal class implementation with inheritance and mixins patterns
 
 ###Utilities
 * **Anim** plugs animations into Node and provides a TimeFrame and Tweens for more complex animations

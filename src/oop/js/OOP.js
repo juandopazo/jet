@@ -6,7 +6,7 @@ var OP = Object.prototype,
  * Utilities for object oriented programming in JavaScript.
  * JET doesn't provide a classical OOP environment like Prototype with Class methods,
  * but instead it helps you take advantage of JavaScript's own prototypical OOP strategy
- * @class OOP
+ * @class jet~extend
  * @static
  */
 /**
