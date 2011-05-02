@@ -1252,7 +1252,7 @@ jet.add('oop', function ($) {
  * Utilities for object oriented programming in JavaScript.
  * JET doesn't provide a classical OOP environment like Prototype with Class methods,
  * but instead it helps you take advantage of JavaScript's own prototypical OOP strategy
- * @class jet~oop
+ * @class jet~extend
  * @static
  */
 /**
@@ -1790,7 +1790,7 @@ function NodeList(nodes, root) {
 		nodes = tmp;
 		//nodes = SLICE.call(nodes);
 	} else {
-		$.error("Wrong argument for NodeList");
+		//$.error("Wrong argument for NodeList");
 	}
 	this._nodes = this._items = nodes;
 }
@@ -2054,9 +2054,13 @@ $.extend(NodeList, $.ArrayList, {
 			}
 		});
 	},
+	/**
+	 * Looks for a parent by walking up the DOM and executing a function on all nodes
+	 * @method ancestor
+	 * @return {NodeList}
+	 */
 	ancestor: function (fn) {
-		return this.map(function (node) {
-			var parent = node;
+		return this.map(function (parent) {
 			while (parent) {
 				if (fn(parent)) {
 					break;
@@ -2091,7 +2095,7 @@ $.extend(NodeList, $.ArrayList, {
 	html: function (html) {
 		return Lang.isValue(html) ? this.each(function (node) {
 			node.innerHTML = html;
-		}) : this._nodes[0].innerHTML;
+		}) : this._nodes[0] ? this._nodes[0].innerHTML : '';
 	},
 	/**
 	 * Gets or sets tag attributes to the nodes in the collection
@@ -2381,6 +2385,18 @@ A.each(['Width', 'Height'], function (size) {
 	}
 });
 
+	/**
+	 * Gets/sets the position of the first node in the collection
+	 * @method offsetTop
+	 * @param {Number} top
+	 * @chainable
+	 */
+	/**
+	 * Gets/sets the position of the first node in the collection
+	 * @method offsetLeft
+	 * @param {Number} left
+	 * @chainable
+	 */
 A.each(['Left', 'Top'], function (direction) {
 	PROTO['offset' + direction] = function (val) {
 		if (Lang.isValue(val)) {
