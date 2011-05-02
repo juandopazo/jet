@@ -13,7 +13,7 @@ var GlobalConfig = {
 	modules: {
 		log: {},
 		oop: {},
-		node: ['log', 'oop'],
+		node: ['oop'],
 		xsl: [NODE],
 		swf: {},
 		json: [NODE],

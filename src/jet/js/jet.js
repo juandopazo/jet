@@ -119,6 +119,9 @@ function makeUse(config, get) {
 			 */
 			if (Lang.isString(module) && config.modules[module]) {
 				request[i] = module = config.modules[module];
+				if (config.minify && (!module.type || module.type == 'js') && module.path.indexOf('.min') === -1) {
+					module.path = module.path.replace('.js', '.min.js');
+				}
 			}
 			if (!Lang.isObject(module) || (module.type == CSS && !config.loadCss)) {
 				request.splice(i, 1);
