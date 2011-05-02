@@ -609,7 +609,7 @@ $.ScrollingDataTable = Base.create('dt', DataTable, [], {
 		if (height) {
 			container.height(height - this.get(THEAD).height());
 		}
-		this._contentTable.append(this.get(TBODY).detach()).appendTo(container);
+		this._contentTable.append(this.get(TBODY).remove()).appendTo(container);
 		this._syncColumnWidths();
 	},
 	

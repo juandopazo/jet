@@ -14,57 +14,59 @@ var ON = "on",
 var EventCache = (function () {
 	var cache = {};
 	
-	/**
-	 * Removes all listeners from a node
-	 * @method clear
-	 * @param {DOMNode} obj
-	 */
-	var clear = function (obj) {
-		if (obj.detachEvent) {
-			clear = function (obj) {
-				var type, c, i;
-				for (type in cache) {
-					if (cache.hasOwnProperty(type)) {
-						c = cache[type];
-						i = 0;
-						while (i < c.length) {
-							if (c[i].obj == obj) {
-								c[i].obj.detachEvent(ON + type, c[i].fn);
-								c.splice(i, 1);
-							} else {
-								i++;
-							}
-						}
-					}
-				}
-			};
-		} else {
-			clear = function (obj) {
-				var type, c, i;
-				for (type in cache) {
-					if (cache.hasOwnProperty(type)) {
-						c = cache[type];
-						i = 0;
-						while (i < c.length) {
-							if (c[i].obj == obj) {
-								c[i].obj.removeEventListener(type, c[i].fn, false);
-								c.splice(i, 1);
-							} else {
-								i++;
-							}
-						}
-					}
-				}
-			};
-		}
-		clear(obj);
-	};
-	
 	var getCache = function (type) {
 		if (!cache[type]) {
 			cache[type] = [];
 		}
 		return cache[type];
+	};
+	
+	var detachEvent = function (obj, type, fn) {
+		if (obj.detachEvent) {
+			detachEvent = function (obj, type, fn) {
+				obj.detachEvent(ON + type, fn);
+			};
+		} else {
+			detachEvent = function (obj, type, fn) {
+				obj.removeEventListener(type, fn, false);
+			};
+		}
+		detachEvent(obj, type, fn);
+	};
+	
+	/**
+	 * Removes all listeners from a node
+	 * @method clear
+	 * @param {DOMNode} obj
+	 */
+	var clear = function (obj, type) {
+		var c, i = 0;
+		if (type) {
+			c = getCache(type);
+			while (i < c.length) {
+				if (c[i].obj == obj) {
+					detachEvent(obj, type, c[i].fn);
+					c.splice(i, 1);
+				} else {
+					i++;
+				}
+			}
+		} else {
+			for (type in cache) {
+				if (cache.hasOwnProperty(type)) {
+					c = cache[type];
+					i = 0;
+					while (i < c.length) {
+						if (c[i].obj == obj) {
+							detachEvent(obj, type, c[i].fn);
+							c.splice(i, 1);
+						} else {
+							i++;
+						}
+					}
+				}
+			}
+		}
 	};
 	
 	return {
@@ -92,10 +94,16 @@ var EventCache = (function () {
 		 * @param {Function} fn
 		 */
 		remove: function (obj, type, fn) {
-			A.remove(getCache(type), {
-				obj: obj,
-				fn: fn
-			});
+			detachEvent(obj, type, fn);
+			var c = getCache(type),
+			i = 0;
+			while (i < c.length) {
+				if (c[i].obj == obj && c[i].fn == fn) {
+					c.splice(i, 1);
+				} else {
+					i++;
+				}
+			}
 		},
 		clear: clear,
 		/**
@@ -150,22 +158,6 @@ var addEvent = function (obj, type, callback, thisp) {
 	return addEvent(obj, type, callback, thisp);
 };
 
-// cross browser listener removal
-var removeEvent = function (obj, type, callback) {
-	if (obj.removeEventListener) {
-		removeEvent = function (obj, type, callback) {
-			obj.removeEventListener(type, callback, false);
-			EventCache.remove(obj, type, callback);
-		};
-	} else if (obj.detachEvent) {
-		removeEvent = function (obj, type, callback) {
-			obj.detachEvent(ON + type, callback);
-			EventCache.remove(obj, type, callback);
-		};
-	}
-	removeEvent(obj, type, callback);
-};
-
 /**
  * A collection of DOM Event handlers for later detaching
  * @class DOMEventHandler
@@ -182,7 +174,7 @@ DOMEventHandler.prototype = {
 	 */
 	detach: function () {
 		for (var handlers = this._handlers, i = 0, length = handlers.length; i < length; i++) {
-			removeEvent(handlers[i].obj, handlers[i].type, handlers[i].fn);
+			EventCache.remove(handlers[i].obj, handlers[i].type, handlers[i].fn);
 		}
 		this._handlers = [];
 	}

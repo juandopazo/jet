@@ -363,7 +363,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 			/*
 			 * Avoiding memory leaks, specially in IE
 			 */
-			this.get(BOUNDING_BOX).unbindAll(true).remove();
+			this.get(BOUNDING_BOX).remove(true);
 		}
 	},
 	

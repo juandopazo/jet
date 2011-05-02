@@ -15,7 +15,8 @@ var Lang = $.Lang,
 	A = $.Array,
 	NONE = "none",
 	SLICE = Array.prototype.slice,
-	rroot = /^(?:body|html)$/i;
+	rroot = /^(?:body|html)$/i,
+	PROTO;
 
 function classRE(name) {
 	return new RegExp("(^|\\s)" + name + "(\\s|$)");
@@ -229,67 +230,17 @@ $.extend(NodeList, $.ArrayList, {
 		});
 	},
 	/**
-	 * Gets/sets the width of all the nodes in the collection
-	 * @method width
-	 * @param {String|Number} [width]
-	 * @memberOf NodeList
-	 * @chainable
-	 */
-	width: function (width) {
-		if (Lang.isValue(width)) {
-			if (Lang.isNumber(width) && width < 0) {
-				width = 0;
-			}
-			width = Lang.isString(width) ? width : width + "px";
-			return this.each(function (node) {
-				node.style.width = width;
-			});
-		}
-		return this._nodes[0].offsetWidth;
-	},
-	/**
-	 * Gets/sets the height of all the nodes in the collection
-	 * @method height
-	 * @param {String|Number} [height]
-	 * @chainable
-	 */
-	height: function (height) {
-		if (Lang.isValue(height)) {
-			if (Lang.isNumber(height) && height < 0) {
-				height = 0;
-			}
-			height = Lang.isString(height) ? height : height + "px";
-			return this.each(function (node) {
-				node.style.height = height;
-			});
-		}
-		return this._nodes[0].offsetHeight;
-	},
-	/**
-	 * Returns a new NodeList with all nodes cloned from the current one
-	 * @method clone
-	 * @param {Boolean} deep If true all nodes in the brach are cloned. If not, only the ones in the collection
-	 * @return {NodeList}
-	 */
-	clone: function (deep) {
-		deep = Lang.isValue(deep) ? deep : true;
-		return this.map(function (node) {
-			return node.cloneNode(deep);
-		});
-	},
-	/**
 	 * Appends nodes to the ones in the current node list
 	 * @method append
 	 * @param {DOMNode|Array|NodeList} appended
 	 * @chainable
 	 */
 	append: function (appended) {
-		appended = $(appended);
-		return this.each(function (node) {
-			appended.each(function (app) {
-				node.appendChild(app);
-			});
+		var node = this._nodes[0];
+		$(appended).each(function (app) {
+			node.appendChild(app)
 		});
+		return this;
 	},
 	/**
 	 * Appends all nodes in the current collection to the target node
@@ -298,10 +249,8 @@ $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	appendTo: function (target) {
-		var mytarget = $(target)._nodes[0];
-		return this.each(function (node) {
-			mytarget.appendChild(node);
-		});
+		$(target).append(this);
+		return this;
 	},
 	/**
 	 * Insert nodes to the ones in the current node list, before their first children
@@ -310,16 +259,13 @@ $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	prepend: function (prepended) {
+		var node = this._nodes[0];
 		prepended = $(prepended);
-		return this.each(function (node) {
-			prepended.each(function (prep) {
-				if (node.firstChild) {
-					node.insertBefore(prep, node.firstChild);
-				} else {
-					node.appendChild(prep);
-				}
-			});
+		prepended._nodes.reverse();
+		prepended.each(function (prep) {
+			node.insertBefore(prep, node.firstChild);
 		});
+		return this;
 	},
 	/**
 	 * Inserts all nodes in the current collection before the first child of the target node
@@ -328,14 +274,8 @@ $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	prependTo: function (target) {
-		target = $(target)._nodes[0];
-		return this.each(function (node) {
-			if (target.firstChild) {
-				target.insertBefore(node, target.firstChild);
-			} else {
-				target.appendChild(node);
-			}
-		});
+		$(target).prepend(this);
+		return this;
 	},
 	/**
 	 * Inserts all nodes in the current node list before the target node
@@ -396,40 +336,7 @@ $.extend(NodeList, $.ArrayList, {
 	 * @return {NodeList}
 	 */
 	first: function () {
-		return this.map(function (node) {
-			node = $(node).children(0)._nodes[0];
-			if (node) {
-				return node;
-			}
-		});
-	},
-	/**
-	 * Returns a new NodeList with all the next siblings of the nodes in the collection
-	 * @method next
-	 * @return {NodeList}
-	 */
-	next: function () {
-		return this.map(function (next) {
-			do {
-				next = next.nextSibling;
-			}
-			while (next && next.nodeType == 1);
-			return next;
-		});
-	},
-	/**
-	 * Returns a new NodeList with all the previous siblings of the nodes in the collection
-	 * @method previous
-	 * @return {NodeList}
-	 */
-	previous: function () {
-		return this.map(function (previous) {
-			do {
-				previous = previous.previousSibling;
-			}
-			while (previous && previous.nodeType == 3);
-			return previous;
-		});
+		return this.children(0);
 	},
 	/**
 	 * Returns a new NodeList with all the last children of the nodes in the collection
@@ -437,13 +344,7 @@ $.extend(NodeList, $.ArrayList, {
 	 * @return {NodeList}
 	 */
 	last: function () {
-		return this.map(function (node) {
-			var children = $(node).children(), i = -1;
-			while (children[++i]) {
-				node = children[i];
-			}
-			return node;
-		});
+		return new NodeList(this.children()._nodes.shift());
 	},
 	/**
 	 * Gets or sets the innerHTML of all the nodes in the node list
@@ -575,33 +476,24 @@ $.extend(NodeList, $.ArrayList, {
 	 */
 	unbind: function (type, callback) {
 		return this.each(function (node) {
-			removeEvent(node, type, callback);
-		});
-	},
-	/**
-	 * Removes all event listeners from all the current nodes
-	 * If "crawl" is true, it also removes them from all the nodes in the branches defined by the nodes
-	 * @method unbindAll
-	 * @param {Boolean} crawl
-	 * @chainable 
-	 */
-	unbindAll: function (crawl) {
-		return this.each(function (node) {
-			if (crawl) {
-				$.walkTheDOM(node, EventCache.clear);
+			if (callback) {
+				EventCache.remove(node, type, callback);
 			} else {
-				EventCache.clear(node);
+				EventCache.clear(node, type);
 			}
 		});
 	},
 	/**
 	 * Removes all the nodes from the DOM tree and removes all event listeners from the nodes
 	 * @method remove
+	 * @param {Boolean} unbind Set to true to remove all event listeners
 	 * @chainable
 	 */
-	remove: function () {
+	remove: function (unbind) {
 		return this.each(function (node) {
-			$.walkTheDOM(node, EventCache.clear);
+			if (unbind) {
+				$.walkTheDOM(node, EventCache.clear);
+			}
 			if (node.parentNode) {
 				node.parentNode.removeChild(node);
 			}
@@ -614,20 +506,8 @@ $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	setContent: function (content) {
-		this.children().unbindAll(true).remove();
+		this.children().unbind().remove();
 		return this.html(content);
-	},
-	/**
-	 * Removes all the nodes from the DOM tree. Unline remove(), it keeps all event listeners
-	 * @method detach
-	 * @chainable
-	 */
-	detach: function () {
-		return this.each(function (node) {
-			if (node.parentNode) {
-				node.parentNode.removeChild(node);
-			}
-		});
 	},
 	ownerDoc: function () {
 		return this.map(function (node) {
@@ -683,34 +563,6 @@ $.extend(NodeList, $.ArrayList, {
 		return new NodeList(result);
 	},
 	/**
-	 * Fires the blur event
-	 * @method blur
-	 * @chainable
-	 */
-	blur: function () {
-		return this.each(function (node) {
-			try {
-				node.blur();
-			} catch (e) {
-				$.error(e);
-			}
-		});
-	},
-	/**
-	 * Fires the focus event
-	 * @method focus
-	 * @chainable
-	 */
-	focus: function () {
-		return this.each(function (node) {
-			try {
-				node.focus();
-			} catch (e) {
-				$.error(e);
-			}
-		});
-	},
-	/**
 	 * Sets or returns the value of the node. Useful mostly for form elements
 	 * @param {String} value - optional
 	 * @chainable
@@ -720,8 +572,81 @@ $.extend(NodeList, $.ArrayList, {
 	}
 });
 
+PROTO = NodeList.prototype;
+
+	/**
+	 * Fires the blur event
+	 * @method blur
+	 * @chainable
+	 */
+	/**
+	 * Fires the focus event
+	 * @method focus
+	 * @chainable
+	 */
+A.each(['blur', 'focus'], function (method) {
+	PROTO[method] = function () {
+		return this.each(function (node) {
+			try {
+				node[method]();
+			} catch (e) {}
+		});
+	};
+});
+
+	/**
+	 * Returns a new NodeList with all the next siblings of the nodes in the collection
+	 * @method next
+	 * @return {NodeList}
+	 */
+	/**
+	 * Returns a new NodeList with all the previous siblings of the nodes in the collection
+	 * @method previous
+	 * @return {NodeList}
+	 */
+A.each(['next', 'previous'], function (method) {
+	PROTO[method] = function () {
+		return this.map(function (node) {
+			do {
+				node = node[method + 'Sibling'];
+			}
+			while (node && node.nodeType == 1);
+			return node;
+		});
+	};
+});
+
+	/**
+	 * Gets/sets the width of all the nodes in the collection
+	 * @method width
+	 * @param {String|Number} [width]
+	 * @memberOf NodeList
+	 * @chainable
+	 */
+	/**
+	 * Gets/sets the height of all the nodes in the collection
+	 * @method height
+	 * @param {String|Number} [height]
+	 * @chainable
+	 */
+A.each(['Width', 'Height'], function (size) {
+	var method = size.toLowerCase();
+	PROTO[method] = function (value) {
+		if (Lang.isValue(value)) {
+			if (Lang.isNumber(value) && value < 0) {
+				value = 0;
+			}
+			value = Lang.isString(value) ? value : value + "px";
+			return this.each(function (node) {
+				node.style[method] = value;
+			});
+		}
+		return this._nodes[0] ? this._nodes[0]['offset' + size] : null;
+	}
+});
+
 A.each(['Left', 'Top'], function (direction) {
-	NodeList.prototype['offset' + direction] = function (val) {
+	PROTO['offset' + direction] = function (val) {
 		if (Lang.isValue(val)) {
 			return direction == 'Left' ? this.offset(val) : this.offset(null, val);
 		} else {

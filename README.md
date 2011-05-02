@@ -13,7 +13,7 @@ The status of the library is *under development*, not even an alpha stage. And s
 ## Small size
 There are many great JavaScript UI libraries out there. Most favor a long range of compatibility and heavy features. That's great when you need a lot of features and have lots of users in the long tail of the browser market. However, most of the time it ends up being overkill or, if you are a UI developer, you end up working on top of a lot of code you don't use.
 
-With that in mind, Jet aims at having a small and powerful core under *15 Kb minified* (5 Kb with gzip compression) that provides a good DOM interface, lots of *optional features* and a good architecture based on Yahoo!'s YUI 3 that will allow you to write good easy-to-maintain code on top of it.
+With that in mind, Jet aims at having a small and powerful core under *20 Kb minified* (7 Kb with gzip compression) that provides a good DOM interface, lots of *optional features* and a good architecture based on Yahoo!'s YUI 3 that will allow you to write good easy-to-maintain code on top of it.
 
 ## Modules
 Jet comes with a lot of optional modules that you can load dinamically. The complete documentation is available in the API reference: http://juandopazo.github.com/jet/docs/api/

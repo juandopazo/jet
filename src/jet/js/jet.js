@@ -104,8 +104,8 @@ function makeUse(config, get) {
 			AP.unshift.apply(request, Hash.keys(config.modules));
 			
 		// add widget-parentchild by default
-		} else if (ArrayHelper.indexOf(BASE, request) == -1) {
-			request.unshift(BASE);
+		} else if (ArrayHelper.indexOf('node', request) == -1) {
+			request.unshift('node');
 		}
 		
 		request = handleRequirements(request, config);

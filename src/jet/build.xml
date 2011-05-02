@@ -10,7 +10,6 @@
 	
 	<target name="init">
 		<subant target="init" inheritAll="false" inheritrefs="false">
-	    	<fileset dir="../base/" includes="build.xml"/>
 	    	<fileset dir="../log/" includes="build.xml"/>
 	    	<fileset dir="../oop/" includes="build.xml"/>
 	    	<fileset dir="../node/" includes="build.xml"/>
@@ -74,7 +73,7 @@
 				<fixcrlf eol="crlf"/>
 			</filterchain>
 			<filelist dir="${tmpdir}" files="${filename}"/>
-			<filelist dir="${builddir}" files="log.js,oop.js,node.js,base.js"/>
+			<filelist dir="${builddir}" files="oop.js,node.js"/>
 		</concat>
 		<concat destfile="${builddir}/${ant.project.name}.min.js" append="yes">
 			<header trimleading="yes">/*
@@ -89,11 +88,11 @@
 				<fixcrlf eol="crlf"/>
 			</filterchain>
 			<filelist dir="${tmpdir}" files="${ant.project.name}.min.js"/>
-			<filelist dir="${builddir}" files="log.min.js,oop.min.js,node.min.js,base.min.js"/>
+			<filelist dir="${builddir}" files="oop.min.js,node.min.js"/>
 		</concat>
 		<delete>
-			<filelist dir="${builddir}" files="log.js,oop.js,node.js,base.js"/>
-			<filelist dir="${builddir}" files="log.min.js,node.min.js,base.min.js"/>
+			<filelist dir="${builddir}" files="oop.js,node.js"/>
+			<filelist dir="${builddir}" files="oop.min.js,node.min.js"/>
 		</delete>
 		<delete dir="${tmpdir}"/>
 	</target>
