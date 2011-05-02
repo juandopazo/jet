@@ -20,9 +20,7 @@ Jet comes with a lot of optional modules that you can load dinamically. The comp
 
 ###Included in the Jet Core
 * **Get** dynamically load scripts and CSS files
-* **IO** for your XmlHttpRequest needs
 * **Lang** type determining functions, and utilities for working with Arrays and Hashes
-* **Log** logging tools, for later watching from the [[Log Console]
 * **Node** chainable and powerful DOM interface
 * **UA** browser sniffing
 
@@ -31,6 +29,7 @@ Jet comes with a lot of optional modules that you can load dinamically. The comp
 * **Cookie** easy to use cookies
 * **History** ReallySimpleHistory project adapted to jet() and updated for modern browsers
 * **ImageLoader** preload images, show them only when needed and fix PNG's
+* **IO** for your XmlHttpRequest needs
 * ***io-xdr** asynchronous cross-domain calls based on flash
 * ***io-xsl** for loading and using XSL transformations
 * **DataSource** transform one information source into the schema your application uses

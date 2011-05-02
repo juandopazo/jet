@@ -372,6 +372,32 @@ $.Base = Class.create('Base', $.Attribute, {
 		});
 		
 		Hash.each(config.on, attachEvent, this);
+
+		this._handlers = [$($.config.win).on(UNLOAD, this.destroy, this)];
+	},
+	
+	/**
+	 * Starts the destruction lifecycle
+	 * @method destroy
+	 */
+	destroy: function () {
+		/**
+		 * Preventing the default behavior will stop the destroy process
+		 * @event destroy
+		 */
+		if (this.fire(DESTROY)) {
+			Class.walk(this, function (constructor) {
+				if (constructor.prototype.hasOwnProperty('destructor')) {
+					constructor.prototype.destructor.call(this);
+				}
+			});
+
+			$_Array.each(this._handlers, function (handler) {
+				if (handler.detach) {
+					handler.detach();
+				}
+			});
+		}
 	}
 	
 }, {
@@ -422,28 +448,6 @@ $.Utility = $.Base.create('utility', $.Base, [], {
 	}
 	
 }, {
-	
-	initializer: function () {
-		this._handlers = [$(this.get('win')).on(UNLOAD, this.destroy, this)];
-	},
-	
-	/**
-	 * Calls itself when the window unloads. Allows for easier memory cleanup
-	 * @method destroy
-	 */
-	destroy: function () {
-		var self = this;
-		/**
-		 * Preventing the default behavior will stop the destroy process
-		 * @event destroy
-		 */
-		if (this.fire(DESTROY)) {
-			$_Array.each(this._handlers, function (handler) {
-				handler.detach();
-			});
-		}
-	},
-	
 	getClassName: function () {
 		return [this.get(CLASS_PREFIX), this.constructor.NAME].concat(SLICE.call(arguments)).join(DASH);
 	}
@@ -786,34 +790,9 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		}
 		return this;
 	},
-	/**
-	 * Destroys the widget by removing the elements from the dom and cleaning all event listeners
-	 * @method destroy
-	 */
-	destroy: function () {
-		var self = this;
-		/**
-		 * Preventing the default behavior will stop the destroy process
-		 * @event destroy
-		 */
-		if (this.fire(DESTROY)) {
-			
-			Class.walk(this, function (constructor) {
-				if (constructor.prototype.hasOwnProperty('destructor')) {
-					constructor.prototype.destructor.call(this);
-				}
-			});
-			
-			$_Array.each(this._handlers, function (handler) {
-				if (handler.detach) {
-					handler.detach();
-				}
-			});
-			/*
-			 * Avoiding memory leaks, specially in IE
-			 */
-			this.get(BOUNDING_BOX).remove(true);
-		}
+	
+	destructor: function () {
+		this.get(BOUNDING_BOX).remove(true);
 	},
 	
 	_parseHTML: function () {
