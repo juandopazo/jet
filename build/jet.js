@@ -22,86 +22,93 @@ var NODE = 'node',
 
 var GlobalConfig = {
 	base: location.protocol + '//github.com/juandopazo/jet/raw/master/build/',
-	modules: {
-		log: {},
-		oop: {},
-		node: ['oop'],
-		xsl: [NODE],
-		swf: {},
-		json: [NODE],
-		cookie: [BASE],
-		sizzle: [NODE],
-		base: [NODE],
-		io: ['json'],
-		'io-xdr': [NODE, 'swf', IO],
-		history: [BASE, 'json'],
-		'resize-styles': {
-			type: CSS,
-			beacon: {
-				name: "borderLeftStyle",
-				value: SOLID
+	combine: true,
+	root: location.protocol + '//192.168.1.213:8080/',
+	modules: {},
+	groups: {
+		jet: {
+			modules: {
+				log: {},
+				oop: {},
+				node: ['oop'],
+				xsl: [NODE],
+				swf: {},
+				json: [NODE],
+				cookie: [BASE],
+				sizzle: [NODE],
+				base: [NODE],
+				io: ['json'],
+				'io-xdr': [NODE, 'swf', IO],
+				history: [BASE, 'json'],
+				'resize-styles': {
+					type: CSS,
+					beacon: {
+						name: "borderLeftStyle",
+						value: SOLID
+					}
+				},
+				resize: [BASE, 'resize-styles'],
+				'button-styles': {
+					type: CSS,
+					beacon: {
+						name: "borderBottomStyle",
+						value: SOLID
+					}
+				},
+				button: [WIDGET_PARENTCHILD, 'button-styles'],
+				'container-styles': {
+					type: CSS,
+					beacon: {
+						name: "borderRightStyle",
+						value: SOLID
+					}
+				},
+				container: [BASE, 'widget-alignment', 'widget-stack', 'container-styles'],
+				'progressbar-styles': {
+					type: CSS,
+					beacon: {
+						name: "cursor",
+						value: "pointer"
+					}
+				},
+				progressbar: [BASE, 'progressbar-styles'],
+				dragdrop: [BASE],
+				imageloader: [BASE],
+				anim: [BASE],
+				datasource: [BASE],
+				'datatable-styles': {
+					type: CSS,
+					beacon: {
+						name: "borderTopStyle",
+						value: SOLID
+					}
+				},
+				datatable: ['io', "datasource", 'datatable-styles'],
+				'tabview-styles': {
+					type: CSS,
+					beacon: {
+						name: "display",
+						value: "none"
+					}
+				},
+				'treeview-styles': {
+					type: CSS,
+					beacon: {
+						name: 'visibility',
+						value: 'hidden'
+					}
+				},
+				tabview: [WIDGET_PARENTCHILD, 'tabview-styles'],
+				treeview: [WIDGET_PARENTCHILD, 'treeview-styles'],
+				'widget-alignment': [BASE],
+				'widget-stack': [BASE],
+				'widget-parentchild': [BASE],
+				'widget-sandbox': [BASE],
+				menu: [WIDGET_PARENTCHILD, 'container'],
+				vector: ['anim'],
+				layout: ['resize', WIDGET_PARENTCHILD]
 			}
-		},
-		resize: [BASE, 'resize-styles'],
-		'button-styles': {
-			type: CSS,
-			beacon: {
-				name: "borderBottomStyle",
-				value: SOLID
-			}
-		},
-		button: [WIDGET_PARENTCHILD, 'button-styles'],
-		'container-styles': {
-			type: CSS,
-			beacon: {
-				name: "borderRightStyle",
-				value: SOLID
-			}
-		},
-		container: [BASE, 'widget-alignment', 'widget-stack', 'container-styles'],
-		'progressbar-styles': {
-			type: CSS,
-			beacon: {
-				name: "cursor",
-				value: "pointer"
-			}
-		},
-		progressbar: [BASE, 'progressbar-styles'],
-		dragdrop: [BASE],
-		imageloader: [BASE],
-		anim: [BASE],
-		datasource: [BASE],
-		'datatable-styles': {
-			type: CSS,
-			beacon: {
-				name: "borderTopStyle",
-				value: SOLID
-			}
-		},
-		datatable: ['io', "datasource", 'datatable-styles'],
-		'tabview-styles': {
-			type: CSS,
-			beacon: {
-				name: "display",
-				value: "none"
-			}
-		},
-		'treeview-styles': {
-			type: CSS,
-			beacon: {
-				name: 'visibility',
-				value: 'hidden'
-			}
-		},
-		tabview: [WIDGET_PARENTCHILD, 'tabview-styles'],
-		treeview: [WIDGET_PARENTCHILD, 'treeview-styles'],
-		'widget-alignment': [BASE],
-		'widget-stack': [BASE],
-		'widget-parentchild': [BASE],
-		'widget-sandbox': [BASE],
-		menu: [WIDGET_PARENTCHILD, 'container'],
-		vector: ['anim'],
-		layout: ['resize', WIDGET_PARENTCHILD]
+		}
 	}
 };
 var OP = Object.prototype,
@@ -949,6 +956,28 @@ var update = function () {
 	}
 };
 
+function getModuleFromString(module, config) {
+	var moduleName = module.toLowerCase();
+	if (config.modules[moduleName]) {
+		module = config.modules[moduleName];
+	} else {
+		for (var name in config.groups) {
+			if (config.groups.hasOwnProperty(name) && config.groups[name].modules[moduleName]) {
+				module = config.groups[name].modules[moduleName];
+				if (Lang.isArray(module)) {
+					module = {
+						requires: module
+					};
+				}
+				module.name = moduleName;
+				module.group = name;
+				break;
+			}
+		}
+	}
+	return module;
+}
+
 function handleRequirements(request, config) {
 	var i = 0, j, moveForward;
 	var module, required;
@@ -958,7 +987,7 @@ function handleRequirements(request, config) {
 		module = request[i];
 		moveForward = 1;
 		if (Lang.isString(module)) {
-			module = config.modules[module.toLowerCase()];
+			module = getModuleFromString(module, config);
 		}
 		if (module && module.requires) {
 			required = module.requires;
@@ -994,11 +1023,12 @@ function makeUse(config, get) {
 			jet.add(module.name, function () {});
 		});
 	};
-
+	
 	return function () {
 		var request = SLICE.call(arguments);
-		var i = 0, module;
+		var i = 0, module, minify, groupName, modName;
 		var fn = request.pop();
+		var groupRequests = {};
 		
 		// if "*" is used, include everything
 		if (ArrayHelper.indexOf("*", request) > -1) {
@@ -1010,6 +1040,14 @@ function makeUse(config, get) {
 			request.unshift('node');
 		}
 		
+		while (i < request.length) {
+			if (!Lang.isString(request[i])) {
+				request.splice(i, 1);
+			} else {
+				i++;
+			}
+		}
+		
 		request = handleRequirements(request, config);
 		
 		// transform every module request into an object and load the required css/script if not already loaded
@@ -1019,10 +1057,12 @@ function makeUse(config, get) {
 			 * If a module is a string, it is considered a predefined module.
 			 * If it isn't defined, it's probably a mistake and will lead to errors
 			 */
-			if (Lang.isString(module) && config.modules[module]) {
-				request[i] = module = config.modules[module];
-				if (config.minify && (!module.type || module.type == 'js') && module.path.indexOf('.min') === -1) {
-					module.path = module.path.replace('.js', '.min.js');
+			if (Lang.isString(module)) {
+				request[i] = module = getModuleFromString(module, config);
+				module.type = module.type || 'js';
+				if (!module.path) {
+					minify = module.group ? config.groups[module.group].minify : config.minify;
+					module.path = module.name + (minify ? '.min.' : '.') + module.type; 
 				}
 			}
 			if (!Lang.isObject(module) || (module.type == CSS && !config.loadCss)) {
@@ -1030,13 +1070,29 @@ function makeUse(config, get) {
 				i--;
 			} else {
 				module.fullpath = module.fullpath || base + module.path;
-				if (!(modules[module.name] || queuedScripts[module.fullpath])) {
+				if (module.group && config.groups[module.group] && config.groups[module.group].combine) {
+					if (!groupRequests[module.group]) {
+						groupRequests[module.group] = [];
+					}
+					if (!modules[module.name]) {
+						groupRequests[module.group].push(module.path);
+					}
+					queuedScripts[module.name] = 1;
+				} else if (!(modules[module.name] || queuedScripts[module.name])) {
 					if (!module.type || module.type == "js") {
 						get.script(module.fullpath); 
 					} else if (module.type == CSS) {
 						domReady(loadCssModule, module);
 					}
-					queuedScripts[module.fullpath] = 1;
+					queuedScripts[module.name] = 1;
+				}
+			}
+		}
+		
+		for (groupName in groupRequests) {
+			if (groupRequests.hasOwnProperty(groupName)) {
+				if (groupRequests[groupName].length > 0) {
+					get.script(config.root + groupName + '?' + groupRequests[groupName].join('&'));
 				}
 			}
 		}
@@ -1146,6 +1202,10 @@ window.jet = function (o) {
 	var config = buildConfig(GlobalConfig);
 	config = buildConfig(config, (o && o.win) ? o.win.jet_Config : window.jet_Config);
 	config = buildConfig(config, o);
+	
+	config.groups.jet.minify = !!config.minify;
+	config.groups.jet.combine = Lang.isBoolean(config.combine) ? config.combine : true;
+
 	var base = config.base;
 	/**
 	 * @attribute base
