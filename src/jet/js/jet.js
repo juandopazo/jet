@@ -162,11 +162,12 @@ function makeUse(config, get) {
 			} else {
 				module.fullpath = module.fullpath || base + module.path;
 				if (module.group && config.groups[module.group] && config.groups[module.group].combine) {
-					if (!groupRequests[module.group]) {
-						groupRequests[module.group] = [];
+					if (!groupRequests[module.group + module.type]) {
+						groupRequests[module.group + module.type] = [];
 					}
+					groupRequests[module.group + module.type].type = module.type;
 					if (!modules[module.name]) {
-						groupRequests[module.group].push(module.path);
+						groupRequests[module.group + module.type].push(module.path);
 					}
 					queuedScripts[module.name] = 1;
 				} else if (!(modules[module.name] || queuedScripts[module.name])) {
@@ -183,7 +184,7 @@ function makeUse(config, get) {
 		for (groupName in groupRequests) {
 			if (groupRequests.hasOwnProperty(groupName)) {
 				if (groupRequests[groupName].length > 0) {
-					get.script(config.root + groupName + '?' + groupRequests[groupName].join('&'));
+					get[groupRequests[groupName].type == 'css' ? 'css' : 'script'](config.root + groupName.substr(0, groupName.length - groupRequests[groupName].type.length) + '?' + groupRequests[groupName].join('&'));
 				}
 			}
 		}
