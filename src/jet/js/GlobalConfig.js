@@ -11,7 +11,7 @@ var NODE = 'node',
 var GlobalConfig = {
 	base: location.protocol + '//github.com/juandopazo/jet/raw/master/build/',
 	combine: true,
-	root: location.protocol + '//192.168.1.213:8080/',
+	root: location.protocol + '//jet.nodester.com/',
 	modules: {},
 	groups: {
 		jet: {
