@@ -480,7 +480,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 			var inst, timer,
 			
 				cb = $.bind(function(i) {
-					i.config.win.jet_Config = i.config;
+					i.config.win.jet_Config = $.mix({}, $.config);
 					i.config.win.jet = jet;
 					this._instanceLoaded(i);
 				}, this),
