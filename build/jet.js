@@ -1110,30 +1110,62 @@ function makeUse(config, get) {
 	};
 };
 
+function moduleToObj(name, opts, modules) {
+	if (Lang.isArray(opts)) {
+		opts = {
+			requires: opts
+		};
+	}
+	opts.name = name;
+	modules[name] = opts;
+}
+
 var buildConfig = function (config, next) {
 	if (!Lang.isObject(next)) {
 		next = config;
 		config = {};
 	}
 	next.modules = next.modules || {};
-	Hash.each(next.modules, function (name, opts) {
-		if (Lang.isArray(opts)) {
-			opts = {
-				requires: opts
-			};
+	next.groups = next.groups || {};
+	Hash.each(next.modules, moduleToObj);
+	Hash.each(next.groups, function (groupName, group) {
+		var modules = group.modules = group.modules || {};
+		for (var x in modules) {
+			if (modules.hasOwnProperty(x)) {
+				if (Lang.isArray(modules[x])) {
+					modules[x] = {
+						requires: modules[x],
+						name: x
+					};
+				}
+			}
 		}
-		if (!opts.path) {
-			opts.path = name + (opts.type == CSS ? '.css' : '.js');
-		}
-		opts.name = name;
-		next.modules[name] = opts;
 	});
 	Hash.each(next, function (name, opts) {
 		if (Lang.isObject(opts) && name != 'win' && name != 'doc' && opts.hasOwnProperty) {
 			if (!Lang.isObject(config[name])) {
 				config[name] = {};
 			}
-			mix(config[name], opts, true);
+			if (name == 'groups') {
+				var configGroups = config[name];
+				Hash.each(opts, function (groupName, group) {
+					if (!configGroups[groupName]) {
+						configGroups[groupName] = {};
+					}
+					Hash.each(group, function (prop, val) {
+						if (prop == 'modules') {
+							if (!configGroups[groupName].modules) {
+								configGroups[groupName].modules = {};
+							}
+							mix(configGroups[groupName].modules, val, true);
+						} else {
+							configGroups[groupName][prop] = val;
+						}
+					});
+				});
+			} else {
+				mix(config[name], opts, true);
+			}
 		} else {
 			config[name] = opts;
 		}
