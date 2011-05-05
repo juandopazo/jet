@@ -117,7 +117,7 @@ function makeUse(config, get) {
 	
 	return function () {
 		var request = SLICE.call(arguments);
-		var i = 0, module, minify, groupName, modName;
+		var i = 0, module, minify, groupReqId, groupName, modName;
 		var fn = request.pop();
 		var groupRequests = {};
 		
@@ -181,10 +181,11 @@ function makeUse(config, get) {
 			}
 		}
 		
-		for (groupName in groupRequests) {
-			if (groupRequests.hasOwnProperty(groupName)) {
-				if (groupRequests[groupName].length > 0) {
-					get[groupRequests[groupName].type == 'css' ? 'css' : 'script'](config.root + groupName.substr(0, groupName.length - groupRequests[groupName].type.length) + '?' + groupRequests[groupName].join('&'));
+		for (groupReqId in groupRequests) {
+			if (groupRequests.hasOwnProperty(groupReqId)) {
+				if (groupRequests[groupReqId].length > 0) {
+					groupName = groupReqId.substr(0, groupReqId.length - groupRequests[groupReqId].type.length);
+					get[groupRequests[groupReqId].type == 'css' ? 'css' : 'script'](config.groups[groupName].root + groupName + '?' + groupRequests[groupReqId].join('&'));
 				}
 			}
 		}
@@ -329,6 +330,7 @@ window.jet = function (o) {
 	
 	config.groups.jet.minify = !!config.minify;
 	config.groups.jet.combine = Lang.isBoolean(config.combine) ? config.combine : true;
+	config.groups.jet.root = config.root;
 
 	var base = config.base;
 	/**
