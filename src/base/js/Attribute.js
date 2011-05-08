@@ -9,7 +9,7 @@ $.Attribute = Class.create('Attribute', $.EventTarget, {
 	
 	initializer: function (state) {
 		this._state = state || {};
-		this._stateConf = {};
+		this._attrs = {};
 		
 		Class.walk(this, function (constructor) {
 			if (constructor.ATTRS) {
@@ -26,7 +26,7 @@ $.Attribute = Class.create('Attribute', $.EventTarget, {
 	 * @chainable
 	 */
 	addAttr: function (attrName, config) {
-		this._stateConf[attrName] = config;
+		this._attrs[attrName] = config;
 		var state = this._state;
 		var isValue = Lang.isValue(state[attrName]);
 		/*if (config.required && config.readOnly) {
@@ -51,7 +51,7 @@ $.Attribute = Class.create('Attribute', $.EventTarget, {
 	},
 	
 	_set: function (attrName, attrValue) {
-		var attrConfig = this._stateConf;
+		var attrConfig = this._attrs;
 		var state = this._state;
 		var config = attrConfig[attrName] = attrConfig[attrName] || {};
 		var oldValue = state[attrName];
@@ -87,7 +87,7 @@ $.Attribute = Class.create('Attribute', $.EventTarget, {
 	 * @param {String} attrName
 	 */	
 	get: function (attrName) {
-		var attrConfig = this._stateConf;
+		var attrConfig = this._attrs;
 		var state = this._state;
 		attrConfig[attrName] = attrConfig[attrName] || {};
 		var config = attrConfig[attrName];
