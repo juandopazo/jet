@@ -348,7 +348,7 @@ $.extend(NodeList, $.ArrayList, {
 	 * @return {NodeList}
 	 */
 	last: function () {
-		return new NodeList(this.children()._nodes.shift());
+		return new (this.constructor)(this.children()._nodes.shift());
 	},
 	/**
 	 * Gets or sets the innerHTML of all the nodes in the node list
@@ -454,7 +454,7 @@ $.extend(NodeList, $.ArrayList, {
 				result.push.apply(result, newChildren);
 			}
 		});
-		return new NodeList(result);
+		return new (this.constructor)(result);
 	},
 	/**
 	 * Adds an event listener to all the nods in the list
@@ -564,7 +564,7 @@ $.extend(NodeList, $.ArrayList, {
 				result.push(node);
 			});
 		});
-		return new NodeList(result);
+		return new (this.constructor)(result);
 	},
 	/**
 	 * Sets or returns the value of the node. Useful mostly for form elements
