@@ -213,6 +213,12 @@ $.ajax = function (settings) {
 	return result || $;
 };
 
+$.get = function (url, opts) {
+	opts = opts || {};
+	opts.url = url;
+	return $.ajax(opts);
+};
+
 $.IO = {
 	utils: {
 		parseXML: parseXML

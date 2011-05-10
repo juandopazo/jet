@@ -74,17 +74,13 @@ getAjaxObject = function () {
 	var hostname = location.host,
 		msxml = "Microsoft.XMLHTTP",
 		test;
-	if ((location.protocol == "file:" || hostname == "localhost" || hostname == "127.0.0.1") && HAS_AXO) {
+	if (HAS_AXO && (!HAS_HXR || (location.protocol == "file:" || hostname == "localhost" || hostname == "127.0.0.1"))) {
 		getAjaxObject = function () {
 			return newAXO(msxml);
 		};
-	} else if (HAS_XHR) {
+	} else {
 		getAjaxObject = function () {
 			return new XMLHttpRequest();
-		};
-	} else if (HAS_AXO) {
-		getAjaxObject = function () {
-			return newAXO(msxml);
 		};
 	}
 	return getAjaxObject();
@@ -226,6 +222,12 @@ $.ajax = function (settings) {
 		}
 	}
 	return result || $;
+};
+
+$.get = function (url, opts) {
+	opts = opts || {};
+	opts.url = url;
+	return $.ajax(opts);
 };
 
 $.IO = {
