@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Deferred test</title>
+</head>
+<body>
+	<script src="http://jet.nodester.com/jet?jet.min.js"></script>
+	<script>
+		jet().use('deferred', function ($) {
+			
+	function TimeOut() {
+		TimeOut.superclass.constructor.apply(this, arguments);
+	}
+	$.extend(TimeOut, Deferred, {
+		
+		set: function (time) {
+			return this.promise(function (promise) {
+				var timeout = setTimeout(function () {
+					promise.resolve();
+				}, time || 0);
+				promise.fail(function () {
+					clearTimeout(timeout);
+				});
+			});
+		},
+		
+		abort: function () {
+			this.reject();
+		}
+		
+	});
+			
+			
+	var timeout = new TimeOut();
+	var time1;
+	var step1 = timeout.set(3000).then(function () {
+		console.log('done1');
+		time1 = Date.now();
+	}, function () {
+		console.log('fail1')
+	});
+	step1.set(500).then(function () {
+		console.log('done2');
+	}, function () {
+		console.log('fail2', (Date.now() - time1));
+	});
+	
+	setTimeout(function () {
+		timeout.abort();
+	}, 1000);
+	
+				
+		})
+	</script>
+</body>
+</html>
