@@ -1,7 +1,7 @@
 /**
  * Provides an extension that makes a class deferrable
  * @module deferred
- * @requires 
+ * @requires oop
  * 
  * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
  * Code licensed under the BSD License
@@ -126,26 +126,6 @@ Deferred.prototype = {
 	
 };
 
-function TimeOut() {
-	TimeOut.superclass.constructor.apply(this, arguments);
-}
-$.extend(TimeOut, Deferred, {
-	
-	set: function (time) {
-		return this.promise(function (promise) {
-			var timeout = setTimeout(function () {
-				promise.resolve();
-			}, time || 0);
-			promise.fail(function () {
-				clearTimeout(timeout);
-			});
-		});
-	},
-	
-	abort: function () {
-		this.reject();
-	}
-	
-});
+$.Deferred = Deferred;
 			
 });
