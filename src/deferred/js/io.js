@@ -4,8 +4,8 @@ if ($.ajax) {
 
 	function XHR(opts) {
 		this.promise(function (promise) {
-			opts.success = promise.resolve;
-			opts.failure = promise.reject;
+			opts.success = $.bind(promise.resolve, promise);
+			opts.failure = $.bind(promise.reject, promise);
 			oldAjax(opts);
 		});
 	}
