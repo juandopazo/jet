@@ -74,7 +74,7 @@ getAjaxObject = function () {
 	var hostname = location.host,
 		msxml = "Microsoft.XMLHTTP",
 		test;
-	if (HAS_AXO && (!HAS_HXR || (location.protocol == "file:" || hostname == "localhost" || hostname == "127.0.0.1"))) {
+	if (HAS_AXO && (!HAS_XHR || (location.protocol == "file:" || hostname == "localhost" || hostname == "127.0.0.1"))) {
 		getAjaxObject = function () {
 			return newAXO(msxml);
 		};
