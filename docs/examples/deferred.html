@@ -11,7 +11,7 @@
 	function TimeOut() {
 		TimeOut.superclass.constructor.apply(this, arguments);
 	}
-	$.extend(TimeOut, Deferred, {
+	$.extend(TimeOut, $.Deferred, {
 		
 		set: function (time) {
 			return this.promise(function (promise) {

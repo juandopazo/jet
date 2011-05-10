@@ -26,6 +26,7 @@ var GlobalConfig = {
 				sizzle: [NODE],
 				base: [NODE],
 				io: ['json'],
+				deferred: ['oop'],
 				'io-xdr': [NODE, 'swf', IO],
 				history: [BASE, 'json'],
 				'resize-styles': {
