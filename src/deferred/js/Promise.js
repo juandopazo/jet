@@ -7,7 +7,7 @@ var Lang = $.Lang,
 /*
  * Turns a value into an array with the value as its first element, or takes an array and spreads
  * each array element into elements of the parent array
- * @param {Object, Array} args The value or array to spread
+ * @param {Object|Array} args The value or array to spread
  * @return Array
  * @private
  */
@@ -34,8 +34,8 @@ $_Array.spread = function (args) {
  * It runs these callbacks once a call to resolve() or reject() is made
  * @class Promise
  * @constructor
- * @param {Function, Array} doneCallbacks A function or array of functions to run when the promise is resolved
- * @param {Function, Array} failCallbacks A function or array of functions to run when the promise is rejected
+ * @param {Function|Array} doneCallbacks A function or array of functions to run when the promise is resolved
+ * @param {Function|Array} failCallbacks A function or array of functions to run when the promise is rejected
  */
 function Promise(doneCallbacks, failCallbacks) {
 	this._done = this._spread(doneCallbacks);
@@ -46,8 +46,8 @@ Promise.prototype = {
 	/**
 	 * @method then
 	 * @description Adds callbacks to the list of callbacks tracked by the promise
-	 * @param {Function, Array} doneCallbacks A function or array of functions to run when the promise is resolved
-	 * @param {Function, Array} failCallbacks A function or array of functions to run when the promise is rejected
+	 * @param {Function|Array} doneCallbacks A function or array of functions to run when the promise is resolved
+	 * @param {Function|Array} failCallbacks A function or array of functions to run when the promise is rejected
 	 * @chainable
 	 */
 	then: function (doneCallbacks, failCallbacks) {
@@ -59,7 +59,7 @@ Promise.prototype = {
 	/**
 	 * @method done
 	 * @description Adds callbacks to the success list
-	 * @param {Function, Array} doneCallbacks Takes any number of functions or arrays of functions to run when the promise is resolved
+	 * @param {Function|Array} doneCallbacks Takes any number of functions or arrays of functions to run when the promise is resolved
 	 * @chainable 
 	 */
 	done: function () {
@@ -69,7 +69,7 @@ Promise.prototype = {
 	/**
 	 * @method fail
 	 * @description Adds callbacks to the failure list
-	 * @param {Function, Array} failCallbacks Takes any number of functions or arrays of functions to run when the promise is rejected
+	 * @param {Function|Array} failCallbacks Takes any number of functions or arrays of functions to run when the promise is rejected
 	 * @chainable 
 	 */
 	fail: function () {

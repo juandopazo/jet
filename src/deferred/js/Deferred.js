@@ -11,8 +11,8 @@ Deferred.prototype = {
 	/**
 	 * @method then
 	 * @description Adds callbacks to the last promise made. If no promise was made it calls the success callbacks immediately
-	 * @param {Function, Array} doneCallbacks A function or array of functions to run when the promise is resolved
-	 * @param {Function, Array} failCallbacks A function or array of functions to run when the promise is rejected
+	 * @param {Function|Array} doneCallbacks A function or array of functions to run when the promise is resolved
+	 * @param {Function|Array} failCallbacks A function or array of functions to run when the promise is rejected
 	 * @chainable
 	 */
 	then: function (doneCallbacks, failCallbacks) {
@@ -27,7 +27,7 @@ Deferred.prototype = {
 	/**
 	 * @method done
 	 * @description Adds callbacks to the success list
-	 * @param {Function, Array} doneCallbacks Takes any number of functions or arrays of functions to run when the promise is resolved
+	 * @param {Function|Array} doneCallbacks Takes any number of functions or arrays of functions to run when the promise is resolved
 	 * @chainable 
 	 */
 	done: Promise.prototype.done,
@@ -35,7 +35,7 @@ Deferred.prototype = {
 	/**
 	 * @method fail
 	 * @description Adds callbacks to the failure list
-	 * @param {Function, Array} failCallbacks Takes any number of functions or arrays of functions to run when the promise is rejected
+	 * @param {Function|Array} failCallbacks Takes any number of functions or arrays of functions to run when the promise is rejected
 	 * @chainable 
 	 */
 	fail: Promise.prototype.fail,
@@ -107,8 +107,9 @@ Deferred.prototype = {
 		}
 		return this;
 	},
+	
 	/**
-	 * @method notify
+	 * @method _notify
 	 * @description Notifies the success or failure callbacks
 	 * @param {Boolean} success Whether to notify the success or failure callbacks
 	 * @param {Array} args A list of arguments to pass to the callbacks

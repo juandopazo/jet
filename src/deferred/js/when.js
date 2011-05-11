@@ -7,7 +7,7 @@
 /**
  * @method when
  * @description Waits for a series of asynchronous calls to be completed
- * @param {Deferred, Array} deferred Any number of Deferred instances or arrays of instances
+ * @param {Deferred|Array} deferred Any number of Deferred instances or arrays of instances
  * @return {Deferred} deferred A Deferred instance
  */
 $.when = function () {
@@ -21,9 +21,9 @@ $.when = function () {
 	return deferred.promise(function (promise) {
 		function notify() {
 			if (rejected > 0) {
-				promise.reject(args);
+				promise.reject.apply(promise, args);
 			} else {
-				promise.resolve(args);
+				promise.resolve.apply(promise, args);
 			}
 		}
 			
