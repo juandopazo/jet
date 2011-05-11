@@ -49,7 +49,7 @@ Deferred.prototype = {
 		return this;
 	},
 	
-	_notify: Promise.prototype._notify
+	_notify: Promise.prototype.notify
 	
 };
 

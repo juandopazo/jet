@@ -50,14 +50,14 @@ Promise.prototype = {
 	},
 	
 	resolveWith: function (context, args) {
-		return this._notify(true, args, context);
+		return this.notify(true, args, context);
 	},
 	
 	rejectWith: function (context, args) {
-		return this._notify(false, args, context);
+		return this.notify(false, args, context);
 	},
 	
-	_notify: function (success, args, thisp) {
+	notify: function (success, args, thisp) {
 		var callbacks = success ? this._done : this._fail,
 			length = callbacks.length,
 			i = 0;
