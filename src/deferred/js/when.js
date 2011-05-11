@@ -1,6 +1,17 @@
 
+/**
+ * A method to wait for a series of asynchronous calls to be completed
+ * @class jet~when
+ * @static
+ */
+/**
+ * @method when
+ * @description Waits for a series of asynchronous calls to be completed
+ * @param {Deferred, Array} deferred Any number of Deferred instances or arrays of instances
+ * @return {Deferred} deferred A Deferred instance
+ */
 $.when = function () {
-	var deferreds = SLICE.call(arguments),
+	var deferreds = $_Array.spread(arguments),
 		args = [],
 		i = 0,
 		resolved = 0,
