@@ -22,8 +22,6 @@ if ($.ajax) {
 		
 	});
 	
-	$.XHR = XHR;
-	
 	$.ajax = function (opts) {
 		opts = opts || {};
 		var success = opts.success;

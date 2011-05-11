@@ -18,14 +18,16 @@ Deferred.prototype = {
 	promise: function (fn) {
 		var promise = new Promise();
 		var self = this;
-		function switchPromise() {
-			self._currPromise = promise;
-		}
-		if (this._promise) {
-			this._promise.then([$.bind(fn, promise, promise), switchPromise], switchPromise);
-		} else {
-			fn.call(promise, promise);
+		var switchPromise = $.bind(function () {
 			this._currPromise = promise;
+		}, this);
+		if (fn) {
+			if (this._promise) {
+				this._promise.then([$.bind(fn, promise, this), switchPromise], switchPromise);
+			} else {
+				fn.call(promise, promise);
+				this._currPromise = promise;
+			}
 		}
 		this._promise = promise;
 		return this;
@@ -36,6 +38,7 @@ Deferred.prototype = {
 		if (promise) {
 			promise.resolve.apply(promise, arguments);
 		}
+		return this;
 	},
 
 	reject: function () {
@@ -43,6 +46,7 @@ Deferred.prototype = {
 		if (promise) {
 			promise.reject.apply(promise, arguments);
 		}
+		return this;
 	},
 	
 	_notify: Promise.prototype._notify

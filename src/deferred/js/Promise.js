@@ -11,12 +11,13 @@ function Promise(doneCallbacks, failCallbacks) {
 Promise.prototype = {
 	
 	_spread: function (args) {
-		args = Lang.isArray(args) ? args : [args];
+		args = !args ? [] :
+				args.length ? SLICE.call(args) :
+				[args];
 		var i = 0;
 		while (i < args.length) {
 			if (Lang.isArray(args[i])) {
-				PUSH.apply(args, args[i]);
-				args.splice(i, 1);
+				AP.splice.apply(args, [i, 1].concat(args[i]));
 			} else if (!Lang.isValue(args[i])) {
 				args.splice(i, 1);
 			} else {
@@ -33,32 +34,34 @@ Promise.prototype = {
 	},
 	
 	done: function () {
-		return this.then(SLICE.call(arguments));
+		return this.then(arguments);
 	},
 	
 	fail: function () {
-		return this.then(null, SLICE.call(arguments));
+		return this.then(null, arguments);
 	},
 	
 	resolve: function () {
-		return this._notify(this._done, SLICE.call(arguments));
+		return this.resolveWith(this, arguments);
 	},
 	
 	reject: function () {
-		return this._notify(this._fail, SLICE.call(arguments));
+		return this.rejectWith(this, arguments);
 	},
 	
-	resolveWith: function (thisp) {
-		return this._notify(this._done, SLICE.call(arguments, 1), thisp);
+	resolveWith: function (context, args) {
+		return this._notify(true, args, context);
 	},
 	
-	rejectWith: function (thisp) {
-		return this._notify(this._fail, SLICE.call(arguments, 1), thisp);
+	rejectWith: function (context, args) {
+		return this._notify(false, args, context);
 	},
 	
-	_notify: function (callbacks, args, thisp) {
-		thisp = thisp || this;
-		for (var i = 0, length = callbacks.length; i < length; i++) {
+	_notify: function (success, args, thisp) {
+		var callbacks = success ? this._done : this._fail,
+			length = callbacks.length,
+			i = 0;
+		for (; i < length; i++) {
 			callbacks[i].apply(thisp, args);
 		}
 		return this;
