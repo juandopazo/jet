@@ -2,7 +2,8 @@ var Lang = $.Lang,
 	$_Array = $.Array,
 	AP = Array.prototype,
 	SLICE = AP.slice,
-	PUSH = AP.push;
+	PUSH = AP.push,
+	PROMISE_PROTO;
 
 /*
  * Turns a value into an array with the value as its first element, or takes an array and spreads
@@ -38,10 +39,12 @@ $_Array.spread = function (args) {
  * @param {Function|Array} failCallbacks A function or array of functions to run when the promise is rejected
  */
 function Promise(doneCallbacks, failCallbacks) {
-	this._done = this._spread(doneCallbacks);
-	this._fail = this._spread(failCallbacks);
+	this._done = $_Array.spread(doneCallbacks);
+	this._fail = $_Array.spread(failCallbacks);
+	this._resolved = false;
+	this._rejected = false;
 }
-Promise.prototype = {
+PROMISE_PROTO = Promise.prototype = {
 	
 	/**
 	 * @method then
@@ -74,6 +77,16 @@ Promise.prototype = {
 	 */
 	fail: function () {
 		return this.then(null, arguments);
+	},
+	
+	/**
+	 * @method always
+	 * @description Adds callbacks to both the failure and the success lists
+	 * @param {Function|Array} callbacks Takes any number of functions or arrays of functions to run when the promise is rejected or resolved
+	 * @chainable 
+	 */
+	always: function () {
+		return this.then(arguments, arguments);
 	},
 	
 	/**
@@ -127,13 +140,24 @@ Promise.prototype = {
 	 * @chainable
 	 */
 	notify: function (success, args, thisp) {
-		var callbacks = success ? this._done : this._fail,
-			length = callbacks.length,
-			i = 0;
-		for (; i < length; i++) {
-			callbacks[i].apply(thisp, args);
+		if (!this._resolved && !this._rejected) {
+			var callbacks = success ? this._done : this._fail,
+				length = callbacks.length,
+				i = 0;
+			this[success ? '_resolved' : '_rejected'] = true;
+			for (; i < length; i++) {
+				callbacks[i].apply(thisp, args);
+			}
 		}
 		return this;
+	},
+	
+	isResolved: function () {
+		return this._resolved;
+	},
+	
+	isRejected: function () {
+		return this._rejected;
 	}
 	
 };

@@ -13,7 +13,8 @@ jet.add('deferred', function ($) {
 	$_Array = $.Array,
 	AP = Array.prototype,
 	SLICE = AP.slice,
-	PUSH = AP.push;
+	PUSH = AP.push,
+	PROMISE_PROTO;
 
 /*
  * Turns a value into an array with the value as its first element, or takes an array and spreads
@@ -49,10 +50,12 @@ $_Array.spread = function (args) {
  * @param {Function|Array} failCallbacks A function or array of functions to run when the promise is rejected
  */
 function Promise(doneCallbacks, failCallbacks) {
-	this._done = this._spread(doneCallbacks);
-	this._fail = this._spread(failCallbacks);
+	this._done = $_Array.spread(doneCallbacks);
+	this._fail = $_Array.spread(failCallbacks);
+	this._resolved = false;
+	this._rejected = false;
 }
-Promise.prototype = {
+PROMISE_PROTO = Promise.prototype = {
 	
 	/**
 	 * @method then
@@ -85,6 +88,16 @@ Promise.prototype = {
 	 */
 	fail: function () {
 		return this.then(null, arguments);
+	},
+	
+	/**
+	 * @method always
+	 * @description Adds callbacks to both the failure and the success lists
+	 * @param {Function|Array} callbacks Takes any number of functions or arrays of functions to run when the promise is rejected or resolved
+	 * @chainable 
+	 */
+	always: function () {
+		return this.then(arguments, arguments);
 	},
 	
 	/**
@@ -138,17 +151,27 @@ Promise.prototype = {
 	 * @chainable
 	 */
 	notify: function (success, args, thisp) {
-		var callbacks = success ? this._done : this._fail,
-			length = callbacks.length,
-			i = 0;
-		for (; i < length; i++) {
-			callbacks[i].apply(thisp, args);
+		if (!this._resolved && !this._rejected) {
+			var callbacks = success ? this._done : this._fail,
+				length = callbacks.length,
+				i = 0;
+			this[success ? '_resolved' : '_rejected'] = true;
+			for (; i < length; i++) {
+				callbacks[i].apply(thisp, args);
+			}
 		}
 		return this;
+	},
+	
+	isResolved: function () {
+		return this._resolved;
+	},
+	
+	isRejected: function () {
+		return this._rejected;
 	}
 	
-};
-/**
+};/**
  * Deferred is a class designed to serve as extension for other classes, allowing them to
  * declare methods that run asynchronously and keep track of its promise
  * @class Deferred
@@ -165,10 +188,12 @@ Deferred.prototype = {
 	 * @chainable
 	 */
 	then: function (doneCallbacks, failCallbacks) {
-		if (this._promise) {
-			this._promise.then(doneCallbacks, failCallbacks);
-		} else {
-			this._notify(doneCallbacks);
+		if (doneCallbacks || failCallbacks) {
+			if (this._promise) {
+				this._promise.then(doneCallbacks, failCallbacks);
+			} else {
+				this._notify(doneCallbacks);
+			}
 		}
 		return this;
 	},
@@ -179,7 +204,7 @@ Deferred.prototype = {
 	 * @param {Function|Array} doneCallbacks Takes any number of functions or arrays of functions to run when the promise is resolved
 	 * @chainable 
 	 */
-	done: Promise.prototype.done,
+	done: PROMISE_PROTO.done,
 
 	/**
 	 * @method fail
@@ -187,7 +212,15 @@ Deferred.prototype = {
 	 * @param {Function|Array} failCallbacks Takes any number of functions or arrays of functions to run when the promise is rejected
 	 * @chainable 
 	 */
-	fail: Promise.prototype.fail,
+	fail: PROMISE_PROTO.fail,
+	
+	/**
+	 * @method always
+	 * @description Adds callbacks to both the failure and the success lists
+	 * @param {Function|Array} callbacks Takes any number of functions or arrays of functions to run when the promise is rejected or resolved
+	 * @chainable 
+	 */
+	always: PROMISE_PROTO.always,
 	
 	promise: function (fn) {
 		var promise = new Promise();
@@ -256,9 +289,8 @@ Deferred.prototype = {
 		}
 		return this;
 	},
-	
 	/**
-	 * @method _notify
+	 * @method notify
 	 * @description Notifies the success or failure callbacks
 	 * @param {Boolean} success Whether to notify the success or failure callbacks
 	 * @param {Array} args A list of arguments to pass to the callbacks
@@ -266,7 +298,15 @@ Deferred.prototype = {
 	 * @chainable
 	 * @private
 	 */
-	_notify: Promise.prototype.notify
+	_notify: PROMISE_PROTO.notify,
+	
+	isResolved: function () {
+		return this._currPromise.isResolved();
+	},
+	
+	isRejected: function () {
+		return this._currPromise.isRejected();
+	}
 	
 };
 
@@ -276,6 +316,10 @@ $.Deferred = Deferred;
  * @class jet~when
  * @static
  */
+$.defer = function (fn) {
+	var deferred = new Deferred();
+	return deferred.promise(fn);
+};
 /**
  * @method when
  * @description Waits for a series of asynchronous calls to be completed
@@ -287,10 +331,9 @@ $.when = function () {
 		args = [],
 		i = 0,
 		resolved = 0,
-		rejected = 0,
-		deferred = new Deferred();
+		rejected = 0;
 			
-	return deferred.promise(function (promise) {
+	return $.defer(function (promise) {
 		function notify() {
 			if (rejected > 0) {
 				promise.reject.apply(promise, args);

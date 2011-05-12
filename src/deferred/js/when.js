@@ -4,6 +4,10 @@
  * @class jet~when
  * @static
  */
+$.defer = function (fn) {
+	var deferred = new Deferred();
+	return deferred.promise(fn);
+};
 /**
  * @method when
  * @description Waits for a series of asynchronous calls to be completed
@@ -15,10 +19,9 @@ $.when = function () {
 		args = [],
 		i = 0,
 		resolved = 0,
-		rejected = 0,
-		deferred = new Deferred();
+		rejected = 0;
 			
-	return deferred.promise(function (promise) {
+	return $.defer(function (promise) {
 		function notify() {
 			if (rejected > 0) {
 				promise.reject.apply(promise, args);
