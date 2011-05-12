@@ -18,7 +18,7 @@ Jet is issued under the BSD license above. Below is a list of certain publicly a
 * ReallySimpleHistory: Jet's History module is a derivative work of the RSH library. More information about RSH can be found here: http://code.google.com/p/reallysimplehistory/. ReallySimpleHistory is (c) 2007 Brian Dillard and Brad Neuberg and is released under the MIT License (http://code.google.com/p/reallysimplehistory/source/browse/trunk/LICENSE.txt)
 
 #Additional copyright information
-YUI is (c) 2011 Yahoo! Inc. and is covered by the following copyright and permission notice:
+YUI is mantained by Yahoo! and is covered by the following copyright and permission notice:
  
 Copyright (c) 2011, Yahoo! Inc. All rights reserved.
 ----------------------------------------------------
