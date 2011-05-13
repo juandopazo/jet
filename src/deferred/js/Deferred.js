@@ -1,4 +1,3 @@
-
 /**
  * Deferred is a class designed to serve as extension for other classes, allowing them to
  * declare methods that run asynchronously and keep track of its promise
@@ -16,10 +15,12 @@ Deferred.prototype = {
 	 * @chainable
 	 */
 	then: function (doneCallbacks, failCallbacks) {
-		if (this._promise) {
-			this._promise.then(doneCallbacks, failCallbacks);
-		} else {
-			this._notify(doneCallbacks);
+		if (doneCallbacks || failCallbacks) {
+			if (this._promise) {
+				this._promise.then(doneCallbacks, failCallbacks);
+			} else {
+				this._notify(doneCallbacks);
+			}
 		}
 		return this;
 	},
@@ -30,7 +31,7 @@ Deferred.prototype = {
 	 * @param {Function|Array} doneCallbacks Takes any number of functions or arrays of functions to run when the promise is resolved
 	 * @chainable 
 	 */
-	done: Promise.prototype.done,
+	done: PROMISE_PROTO.done,
 
 	/**
 	 * @method fail
@@ -38,7 +39,15 @@ Deferred.prototype = {
 	 * @param {Function|Array} failCallbacks Takes any number of functions or arrays of functions to run when the promise is rejected
 	 * @chainable 
 	 */
-	fail: Promise.prototype.fail,
+	fail: PROMISE_PROTO.fail,
+	
+	/**
+	 * @method always
+	 * @description Adds callbacks to both the failure and the success lists
+	 * @param {Function|Array} callbacks Takes any number of functions or arrays of functions to run when the promise is rejected or resolved
+	 * @chainable 
+	 */
+	always: PROMISE_PROTO.always,
 	
 	promise: function (fn) {
 		var promise = new Promise();
@@ -107,9 +116,8 @@ Deferred.prototype = {
 		}
 		return this;
 	},
-	
 	/**
-	 * @method _notify
+	 * @method notify
 	 * @description Notifies the success or failure callbacks
 	 * @param {Boolean} success Whether to notify the success or failure callbacks
 	 * @param {Array} args A list of arguments to pass to the callbacks
@@ -117,7 +125,15 @@ Deferred.prototype = {
 	 * @chainable
 	 * @private
 	 */
-	_notify: Promise.prototype.notify
+	_notify: PROMISE_PROTO.notify,
+	
+	isResolved: function () {
+		return this._currPromise.isResolved();
+	},
+	
+	isRejected: function () {
+		return this._currPromise.isRejected();
+	}
 	
 };
 
