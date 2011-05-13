@@ -466,9 +466,17 @@ $.extend(NodeList, $.ArrayList, {
 	 */
 	on: function (type, callback, thisp) {
 		var handlers = [];
-		this.each(function (node) {
-			handlers.push(addEvent(node, type, callback, thisp));
-		});
+		if (Lang.isObject(type, true)) {
+			$.Hash.each(type, function (evType, fn) {
+				this.each(function (node) {
+					handlers.push(addEvent(node, evType, fn, thisp));
+				});
+			}, this);
+		} else {
+			this.each(function (node) {
+				handlers.push(addEvent(node, type, callback, thisp));
+			});
+		}
 		return new DOMEventHandler(handlers);
 	},
 	/**
