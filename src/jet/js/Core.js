@@ -59,10 +59,10 @@ function buildJet(config) {
 	// @TODO: consider moving this to the Node module
 	var $ = function Jet(query, root) {
 		root = root || $.context;
+		root = root.ownerDocument || root;
 		if (Lang.isString(query)) {
-			root = query.substr(0, 1) == '#' && root.ownerDocument ? root.ownerDocument : root;
-			query = $.parseQuery(query, root);
-			query = !Lang.isValue(query) ? new $.NodeList([]) : new $.NodeList(query);
+			query = $.find(query, root);
+			query = new $.NodeList(Lang.isValue(query) ? query : []);
 		} else {
 			query = new $.NodeList(query);
 		}
@@ -98,29 +98,25 @@ function buildJet(config) {
 		 * @param {String} query
 		 * @param {HTMLElement|Document} root
 		 */
-		parseQuery: function (query, root) {
+		find: function (query, root) {
 			root = root || $.context;
-			var c = query.substr(0, 1), test, node;
-			if (c == "<") {
-				if (query.match(/</g).length == 1) {
-					return root.createElement(query.substr(1, query.length - 3));
+			var c = query.charAt(0), test, node = null;
+			if (c === '<' && query.charAt(query.length - 1) === '>') {
+				if (query.match(/</g).length === 1) {
+					// suport for '<div/>' and '<div>'
+					return root.createElement(query.substr(1, query.length - (query.charAt(query.length - 2) === '/' ? 3 : 2)));
 				} else {
-					/*
-					 * Check for strings like "<div><span><a/></span></div>"
-					 */
-					test = query.match(new RegExp("<([a-z]+)>(.+)<\/([a-z]+)>", "i"));
-					node = null;
+					// Check for strings like "<div><span><a/></span></div>"
+					test = query.match(/<([a-z]+)>(.+)<\/([a-z]+)>/i);
 					if (test.length == 4 && test[1] == test[3]) {
 						node = root.createElement(test[1]);
 						node.innerHTML = test[2];
-					} else {
-						$.error("Wrong element creation string");
 					}
 					return node;
 				}
 			} else {
-				return c == "#" ? root.getElementById(query.substr(1)) : 
-					   c == "." ? getByClass(query.substr(1), root) :
+				return c === '#' ? root.getElementById(query.substr(1)) : 
+					   c === '.' ? getByClass(query.substr(1), root) :
 					   root.getElementsByTagName(query);
 			}
 		},

@@ -1,0 +1,3 @@
+[submodule "src/sizzle/js/sizzle"]
+	path = src/sizzle/js/sizzle
+	url = git://github.com/jquery/sizzle.git
