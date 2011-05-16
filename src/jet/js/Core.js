@@ -37,7 +37,7 @@ function buildJet(config) {
 				var result = [];
 				walkTheDOM(root, function (node) {
 					var a, c = node.className, i;
-					if (c && ArrayHelper.indexOf(className, c.split(" ")) > -1) {
+					if (c && _Array.indexOf(className, c.split(" ")) > -1) {
 						result[result.length] = node;
 					}
 				});
@@ -142,7 +142,7 @@ function buildJet(config) {
 		
 		Lang: Lang,
 		
-		'Array': ArrayHelper,
+		'Array': _Array,
 		
 		ArrayList: ArrayList,
 		

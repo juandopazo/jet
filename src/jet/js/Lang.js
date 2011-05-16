@@ -17,7 +17,7 @@ var ARRAY		= "array",
 	STRING		= "string",
 	UNDEFINED	= "undefined";
 	
-var ArrayHelper, Hash;
+var _Array, Hash;
 
 /**
  * Provides utility methods for finding object types and other
@@ -184,7 +184,7 @@ var Lang = (function () {
 				});
 			} else if (Lang.isArray(o)) {
 				n = [];
-				ArrayHelper.each(o, function (value) {
+				_Array.each(o, function (value) {
 					n[n.length] = clone(value);
 				});
 			} else {

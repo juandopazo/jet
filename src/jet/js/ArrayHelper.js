@@ -4,7 +4,7 @@
  * @class Array
  * @static
  */
-ArrayHelper = {
+_Array = {
 	/**
 	 * Iterates through an array
 	 * @method each
@@ -13,7 +13,7 @@ ArrayHelper = {
 	 * @param {Object} thisp sets up the <b>this</b> keyword inside the callback
 	 */
 	// check for native support
-	forEach: Lang.isNative(AP.forEach) ? function (arr, fn, thisp) {
+	forEach: AP.forEach ? function (arr, fn, thisp) {
 		
 		arr.forEach(fn, thisp);
 		
@@ -49,7 +49,7 @@ ArrayHelper = {
 	 * @param {Array} haystack
 	 * @return {Number}
 	 */
-	indexOf: Lang.isNative(AP.indexOf) ? function (needle, haystack) {
+	indexOf: AP.indexOf ? function (needle, haystack) {
 		
 		return haystack.indexOf(needle);
 		
@@ -62,44 +62,7 @@ ArrayHelper = {
 			}
 		}
 		return -1;
-	},
-	/**
-	 * Creates a new array with the results of calling a provided function on every element in this array
-	 * @method map
-	 * @param {Array} arr
-	 * @param {Function} callback Function that produces an element of the new Array from an element of the current one
-	 * @param {Object} thisObject Object to use as 'this' when executing 'callback'
-	 */
-	map: function (arr, fn, thisp) {
-		var results = [];
-		ArrayHelper.each(arr || [], function (item) {
-			var output = fn.call(thisp, item);
-			if (Lang.isValue(output)) {
-				if (Lang.isArray(output)) {
-					results.push.apply(results, output);
-				} else if (output instanceof ArrayList) {
-					output.each(function (item) {
-						if (ArrayHelper.indexOf(item, results) == -1) {
-							results[results.length] = item;
-						}
-					});
-				} else if (ArrayHelper.indexOf(output, results) == -1){
-					results[results.length] = output;
-				}
-			}
-		});
-		return results;
-	},
-	/**
-	 * Returns whether needle is present in haystack
-	 * @method inArray
-	 * @param {Object} needle
-	 * @param {Array} haystack
-	 * @return {Boolean}
-	 */
-	inArray: function (needle, haystack) {
-		return this.indexOf(needle, haystack) > -1;
 	}
 };
 
-ArrayHelper.each = ArrayHelper.forEach;
+_Array.each = _Array.forEach;

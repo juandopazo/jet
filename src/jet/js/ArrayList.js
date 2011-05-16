@@ -1,5 +1,5 @@
 var ArrayMethods,
-	ARRAYLIST_PROTO,
+	ARRAYLIST_PROTO;
 
 /**
  * A collection of elements
@@ -7,7 +7,7 @@ var ArrayMethods,
  * @constructor
  * @param {Array|Object} items An element or an array of elements 
  */
-ArrayList = function (items) {
+function ArrayList(items) {
 	this._items = !Lang.isValue(items) ? [] : Lang.isArray(items) ? items : [items];
 }
 ARRAYLIST_PROTO = ArrayList.prototype = {
@@ -27,7 +27,7 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 	 * @chainable
 	 */
 	forEach: function (fn, thisp) {
-		ArrayHelper.forEach(this._items, fn, thisp);
+		_Array.forEach(this._items, fn, thisp);
 		return this;
 	},
 	/**
@@ -37,8 +37,25 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 	 * @param {Object} thisp Object to use as 'this' when executing 'callback'
 	 * @return ArrayList
 	 */
-	map: function (fn, thisp) {
-		return new (this.constructor)(ArrayHelper.map(this._items, fn, thisp));
+	map: function (arr, fn, thisp) {
+		var results = [];
+		_Array.forEach(arr || [], function (item) {
+			var output = fn.call(thisp, item);
+			if (Lang.isValue(output)) {
+				if (Lang.isArray(output)) {
+					results.push.apply(results, output);
+				} else if (output instanceof ArrayList) {
+					output.forEach(function (item) {
+						if (_Array.indexOf(item, results) == -1) {
+							results[results.length] = item;
+						}
+					});
+				} else if (_Array.indexOf(output, results) == -1){
+					results[results.length] = output;
+				}
+			}
+		});
+		return new (this.constructor)(results);
 	},
 	/**
 	 * Returns the length of this ArrayList
@@ -79,7 +96,7 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 	 * @return Number
 	 */
 	indexOf: function (o) {
-		return ArrayHelper.indexOf(o, this._items);
+		return _Array.indexOf(o, this._items);
 	}
 };
 

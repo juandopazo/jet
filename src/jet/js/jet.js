@@ -83,7 +83,7 @@ function handleRequirements(request, config) {
 		if (module && module.requires) {
 			required = module.requires;
 			for (j = required.length - 1; j >= 0; j--) {
-				index = ArrayHelper.indexOf(required[j], request);
+				index = _Array.indexOf(required[j], request);
 				if (index == -1) {
 					request.splice(i, 0, required[j]);
 					moveForward = 0;
@@ -98,7 +98,7 @@ function handleRequirements(request, config) {
 	
 	// remove JSON module if there's native JSON support
 	if (config.win.JSON) {
-		ArrayHelper.remove('json', request);
+		_Array.remove('json', request);
 	}
 		
 	return request;
@@ -122,12 +122,12 @@ function makeUse(config, get) {
 		var groupRequests = {};
 		
 		// if "*" is used, include everything
-		if (ArrayHelper.indexOf("*", request) > -1) {
+		if (_Array.indexOf("*", request) > -1) {
 			request = [];
 			AP.unshift.apply(request, Hash.keys(config.modules));
 			
 		// add widget-parentchild by default
-		} else if (ArrayHelper.indexOf('node', request) == -1) {
+		} else if (_Array.indexOf('node', request) == -1) {
 			request.unshift('node');
 		}
 		
