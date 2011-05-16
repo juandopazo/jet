@@ -1,6 +1,6 @@
 
 var ready = function (fn) {
-	var node = this._nodes[0];
+	var node = this.getDOMNode();
 	if ((node.ownerDocument || node).body) {
 		fn.call(this);
 	} else {
@@ -29,11 +29,13 @@ function classRE(name) {
  * @param {DOMNode|Document} root
  */
 function NodeList(nodes, root) {
+	NodeList.superclass.constructor.apply(this, arguments);
+	
 	var i = 0, length, tmp;
 	root = root || $.context;
 	nodes = Lang.isValue(nodes) ? nodes : [];
-	if (Lang.isArray(nodes._nodes)) {
-		nodes = nodes._nodes;
+	if (Lang.isArray(nodes._items)) {
+		nodes = nodes._items;
 	} else if (Lang.isString(nodes)) {
 		nodes = [root.createElement(nodes)];
 	} else if (nodes.nodeType || nodes.body || nodes.navigator) {
@@ -56,9 +58,17 @@ function NodeList(nodes, root) {
 	} else {
 		//$.error("Wrong argument for NodeList");
 	}
-	this._nodes = this._items = nodes;
+	this._items = nodes;
 }
 $.extend(NodeList, $.ArrayList, {
+	
+	getDOMNodes: function () {
+		return this._items;
+	},
+	
+	getDOMNode: function () {
+		return this._items[0];
+	},
 	/**
 	 * Hides all nodes
 	 * @method hide
@@ -105,7 +115,7 @@ $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	hasClass: function (className) {
-		return classRE(className).test(this._nodes[0].className);
+		return classRE(className).test(this.getDOMNode().className);
 	},
 	/**
 	 * Removes a number of classes from all nodes in the collection.
@@ -187,7 +197,7 @@ $.extend(NodeList, $.ArrayList, {
 				}
 			});
 		} else {
-			var node = this._nodes[0];
+			var node = this.getDOMNode();
 			var offset = {
 				left: 0,
 				top: 0,
@@ -236,7 +246,7 @@ $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	append: function (appended) {
-		var node = this._nodes[0];
+		var node = this.getDOMNode();
 		$(appended).each(function (app) {
 			node.appendChild(app)
 		});
@@ -259,9 +269,9 @@ $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	prepend: function (prepended) {
-		var node = this._nodes[0];
+		var node = this.getDOMNode();
 		prepended = $(prepended);
-		prepended._nodes.reverse();
+		prepended.getDOMNodes().reverse();
 		prepended.each(function (prep) {
 			node.insertBefore(prep, node.firstChild);
 		});
@@ -284,7 +294,7 @@ $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	insertBefore: function (target) {
-		target = $(target)._nodes[0];
+		target = $(target).getDOMNode();
 		return this.each(function (node) {
 			target.parentNode.insertBefore(node, target);
 		});
@@ -296,10 +306,10 @@ $.extend(NodeList, $.ArrayList, {
 	 * @return Boolean
 	 */
 	inDoc: function () {
-		var de = this._nodes[0].ownerDocument.documentElement;
+		var de = this.getDOMNode().ownerDocument.documentElement;
 		var parent = this.parent();
-		while (parent._nodes[0]) {
-			if (parent._nodes[0].nodeName.toLowerCase() == 'html') {
+		while (parent.getDOMNode()) {
+			if (parent.getDOMNode().nodeName.toLowerCase() == 'html') {
 				return true;
 			}
 			parent = parent.parent();
@@ -348,7 +358,7 @@ $.extend(NodeList, $.ArrayList, {
 	 * @return {NodeList}
 	 */
 	last: function () {
-		return new (this.constructor)(this.children()._nodes.shift());
+		return this.children().getDOMNodes().shift();
 	},
 	/**
 	 * Gets or sets the innerHTML of all the nodes in the node list
@@ -359,7 +369,7 @@ $.extend(NodeList, $.ArrayList, {
 	html: function (html) {
 		return Lang.isValue(html) ? this.each(function (node) {
 			node.innerHTML = html;
-		}) : this._nodes[0] ? this._nodes[0].innerHTML : '';
+		}) : this.getDOMNode() ? this.getDOMNode().innerHTML : '';
 	},
 	/**
 	 * Gets or sets tag attributes to the nodes in the collection
@@ -376,7 +386,7 @@ $.extend(NodeList, $.ArrayList, {
 		} else if (Lang.isValue(value)) {
 			attrs[key] = value;
 		} else {
-			return this._nodes[0][key];
+			return this.getDOMNode()[key];
 		}
 		return this.each(function (node) {
 			Hash.each(attrs, function (name, val) {
@@ -398,7 +408,7 @@ $.extend(NodeList, $.ArrayList, {
 		} else if (Lang.isValue(value)) {
 			css[key] = value;
 		} else {
-			return $(this._nodes[0]).currentStyle()[key];
+			return $(this.getDOMNode()).currentStyle()[key];
 		}
 		return this.each(function (node) {
 			Hash.each(css, function (prop, value) {
@@ -544,7 +554,7 @@ $.extend(NodeList, $.ArrayList, {
 	 * @return {CSSDeclaration}
 	 */
 	currentStyle: function () {
-		var node = this._nodes[0];
+		var node = this.getDOMNode();
 		return $.win[GET_COMPUTED_STYLE] ? $.win[GET_COMPUTED_STYLE](node, null) : 
 				node[CURRENT_STYLE] ? node[CURRENT_STYLE] : node.style;
 	},
@@ -653,7 +663,7 @@ A.each(['Width', 'Height'], function (size) {
 				node.style[method] = value;
 			});
 		}
-		return this._nodes[0] ? this._nodes[0]['offset' + size] : null;
+		return this.getDOMNode() ? this.getDOMNode()['offset' + size] : null;
 	}
 });
 
