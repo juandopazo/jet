@@ -341,7 +341,7 @@ ArrayHelper = {
 	 * @param {Object} thisp sets up the <b>this</b> keyword inside the callback
 	 */
 	// check for native support
-	each: Lang.isNative(AP.forEach) ? function (arr, fn, thisp) {
+	forEach: Lang.isNative(AP.forEach) ? function (arr, fn, thisp) {
 		
 		arr.forEach(fn, thisp);
 		
@@ -428,16 +428,21 @@ ArrayHelper = {
 	inArray: function (needle, haystack) {
 		return this.indexOf(needle, haystack) > -1;
 	}
-};/**
+};
+
+ArrayHelper.each = ArrayHelper.forEach;var ArrayMethods,
+	ARRAYLIST_PROTO,
+
+/**
  * A collection of elements
  * @class ArrayList
  * @constructor
  * @param {Array|Object} items An element or an array of elements 
  */
-var ArrayList = function (items) {
+ArrayList = function (items) {
 	this._items = !Lang.isValue(items) ? [] : Lang.isArray(items) ? items : [items];
 }
-ArrayList.prototype = {
+ARRAYLIST_PROTO = ArrayList.prototype = {
 	/**
 	 * Iterates through the ArrayList
 	 * The callback is passed a reference to the element and an iteration index. 
@@ -453,8 +458,8 @@ ArrayList.prototype = {
 	 * @param {Function} callback
 	 * @chainable
 	 */
-	each: function (fn, thisp) {
-		ArrayHelper.each.call(ArrayHelper, this._items, fn, thisp);
+	forEach: function (fn, thisp) {
+		ArrayHelper.forEach(this._items, fn, thisp);
 		return this;
 	},
 	/**
@@ -500,6 +505,77 @@ ArrayList.prototype = {
 		return new (this.constructor)([this._items[index]]);
 	}
 };
+
+ArrayMethods = {
+	/** Returns a new ArrayList combining the given ArrayList(s) 
+	  * @method concat
+	  * @param {ArrayList | Array} valueN Arrays/ArrayLists and/or values to
+	  * concatenate to the resulting ArrayList
+	  * @return {ArrayList} A new ArrayList comprised of this ArrayList joined with the input.
+	  */
+	'concat': 1,
+	/** Removes the first last from the ArrayList and returns it.
+	  * @method pop
+	  * @return {Object} The last item in the ArrayList.
+	  */
+	'pop': 0,
+	/** Adds the given Node(s) to the end of the ArrayList. 
+	  * @method push
+	  * @param {Node | DOMNode} nodes One or more nodes to add to the end of the ArrayList. 
+	  */
+	'push': 0,
+	/** Removes the first item from the ArrayList and returns it.
+	  * @method shift
+	  * @return {Object} The first item in the ArrayList.
+	  */
+	'shift': 0,
+	/** Returns a new ArrayList comprising the Nodes in the given range. 
+	  * @method slice
+	  * @param {Number} begin Zero-based index at which to begin extraction.
+	  As a negative index, start indicates an offset from the end of the sequence. slice(-2) extracts the second-to-last element and the last element in the sequence.
+	  * @param {Number} end Zero-based index at which to end extraction. slice extracts up to but not including end.
+	  slice(1,4) extracts the second element through the fourth element (elements indexed 1, 2, and 3).
+	  As a negative index, end indicates an offset from the end of the sequence. slice(2,-1) extracts the third element through the second-to-last element in the sequence.
+	  If end is omitted, slice extracts to the end of the sequence.
+	  * @return {ArrayList} A new ArrayList comprised of this ArrayList joined with the input.
+	  */
+	'slice': 1,
+	/** Changes the content of the ArrayList, adding new elements while removing old elements.
+	  * @method splice
+	  * @param {Number} index Index at which to start changing the array. If negative, will begin that many elements from the end.
+	  * @param {Number} howMany An integer indicating the number of old array elements to remove. If howMany is 0, no elements are removed. In this case, you should specify at least one new element. If no howMany parameter is specified (second syntax above, which is a SpiderMonkey extension), all elements after index are removed.
+	  * {Node | DOMNode| element1, ..., elementN 
+	  The elements to add to the array. If you don't specify any elements, splice simply removes elements from the array.
+	  * @return {ArrayList} The element(s) removed.
+	  */
+	'splice': 1,
+	/** Adds the given Node(s) to the beginning of the ArrayList. 
+	  * @method push
+	  * @param {Object} nodes One or more nodes to add to the ArrayList. 
+	  */
+	'unshift': 0
+};
+
+$.Object.each(ArrayMethods, function (method, returnArrayList) {
+	
+	ARRAYLIST_PROTO[method] = function () {
+		var args = [],
+			i = 0,
+			arg,
+			ret;
+
+		while (typeof (arg = arguments[i++]) != 'undefined') { // use arraylists 
+			args.push(arg._items || arg);
+		}
+
+		ret = Array.prototype[name].apply(this._items, args);
+
+		return returnArrayList ? new (this.constructor)(ret) : ret;
+	};
+	
+});
+
+ARRAYLIST_PROTO.each = ARRAYLIST_PROTO.forEach;
 
 /**
  * Utilities for working with object literals
@@ -806,10 +882,10 @@ function buildJet(config) {
 	// @TODO: consider moving this to the Node module
 	var $ = function Jet(query, root) {
 		root = root || $.context;
+		root = root.ownerDocument || root;
 		if (Lang.isString(query)) {
-			root = query.substr(0, 1) == '#' && root.ownerDocument ? root.ownerDocument : root;
-			query = $.parseQuery(query, root);
-			query = !Lang.isValue(query) ? new $.NodeList([]) : new $.NodeList(query);
+			query = $.find(query, root);
+			query = new $.NodeList(Lang.isValue(query) ? query : []);
 		} else {
 			query = new $.NodeList(query);
 		}
@@ -845,29 +921,25 @@ function buildJet(config) {
 		 * @param {String} query
 		 * @param {HTMLElement|Document} root
 		 */
-		parseQuery: function (query, root) {
+		find: function (query, root) {
 			root = root || $.context;
-			var c = query.substr(0, 1), test, node;
-			if (c == "<") {
-				if (query.match(/</g).length == 1) {
-					return root.createElement(query.substr(1, query.length - 3));
+			var c = query.charAt(0), test, node = null;
+			if (c === '<' && query.charAt(query.length - 1) === '>') {
+				if (query.match(/</g).length === 1) {
+					// suport for '<div/>' and '<div>'
+					return root.createElement(query.substr(1, query.length - (query.charAt(query.length - 2) === '/' ? 3 : 2)));
 				} else {
-					/*
-					 * Check for strings like "<div><span><a/></span></div>"
-					 */
-					test = query.match(new RegExp("<([a-z]+)>(.+)<\/([a-z]+)>", "i"));
-					node = null;
+					// Check for strings like "<div><span><a/></span></div>"
+					test = query.match(/<([a-z]+)>(.+)<\/([a-z]+)>/i);
 					if (test.length == 4 && test[1] == test[3]) {
 						node = root.createElement(test[1]);
 						node.innerHTML = test[2];
-					} else {
-						$.error("Wrong element creation string");
 					}
 					return node;
 				}
 			} else {
-				return c == "#" ? root.getElementById(query.substr(1)) : 
-					   c == "." ? getByClass(query.substr(1), root) :
+				return c === '#' ? root.getElementById(query.substr(1)) : 
+					   c === '.' ? getByClass(query.substr(1), root) :
 					   root.getElementsByTagName(query);
 			}
 		},
@@ -893,11 +965,13 @@ function buildJet(config) {
 		
 		Lang: Lang,
 		
-		"Array": ArrayHelper,
+		'Array': ArrayHelper,
 		
 		ArrayList: ArrayList,
 		
 		Hash: Hash,
+		
+		'Object': Hash,
 		
 		config: config,
 		
@@ -1835,7 +1909,7 @@ var DOM = {
 	}
 };
 var ready = function (fn) {
-	var node = this._nodes[0];
+	var node = this.getDOMNode();
 	if ((node.ownerDocument || node).body) {
 		fn.call(this);
 	} else {
@@ -1864,11 +1938,13 @@ function classRE(name) {
  * @param {DOMNode|Document} root
  */
 function NodeList(nodes, root) {
+	NodeList.superclass.constructor.apply(this, arguments);
+	
 	var i = 0, length, tmp;
 	root = root || $.context;
 	nodes = Lang.isValue(nodes) ? nodes : [];
-	if (Lang.isArray(nodes._nodes)) {
-		nodes = nodes._nodes;
+	if (Lang.isArray(nodes._items)) {
+		nodes = nodes._items;
 	} else if (Lang.isString(nodes)) {
 		nodes = [root.createElement(nodes)];
 	} else if (nodes.nodeType || nodes.body || nodes.navigator) {
@@ -1891,9 +1967,17 @@ function NodeList(nodes, root) {
 	} else {
 		//$.error("Wrong argument for NodeList");
 	}
-	this._nodes = this._items = nodes;
+	this._items = nodes;
 }
 $.extend(NodeList, $.ArrayList, {
+	
+	getDOMNodes: function () {
+		return this._items;
+	},
+	
+	getDOMNode: function () {
+		return this._items[0];
+	},
 	/**
 	 * Hides all nodes
 	 * @method hide
@@ -1940,7 +2024,7 @@ $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	hasClass: function (className) {
-		return classRE(className).test(this._nodes[0].className);
+		return classRE(className).test(this.getDOMNode().className);
 	},
 	/**
 	 * Removes a number of classes from all nodes in the collection.
@@ -2022,7 +2106,7 @@ $.extend(NodeList, $.ArrayList, {
 				}
 			});
 		} else {
-			var node = this._nodes[0];
+			var node = this.getDOMNode();
 			var offset = {
 				left: 0,
 				top: 0,
@@ -2071,7 +2155,7 @@ $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	append: function (appended) {
-		var node = this._nodes[0];
+		var node = this.getDOMNode();
 		$(appended).each(function (app) {
 			node.appendChild(app)
 		});
@@ -2094,9 +2178,9 @@ $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	prepend: function (prepended) {
-		var node = this._nodes[0];
+		var node = this.getDOMNode();
 		prepended = $(prepended);
-		prepended._nodes.reverse();
+		prepended.getDOMNodes().reverse();
 		prepended.each(function (prep) {
 			node.insertBefore(prep, node.firstChild);
 		});
@@ -2119,7 +2203,7 @@ $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	insertBefore: function (target) {
-		target = $(target)._nodes[0];
+		target = $(target).getDOMNode();
 		return this.each(function (node) {
 			target.parentNode.insertBefore(node, target);
 		});
@@ -2131,10 +2215,10 @@ $.extend(NodeList, $.ArrayList, {
 	 * @return Boolean
 	 */
 	inDoc: function () {
-		var de = this._nodes[0].ownerDocument.documentElement;
+		var de = this.getDOMNode().ownerDocument.documentElement;
 		var parent = this.parent();
-		while (parent._nodes[0]) {
-			if (parent._nodes[0].nodeName.toLowerCase() == 'html') {
+		while (parent.getDOMNode()) {
+			if (parent.getDOMNode().nodeName.toLowerCase() == 'html') {
 				return true;
 			}
 			parent = parent.parent();
@@ -2183,7 +2267,7 @@ $.extend(NodeList, $.ArrayList, {
 	 * @return {NodeList}
 	 */
 	last: function () {
-		return new (this.constructor)(this.children()._nodes.shift());
+		return this.children().getDOMNodes().shift();
 	},
 	/**
 	 * Gets or sets the innerHTML of all the nodes in the node list
@@ -2194,7 +2278,7 @@ $.extend(NodeList, $.ArrayList, {
 	html: function (html) {
 		return Lang.isValue(html) ? this.each(function (node) {
 			node.innerHTML = html;
-		}) : this._nodes[0] ? this._nodes[0].innerHTML : '';
+		}) : this.getDOMNode() ? this.getDOMNode().innerHTML : '';
 	},
 	/**
 	 * Gets or sets tag attributes to the nodes in the collection
@@ -2211,7 +2295,7 @@ $.extend(NodeList, $.ArrayList, {
 		} else if (Lang.isValue(value)) {
 			attrs[key] = value;
 		} else {
-			return this._nodes[0][key];
+			return this.getDOMNode()[key];
 		}
 		return this.each(function (node) {
 			Hash.each(attrs, function (name, val) {
@@ -2233,7 +2317,7 @@ $.extend(NodeList, $.ArrayList, {
 		} else if (Lang.isValue(value)) {
 			css[key] = value;
 		} else {
-			return $(this._nodes[0]).currentStyle()[key];
+			return $(this.getDOMNode()).currentStyle()[key];
 		}
 		return this.each(function (node) {
 			Hash.each(css, function (prop, value) {
@@ -2301,9 +2385,17 @@ $.extend(NodeList, $.ArrayList, {
 	 */
 	on: function (type, callback, thisp) {
 		var handlers = [];
-		this.each(function (node) {
-			handlers.push(addEvent(node, type, callback, thisp));
-		});
+		if (Lang.isObject(type, true)) {
+			$.Hash.each(type, function (evType, fn) {
+				this.each(function (node) {
+					handlers.push(addEvent(node, evType, fn, thisp));
+				});
+			}, this);
+		} else {
+			this.each(function (node) {
+				handlers.push(addEvent(node, type, callback, thisp));
+			});
+		}
 		return new DOMEventHandler(handlers);
 	},
 	/**
@@ -2371,7 +2463,7 @@ $.extend(NodeList, $.ArrayList, {
 	 * @return {CSSDeclaration}
 	 */
 	currentStyle: function () {
-		var node = this._nodes[0];
+		var node = this.getDOMNode();
 		return $.win[GET_COMPUTED_STYLE] ? $.win[GET_COMPUTED_STYLE](node, null) : 
 				node[CURRENT_STYLE] ? node[CURRENT_STYLE] : node.style;
 	},
@@ -2480,7 +2572,7 @@ A.each(['Width', 'Height'], function (size) {
 				node.style[method] = value;
 			});
 		}
-		return this._nodes[0] ? this._nodes[0]['offset' + size] : null;
+		return this.getDOMNode() ? this.getDOMNode()['offset' + size] : null;
 	}
 });
 

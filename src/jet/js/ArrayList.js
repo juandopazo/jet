@@ -139,7 +139,7 @@ $.Object.each(ArrayMethods, function (method, returnArrayList) {
 		ret = Array.prototype[name].apply(this._items, args);
 
 		return returnArrayList ? new (this.constructor)(ret) : ret;
-	}
+	};
 	
 });
 
