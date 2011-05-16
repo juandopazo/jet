@@ -1,4 +1,5 @@
 var ArrayMethods,
+	ArrayHelperMethods,
 	ARRAYLIST_PROTO;
 
 /**
@@ -11,25 +12,6 @@ function ArrayList(items) {
 	this._items = !Lang.isValue(items) ? [] : Lang.isArray(items) ? items : [items];
 }
 ARRAYLIST_PROTO = ArrayList.prototype = {
-	/**
-	 * Iterates through the ArrayList
-	 * The callback is passed a reference to the element and an iteration index. 
-	 * The "this" keyword also refers to the node. ie:<br/>
-	 * <code>$("div").each(function (node, i) {<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;if (i % 2 == 1) {<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(node).addClass("even");<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;} else {<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$(node).addClass("odd");<br/>
-	 * &nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-	 * });</code>
-	 * @method each
-	 * @param {Function} callback
-	 * @chainable
-	 */
-	forEach: function (fn, thisp) {
-		_Array.forEach(this._items, fn, thisp);
-		return this;
-	},
 	/**
 	 * Creates a new ArrayList with the results of calling a provided function on every element in this array
 	 * @method map
@@ -66,21 +48,6 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 		return this._items.length;
 	},
 	/**
-	 * Returns a new ArrayList with only the elements for which the provided function returns true
-	 * @method filter
-	 * @param {Function} fn
-	 * @return ArrayList
-	 */
-	filter: function (fn, thisp) {
-		var results = [];
-		this.each(function (node) {
-			if (fn.call(thisp || this, node)) {
-				results[results.length] = node;
-			}
-		});
-		return new (this.constructor)(results);
-	},
-	/**
 	 * @method item
 	 * @description Returns a new ArrayList with the nth element of the current list
 	 * @param {Number} nth
@@ -88,15 +55,6 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 	 */
 	item: function (index) {
 		return new (this.constructor)([this._items[index]]);
-	},
-	/**
-	 * @method indexOf
-	 * @description Returns the index of the searched item or -1 if it didn't find it
-	 * @param {Object} item Some object
-	 * @return Number
-	 */
-	indexOf: function (o) {
-		return _Array.indexOf(this._items, o);
 	}
 };
 
@@ -150,6 +108,31 @@ ArrayMethods = {
 	'unshift': 0
 };
 
+ArrayHelperMethods = {
+	/**
+	 * @method indexOf
+	 * @description Returns the index of the searched item or -1 if it didn't find it
+	 * @param {Object} item Some object
+	 * @return Number
+	 */
+	indexOf: 2,
+	/**
+	 * Returns a new ArrayList with only the elements for which the provided function returns true
+	 * @method filter
+	 * @param {Function} fn
+	 * @return ArrayList
+	 */
+	filter: 1,
+	/**
+	 * Iterates through the ArrayList
+	 * The callback is passed a reference to the element and an iteration index. 
+	 * @method forEach
+	 * @param {Function} callback
+	 * @chainable
+	 */
+	forEach: 0
+};
+
 Hash.each(ArrayMethods, function (method, returnArrayList) {
 	
 	ARRAYLIST_PROTO[method] = function () {
@@ -165,6 +148,17 @@ Hash.each(ArrayMethods, function (method, returnArrayList) {
 		ret = Array.prototype[name].apply(this._items, args);
 
 		return returnArrayList ? new (this.constructor)(ret) : ret;
+	};
+	
+});
+
+Hash.each(ArrayHelperMethods, function (method, returnType) {
+	
+	ARRAYLIST_PROTO[method] = function () {
+		var result = _Array[method].apply(null, [this._items].concat(arguments));
+		return returnType === 0 ? this :
+				returnType === 1 ? new (this.constructor)(result) :
+				result;
 	};
 	
 });
