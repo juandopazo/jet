@@ -142,11 +142,13 @@ function buildJet(config) {
 		
 		Lang: Lang,
 		
-		"Array": ArrayHelper,
+		'Array': ArrayHelper,
 		
 		ArrayList: ArrayList,
 		
 		Hash: Hash,
+		
+		'Object': Hash,
 		
 		config: config,
 		
