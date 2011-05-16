@@ -1,19 +1,4 @@
-module("node");
-
-test("Basic requirements", function() {
-	expect(9);
-	ok( Array.prototype.push, "Array.push()" );
-	ok( Function.prototype.apply, "Function.apply()" );
-	ok( document.getElementById, "getElementById" );
-	ok( document.getElementsByTagName, "getElementsByTagName" );
-	ok( RegExp, "RegExp" );
-	ok( jet, "jet" );
-	ok( jet(), "jet()");
-	ok( jet().use && jet.add, "jet().use && jet.add");
-	jet().use(function ($) {
-		ok( $ != window.$, "jet doesn't pollute the global object" )
-	});
-});
+module("nodelist");
 
 jet().use(function ($) {
 	

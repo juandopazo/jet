@@ -64,13 +64,22 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 		return new (this.constructor)(results);
 	},
 	/**
-	 * @method eq
+	 * @method item
 	 * @description Returns a new ArrayList with the nth element of the current list
 	 * @param {Number} nth
 	 * @return ArrayList
 	 */
 	item: function (index) {
 		return new (this.constructor)([this._items[index]]);
+	},
+	/**
+	 * @method indexOf
+	 * @description Returns the index of the searched item or -1 if it didn't find it
+	 * @param {Object} item Some object
+	 * @return Number
+	 */
+	indexOf: function (o) {
+		return ArrayHelper.indexOf(o, this._items);
 	}
 };
 

@@ -66,8 +66,8 @@ $.extend(NodeList, $.ArrayList, {
 		return this._items;
 	},
 	
-	getDOMNode: function () {
-		return this._items[0];
+	getDOMNode: function (index) {
+		return this._items[index || 0];
 	},
 	/**
 	 * Hides all nodes
