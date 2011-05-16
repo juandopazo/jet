@@ -290,7 +290,7 @@ WidgetParent.prototype = {
 	 * @param {Function} fn Callback
 	 * @chainable
 	 */
-	each: function (fn, thisp) {
+	forEach: function (fn, thisp) {
 		A.each(this.get(CHILDREN), fn, thisp || this);
 		return this;
 	},
@@ -305,3 +305,5 @@ WidgetParent.prototype = {
 	 }
 	
 };
+
+WidgetParent.prototype.each = WidgetParent.prototype.forEach;
