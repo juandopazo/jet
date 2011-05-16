@@ -556,7 +556,7 @@ ArrayMethods = {
 	'unshift': 0
 };
 
-$.Object.each(ArrayMethods, function (method, returnArrayList) {
+Hash.each(ArrayMethods, function (method, returnArrayList) {
 	
 	ARRAYLIST_PROTO[method] = function () {
 		var args = [],
