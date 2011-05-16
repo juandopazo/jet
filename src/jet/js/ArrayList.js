@@ -46,11 +46,11 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 					results.push.apply(results, output);
 				} else if (output instanceof ArrayList) {
 					output.forEach(function (item) {
-						if (_Array.indexOf(item, results) == -1) {
+						if (_Array.indexOf(results, item) == -1) {
 							results[results.length] = item;
 						}
 					});
-				} else if (_Array.indexOf(output, results) == -1){
+				} else if (_Array.indexOf(results, output) == -1){
 					results[results.length] = output;
 				}
 			}
@@ -96,7 +96,7 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 	 * @return Number
 	 */
 	indexOf: function (o) {
-		return _Array.indexOf(o, this._items);
+		return _Array.indexOf(this._items, o);
 	}
 };
 

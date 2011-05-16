@@ -37,7 +37,7 @@ function buildJet(config) {
 				var result = [];
 				walkTheDOM(root, function (node) {
 					var a, c = node.className, i;
-					if (c && _Array.indexOf(className, c.split(" ")) > -1) {
+					if (c && _Array.indexOf(c.split(' '), className) > -1) {
 						result[result.length] = node;
 					}
 				});

@@ -49,11 +49,11 @@ _Array = {
 	 * @param {Array} haystack
 	 * @return {Number}
 	 */
-	indexOf: AP.indexOf ? function (needle, haystack) {
+	indexOf: AP.indexOf ? function (haystack, needle) {
 		
 		return haystack.indexOf(needle);
 		
-	} : function (needle, haystack) {
+	} : function (haystack, needle) {
 		var i,
 			length = haystack.length;
 		for (i = 0; i < length; i = i + 1) {

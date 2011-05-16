@@ -83,7 +83,7 @@ function handleRequirements(request, config) {
 		if (module && module.requires) {
 			required = module.requires;
 			for (j = required.length - 1; j >= 0; j--) {
-				index = _Array.indexOf(required[j], request);
+				index = _Array.indexOf(request, required[j]);
 				if (index == -1) {
 					request.splice(i, 0, required[j]);
 					moveForward = 0;
@@ -122,12 +122,12 @@ function makeUse(config, get) {
 		var groupRequests = {};
 		
 		// if "*" is used, include everything
-		if (_Array.indexOf("*", request) > -1) {
+		if (_Array.indexOf(request, '*') > -1) {
 			request = [];
 			AP.unshift.apply(request, Hash.keys(config.modules));
 			
 		// add widget-parentchild by default
-		} else if (_Array.indexOf('node', request) == -1) {
+		} else if (_Array.indexOf(request, 'node') == -1) {
 			request.unshift('node');
 		}
 		

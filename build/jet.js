@@ -130,7 +130,7 @@ var ARRAY		= "array",
 	STRING		= "string",
 	UNDEFINED	= "undefined";
 	
-var ArrayHelper, Hash;
+var _Array, Hash;
 
 /**
  * Provides utility methods for finding object types and other
@@ -297,7 +297,7 @@ var Lang = (function () {
 				});
 			} else if (Lang.isArray(o)) {
 				n = [];
-				ArrayHelper.each(o, function (value) {
+				_Array.each(o, function (value) {
 					n[n.length] = clone(value);
 				});
 			} else {
@@ -332,7 +332,7 @@ if (Function.prototype.bind) {
  * @class Array
  * @static
  */
-ArrayHelper = {
+_Array = {
 	/**
 	 * Iterates through an array
 	 * @method each
@@ -341,7 +341,7 @@ ArrayHelper = {
 	 * @param {Object} thisp sets up the <b>this</b> keyword inside the callback
 	 */
 	// check for native support
-	forEach: Lang.isNative(AP.forEach) ? function (arr, fn, thisp) {
+	forEach: AP.forEach ? function (arr, fn, thisp) {
 		
 		arr.forEach(fn, thisp);
 		
@@ -377,11 +377,11 @@ ArrayHelper = {
 	 * @param {Array} haystack
 	 * @return {Number}
 	 */
-	indexOf: Lang.isNative(AP.indexOf) ? function (needle, haystack) {
+	indexOf: AP.indexOf ? function (haystack, needle) {
 		
 		return haystack.indexOf(needle);
 		
-	} : function (needle, haystack) {
+	} : function (haystack, needle) {
 		var i,
 			length = haystack.length;
 		for (i = 0; i < length; i = i + 1) {
@@ -390,47 +390,10 @@ ArrayHelper = {
 			}
 		}
 		return -1;
-	},
-	/**
-	 * Creates a new array with the results of calling a provided function on every element in this array
-	 * @method map
-	 * @param {Array} arr
-	 * @param {Function} callback Function that produces an element of the new Array from an element of the current one
-	 * @param {Object} thisObject Object to use as 'this' when executing 'callback'
-	 */
-	map: function (arr, fn, thisp) {
-		var results = [];
-		ArrayHelper.each(arr || [], function (item) {
-			var output = fn.call(thisp, item);
-			if (Lang.isValue(output)) {
-				if (Lang.isArray(output)) {
-					results.push.apply(results, output);
-				} else if (output instanceof ArrayList) {
-					output.each(function (item) {
-						if (ArrayHelper.indexOf(item, results) == -1) {
-							results[results.length] = item;
-						}
-					});
-				} else if (ArrayHelper.indexOf(output, results) == -1){
-					results[results.length] = output;
-				}
-			}
-		});
-		return results;
-	},
-	/**
-	 * Returns whether needle is present in haystack
-	 * @method inArray
-	 * @param {Object} needle
-	 * @param {Array} haystack
-	 * @return {Boolean}
-	 */
-	inArray: function (needle, haystack) {
-		return this.indexOf(needle, haystack) > -1;
 	}
 };
 
-ArrayHelper.each = ArrayHelper.forEach;
+_Array.each = _Array.forEach;
 /**
  * Utilities for working with object literals
  * Throughout jet the Hash type means an object lieteral
@@ -482,7 +445,7 @@ Hash = {
 		return values;
 	}
 };var ArrayMethods,
-	ARRAYLIST_PROTO,
+	ARRAYLIST_PROTO;
 
 /**
  * A collection of elements
@@ -490,7 +453,7 @@ Hash = {
  * @constructor
  * @param {Array|Object} items An element or an array of elements 
  */
-ArrayList = function (items) {
+function ArrayList(items) {
 	this._items = !Lang.isValue(items) ? [] : Lang.isArray(items) ? items : [items];
 }
 ARRAYLIST_PROTO = ArrayList.prototype = {
@@ -510,7 +473,7 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 	 * @chainable
 	 */
 	forEach: function (fn, thisp) {
-		ArrayHelper.forEach(this._items, fn, thisp);
+		_Array.forEach(this._items, fn, thisp);
 		return this;
 	},
 	/**
@@ -520,8 +483,25 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 	 * @param {Object} thisp Object to use as 'this' when executing 'callback'
 	 * @return ArrayList
 	 */
-	map: function (fn, thisp) {
-		return new (this.constructor)(ArrayHelper.map(this._items, fn, thisp));
+	map: function (arr, fn, thisp) {
+		var results = [];
+		_Array.forEach(arr || [], function (item) {
+			var output = fn.call(thisp, item);
+			if (Lang.isValue(output)) {
+				if (Lang.isArray(output)) {
+					results.push.apply(results, output);
+				} else if (output instanceof ArrayList) {
+					output.forEach(function (item) {
+						if (_Array.indexOf(results, item) == -1) {
+							results[results.length] = item;
+						}
+					});
+				} else if (_Array.indexOf(results, output) == -1){
+					results[results.length] = output;
+				}
+			}
+		});
+		return new (this.constructor)(results);
 	},
 	/**
 	 * Returns the length of this ArrayList
@@ -562,7 +542,7 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 	 * @return Number
 	 */
 	indexOf: function (o) {
-		return ArrayHelper.indexOf(o, this._items);
+		return _Array.indexOf(this._items, o);
 	}
 };
 
@@ -869,7 +849,7 @@ function buildJet(config) {
 				var result = [];
 				walkTheDOM(root, function (node) {
 					var a, c = node.className, i;
-					if (c && ArrayHelper.indexOf(className, c.split(" ")) > -1) {
+					if (c && _Array.indexOf(c.split(' '), className) > -1) {
 						result[result.length] = node;
 					}
 				});
@@ -974,7 +954,7 @@ function buildJet(config) {
 		
 		Lang: Lang,
 		
-		'Array': ArrayHelper,
+		'Array': _Array,
 		
 		ArrayList: ArrayList,
 		
@@ -1076,7 +1056,7 @@ function handleRequirements(request, config) {
 		if (module && module.requires) {
 			required = module.requires;
 			for (j = required.length - 1; j >= 0; j--) {
-				index = ArrayHelper.indexOf(required[j], request);
+				index = _Array.indexOf(request, required[j]);
 				if (index == -1) {
 					request.splice(i, 0, required[j]);
 					moveForward = 0;
@@ -1091,7 +1071,7 @@ function handleRequirements(request, config) {
 	
 	// remove JSON module if there's native JSON support
 	if (config.win.JSON) {
-		ArrayHelper.remove('json', request);
+		_Array.remove('json', request);
 	}
 		
 	return request;
@@ -1115,12 +1095,12 @@ function makeUse(config, get) {
 		var groupRequests = {};
 		
 		// if "*" is used, include everything
-		if (ArrayHelper.indexOf("*", request) > -1) {
+		if (_Array.indexOf(request, '*') > -1) {
 			request = [];
 			AP.unshift.apply(request, Hash.keys(config.modules));
 			
 		// add widget-parentchild by default
-		} else if (ArrayHelper.indexOf('node', request) == -1) {
+		} else if (_Array.indexOf(request, 'node') == -1) {
 			request.unshift('node');
 		}
 		

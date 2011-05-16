@@ -38,6 +38,46 @@ ArrayExtras = {
 		return true;
 	},
 	
+	some: function (arr, callback, context) {
+		var length = arr.length,
+			i = 0;
+		
+		for (; i < length; i++) {
+			if (i in arr && !callback.call(context, arr[i], i, arr)) {
+				return true;
+			}
+		}
+		return false;
+	},
+	
+	lastIndexOf: function (haystack, needle) {
+		var length = haystack.length >>> 0,
+			n = length,
+			i;
+		if (length === 0) {
+			return -1;
+		}
+
+		if (arguments.length > 1) {
+			n = Number(arguments[1]);
+			if (n !== n) {
+				n = 0;
+			}
+			else if (n !== 0 && n !== (1 / 0) && n !== -(1 / 0)) {
+				n = (n > 0 || -1) * Math.floor(Math.abs(n));
+			}
+		}
+
+		i = n >= 0 ? Math.min(n, length - 1) : length - Math.abs(n);
+
+		for (; i >= 0; i--) {
+			if (i in haystack && haystack[i] === needle) {
+				return i;
+			}
+		}
+		return -1;
+	},
+	
 	/**
 	 * Creates a new array with the results of calling a provided function on every element in this array
 	 * @method map
@@ -56,18 +96,6 @@ ArrayExtras = {
 			}
 		}
 		return result;
-	},
-	
-	some: function (arr, callback, context) {
-		var length = arr.length,
-			i = 0;
-		
-		for (; i < length; i++) {
-			if (i in arr && !callback.call(context, arr[i], i, arr)) {
-				return true;
-			}
-		}
-		return false;
 	},
 	
 	reduce: function (arr, callback, accumulator) {
@@ -102,6 +130,39 @@ ArrayExtras = {
 		}
 
 		return accumulator;
+	},
+	
+	reduceRight: function (arr, callbackfn, accumulator) {
+		var length = arr.length >>> 0,
+			i = length - 1;
+		// no value to return if no initial value, empty array
+		if (length === 0 && arguments.length === 2) {
+			throw new TypeError();
+		}
+
+		if (arguments.length < 2) {
+			do 	{
+				if (i in arr) {
+					accumulator = arr[i--];
+					break;
+				}
+
+				// if array contains no values, no initial value to return
+				if (--i < 0) {
+					throw new TypeError();
+				}
+			}
+			while (true);
+		}
+
+		while (i >= 0) {
+			if (i in arr) {
+				accumulator = callbackfn.call(undefined, accumulator, arr[i], i, arr);
+			}
+			i--;
+		}
+
+		return accumulator;
 	}
 	
 };
@@ -112,7 +173,7 @@ $.Object.each(ArrayExtras, function (name, fn) {
 	
 });
 
-$.Array.forEach(['filter', 'every', 'some', 'reduce'], function (method) {
+$.Array.forEach(['filter', 'every', 'some', 'lastIndexOf', 'reduce', 'reduceRight'], function (method) {
 	
 	$.ArrayList.prototype[method] = function () {
 		return $.Array[method].apply(null, [this._items].concat(arguments));
