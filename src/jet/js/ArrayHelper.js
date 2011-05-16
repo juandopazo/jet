@@ -13,7 +13,7 @@ ArrayHelper = {
 	 * @param {Object} thisp sets up the <b>this</b> keyword inside the callback
 	 */
 	// check for native support
-	each: Lang.isNative(AP.forEach) ? function (arr, fn, thisp) {
+	forEach: Lang.isNative(AP.forEach) ? function (arr, fn, thisp) {
 		
 		arr.forEach(fn, thisp);
 		
@@ -101,3 +101,5 @@ ArrayHelper = {
 		return this.indexOf(needle, haystack) > -1;
 	}
 };
+
+ArrayHelper.each = ArrayHelper.forEach;

@@ -23,8 +23,8 @@ ArrayList.prototype = {
 	 * @param {Function} callback
 	 * @chainable
 	 */
-	each: function (fn, thisp) {
-		ArrayHelper.each.call(ArrayHelper, this._items, fn, thisp);
+	forEach: function (fn, thisp) {
+		ArrayHelper.forEach(this._items, fn, thisp);
 		return this;
 	},
 	/**
@@ -70,3 +70,5 @@ ArrayList.prototype = {
 		return new (this.constructor)([this._items[index]]);
 	}
 };
+
+ArrayList.prototype.each = ArrayList.prototype.forEach;
