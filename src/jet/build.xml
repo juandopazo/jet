@@ -32,7 +32,7 @@
 			(function () {
 			
 			</header>
-			<filelist dir="./js" files="GlobalConfig.js,Lang.js,ArrayHelper.js,ArrayList.js,Hash.js,ua.js,Get.js,Core.js,jet.js"/>
+			<filelist dir="./js" files="GlobalConfig.js,Lang.js,ArrayHelper.js,Hash.js,ArrayList.js,ua.js,Get.js,Core.js,jet.js"/>
 			<footer trimleading="yes">
 			
 			}());
