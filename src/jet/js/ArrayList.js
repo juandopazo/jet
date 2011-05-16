@@ -145,7 +145,7 @@ Hash.each(ArrayMethods, function (method, returnArrayList) {
 			args.push(arg._items || arg);
 		}
 
-		ret = Array.prototype[name].apply(this._items, args);
+		ret = AP[name].apply(this._items, args);
 
 		return returnArrayList ? new (this.constructor)(ret) : ret;
 	};
@@ -155,7 +155,7 @@ Hash.each(ArrayMethods, function (method, returnArrayList) {
 Hash.each(ArrayHelperMethods, function (method, returnType) {
 	
 	ARRAYLIST_PROTO[method] = function () {
-		var result = _Array[method].apply(null, [this._items].concat(arguments));
+		var result = _Array[method].apply(null, [this._items].concat(AP.slice.call(arguments)));
 		return returnType === 0 ? this :
 				returnType === 1 ? new (this.constructor)(result) :
 				result;
