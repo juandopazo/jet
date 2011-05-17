@@ -343,7 +343,7 @@ _Array = {
 	// check for native support
 	forEach: AP.forEach ? function (arr, fn, thisp) {
 		
-		(arr || []).forEach(fn, thisp);
+		AP.slice.call(arr).forEach(fn, thisp);
 		
 	} : function (arr, fn, thisp) {
 		arr = arr || [];
