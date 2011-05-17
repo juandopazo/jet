@@ -117,7 +117,7 @@ function makeUse(config, get) {
 	
 	return function () {
 		var request = SLICE.call(arguments);
-		var i = 0, module, minify, groupReqId, groupName, modName;
+		var i = 0, module, minify, groupReqId, groupName, modName, group;
 		var fn = request.pop();
 		var groupRequests = {};
 		
@@ -150,18 +150,20 @@ function makeUse(config, get) {
 			 */
 			if (Lang.isString(module)) {
 				request[i] = module = getModuleFromString(module, config);
+				group = config.groups[module.group];
 				module.type = module.type || 'js';
 				if (!module.path) {
-					minify = module.group ? config.groups[module.group].minify : config.minify;
+					minify = group ? group.minify : config.minify;
 					module.path = module.name + (minify ? '.min.' : '.') + module.type; 
 				}
 			}
+			group = config.groups[module.group];
 			if (!Lang.isObject(module) || (module.type == CSS && !config.loadCss)) {
 				request.splice(i, 1);
 				i--;
 			} else {
-				module.fullpath = module.fullpath || base + module.path;
-				if (module.group && config.groups[module.group] && config.groups[module.group].combine) {
+				module.fullpath = module.fullpath || (group ? group.base : base) + module.path;
+				if (module.group && group && group.combine) {
 					if (!groupRequests[module.group + module.type]) {
 						groupRequests[module.group + module.type] = [];
 					}
@@ -328,9 +330,12 @@ window.jet = function (o) {
 	config = buildConfig(config, (o && o.win) ? o.win.jet_Config : window.jet_Config);
 	config = buildConfig(config, o);
 	
-	config.groups.jet.minify = !!config.minify;
-	config.groups.jet.combine = Lang.isBoolean(config.combine) ? config.combine : true;
-	config.groups.jet.root = config.root;
+	mix(config.groups.jet, {
+		minify: !!config.minify,
+		combine: Lang.isBoolean(config.combine) ? config.combine : true,
+		root: config.root,
+		base: config.base
+	}, true);
 
 	var base = config.base;
 	/**
