@@ -212,7 +212,7 @@ var DataTable = Base.create('dt', Widget, [], {
 	
 	renderUI: function () {
 		var contentBox = this.get('contentBox');
-		contentBox._nodes[0].setAttribute('cellspacing', '0px');
+		contentBox.getDOMNode().setAttribute('cellspacing', '0px');
 		var thead = this.get(THEAD);
 		var tbody = this.get(TBODY);
 		
@@ -234,7 +234,7 @@ var DataTable = Base.create('dt', Widget, [], {
 		e.stopPropagation();
 		e.preventDefault();
 		var target = e.target;
-		var parent = this.get(THEAD).first()._nodes[0];
+		var parent = this.get(THEAD).first().getDOMNode();
 		while (target.parentNode != parent) {
 			target = target.parentNode;
 		}
@@ -583,19 +583,19 @@ $.ScrollingDataTable = Base.create('dt', DataTable, [], {
 	
 	_autoScrollBefore: function () {
 		var tbodyContainer = this.get('tbodyContainer');
-		this.set('autoScrollStatus', (tbodyContainer._nodes[0].scrollTop + tbodyContainer.height() == tbodyContainer._nodes[0].scrollHeight));
+		this.set('autoScrollStatus', (tbodyContainer.getDOMNode().scrollTop + tbodyContainer.height() == tbodyContainer.getDOMNode().scrollHeight));
 	},
 	
 	_autoScrollAfter: function () {
 		var tbodyContainer = this.get('tbodyContainer');
 		if (this.get('autoScroll') && this.get('autoScrollStatus')) {
-			tbodyContainer._nodes[0].scrollTop = tbodyContainer._nodes[0].scrollHeight;
+			tbodyContainer.getDOMNode().scrollTop = tbodyContainer.getDOMNode().scrollHeight;
 		}
 	},
 	
 	_syncColumnWidths: function () {
 		var ths = this.get(THEAD).first().children();
-		if (!this._firstTr || !this._firstTr._nodes[0] || !this._firstTr._nodes[0].parentNode) {
+		if (!this._firstTr || !this._firstTr.getDOMNode() || !this._firstTr.getDOMNode().parentNode) {
 			this._firstTr = this.getFirstTr();
 		}
 		this._firstTr.children().each(function (td, i) {
@@ -615,7 +615,7 @@ $.ScrollingDataTable = Base.create('dt', DataTable, [], {
 	
 	renderUI: function (boundingBox) {
 		var table = this._contentTable = $("<table/>").addClass(this.getClassName('content'));
-		table._nodes[0].setAttribute('cellspacing', '0');
+		table.getDOMNode().setAttribute('cellspacing', '0');
 		this.get('tbodyContainer').addClass(this.getClassName('table', 'body')).appendTo(boundingBox).css("overflowY", "auto");
 		
 		this.after('render', this._sdtAfterRender);

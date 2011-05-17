@@ -223,7 +223,7 @@ WidgetParent.prototype = {
 	
 	_domEventChildrenProxy: function (e) {
 		var targetWidget = Widget.getByNode(e.domEvent.target);
-		if (targetWidget && A.indexOf(targetWidget, this.get(CHILDREN)) > -1) {
+		if (targetWidget && A.indexOf(this.get(CHILDREN), targetWidget) > -1) {
 			targetWidget.fire(e.type, { domEvent: e.domEvent });
 		}
 	},
@@ -301,7 +301,7 @@ WidgetParent.prototype = {
 	 * @param {Function} fn Callback
 	 * @chainable
 	 */
-	each: function (fn, thisp) {
+	forEach: function (fn, thisp) {
 		A.each(this.get(CHILDREN), fn, thisp || this);
 		return this;
 	},
@@ -316,6 +316,8 @@ WidgetParent.prototype = {
 	 }
 	
 };
+
+WidgetParent.prototype.each = WidgetParent.prototype.forEach;
 /**
  * An extension that turns a widget into a child widget
  * @class WidgetChild

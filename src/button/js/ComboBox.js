@@ -113,7 +113,7 @@ $.ComboBox = Base.create('combobox', Widget, [WidgetParent], {
 	},
 	
 	_toggleContent: function (e) {
-		var contentBox = this.get('contentBox')._nodes[0];
+		var contentBox = this.get('contentBox').getDOMNode();
 		if ($(e.domEvent.target).ancestor(function (node) {
 			return node == contentBox;
 		}).size() === 0) {
@@ -124,7 +124,7 @@ $.ComboBox = Base.create('combobox', Widget, [WidgetParent], {
 	_uiComboHide: function (e) {
 		var boundingBox = this.get('boundingBox');
 		var ancestor = $(e.target).ancestor(function (node) {
-			return node == boundingBox._nodes[0];
+			return node == boundingBox.getDOMNode();
 		});
 		if (ancestor.size() === 0) {
 			boundingBox.removeClass(this.getClassName('expanded'));

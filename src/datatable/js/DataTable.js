@@ -78,7 +78,7 @@ var DataTable = Base.create('dt', Widget, [], {
 	
 	renderUI: function () {
 		var contentBox = this.get('contentBox');
-		contentBox._nodes[0].setAttribute('cellspacing', '0px');
+		contentBox.getDOMNode().setAttribute('cellspacing', '0px');
 		var thead = this.get(THEAD);
 		var tbody = this.get(TBODY);
 		
@@ -100,7 +100,7 @@ var DataTable = Base.create('dt', Widget, [], {
 		e.stopPropagation();
 		e.preventDefault();
 		var target = e.target;
-		var parent = this.get(THEAD).first()._nodes[0];
+		var parent = this.get(THEAD).first().getDOMNode();
 		while (target.parentNode != parent) {
 			target = target.parentNode;
 		}

@@ -343,7 +343,7 @@ _Array = {
 	// check for native support
 	forEach: AP.forEach ? function (arr, fn, thisp) {
 		
-		arr.forEach(fn, thisp);
+		(arr || []).forEach(fn, thisp);
 		
 	} : function (arr, fn, thisp) {
 		arr = arr || [];
@@ -465,9 +465,9 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 	 * @param {Object} thisp Object to use as 'this' when executing 'callback'
 	 * @return ArrayList
 	 */
-	map: function (arr, fn, thisp) {
+	map: function (fn, thisp) {
 		var results = [];
-		_Array.forEach(arr || [], function (item) {
+		_Array.forEach(this._items, function (item) {
 			var output = fn.call(thisp, item);
 			if (Lang.isValue(output)) {
 				if (Lang.isArray(output)) {

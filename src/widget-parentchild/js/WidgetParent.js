@@ -212,7 +212,7 @@ WidgetParent.prototype = {
 	
 	_domEventChildrenProxy: function (e) {
 		var targetWidget = Widget.getByNode(e.domEvent.target);
-		if (targetWidget && A.indexOf(targetWidget, this.get(CHILDREN)) > -1) {
+		if (targetWidget && A.indexOf(this.get(CHILDREN), targetWidget) > -1) {
 			targetWidget.fire(e.type, { domEvent: e.domEvent });
 		}
 	},

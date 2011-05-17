@@ -167,7 +167,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 	 * @static
 	 */
 	getByNode: function (node) {
-		node = $(node)._nodes[0];
+		node = $(node).getDOMNode();
 		var de = node.ownerDocument.documentElement;
 		while (node && node != de) {
 			if (node.id && jet.Widget._instances[node.id]) {
@@ -289,7 +289,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 				contentBox.addClass([className, CONTENT].join(DASH));
 			});
 			
-			if (boundingBox._nodes[0] != contentBox._nodes[0]) {
+			if (boundingBox.getDOMNode() != contentBox.getDOMNode()) {
 				boundingBox.append(contentBox.css(VISIBILITY, 'inherit'));
 			}
 			if (!boundingBox.attr('id')) {
@@ -345,11 +345,11 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 	_parseHTML: function () {
 		var self = this;
 		var boundingBox = this.get(BOUNDING_BOX);
-		if (boundingBox._nodes[0] && boundingBox.inDoc()) {
+		if (boundingBox.getDOMNode() && boundingBox.inDoc()) {
 			$_Array.each(this._classes, function (someClass) {
 				Hash.each(someClass.HTML_PARSER || {}, function (attr, parser) {
 					var val = parser.call(self, boundingBox);
-					if (Lang.isValue(val) && (!(val instanceof $.NodeList) || val._nodes[0])) {
+					if (Lang.isValue(val) && (!(val instanceof $.NodeList) || val.getDOMNode())) {
 						self.set(attr, val);
 					}
 				});

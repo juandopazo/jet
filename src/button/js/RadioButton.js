@@ -13,7 +13,7 @@ if (!Lang.isNumber(jet.Button.radio)) {
 $.RadioButton = Base.create('radio', Button, [], {
 	EVENTS: {
 		afterSelectionChange: function (e) {
-			this.get(CONTENT_BOX)._nodes[0].checked = !!e.newVal;
+			this.get(CONTENT_BOX).getDOMNode().checked = !!e.newVal;
 		},
 		render: function () {
 			this.get(CONTENT_BOX).attr({

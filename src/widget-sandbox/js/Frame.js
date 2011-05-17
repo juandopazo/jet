@@ -296,8 +296,8 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 	*/
 	_resolveWinDoc: function(c) {
 		var config = (c) ? c : {};
-		config.win = this._iframe._nodes[0].contentWindow;
-		config.doc = this._iframe._nodes[0].contentWindow.document;
+		config.win = this._iframe.getDOMNode().contentWindow;
+		config.doc = this._iframe.getDOMNode().contentWindow.document;
 		if (!config.doc) {
 			config.doc = $.config.doc;
 		}
@@ -336,7 +336,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 			this.fire('contentReady');
 
 			if (e) {
-				inst.config.doc = e.target._nodes[0] || e.target;
+				inst.config.doc = e.target.getDOMNode() || e.target;
 			}
 			//TODO Circle around and deal with CSS loading...
 			/*args.push($.bind(function() {

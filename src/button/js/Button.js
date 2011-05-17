@@ -100,7 +100,7 @@ var Button = $.Button = Base.create('button', Widget, [WidgetChild], {
 		var val = e.newVal;
 		if (Lang.isString(val)) {
 			labelNode.html(val);
-			if (!labelNode.parent()._nodes[0]) {
+			if (!labelNode.parent().getDOMNode()) {
 				this.get(BOUNDING_BOX).prepend(labelNode);
 			}
 		} else {
@@ -110,7 +110,7 @@ var Button = $.Button = Base.create('button', Widget, [WidgetChild], {
 	
 	_uiEnabledChange: function (e, val) {
 		this.get(BOUNDING_BOX).toggleClass(this.getClassName('disabled'), !e.newVal);
-		this.get(CONTENT_BOX)._nodes[0].disabled = !e.newVal;
+		this.get(CONTENT_BOX).getDOMNode().disabled = !e.newVal;
 	},
 	
 	initializer: function () {
@@ -124,7 +124,7 @@ var Button = $.Button = Base.create('button', Widget, [WidgetChild], {
 		var labelNode = this.get(LABEL_NODE);
 		var label = this.get('labelContent');
 		this.get(CONTENT_BOX).attr(ID, id).html(this.get('text'));
-		labelNode._nodes[0].setAttribute('for', id);
+		labelNode.getDOMNode().setAttribute('for', id);
 		if (Lang.isString(label)) {
 			boundingBox.prepend(labelNode.html(label));
 		}
@@ -142,7 +142,7 @@ var Button = $.Button = Base.create('button', Widget, [WidgetChild], {
 	},
 	
 	syncUI: function () {
-		this.get('contentBox')._nodes[0].disabled = !this.get(ENABLED);
+		this.get('contentBox').getDOMNode().disabled = !this.get(ENABLED);
 	},
 	
 	destructor: function () {

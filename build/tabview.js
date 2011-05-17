@@ -144,7 +144,7 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 		this.get(CONTENT_BOX).attr(HREF, this.get(HREF)).html(this.get('labelContent'));
 		var panel = this.get('panelNode').html(this.get('panelContent')).addClass(this.getClassName(PANEL));
 		var panelContainer = this.get(PARENT).get(PANEL_CONTAINER);
-		if (panel.parent()._nodes[0] != panelContainer._nodes[0]) {
+		if (panel.parent().getDOMNode() != panelContainer.getDOMNode()) {
 			panel.appendTo(panelContainer);					
 		}
 	},
@@ -201,7 +201,7 @@ $.TabView = Base.create('tabview', Widget, [$.WidgetParent], {
 	
 	HTML_PARSER: {
 		panelContainer: function (boundingBox) {
-			return $(boundingBox.children('div')._nodes[0]);
+			return $(boundingBox.children('div').getDOMNode());
 		}
 	}
 }, {

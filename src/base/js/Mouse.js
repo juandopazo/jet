@@ -136,7 +136,7 @@ var Mouse = $.Mouse = $.Base.create('mouse', $.Utility, [], {
 		 * because the native mousemove event fires too quickly
 		 * @event move
 		 */
-		var shimDoc = $(shim._nodes[0].contentWindow.document); 
+		var shimDoc = $(shim.getDOMNode().contentWindow.document); 
 		shimDoc.find('body').css({
 			margin: 0,
 			padding: 0

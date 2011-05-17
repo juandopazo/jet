@@ -14,7 +14,7 @@ $.CheckBox = Base.create('checkbox', Button, [], {}, {
 	CONTENT_TEMPLATE: '<input/>',
 	
 	_uiCheckBoxSelect: function (e) {
-		this.get(CONTENT_BOX)._nodes[0].checked = !!e.newVal;
+		this.get(CONTENT_BOX).getDOMNode().checked = !!e.newVal;
 	},
 	
 	renderUI: function () {
