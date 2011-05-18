@@ -154,8 +154,18 @@ $.EventTarget = Class.create('EventTarget', null, {
 	 * @chainable
 	 */
 	unbind: function (eventType, callback) {
-		if (eventType) {
-			$_Array.remove(callback, this._events[eventType] || []);
+		var events = this._events[eventType] || [],
+			i = 0;
+		if (eventType && callback) {
+			while (i < events.length) {
+				if (events[i].fn == calback) {
+					events[i].splice(i, 1);
+				} else {
+					i++;
+				}
+			}
+		} else if (eventType) {
+			this._events[eventType] = [];
 		} else {
 			this._events = {};
 		}
@@ -174,23 +184,24 @@ $.EventTarget = Class.create('EventTarget', null, {
 		if (collection["*"]) {
 			handlers = handlers.concat(collection["*"]);
 		}
-		var i, collecLength = handlers.length;
+		var i = 0;
 		var callback;
 		var e = new CustomEvent(eventType, this, function () {
 			returnValue = false;
 		}, args);
-		for (i = 0; i < collecLength; i++) {
+		while (i < handlers.length) {
 			callback = handlers[i].fn;
 			if (Lang.isFunction(callback)) {
 				callback.call(handlers[i].o, e);
 			// if the event handler is an object with a handleEvent method,
 			// that method is used but the context is the object itself
-			} else if (Lang.isObject(callback) && callback.handleEvent) {
+			} else if (Lang.isObject(callback) && Lang.isFunction(callback.handleEvent)) {
 				callback.handleEvent.call(handlers[i].o || callback, e);
 			}
 			if (handlers[i].once) {
-				$_Array.remove(handlers, handlers[i]);
-				i--;
+				handlers.splice(i, 1);
+			} else {
+				i++;
 			}
 		}
 		return returnValue;
