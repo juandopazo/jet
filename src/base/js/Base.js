@@ -15,7 +15,7 @@ $.Base = Class.create('Base', $.Attribute, {
 		}
 		
 		Class.walk(this, function (constructor) {
-			$_Array.each(constructor.EXTS, function (extension) {
+			$_Array.each(constructor.EXTS || [], function (extension) {
 				Hash.each(extension.EVENTS, attachEvent, this);
 			}, this);
 			Hash.each(constructor.EVENTS, attachEvent, this);

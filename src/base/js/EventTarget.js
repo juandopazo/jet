@@ -1,3 +1,5 @@
+"use strict";
+
 
 var Hash = $.Hash,
 	Lang = $.Lang,
