@@ -9,7 +9,9 @@
 */
 jet.add('base', function ($) {
 
-			
+			"use strict";
+
+
 var Hash = $.Hash,
 	Lang = $.Lang,
 	$_Array = $.Array,
@@ -93,16 +95,33 @@ $.EventTarget = Class.create('EventTarget', null, {
 		this._events = {};
 	},
 	
-	_on: function (eventType, handler) {
+	_attach: function (eventType, handler) {
+		handler.o = handler.o || this;
+		
 		var collection = this._events;
 		if (!collection[eventType]) {
 			collection[eventType] = [];
 		}
 		
 		if (Lang.isObject(handler.fn)) {
-			collection[eventType].push({
+			collection[eventType].push(handler);
+		}
+		return this;
+	},
+	
+	_on: function (eventType, callback, thisp, once) {
+		if (Lang.isObject(eventType)) {
+			Hash.each(eventType, function (type, fn) {
+				this._attach(type, {
+					fn: fn,
+					o: callback,
+					once: once
+				});
+			}, this);
+		} else {
+			this._attach(eventType, {
 				fn: callback,
-				o: thisp || this,
+				o: thisp,
 				once: once
 			});
 		}
@@ -118,10 +137,7 @@ $.EventTarget = Class.create('EventTarget', null, {
 	 * @chainable
 	 */
 	on: function (eventType, callback, thisp) {
-		return this._on(eventType, {
-			fn: callback,
-			o: thisp
-		});
+		return this._on(eventType, callback, thisp);
 	},
 	
 	/**
@@ -133,11 +149,7 @@ $.EventTarget = Class.create('EventTarget', null, {
 	 * @chainable
 	 */
 	once: function (eventType, callback, thisp) {
-		return this._on(eventType, {
-			fn: callback,
-			o: thisp,
-			once: true
-		});
+		return this._on(eventType, callback, thisp, true);
 	},
 	
 	/**
@@ -381,7 +393,7 @@ $.Base = Class.create('Base', $.Attribute, {
 		}
 		
 		Class.walk(this, function (constructor) {
-			$_Array.each(constructor.EXTS, function (extension) {
+			$_Array.each(constructor.EXTS || [], function (extension) {
 				Hash.each(extension.EVENTS, attachEvent, this);
 			}, this);
 			Hash.each(constructor.EVENTS, attachEvent, this);
