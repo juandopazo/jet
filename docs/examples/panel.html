@@ -20,23 +20,56 @@
 </head>
 
 <body class="jet-skin-sam">
+	<a href="#" id="test">test</a>
 	<script type="text/javascript" src="../../build/jet.js"></script>
 	<script type="text/javascript">
 		jet({
-			base: '../../build'
-		}).use('button', 'dragdrop', 'container', function ($) {
+			base: '../../build/',
+			combine: false
+		}).use('button', 'container', function ($) {
 
-			for (var i = 0, panel; i < 10; i++) {
-				panel = (function (index) {
-					return new $.Panel({
-						headerContent: "Panel " + index,
-						bodyContent: "Hello world!",
-						draggable: true,
-						width: 300
-					});
-				}(i));
-				panel.render();
-			}
+			var panel = new $.Panel({
+				headerContent: 'Panel',
+				bodyContent: 'Hello world!',
+				align: {
+					points: ['mc', 'mc']
+				},
+				width: 300
+			});
+			panel.render();
+			
+			var dialog = new $.SimpleDialog({
+				headerContent: 'Dialog',
+				bodyContent: 'Hello world!',
+				width: 300,
+				align: {
+					points: ['tl', $.WidgetAlignment.TopRight]
+				},
+				buttons: [{
+					text: 'Test'
+				}]
+			});
+			dialog.render();
+			
+			var overlay = new $.Overlay({
+				headerContent: 'Overlay',
+				bodyContent: 'Hello world!',
+				width: 300,
+				align: {
+					points: ['br', 'br']
+				}
+			});
+			overlay.render();
+			
+			var tooltip = new $.Tooltip({
+				srcNode: '#test',
+				headerContent: 'Tooltip',
+				bodyContent: 'Hello world!',
+				width: 300,
+				align: {
+					points: ['tl', 'bl']
+				}
+			})
 			
 		});
 	</script>

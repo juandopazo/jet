@@ -1,35 +1,42 @@
 
-var UA_SUPPORTS_FIXED = $.UA.support.fixed;
-var DOM = $.DOM;
-var FIXED = 'fixed';
-var PX = 'px';
+var UA_SUPPORTS_FIXED = $.UA.support.fixed,
+	DOM = $.DOM,
+	FIXED = 'fixed',
+	PX = 'px',
+	REPOSITION_UI = '_repositionUI',
+	
+	TOP = 't',
+	MIDDLE = 'm',
+	BOTTOM = 'b',
+	LEFT = 'l',
+	CENTER = 'c',
+	RIGHT = 'r';
 
 /**
  * A widget extension that provides alignment support
  * @class WidgetAlignment
  * @constructor
  */
-function WidgetAlignment() {};
-$.mix(WidgetAlignment, {
-	Top: 't',
-	Middle: 'm',
-	Bottom: 'b',
-	Left: 'l',
-	Center: 'c',
-	Right: 'r'		
-});
-$.mix(WidgetAlignment, {
-	TopLeft: WidgetAlignment.Top + WidgetAlignment.Left,
-	TopCenter: WidgetAlignment.Top + WidgetAlignment.Center,
-	TopRight: WidgetAlignment.Top + WidgetAlignment.Right,
+function WidgetAlignment() {}
+$.WidgetAlignment = $.mix(WidgetAlignment, {
+	Top: TOP,
+	Middle: MIDDLE,
+	Bottom: BOTTOM,
+	Left: LEFT,
+	Center: CENTER,
+	Right: RIGHT,
 	
-	MiddleLeft: WidgetAlignment.Middle + WidgetAlignment.Left,
-	MiddleCenter: WidgetAlignment.Middle + WidgetAlignment.Center,
-	MiddleRight: WidgetAlignment.Middle + WidgetAlignment.Right,
+	TopLeft: TOP + LEFT,
+	TopCenter: TOP + CENTER,
+	TopRight: TOP + RIGHT,
 	
-	BottomLeft: WidgetAlignment.Bottom + WidgetAlignment.Left,
-	BottomCenter: WidgetAlignment.Bottom + WidgetAlignment.Center,
-	BottomRight: WidgetAlignment.Bottom + WidgetAlignment.Right
+	MiddleLeft: MIDDLE + LEFT,
+	MiddleCenter: MIDDLE + CENTER,
+	MiddleRight: MIDDLE + RIGHT,
+	
+	BottomLeft: BOTTOM + LEFT,
+	BottomCenter: BOTTOM + CENTER,
+	BottomRight: BOTTOM + RIGHT
 });
 WidgetAlignment.prototype = {
 	
@@ -37,18 +44,18 @@ WidgetAlignment.prototype = {
 		var boundingRelative = 0;
 		
 		switch (boundingAlignVert) {
-			case WidgetAlignment.Middle:
+			case MIDDLE:
 				boundingRelative -= boundingHeight / 2;
 				break;
-			case WidgetAlignment.Bottom:
+			case BOTTOM:
 				boundingRelative -= boundingHeight;
 				break;
 		}
 		switch (targetAlignVert) {
-			case WidgetAlignment.Middle:
+			case MIDDLE:
 				targetTop += targetHeight / 2;
 				break;
-			case WidgetAlignment.Bottom:
+			case BOTTOM:
 				targetTop += targetHeight;
 				break;
 		}
@@ -72,18 +79,18 @@ WidgetAlignment.prototype = {
 		var boundingRelative = 0;
 
 		switch (boundingAlignHoriz) {
-			case WidgetAlignment.Center:
+			case CENTER:
 				boundingRelative -= boundingWidth / 2;
 				break;
-			case WidgetAlignment.Right:
+			case RIGHT:
 				boundingRelative -= boundingWidth;
 				break;
 		}
 		switch (targetAlignHoriz) {
-			case WidgetAlignment.Center:
+			case CENTER:
 				targetLeft += targetWidth / 2;
 				break;
-			case WidgetAlignment.Right:
+			case RIGHT:
 				targetLeft += targetWidth;
 				break;
 		}
@@ -105,7 +112,7 @@ WidgetAlignment.prototype = {
 	_getPositionBottom: function (boundingAlignVert, boundingHeight, offsetTop, fixed, constrain) {
 		var bottom = 0;
 		switch (boundingAlignVert) {
-			case WidgetAlignment.Top:
+			case TOP:
 				bottom -= boundingHeight;
 				break;
 			case WidgetAlignment.Middle:
@@ -125,10 +132,10 @@ WidgetAlignment.prototype = {
 	_getPositionRight: function (boundingAlignHoriz, boundingWidth, offsetLeft, fixed, constrain) {
 		var right = 0;
 		switch (boundingAlignHoriz) {
-			case WidgetAlignment.Left:
+			case LEFT:
 				right -= boundingWidth;
 				break;
-			case WidgetAlignment.Center:
+			case CENTER:
 				right -= boundingWidth / 2;
 				break;
 		}
@@ -143,40 +150,40 @@ WidgetAlignment.prototype = {
 	},
 	
 	_repositionUI: function () {
-		var align = this.get('align');
-		var points = align.points || [WidgetAlignment.TopLeft, WidgetAlignment.TopLeft];
-		var alignOffset = align.offset || [0, 0];
-		
-		var target = align.node ? $(align.node) : null;
-		var boundingBox = this.get(this.get('alignedBox'));
-		
-		var targetOffset = target ? target.offset() : null;
-		var boundingOffset = boundingBox.offset();
-		
-		var fixed = this.get(FIXED);
-		var constrain = this.get('constrain');
-		var screenSize = DOM.screenSize();
-		
-		var boundingAlign = points[0];
-		var targetAlign = points[1];
-		
-		var boundingAlignVert = boundingAlign.substr(0, 1);
-		var boundingAlignHoriz = boundingAlign.substr(1);
-		var targetAlignVert = targetAlign.substr(0, 1);
-		var targetAlignHoriz = targetAlign.substr(1);
-		
-		var getPositionLeft = this._getPositionLeft;
-		var getPositionTop = this._getPositionTop;
-		
-		var resultingPosition = {};
+		var align = this.get('align'),
+			points = align.points || [WidgetAlignment.TopLeft, WidgetAlignment.TopLeft],
+			alignOffset = align.offset || [0, 0],
+			
+			target = align.node ? $(align.node) : null,
+			boundingBox = this.get(this.get('alignedBox')),
+			
+			targetOffset = target ? target.offset() : null,
+			boundingOffset = boundingBox.offset(),
+			
+			fixed = this.get(FIXED),
+			constrain = this.get('constrain'),
+			screenSize = DOM.screenSize(),
+			
+			boundingAlign = points[0],
+			targetAlign = points[1],
+			
+			boundingAlignVert = boundingAlign.substr(0, 1),
+			boundingAlignHoriz = boundingAlign.substr(1),
+			targetAlignVert = targetAlign.substr(0, 1),
+			targetAlignHoriz = targetAlign.substr(1),
+			
+			getPositionLeft = $.bind(this._getPositionLeft, this),
+			getPositionTop = $.bind(this._getPositionTop, this),
+			
+			resultingPosition = {};
 		
 		if (!target) {
-			if (targetAlignVert == WidgetAlignment.Bottom) {
+			if (targetAlignVert == BOTTOM) {
 				resultingPosition.bottom = this._getPositionBottom(boundingAlignVert, boundingOffset.height, alignOffset[1], fixed, constrain);
 			} else {
 				resultingPosition.top = getPositionTop(boundingAlignVert, targetAlignVert, boundingOffset.height, screenSize.height, 0, alignOffset[1] || 0, screenSize.height, fixed, constrain);
 			}
-			if (targetAlignHoriz == WidgetAlignment.Right) {
+			if (targetAlignHoriz == RIGHT) {
 				resultingPosition.right = this._getPositionRight(boundingAlignHoriz, boundingOffset.width, alignOffset[0], fixed, constrain);
 			} else {
 				resultingPosition.left = getPositionLeft(boundingAlignHoriz, targetAlignHoriz, boundingOffset.width, screenSize.width, 0, alignOffset[0] || 0, screenSize.width, fixed, constrain);
@@ -190,9 +197,6 @@ WidgetAlignment.prototype = {
 		boundingBox.css(resultingPosition);
 	}
 };
-function doReposition() {
-	this._repositionUI();
-}
 $.mix(WidgetAlignment, {
 	
 	ATTRS: {
@@ -238,22 +242,23 @@ $.mix(WidgetAlignment, {
 	
 	EVENTS: {
 		render: function () {
-			var fixed = this.get(FIXED);
-			var win = $(this.get('win'));
+			var fixed = this.get(FIXED),
+				win = $(this.get('win'));
+				
 			this.get('boundingBox').css('position', (fixed && UA_SUPPORTS_FIXED) ? FIXED : 'absolute');
 			this._handlers.push(win.on('resize', this._repositionUI, this));
+			
 			if (fixed && !UA_SUPPORTS_FIXED) {
 				this._handlers.push(win.on('scroll', this._repositionUI, this));
 			}
 			this._repositionUI();
 		},
-		afterRender: doReposition,
-		afterFixedChange: doReposition,
-		afterConstrainChange: doReposition,
-		afterAlignChange: doReposition,
-		afterWidthChange: doReposition,
-		afterHeightChange: doReposition
+		afterRender: REPOSITION_UI,
+		afterFixedChange: REPOSITION_UI,
+		afterConstrainChange: REPOSITION_UI,
+		afterAlignChange: REPOSITION_UI,
+		afterWidthChange: REPOSITION_UI,
+		afterHeightChange: REPOSITION_UI
 	}
 	
 });
-$.WidgetAlignment = WidgetAlignment;
