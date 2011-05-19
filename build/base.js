@@ -26,8 +26,7 @@ var TRACKING = "tracking",
 	HEIGHT = "height",
 	WIDTH = "width",
 	PROTO = 'prototype',
-	DASH = '-',
-	ONCE = '~ONCE~';
+	DASH = '-';
 
 /**
  * A custom event object, only to be used by EventTarget
@@ -94,6 +93,22 @@ $.EventTarget = Class.create('EventTarget', null, {
 		this._events = {};
 	},
 	
+	_on: function (eventType, handler) {
+		var collection = this._events;
+		if (!collection[eventType]) {
+			collection[eventType] = [];
+		}
+		
+		if (Lang.isObject(handler.fn)) {
+			collection[eventType].push({
+				fn: callback,
+				o: thisp || this,
+				once: once
+			});
+		}
+		return this;
+	},
+	
 	/**
 	 * Adds an event listener 
 	 * @method on
@@ -103,24 +118,10 @@ $.EventTarget = Class.create('EventTarget', null, {
 	 * @chainable
 	 */
 	on: function (eventType, callback, thisp) {
-		var collection = this._events;
-		var once = false;
-		if (!collection[eventType]) {
-			collection[eventType] = [];
-		}
-		
-		if (eventType.indexOf(ONCE) > -1) {
-			once = true;
-			eventType = eventType.substr(ONCE.length);
-		}
-		if (Lang.isObject(callback)) {
-			collection[eventType].push({
-				fn: callback,
-				o: thisp || this,
-				once: once
-			});
-		}
-		return this;
+		return this._on(eventType, {
+			fn: callback,
+			o: thisp
+		});
 	},
 	
 	/**
@@ -132,7 +133,11 @@ $.EventTarget = Class.create('EventTarget', null, {
 	 * @chainable
 	 */
 	once: function (eventType, callback, thisp) {
-		return this.on(ONCE * eventType, callback, thisp);
+		return this._on(eventType, {
+			fn: callback,
+			o: thisp,
+			once: true
+		});
 	},
 	
 	/**
