@@ -1123,8 +1123,7 @@ function makeUse(config, get) {
 				group = config.groups[module.group];
 				module.type = module.type || 'js';
 				if (!module.path) {
-					minify = group ? group.minify : config.minify;
-					module.path = module.name + (minify ? '.min.' : '.') + module.type; 
+					module.path = module.name + (group.minify ? '.min.' : '.') + module.type; 
 				}
 			}
 			group = config.groups[module.group];
@@ -1352,7 +1351,7 @@ window.jet = function (o) {
 			root: STRING,
 			base: STRING
 		}, function (prop, type) {
-			if (Lang.type(group[prop] != type)) {
+			if (Lang.type(group[prop]) != type) {
 				group[prop] = config[prop];
 			}
 		});
