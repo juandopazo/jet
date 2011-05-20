@@ -380,8 +380,14 @@ window.jet = function (o) {
 		base: config.base
 	}, true);
 	Hash.each(config.groups, function (name, group) {
-		_Array.forEach(['minify', 'combine', 'loadCss'], function (prop) {
-			if (!Lang.isBoolean(group[prop])) {
+		Hash.each({
+			minify: BOOLEAN,
+			combine: BOOLEAN,
+			loadCss: BOOLEAN,
+			root: STRING,
+			base: STRING
+		}, function (prop, type) {
+			if (!Lang.type(group[prop] == type)) {
 				group[prop] = config[prop];
 			}
 		});
