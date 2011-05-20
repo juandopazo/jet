@@ -375,10 +375,6 @@ window.jet = function (o) {
 	 * @description id of a node before which to insert all scripts and css files
 	 */
 	
-	mix(config.groups.jet, {
-		root: config.root,
-		base: config.base
-	}, true);
 	Hash.each(config.groups, function (name, group) {
 		Hash.each({
 			minify: BOOLEAN,
@@ -387,7 +383,7 @@ window.jet = function (o) {
 			root: STRING,
 			base: STRING
 		}, function (prop, type) {
-			if (!Lang.type(group[prop] == type)) {
+			if (Lang.type(group[prop] != type)) {
 				group[prop] = config[prop];
 			}
 		});
