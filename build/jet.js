@@ -1078,7 +1078,8 @@ function makeUse(config, get) {
 	var base = config.base;
 	
 	var loadCssModule = function (module) {
-		var url = module.fullpath || (module.path ? (base + module.path) : (base + module.name + (config.minify ? ".min.css" : ".css")));
+		var group = config.groups[module.group];
+		var url = module.fullpath || (module.path ? (group.base + module.path) : (group.base + module.name + (config.minify ? ".min.css" : ".css")));
 		get.css(url, function () {
 			jet.add(module.name, function () {});
 		});
@@ -1127,7 +1128,7 @@ function makeUse(config, get) {
 				}
 			}
 			group = config.groups[module.group];
-			if (!Lang.isObject(module) || (module.type == CSS && !config.loadCss)) {
+			if (!Lang.isObject(module) || (module.type == CSS && !group.loadCss)) {
 				request.splice(i, 1);
 				i--;
 			} else {
@@ -1145,7 +1146,7 @@ function makeUse(config, get) {
 					if (!module.type || module.type == "js") {
 						get.script(module.fullpath); 
 					} else if (module.type == CSS) {
-						domReady(loadCssModule, module);
+						domReady(loadCssModule, module, config.doc);
 					}
 					queuedScripts[module.name] = 1;
 				}
@@ -1299,13 +1300,6 @@ window.jet = function (o) {
 	config = buildConfig(config, (o && o.win) ? o.win.jet_Config : window.jet_Config);
 	config = buildConfig(config, o);
 	
-	mix(config.groups.jet, {
-		minify: !!config.minify,
-		combine: Lang.isBoolean(config.combine) ? config.combine : true,
-		root: config.root,
-		base: config.base
-	}, true);
-
 	var base = config.base;
 	/**
 	 * @attribute base
@@ -1350,6 +1344,18 @@ window.jet = function (o) {
 	 * @description id of a node before which to insert all scripts and css files
 	 */
 	
+	mix(config.groups.jet, {
+		root: config.root,
+		base: config.base
+	}, true);
+	Hash.each(config.groups, function (name, group) {
+		_Array.forEach(['minify', 'combine', 'loadCss'], function (prop) {
+			if (!Lang.isBoolean(group[prop])) {
+				group[prop] = config[prop];
+			}
+		});
+	});
+
 	var get = new Get(config);
 	var use = makeUse(config, get);
 	
@@ -1500,7 +1506,7 @@ var Class = $.Class = function Class() {
 	var args = arguments;
 	var self = this;
 	
-	$_Array.each(Class.getClasses(this), function (constructor) {
+	$_Array.each($.Class.getClasses(this), function (constructor) {
 		$_Array.each(constructor.EXTS || [], function (extension) {
 			extension.apply(self, args);
 		});
