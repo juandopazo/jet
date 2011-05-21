@@ -30,11 +30,9 @@ var hideStyles = {
 	position: "absolute"
 };
 
-if (!jet.History) {
-	jet.History = {};
-}
-if (!jet.History.iframe) {
-	jet.History.iframe = new $.EventTarget();
+var HistoryNS = jet.namespace('History');
+if (!HistoryNS.iframe) {
+	HistoryNS.iframe = new $.EventTarget();
 }
 
 /*
@@ -494,7 +492,7 @@ var History = function () {
 	};
 	
 	/*Private: For IE, tell when the hidden iframe has finished loading.*/
-	jet.History.iframe.on("load", function (e, newLocation) {
+	HistoryNS.iframe.on("load", function (e, newLocation) {
 		/*ignore any location changes that we made ourselves*/
 		if (ignoreLocationChange) {
 			ignoreLocationChange = false;

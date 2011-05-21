@@ -4,10 +4,7 @@
  * @class Log
  * @static
  */
-if (!jet.Log) {
-	jet.Log = {};
-}
-var Log = jet.Log;
+var Log = jet.namspace('Log');
 if (!Log.errors) {
 	Log.errors = [];
 }

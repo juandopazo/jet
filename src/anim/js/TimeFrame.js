@@ -74,5 +74,5 @@ if (!jet.TimeFrame) {
 			}
 		};
 	}());
-	jet.TimeFrame = $.mix(new $.EventTarget(), TimeFrame);
+	$.mix(new $.EventTarget(), TimeFrame);
 }

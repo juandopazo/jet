@@ -24,12 +24,11 @@ var PARSER = "parser",
 	TIMEOUT = "timeout",
 	TEMP_DATA = "tempData",
 	INITIAL_REQUEST = "initialRequest";
+	
+var RecordNS = jet.namespace('Record');
 
-if (!jet.Record) {
-	jet.Record = {};
-}
-if (!jet.Record.ids) {
-	jet.Record.ids = 0;
+if (!RecordNS.ids) {
+	RecordNS.ids = 0;
 }
 
 /**
@@ -39,7 +38,7 @@ if (!jet.Record.ids) {
  * @param {Object} An object literal
  */
 var Record = function (data) {
-	var id = jet.Record.ids++;
+	var id = RecordNS.ids++;
 	
 	/**
 	 * Returns the id of the record. Each record has a unique id globally.alert

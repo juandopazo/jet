@@ -1,29 +1,25 @@
 
 var IO = $.IO;
+var ioNS = jet.namespace('IO');
 
-if (!jet.IO) {
-	jet.IO = {};
-}
-var flajax = jet.IO.flajax;
+var flajax = ioNS.flajax;
 if (!flajax) {
-	jet.IO.xdrWaitList = [];
+	ioNS.xdrWaitList = [];
 	window.flajaxLoad = function () {
-		jet.IO.xdrReady = true;
-		for (var i = 0; i < jet.IO.xdrWaitList.length; i++) {
-			IO.flajax(jet.IO.xdrWaitList[i]);
+		ioNS.xdrReady = true;
+		for (var i = 0; i < ioNS.xdrWaitList.length; i++) {
+			IO.flajax(ioNS.xdrWaitList[i]);
 		}
-		jet.IO.xdrWaitList = [];
+		ioNS.xdrWaitList = [];
 	};
 	$("<div/>").attr("id", "flajax").appendTo($("#jet-tracker"));
 	$.swfobject.embedSWF("/jet/src/io/flajax.swf", "flajax", "1", "1", "9.0.0", "expressInstall.swf", {}, {}, {}, function (e) {
-		flajax = jet.IO.flajax = e.ref;
+		flajax = ioNS.flajax = e.ref;
 	});
 }
-if (!jet.IO.xdrCallbacks) {
-	jet.IO.xdrCallbacks = {};
-}
-if (!jet.IO.xdrCount) {
-	jet.IO.xdrCount = 1;
+jet.namespace('IO.xdrCallbacks');
+if (!ioNS.xdrCount) {
+	ioNS.xdrCount = 1;
 }
 
 /**
@@ -33,7 +29,7 @@ if (!jet.IO.xdrCount) {
  * @param {Hash} settings
  */
 IO.flajax = function (settings) {
-	if (jet.IO.xdrReady) {
+	if (ioNS.xdrReady) {
 		settings = settings || {};
 		var method = settings.method || "GET";
 		var success = function (data) {
@@ -60,11 +56,11 @@ IO.flajax = function (settings) {
 				settings.complete(data);
 			}
 		};
-		var callbackId = ++jet.IO.xdrCount;
-		jet.IO.xdrCallbacks["flajax" + callbackId] = success;
-		jet.IO.xdrCallbacks["flajax" + callbackId + "Error"] = error;
-		jet.IO.flajax.call(settings.url, "jet.IO.xdrCallbacks.flajax" + callbackId, method, settings.data);
+		var callbackId = ++ioNS.xdrCount;
+		ioNS.xdrCallbacks["flajax" + callbackId] = success;
+		ioNS.xdrCallbacks["flajax" + callbackId + "Error"] = error;
+		ioNS.flajax.call(settings.url, "jet.IO.xdrCallbacks.flajax" + callbackId, method, settings.data);
 	} else {
-		jet.IO.xdrWaitList.push(settings);
+		ioNS.xdrWaitList.push(settings);
 	}
 };

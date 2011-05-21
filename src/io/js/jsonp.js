@@ -1,9 +1,7 @@
 
-if (!jet.IO) {
-	jet.IO = {};
-}
-if (!jet.IO.jsonpCallbacks) {
-	jet.IO.jsonpCallbacks = [];
+var ioNS = jet.namespace('IO');
+if (!ioNS.jsonpCallbacks) {
+	ioNS.jsonpCallbacks = [];
 }
 
 $.jsonp = function (settings) {
@@ -25,7 +23,7 @@ $.jsonp = function (settings) {
 			settings.complete(result);
 		}
 	};
-	var callbacks = jet.IO.jsonpCallbacks;
+	var callbacks = ioNS.jsonpCallbacks;
 	var index = callbacks.length;
 	var loaded = false;
 	var url = settings.url;
