@@ -9,7 +9,7 @@ var Class = $.Class = function Class() {
 	var args = arguments;
 	var self = this;
 	
-	$_Array.each(Class.getClasses(this), function (constructor) {
+	$_Array.each($.Class.getClasses(this), function (constructor) {
 		$_Array.each(constructor.EXTS || [], function (extension) {
 			extension.apply(self, args);
 		});

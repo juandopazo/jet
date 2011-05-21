@@ -15,13 +15,15 @@ _Array = {
 	// check for native support
 	forEach: AP.forEach ? function (arr, fn, thisp) {
 		
-		AP.slice.call(arr).forEach(fn, thisp);
+		AP.slice.call(Lang.isValue(arr) ? arr : []).forEach(fn, thisp);
 		
 	} : function (arr, fn, thisp) {
-		arr = arr || [];
+		arr = Lang.isValue(arr) ? arr : [];
 		var i, length = arr.length;
 		for (i = 0; i < length; i++) {
-			fn.call(thisp, arr[i], i, arr);
+			if (i in arr) {
+				fn.call(thisp, arr[i], i, arr);
+			}
 		}
 	},
 	/**
