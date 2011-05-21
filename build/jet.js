@@ -327,6 +327,20 @@ if (Function.prototype.bind) {
 		return bound;
 	};
 }
+
+function namespace(name) {
+	var names = name.split('.'),
+		o = this,
+		i = 0;
+	for (; i < names.length; i++) {
+		if (!o[names[i]]) {
+			o[names[i]] = {};
+		}
+		o = o[names[i]];
+	}
+	return o;
+}
+
 /**
  * Utilities for working with Arrays
  * @class Array
@@ -875,9 +889,9 @@ function buildJet(config) {
 		return query;
 	};
 	
-	var add = function (o) {
+	function add(o) {
 		mix($, o, true);
-	};
+	}
 	
 	if (config.win.JSON) {
 		$.JSON = config.win.JSON;
@@ -885,6 +899,8 @@ function buildJet(config) {
 	
 	add({
 		bind: bind,
+		
+		namespace: bind(namespace, $),
 		
 		/**
 		 * A pointer to the last Windo that was referenced by the $() function
@@ -1389,6 +1405,8 @@ jet.add = function (moduleName, expose) {
 	modules[moduleName] = expose;
 	update();
 };
+
+jet.namespace = bind(namespace, jet);
 
 
 }());

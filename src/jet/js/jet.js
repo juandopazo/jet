@@ -422,3 +422,5 @@ jet.add = function (moduleName, expose) {
 	modules[moduleName] = expose;
 	update();
 };
+
+jet.namespace = bind(namespace, jet);

@@ -214,3 +214,16 @@ if (Function.prototype.bind) {
 		return bound;
 	};
 }
+
+function namespace(name) {
+	var names = name.split('.'),
+		o = this,
+		i = 0;
+	for (; i < names.length; i++) {
+		if (!o[names[i]]) {
+			o[names[i]] = {};
+		}
+		o = o[names[i]];
+	}
+	return o;
+}
