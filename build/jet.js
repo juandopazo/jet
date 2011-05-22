@@ -1558,7 +1558,7 @@ $.mix(Class, {
 		
 		return $.mix(BuiltClass, {
 			NAME: name,
-			inherit: function (_name, _proto, _attrs) {
+			subclass: function (_name, _proto, _attrs) {
 				return Class.create(_name, BuiltClass, _proto, _attrs);
 			},
 			mixin: function (exts) {
@@ -1939,13 +1939,13 @@ var ready = function (fn) {
 
 var Lang = $.Lang,
 	A = $.Array,
-	NONE = "none",
+	NONE = 'none',
 	SLICE = Array.prototype.slice,
 	rroot = /^(?:body|html)$/i,
 	PROTO;
 
 function classRE(name) {
-	return new RegExp("(^|\\s)" + name + "(\\s|$)");
+	return new RegExp('(^|\\s)' + name + '(\\s|$)');
 }
 /**
  * A collection of DOM Nodes
@@ -1982,7 +1982,7 @@ function NodeList(nodes, root) {
 		nodes = tmp;
 		//nodes = SLICE.call(nodes);
 	} else {
-		//$.error("Wrong argument for NodeList");
+		//$.error('Wrong argument for NodeList');
 	}
 	this._items = nodes;
 }
@@ -2104,31 +2104,27 @@ $.extend(NodeList, $.ArrayList, {
 	 * <ul>
 	 * <li><strong>top</strong>: top position in px</li>
 	 * <li><strong>left</strong>: left position in px</li>
-	 * <li><strong>width</strong>: width in px</li>
-	 * <li><strong>height</strong>: height in px</li>
 	 * </ul>
-	 * @method offset
+	 * @method position
 	 * @return {Hash}
 	 */
-	offset: function (left, top) {
+	position: function (left, top) {
 		if (Lang.isNumber(left) || Lang.isNumber(top)) {
 			return this.each(function (node) {
 				node = $(node);
 				var parentOffset = node.offsetParent().offset();
 				if (Lang.isNumber(left)) {
-					node.css('left', left - parentOffset.left + 'px');
+					node.css('left', left - parentOffset.left);
 				}
 				if (Lang.isNumber(top)) {
-					node.css('top', top - parentOffset.top + 'px');
+					node.css('top', top - parentOffset.top);
 				}
 			});
 		} else {
 			var node = this.getDOMNode();
 			var offset = {
 				left: 0,
-				top: 0,
-				width: node.offsetWidth,
-				height: node.offsetHeight
+				top: 0
 			};
 			var doc = node.ownerDocument;
 			try {
@@ -2151,6 +2147,28 @@ $.extend(NodeList, $.ArrayList, {
 			return offset;
 		}
 	},
+	offset: function () {
+		return $.mix(this.position(), this.size());
+	},
+	size: function (width, height) {
+		var node = this.getDOMNode();
+		if (Lang.isNumber(width)) {
+			width += 'px';
+		}
+		if (Lang.isNumber(height)) {
+			height += 'px';
+		}
+		if (Lang.isString(width) || Lang.isString(height)) {
+			this.css('width', width);
+			this.css('height', height);
+		} else {
+			return {
+				width: node.offsetWidth,
+				height: node.offsetHeight
+			};
+		}
+		return this;
+	},
 	/**
 	 * Returns a new NodeList with all the offset parents of this one
 	 * @method offsetParent
@@ -2159,7 +2177,7 @@ $.extend(NodeList, $.ArrayList, {
 	offsetParent: function () {
 		return this.map(function(node) {
 			var offsetParent = node.offsetParent || document.body;
-			while (offsetParent && (!rroot.test(offsetParent.nodeName) && $(offsetParent).css("position") === "static")) {
+			while (offsetParent && (!rroot.test(offsetParent.nodeName) && $(offsetParent).css('position') === 'static')) {
 				offsetParent = offsetParent.offsetParent;
 			}
 			return offsetParent;
@@ -2338,13 +2356,15 @@ $.extend(NodeList, $.ArrayList, {
 		}
 		return this.each(function (node) {
 			Hash.each(css, function (prop, value) {
-				if (prop == "opacity" && $.UA.ie) {
-					node.style.filter = "alpha(opacity=" + Math.ceil(value * 100) + ")";
+				if (prop == 'opacity' && $.UA.ie) {
+					node.style.filter = 'alpha(opacity=' + Math.ceil(value * 100) + ')';
 				} else {
-					if (Lang.isNumber(value) && prop != "zIndex" && prop != "zoom" && prop != "opacity") {
-						value += "px";
+					if (Lang.isNumber(value)) {
+						value += (prop != 'zIndex' && prop != 'zoom' && prop != 'opacity') ? '' : 'px';
 					}
-					node.style[prop] = value;
+					if (Lang.isString(value)) {
+						node.style[prop] = value;
+					}
 				}
 			});
 		});
@@ -2390,7 +2410,7 @@ $.extend(NodeList, $.ArrayList, {
 				result.push.apply(result, newChildren);
 			}
 		});
-		return new (this.constructor)(result);
+		return new this.constructor(result);
 	},
 	/**
 	 * Adds an event listener to all the nods in the list
@@ -2469,7 +2489,7 @@ $.extend(NodeList, $.ArrayList, {
 	 */
 	contentDoc: function () {
 		return this.map(function (node) {
-			if (node.nodeName == "IFRAME") {
+			if (node.nodeName == 'IFRAME') {
 				return node.contentDocument || node.contentWindow.document || node.document;
 			}
 		});
@@ -2508,7 +2528,7 @@ $.extend(NodeList, $.ArrayList, {
 				result.push(node);
 			});
 		});
-		return new (this.constructor)(result);
+		return new this.constructor(result);
 	},
 	/**
 	 * Sets or returns the value of the node. Useful mostly for form elements
@@ -2516,7 +2536,7 @@ $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	value: function (val) {
-		return this.attr("value", val);
+		return this.attr('value', val);
 	}
 });
 
@@ -2584,7 +2604,7 @@ A.each(['Width', 'Height'], function (size) {
 			if (Lang.isNumber(value) && value < 0) {
 				value = 0;
 			}
-			value = Lang.isString(value) ? value : value + "px";
+			value = Lang.isString(value) ? value : value + 'px';
 			return this.each(function (node) {
 				node.style[method] = value;
 			});
@@ -2627,6 +2647,6 @@ $.add({
 	}
 });
 
-addEvent($.win, "unload", EventCache.flush);
+addEvent($.win, 'unload', EventCache.flush);
 			
 });
