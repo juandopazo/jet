@@ -122,38 +122,42 @@ var EventCache = Event.Cache = (function () {
 	};
 }());
 
+var makeHandler = function (callback, thisp) {
+	return function (e) {
+		e.target = e.srcElement;
+		e.preventDefault = function () {
+			e.returnValue = false;
+		};
+		e.stopPropagation = function () {
+			e.cancelBubble = true;
+		};
+		callback.call(thisp || e.srcElement, e);
+	};
+};
+
 // adds a DOM event and provides event object normalization
 var addEvent = function (obj, type, callback, thisp) {
 	if (obj.addEventListener) {
 		addEvent = function (obj, type, callback, thisp) {
-			if (thisp) {
-				callback = $.bind(callback, thisp);
-			}
-			obj.addEventListener(type, callback, false);
-			EventCache.add(obj, type, callback);
+			var handlerFn = thisp ? $.bind(callback, thisp) : callback;
+			obj.addEventListener(type, handlerFn, false);
+			EventCache.add(obj, type, callback, handlerFn);
 			return {
 				obj: obj,
 				type: type,
-				fn: callback
+				fn: handlerFn
 			};
 		};
 	} else if (obj.attachEvent) {
 		addEvent = function (obj, type, callback, thisp) {
-			obj.attachEvent(ON + type, function (ev) {
-				ev.target = ev.srcElement;
-				ev.preventDefault = function () {
-					ev.returnValue = false;
-				};
-				ev.stopPropagation = function () {
-					ev.cancelBubble = true;
-				};
-				callback.call(thisp || obj, ev);
-			});
-			EventCache.add(obj, type, callback);
+			// Use makeHandler to prevent the handler function from having obj in its scope
+			var handlerFn = makeHandler(callback, thisp);
+			obj.attachEvent(ON + type, handlerFn);
+			EventCache.add(obj, type, handler, handlerFn);
 			return {
 				obj: obj,
 				type: type,
-				fn: callback
+				fn: handlerFn
 			};
 		};
 	}
