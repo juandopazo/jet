@@ -37,7 +37,7 @@ var GlobalConfig = {
 				cookie: [BASE],
 				sizzle: [NODE],
 				base: [NODE],
-				io: ['json'],
+				io: ['json', 'deferred'],
 				deferred: ['oop'],
 				'io-xdr': [NODE, 'swf', IO],
 				history: [BASE, 'json'],

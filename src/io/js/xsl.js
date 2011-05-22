@@ -39,9 +39,7 @@ var transform = function (xml, xsl, parameters) {
  * @description Makes a XSL transformation. Loads the files with Ajax if needed. <strong>Requires the io-xsl submodule</strong>
  * @param {Hash} settings
  */
-$.IO.xsl = function (settings) {
-	var xml = settings.xml;
-	var xsl = settings.xsl;
+function xslt(xml, xsl, settings) {
 	var parameters = settings.params;
 	var xmlDoc, xslDoc;
 	
@@ -54,8 +52,8 @@ $.IO.xsl = function (settings) {
 		}
 	};
 	var error = function (data) {
-		if (settings.error) {
-			settings.error(data);
+		if (settings.failure) {
+			settings.failure(data);
 		}
 		if (settings.complete) {
 			settings.complete(data);

@@ -135,7 +135,7 @@ var getResultByContentType = function (xhr, dataType, onError) {
  * @method ajax
  * @param {Hash} settings
  */
-$.ajax = function (settings) {
+function ajax(url, settings) {
 	var xhr = getAjaxObject();
    
 	var success = settings.success,
@@ -154,12 +154,11 @@ $.ajax = function (settings) {
 		complete.apply($, arguments);
 	};
 	var onError			= function (a, b, c) {
-		if (settings.error) {
-			settings.error(a, b, c);
+		if (settings.failure) {
+			settings.failure(a, b, c);
 		}
 		complete.apply($, arguments);
 	};
-	var url = settings.url;
 
 	if (xhr) {
 		/* Esto corrije el problema de ausencia de tipos mime solo si existe el metodo overrideMimeType (no existe en IE) */
@@ -211,16 +210,4 @@ $.ajax = function (settings) {
 		}
 	}
 	return result || $;
-};
-
-$.get = function (url, opts) {
-	opts = opts || {};
-	opts.url = url;
-	return $.ajax(opts);
-};
-
-$.IO = {
-	utils: {
-		parseXML: parseXML
-	}
-};
+}

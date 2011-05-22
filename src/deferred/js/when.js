@@ -4,9 +4,10 @@
  * @class jet~when
  * @static
  */
-$.defer = function (fn) {
-	var deferred = new Deferred();
-	return deferred.promise(fn);
+$.defer = function (fn, context) {
+	var promise = new Promise();
+	fn.call(context, promise);
+	return promise;
 };
 /**
  * @method when
@@ -24,9 +25,9 @@ $.when = function () {
 	return $.defer(function (promise) {
 		function notify() {
 			if (rejected > 0) {
-				promise.reject.apply(promise, args);
+				promise.rejectWith(promise, args);
 			} else {
-				promise.resolve.apply(promise, args);
+				promise.resolveWith(promise, args);
 			}
 		}
 			
