@@ -1,0 +1,4 @@
+
+function TransitionTimer(node, config) {
+	
+}

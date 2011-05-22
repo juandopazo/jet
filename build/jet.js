@@ -107,7 +107,8 @@ var GlobalConfig = {
 				'widget-sandbox': [BASE],
 				menu: [WIDGET_PARENTCHILD, 'container'],
 				vector: ['anim'],
-				layout: ['resize', WIDGET_PARENTCHILD]
+				layout: ['resize', WIDGET_PARENTCHILD],
+				transition: ['node','anim','deferred']
 			}
 		}
 	}
