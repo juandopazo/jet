@@ -1,32 +1,35 @@
-jet().add('touch', function ($) {
+var x1, x2, y1, y2,
+	FLICK = 'flick',
+	LEFT = 'left',
+	RIGHT = 'right',
+	UP = 'up',
+	DOWN = 'down';
 	
-	var x1, x2, y1, y2;
-	var TOUCH = 'touch';
-	var FLICK = 'flick';
-	var LEFT = 'left';
-	var RIGHT = 'right';
-	var UP = 'up';
-	var DOWN = 'down';
+var Touch = $.namespace('Event').Touch = {
 	
-	var fireFlick = function (target, direction) {
+	fireFlick: function (target, direction) {
 		target.trigger(FLICK, {
 			direction: direction
-		}).trigger(FLICK + ":" + direction);
-	};
+		}).trigger(FLICK + ':' + direction);
+	},
 	
-	$(document).on(TOUCH + 'start', function (e) {
+	touchstart: function (e) {
 		
 		var touches = e.touches[0];
 		x1 = touches.clientX;
 		y1 = touches.clientY;
 		
-	}).on(TOUCH + 'move', function (e) {
-		
+	},
+	
+	touchmove: function (e) {
+	
 		var touches = e.touches[0];
 		x2 = touches.clientX;
 		y2 = touches.clientY;
 		
-	}).on(TOUCH + 'end', function (e) {
+	},
+	
+	touchend: function (e) {
 		
 		var target = $(e.target);
 		if (x2 > 0 || y2 > 0) {
@@ -48,7 +51,7 @@ jet().add('touch', function ($) {
 			}
 		}
 		
-	});
-	
-	
-});
+	}
+};
+
+$.Object.each(Touch, $(document).on);
