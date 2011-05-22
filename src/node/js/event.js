@@ -1,17 +1,21 @@
 
-var ON = "on",
+var ON = 'on',
 	Lang = $.Lang,
-	Hash = $.Hash,
-	A = $.Array,
-	AP = Array.prototype;
+	$Object = $.Object,
+	$Array = $.Array,
+	AP = Array.prototype,
+	SLICE = AP.slice,
+	NONE = 'none',
+	rroot = /^(?:body|html)$/i,
+	PROTO;
 
+var Event = $.namespace('Event');
 /**
  * Keeps a record of all listeners attached to the DOM in order to remove them when necessary
- * @class EventCache
+ * @class Event.Cache
  * @static
- * @private
  */
-var EventCache = (function () {
+var EventCache = Event.Cache = (function () {
 	var cache = {};
 	
 	var getCache = function (type) {
@@ -32,41 +36,6 @@ var EventCache = (function () {
 			};
 		}
 		detachEvent(obj, type, fn);
-	};
-	
-	/**
-	 * Removes all listeners from a node
-	 * @method clear
-	 * @param {DOMNode} obj
-	 */
-	var clear = function (obj, type) {
-		var c, i = 0;
-		if (type) {
-			c = getCache(type);
-			while (i < c.length) {
-				if (c[i].obj == obj) {
-					detachEvent(obj, type, c[i].fn);
-					c.splice(i, 1);
-				} else {
-					i++;
-				}
-			}
-		} else {
-			for (type in cache) {
-				if (cache.hasOwnProperty(type)) {
-					c = cache[type];
-					i = 0;
-					while (i < c.length) {
-						if (c[i].obj == obj) {
-							detachEvent(obj, type, c[i].fn);
-							c.splice(i, 1);
-						} else {
-							i++;
-						}
-					}
-				}
-			}
-		}
 	};
 	
 	return {
@@ -105,7 +74,40 @@ var EventCache = (function () {
 				}
 			}
 		},
-		clear: clear,
+		/**
+		 * Removes all listeners from a node
+		 * @method clear
+		 * @param {DOMNode} obj
+		 */
+		clear: function (obj, type) {
+			var c, i = 0;
+			if (type) {
+				c = getCache(type);
+				while (i < c.length) {
+					if (c[i].obj == obj) {
+						detachEvent(obj, type, c[i].fn);
+						c.splice(i, 1);
+					} else {
+						i++;
+					}
+				}
+			} else {
+				for (type in cache) {
+					if (cache.hasOwnProperty(type)) {
+						c = cache[type];
+						i = 0;
+						while (i < c.length) {
+							if (c[i].obj == obj) {
+								detachEvent(obj, type, c[i].fn);
+								c.splice(i, 1);
+							} else {
+								i++;
+							}
+						}
+					}
+				}
+			}
+		},
 		/**
 		 * Removes all listeners from all nodes recorded in the cache
 		 * @method flush
@@ -113,7 +115,7 @@ var EventCache = (function () {
 		flush: function () {
 			for (var o in cache) {
 				if (cache.hasOwnProperty(o)) {
-					clear(o);
+					EventCache.clear(o);
 				}
 			}
 		}
@@ -158,6 +160,27 @@ var addEvent = function (obj, type, callback, thisp) {
 	return addEvent(obj, type, callback, thisp);
 };
 
+var triggerEvent = function (node, type, data) {
+	var doc = $.config.doc;
+	if (doc.createEvent) {
+		triggerEvent = function (node, type, data) {
+			var e = node.ownerDocument.createEvent('Events');
+			e.initEvent(event, true, true)
+			$.mix(e, data);
+			node.dispatchEvent(e);
+		};
+	} else {
+		triggerEvent = function (node, type, data) {
+			var e = node.ownerDocument.createEventObject();
+			$.mix(e, data);
+			node.fireEvent(ON + type, e);
+		};
+	}
+	triggerEvent(node, type, data);
+};
+
+addEvent($.win, 'unload', EventCache.flush);
+
 /**
  * A collection of DOM Event handlers for later detaching
  * @class DOMEventHandler
@@ -167,7 +190,7 @@ var addEvent = function (obj, type, callback, thisp) {
 function DOMEventHandler(handlers) {
 	this._handlers = handlers || [];
 }
-DOMEventHandler.prototype = {
+$.DOMEventHandler = $.mix(DOMEventHandler.prototype, {
 	/**
 	 * Unbinds all event handlers from their hosts
 	 * @method detach
@@ -178,4 +201,5 @@ DOMEventHandler.prototype = {
 		}
 		this._handlers = [];
 	}
-};
+});
+

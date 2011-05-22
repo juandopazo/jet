@@ -11,13 +11,6 @@ var ready = function (fn) {
 	return this;
 };
 
-var Lang = $.Lang,
-	A = $.Array,
-	NONE = 'none',
-	SLICE = Array.prototype.slice,
-	rroot = /^(?:body|html)$/i,
-	PROTO;
-
 function classRE(name) {
 	return new RegExp('(^|\\s)' + name + '(\\s|$)');
 }
@@ -54,7 +47,6 @@ function NodeList(nodes, root) {
 			tmp[i] = nodes[i];
 		}
 		nodes = tmp;
-		//nodes = SLICE.call(nodes);
 	} else {
 		//$.error('Wrong argument for NodeList');
 	}
@@ -126,7 +118,7 @@ $.extend(NodeList, $.ArrayList, {
 	removeClass: function () {
 		var args = arguments;
 		return this.each(function (el) {
-			A.each(SLICE.call(args), function (name) {
+			$Array.forEach(SLICE.call(args), function (name) {
 				el.className = Lang.trim(el.className.replace(classRE(name), ' '));
 			});
 		});
@@ -140,7 +132,7 @@ $.extend(NodeList, $.ArrayList, {
 	addClass: function () {
 		var args = arguments;
 		return this.each(function (el) {
-			A.each(SLICE.call(args), function (name) {
+			$Array.forEach(SLICE.call(args), function (name) {
 				if (!classRE(name).test(el.className)) {
 					el.className += (el.className ? ' ' : '') + name;
 				}
@@ -180,7 +172,7 @@ $.extend(NodeList, $.ArrayList, {
 	 * <li><strong>left</strong>: left position in px</li>
 	 * </ul>
 	 * @method position
-	 * @return {Hash}
+	 * @return {Object}
 	 */
 	position: function (left, top) {
 		if (Lang.isNumber(left) || Lang.isNumber(top)) {
@@ -392,7 +384,7 @@ $.extend(NodeList, $.ArrayList, {
 	/**
 	 * Gets or sets tag attributes to the nodes in the collection
 	 * @method attr
-	 * @param {String|Hash} key
+	 * @param {String|Object} key
 	 * @param {String} [value]
 	 * @chainable
 	 */
@@ -407,7 +399,7 @@ $.extend(NodeList, $.ArrayList, {
 			return this.getDOMNode()[key];
 		}
 		return this.each(function (node) {
-			Hash.each(attrs, function (name, val) {
+			$Object.each(attrs, function (name, val) {
 				node[name] = val;
 			});
 		});
@@ -415,7 +407,7 @@ $.extend(NodeList, $.ArrayList, {
 	/**
 	 * Gets or sets CSS styles
 	 * @method css
-	 * @param {String|Hash} key
+	 * @param {String|Object} key
 	 * @param {String} [value]
 	 * @chainable
 	 */
@@ -429,7 +421,7 @@ $.extend(NodeList, $.ArrayList, {
 			return $(this.getDOMNode()).currentStyle()[key];
 		}
 		return this.each(function (node) {
-			Hash.each(css, function (prop, value) {
+			$Object.each(css, function (prop, value) {
 				if (prop == 'opacity' && $.UA.ie) {
 					node.style.filter = 'alpha(opacity=' + Math.ceil(value * 100) + ')';
 				} else {
@@ -497,7 +489,7 @@ $.extend(NodeList, $.ArrayList, {
 	on: function (type, callback, thisp) {
 		var handlers = [];
 		if (Lang.isObject(type, true)) {
-			$.Hash.each(type, function (evType, fn) {
+			$Object.each(type, function (evType, fn) {
 				this.each(function (node) {
 					handlers.push(addEvent(node, evType, fn, thisp));
 				});
@@ -523,6 +515,18 @@ $.extend(NodeList, $.ArrayList, {
 			} else {
 				EventCache.clear(node, type);
 			}
+		});
+	},
+	/**
+	 * Fires an event as if it was created from a user interaction
+	 * @method trigger
+	 * @param {String} type
+	 * @param {Object} data optional. Extra data to pass in the event
+	 * @chainable
+	 */
+	trigger: function (type, data) {
+		return this.each(function (node) {
+			triggerEvent(node, type, data);
 		});
 	},
 	/**
@@ -597,7 +601,7 @@ $.extend(NodeList, $.ArrayList, {
 		this.each(function (node) {
 			result.push(node);
 		});
-		A.each(arguments, function (nodelist) {
+		$Array.forEach(SLICE.call(arguments), function (nodelist) {
 			$(nodelist).each(function (node) {
 				result.push(node);
 			});
@@ -626,7 +630,7 @@ PROTO = NodeList.prototype;
 	 * @method focus
 	 * @chainable
 	 */
-A.each(['blur', 'focus'], function (method) {
+$Array.forEach(['blur', 'focus'], function (method) {
 	PROTO[method] = function () {
 		return this.each(function (node) {
 			try {
@@ -646,7 +650,7 @@ A.each(['blur', 'focus'], function (method) {
 	 * @method previous
 	 * @return {NodeList}
 	 */
-A.each(['next', 'previous'], function (method) {
+$Array.forEach(['next', 'previous'], function (method) {
 	PROTO[method] = function () {
 		return this.map(function (node) {
 			do {
@@ -671,7 +675,7 @@ A.each(['next', 'previous'], function (method) {
 	 * @param {String|Number} [height]
 	 * @chainable
 	 */
-A.each(['Width', 'Height'], function (size) {
+$Array.forEach(['Width', 'Height'], function (size) {
 	var method = size.toLowerCase();
 	PROTO[method] = function (value) {
 		if (Lang.isValue(value)) {
@@ -699,7 +703,7 @@ A.each(['Width', 'Height'], function (size) {
 	 * @param {Number} left
 	 * @chainable
 	 */
-A.each(['Left', 'Top'], function (direction) {
+$Array.forEach(['Left', 'Top'], function (direction) {
 	PROTO['offset' + direction] = function (val) {
 		if (Lang.isValue(val)) {
 			return direction == 'Left' ? this.offset(val) : this.offset(null, val);
@@ -709,16 +713,7 @@ A.each(['Left', 'Top'], function (direction) {
 	};
 });
 
-$.add({
-
-	NodeList: NodeList,
-	
-	DOM: DOM,
-	
-	pxToFloat: function (px) {
-		return Lang.isNumber(parseFloat(px)) ? parseFloat(px) :
-			   Lang.isString(px) ? parseFloat(px.substr(0, px.length - 2)) : px;
-	}
-});
-
-addEvent($.win, 'unload', EventCache.flush);
+$.pxToFloat = function (px) {
+	return Lang.isNumber(parseFloat(px)) ? parseFloat(px) :
+		   Lang.isString(px) ? parseFloat(px.substr(0, px.length - 2)) : px;
+};
