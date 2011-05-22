@@ -136,7 +136,7 @@ function buildJet(config) {
 		/**
 		 * Adds properties to the $ object (shortcut for adding classes)
 		 * @method add
-		 * @param {Hash} key/value pairs of class/function names and definitions
+		 * @param {Object} key/value pairs of class/function names and definitions
 		 */
 		add: add,
 		

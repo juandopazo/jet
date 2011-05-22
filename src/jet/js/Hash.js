@@ -1,15 +1,34 @@
 
+var mix = function (a, b, overwrite) {
+	a = a || {};
+	b = b || {};
+	if (b.hasOwnProperty) {
+		for (var x in b) {
+			if (b.hasOwnProperty(x) && (!a[x] || overwrite)) {
+				a[x] = b[x];
+			}
+		}
+	}
+	return a;
+};
+
 /**
  * Utilities for working with object literals
- * Throughout jet the Hash type means an object lieteral
- * @class Hash
+ * Throughout jet the Object type means an object lieteral
+ * @class Object
  * @static
  */
-Hash = {
+var $Object = Hash = function (proto) {
+	var F = function () {};
+	F.prototype = proto;
+	return new F();
+};
+
+mix($Object, {
 	/**
 	 * Iterats through a hash
 	 * @method each
-	 * @param {Hash} hash
+	 * @param {Object} hash
 	 * @param {Function} fn
 	 * @param {Object} [thisp] Sets the value of the this keyword 
 	 */
@@ -26,12 +45,12 @@ Hash = {
 	/**
 	 * Returns an array with all the keys of a hash
 	 * @method keys
-	 * @param {Hash} hash
+	 * @param {Object} hash
 	 * @return {Array}
 	 */
 	keys: function (hash) {
 		var keys = [];
-		Hash.each(hash, function (key) {
+		$Object.each(hash, function (key) {
 			keys[keys.length] = key;
 		});
 		return keys;
@@ -44,9 +63,10 @@ Hash = {
 	 */
 	values: function (hash) {
 		var values = [];
-		Hash.each(hash, function (key, value) {
+		$Object.each(hash, function (key, value) {
 			values[values.length] = value;
 		});
 		return values;
-	}
-};
+	},
+	mix: mix
+});

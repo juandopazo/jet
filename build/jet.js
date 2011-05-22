@@ -117,7 +117,8 @@ var OP = Object.prototype,
 	AP = Array.prototype,
 	SP = String.prototype,
 	SLICE = AP.slice,
-	TOSTRING = OP.toString;
+	TOSTRING = OP.toString,
+	_Array, Hash;
 
  //A couple of functions of this module are used throughout the Loader.
  //Should this be defined as any other module with the jet.add() method?
@@ -131,8 +132,6 @@ var ARRAY		= "array",
 	STRING		= "string",
 	UNDEFINED	= "undefined";
 	
-var _Array, Hash;
-
 /**
  * Provides utility methods for finding object types and other
  * methods that javascript provides in some browsers but not in others such as trim()
@@ -293,12 +292,12 @@ var Lang = (function () {
 			var n;
 			if (Lang.isHash(o)) {
 				n = {};
-				Hash.each(o, function (key, value) {
+				$Object.each(o, function (key, value) {
 					n[key] = clone(value);
 				});
 			} else if (Lang.isArray(o)) {
 				n = [];
-				_Array.each(o, function (value) {
+				_Array.forEach(o, function (value) {
 					n[n.length] = clone(value);
 				});
 			} else {
@@ -347,7 +346,7 @@ function namespace(name) {
  * @class Array
  * @static
  */
-_Array = {
+var _Array = {
 	/**
 	 * Iterates through an array
 	 * @method each
@@ -411,17 +410,36 @@ _Array = {
 };
 
 _Array.each = _Array.forEach;
+var mix = function (a, b, overwrite) {
+	a = a || {};
+	b = b || {};
+	if (b.hasOwnProperty) {
+		for (var x in b) {
+			if (b.hasOwnProperty(x) && (!a[x] || overwrite)) {
+				a[x] = b[x];
+			}
+		}
+	}
+	return a;
+};
+
 /**
  * Utilities for working with object literals
- * Throughout jet the Hash type means an object lieteral
- * @class Hash
+ * Throughout jet the Object type means an object lieteral
+ * @class Object
  * @static
  */
-Hash = {
+var $Object = Hash = function (proto) {
+	var F = function () {};
+	F.prototype = proto;
+	return new F();
+};
+
+mix($Object, {
 	/**
 	 * Iterats through a hash
 	 * @method each
-	 * @param {Hash} hash
+	 * @param {Object} hash
 	 * @param {Function} fn
 	 * @param {Object} [thisp] Sets the value of the this keyword 
 	 */
@@ -438,12 +456,12 @@ Hash = {
 	/**
 	 * Returns an array with all the keys of a hash
 	 * @method keys
-	 * @param {Hash} hash
+	 * @param {Object} hash
 	 * @return {Array}
 	 */
 	keys: function (hash) {
 		var keys = [];
-		Hash.each(hash, function (key) {
+		$Object.each(hash, function (key) {
 			keys[keys.length] = key;
 		});
 		return keys;
@@ -456,12 +474,13 @@ Hash = {
 	 */
 	values: function (hash) {
 		var values = [];
-		Hash.each(hash, function (key, value) {
+		$Object.each(hash, function (key, value) {
 			values[values.length] = value;
 		});
 		return values;
-	}
-};var ArrayMethods,
+	},
+	mix: mix
+});var ArrayMethods,
 	ArrayHelperMethods,
 	ARRAYLIST_PROTO;
 
@@ -690,19 +709,6 @@ var domReady = function (fn, lib, _doc) {
 			domReady(fn, lib, _doc);
 		}, 13);
 	}
-};
-
-var mix = function (a, b, overwrite) {
-	a = a || {};
-	b = b || {};
-	if (b.hasOwnProperty) {
-		for (var x in b) {
-			if (b.hasOwnProperty(x) && (!a[x] || overwrite)) {
-				a[x] = b[x];
-			}
-		}
-	}
-	return a;
 };
 
 /**
@@ -959,7 +965,7 @@ function buildJet(config) {
 		/**
 		 * Adds properties to the $ object (shortcut for adding classes)
 		 * @method add
-		 * @param {Hash} key/value pairs of class/function names and definitions
+		 * @param {Object} key/value pairs of class/function names and definitions
 		 */
 		add: add,
 		
@@ -1440,23 +1446,9 @@ jet.add('oop', function ($) {
 
 /**
  * Utilities for object oriented programming in JavaScript.
- * JET doesn't provide a classical OOP environment like Prototype with Class methods,
- * but instead it helps you take advantage of JavaScript's own prototypical OOP strategy
  * @class jet~extend
  * @static
  */
-/**
- * Object function by Douglas Crockford
- * <a href="https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1">link</a>
- * @private
- * @param {Object} o
- */
-var toObj = function (o) {
-	var F = function () {};
-	F.prototype = o;
-	return new F();
-};
-
 /**
  * Allows for an inheritance strategy based on prototype chaining.
  * When exteiding a class with extend, you keep all prototypic methods from all superclasses
@@ -1474,7 +1466,7 @@ $.extend = function (r, s, px, ax) {
 		$.error("extend failed, verify dependencies");
 	}
 
-	var sp = s.prototype, rp = toObj(sp);
+	var sp = s.prototype, rp = $.Object(sp);
 	r.prototype = rp;
 
 	rp.constructor = r;

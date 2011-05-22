@@ -10,19 +10,6 @@ var domReady = function (fn, lib, _doc) {
 	}
 };
 
-var mix = function (a, b, overwrite) {
-	a = a || {};
-	b = b || {};
-	if (b.hasOwnProperty) {
-		for (var x in b) {
-			if (b.hasOwnProperty(x) && (!a[x] || overwrite)) {
-				a[x] = b[x];
-			}
-		}
-	}
-	return a;
-};
-
 /**
  * Loads scripts and CSS files.
  * Included in the jet() core
