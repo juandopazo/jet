@@ -153,7 +153,7 @@ var addEvent = function (obj, type, callback, thisp) {
 			// Use makeHandler to prevent the handler function from having obj in its scope
 			var handlerFn = makeHandler(callback, thisp);
 			obj.attachEvent(ON + type, handlerFn);
-			EventCache.add(obj, type, handler, handlerFn);
+			EventCache.add(obj, type, handlerFn);
 			return {
 				obj: obj,
 				type: type,

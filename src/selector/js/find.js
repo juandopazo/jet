@@ -1,4 +1,7 @@
 
+var qwery = $.qwery;
+
+delete $.qwery;
 
 $.find = function (query, root) {
 	root = root || $.context;
@@ -17,6 +20,6 @@ $.find = function (query, root) {
 			return node;
 		}
 	} else {
-		return query(query, root);
+		return qwery(query, root);
 	}
 };

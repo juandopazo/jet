@@ -13,9 +13,7 @@ if (!window.jet) {
 
 var doc = document;
 	
-var NODE = 'node',
-	BASE = 'base',
-	CSS = 'css',
+var CSS = 'css',
 	IO = 'io',
 	WIDGET_PARENTCHILD = 'widget-parentchild',
 	SOLID = 'solid';
@@ -31,16 +29,16 @@ var GlobalConfig = {
 				log: {},
 				oop: {},
 				node: ['oop'],
-				xsl: [NODE],
+				xsl: ['node'],
 				swf: {},
-				json: [NODE],
-				cookie: [BASE],
-				sizzle: [NODE],
-				base: [NODE],
+				json: ['node'],
+				cookie: ['base'],
+				sizzle: ['node'],
+				base: ['node'],
 				io: ['json', 'deferred'],
 				deferred: ['oop'],
-				'io-xdr': [NODE, 'swf', IO],
-				history: [BASE, 'json'],
+				'io-xdr': ['node', 'swf', IO],
+				history: ['base', 'json'],
 				'resize-styles': {
 					type: CSS,
 					beacon: {
@@ -48,7 +46,7 @@ var GlobalConfig = {
 						value: SOLID
 					}
 				},
-				resize: [BASE, 'resize-styles'],
+				resize: ['base', 'resize-styles'],
 				'button-styles': {
 					type: CSS,
 					beacon: {
@@ -64,7 +62,7 @@ var GlobalConfig = {
 						value: SOLID
 					}
 				},
-				container: [BASE, 'widget-alignment', 'widget-stack', 'container-styles'],
+				container: ['base', 'widget-alignment', 'widget-stack', 'container-styles'],
 				'progressbar-styles': {
 					type: CSS,
 					beacon: {
@@ -72,11 +70,11 @@ var GlobalConfig = {
 						value: "pointer"
 					}
 				},
-				progressbar: [BASE, 'progressbar-styles'],
-				dragdrop: [BASE],
-				imageloader: [BASE],
-				anim: [BASE],
-				datasource: [BASE],
+				progressbar: ['base', 'progressbar-styles'],
+				dragdrop: ['base'],
+				imageloader: ['base'],
+				anim: ['base'],
+				datasource: ['base'],
 				'datatable-styles': {
 					type: CSS,
 					beacon: {
@@ -101,14 +99,15 @@ var GlobalConfig = {
 				},
 				tabview: [WIDGET_PARENTCHILD, 'tabview-styles'],
 				treeview: [WIDGET_PARENTCHILD, 'treeview-styles'],
-				'widget-alignment': [BASE],
-				'widget-stack': [BASE],
-				'widget-parentchild': [BASE],
-				'widget-sandbox': [BASE],
+				'widget-alignment': ['base'],
+				'widget-stack': ['base'],
+				'widget-parentchild': ['base'],
+				'widget-sandbox': ['base'],
 				menu: [WIDGET_PARENTCHILD, 'container'],
 				vector: ['anim'],
 				layout: ['resize', WIDGET_PARENTCHILD],
-				transition: ['node','anim','deferred']
+				transition: ['node','anim','deferred'],
+				selector: ['node']
 			}
 		}
 	}
@@ -1030,7 +1029,7 @@ var update = function () {
 			core = buildJet(queueList[i].config);
 			core.use = makeUse(queueList[i].config, core.Get);
 			for (j = 0; j < requiredLength; j++) {
-				modules[required[j].name](core);
+				modules[required[j].name].call(core, core);
 			}
 			domReady(queueList.splice(i, 1)[0].main, core);
 		} else {
@@ -1805,7 +1804,7 @@ var addEvent = function (obj, type, callback, thisp) {
 			// Use makeHandler to prevent the handler function from having obj in its scope
 			var handlerFn = makeHandler(callback, thisp);
 			obj.attachEvent(ON + type, handlerFn);
-			EventCache.add(obj, type, handler, handlerFn);
+			EventCache.add(obj, type, handlerFn);
 			return {
 				obj: obj,
 				type: type,
@@ -1869,7 +1868,7 @@ var CURRENT_STYLE = "currentStyle";
  * @class DOM
  * @static
  */
-$.DOM = {
+var DOM = $.DOM = {
 	/**
 	 * Returns the window object to which the current document belongs
 	 * @method getWindowFromDocument
@@ -1998,7 +1997,7 @@ function NodeList(nodes, root) {
 	}
 	this._items = nodes;
 }
-$.extend(NodeList, $.ArrayList, {
+$.NodeList = $.extend(NodeList, $.ArrayList, {
 	
 	getDOMNodes: function () {
 		return this._items;

@@ -52,7 +52,7 @@ function NodeList(nodes, root) {
 	}
 	this._items = nodes;
 }
-$.extend(NodeList, $.ArrayList, {
+$.NodeList = $.extend(NodeList, $.ArrayList, {
 	
 	getDOMNodes: function () {
 		return this._items;

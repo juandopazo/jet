@@ -38,7 +38,7 @@ var update = function () {
 			core = buildJet(queueList[i].config);
 			core.use = makeUse(queueList[i].config, core.Get);
 			for (j = 0; j < requiredLength; j++) {
-				modules[required[j].name](core);
+				modules[required[j].name].call(core, core);
 			}
 			domReady(queueList.splice(i, 1)[0].main, core);
 		} else {
