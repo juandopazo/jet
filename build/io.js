@@ -375,43 +375,56 @@ function xslt(xml, xsl, settings) {
 		xslDoc = xml;
 		checkReady();
 	}
-};function IO() {
-	IO.superclass.constructor.apply(this, arguments);
-	this.resolved = true;
+};function Transaction(started) {
+	Transaction.superclass.constructor.apply(this, arguments);
+	this.resolved = !started;
 }
-$.IO = $.extend(IO, Promise, {
+$.Transaction = $.extend(Transaction, Promise, {
 	
 	abort: function () {
+		if (this._request && this._request.abort) {
+			this._request.abort();
+		}
 		this.reject();
 	}
 	
 }, {
 	
 	addMethod: function (name, fn) {
-		IO.prototype[name] = function (url, config) {
-			var success = config.success;
-			var failure = config.failure;
+		
+		Transaction.prototype[name] = function () {
+			var args = SLICE.call(arguments),
+				config = args.length > 1 ? args.pop() : {},
+				success, failure;
+				
+			config = config || {};
+			success = config.success;
+			failure = config.failure;
+			
 			return this.defer(function (promise) {
 				config.success = $.bind(promise.resolve, promise);
 				config.failure = $.bind(promise.reject, promise);
-				fn(url, opts);
+				this._request = fn.apply(this, args.concat([config]));
 			}).then(success, failure);
 		};
+		
 	}
 	
 });
 
-Hash.each({
+var TRANSACTION_METHODS = {
 	ajax: ajax,
 	jsonp: jsonp,
 	xslt: xslt
-}, IO.addMethod);
+};
 
-$.Array.forEach(['ajax', 'jsonp', 'xslt'], function (method) {
+$Object.each(TRANSACTION_METHODS, Transaction.addMethod);
+
+$Object.each(TRANSACTION_METHODS, function (method) {
 	
-	$[method] = function (url, opts) {
-		var io = new $.IO();
-		return io[method](url, opts);
+	$[method] = function () {
+		var transaction = new $.Transaction(true);
+		return transaction[method].apply(transaction, arguments);
 	};
 	
 });
