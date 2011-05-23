@@ -1,7 +1,7 @@
 /**
  * Handles AJAX, JSONP and XSLT requests
  * @module io
- * @requires base
+ * @requires deferred
  * 
  * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
  * Code licensed under the BSD License
@@ -146,7 +146,7 @@ var getResultByContentType = function (xhr, dataType, onError) {
  * @method ajax
  * @param {Hash} settings
  */
-$.ajax = function (settings) {
+function ajax(url, settings) {
 	var xhr = getAjaxObject();
    
 	var success = settings.success,
@@ -165,12 +165,11 @@ $.ajax = function (settings) {
 		complete.apply($, arguments);
 	};
 	var onError			= function (a, b, c) {
-		if (settings.error) {
-			settings.error(a, b, c);
+		if (settings.failure) {
+			settings.failure(a, b, c);
 		}
 		complete.apply($, arguments);
 	};
-	var url = settings.url;
 
 	if (xhr) {
 		/* Esto corrije el problema de ausencia de tipos mime solo si existe el metodo overrideMimeType (no existe en IE) */
@@ -222,27 +221,13 @@ $.ajax = function (settings) {
 		}
 	}
 	return result || $;
-};
-
-$.get = function (url, opts) {
-	opts = opts || {};
-	opts.url = url;
-	return $.ajax(opts);
-};
-
-$.IO = {
-	utils: {
-		parseXML: parseXML
-	}
-};
-if (!jet.IO) {
-	jet.IO = {};
 }
-if (!jet.IO.jsonpCallbacks) {
-	jet.IO.jsonpCallbacks = [];
+var ioNS = jet.namespace('IO');
+if (!ioNS.jsonpCallbacks) {
+	ioNS.jsonpCallbacks = [];
 }
 
-$.jsonp = function (settings) {
+function jsonp(url, settings) {
 	settings = settings || {};
 	var jsonCallbackParam = settings.jsonCallbackParam || "p";
 	var success = function (result) {
@@ -254,17 +239,16 @@ $.jsonp = function (settings) {
 		}
 	};
 	var error = function (result) {
-		if (settings.error) {
-			settings.error(result);
+		if (settings.failure) {
+			settings.failure(result);
 		}
 		if (settings.complete) {
 			settings.complete(result);
 		}
 	};
-	var callbacks = jet.IO.jsonpCallbacks;
+	var callbacks = ioNS.jsonpCallbacks;
 	var index = callbacks.length;
 	var loaded = false;
-	var url = settings.url;
 	if (url) {
 		callbacks[index] = function (data) {
 			loaded = true;
@@ -333,9 +317,7 @@ var transform = function (xml, xsl, parameters) {
  * @description Makes a XSL transformation. Loads the files with Ajax if needed. <strong>Requires the io-xsl submodule</strong>
  * @param {Hash} settings
  */
-$.IO.xsl = function (settings) {
-	var xml = settings.xml;
-	var xsl = settings.xsl;
+function xslt(xml, xsl, settings) {
 	var parameters = settings.params;
 	var xmlDoc, xslDoc;
 	
@@ -348,8 +330,8 @@ $.IO.xsl = function (settings) {
 		}
 	};
 	var error = function (data) {
-		if (settings.error) {
-			settings.error(data);
+		if (settings.failure) {
+			settings.failure(data);
 		}
 		if (settings.complete) {
 			settings.complete(data);
@@ -393,6 +375,45 @@ $.IO.xsl = function (settings) {
 		xslDoc = xml;
 		checkReady();
 	}
-};
+};function IO() {
+	IO.superclass.constructor.apply(this, arguments);
+	this.resolved = true;
+}
+$.IO = $.extend(IO, Promise, {
+	
+	abort: function () {
+		this.reject();
+	}
+	
+}, {
+	
+	addMethod: function (name, fn) {
+		IO.prototype[name] = function (url, config) {
+			var success = config.success;
+			var failure = config.failure;
+			return this.defer(function (promise) {
+				config.success = $.bind(promise.resolve, promise);
+				config.failure = $.bind(promise.reject, promise);
+				fn(url, opts);
+			}).then(success, failure);
+		};
+	}
+	
+});
+
+Hash.each({
+	ajax: ajax,
+	jsonp: jsonp,
+	xslt: xslt
+}, IO.addMethod);
+
+$.Array.forEach(['ajax', 'jsonp', 'xslt'], function (method) {
+	
+	$[method] = function (url, opts) {
+		var io = new $.IO();
+		return io[method](url, opts);
+	};
+	
+});
 			
 });

@@ -11,15 +11,8 @@ var ready = function (fn) {
 	return this;
 };
 
-var Lang = $.Lang,
-	A = $.Array,
-	NONE = "none",
-	SLICE = Array.prototype.slice,
-	rroot = /^(?:body|html)$/i,
-	PROTO;
-
 function classRE(name) {
-	return new RegExp("(^|\\s)" + name + "(\\s|$)");
+	return new RegExp('(^|\\s)' + name + '(\\s|$)');
 }
 /**
  * A collection of DOM Nodes
@@ -54,13 +47,12 @@ function NodeList(nodes, root) {
 			tmp[i] = nodes[i];
 		}
 		nodes = tmp;
-		//nodes = SLICE.call(nodes);
 	} else {
-		//$.error("Wrong argument for NodeList");
+		//$.error('Wrong argument for NodeList');
 	}
 	this._items = nodes;
 }
-$.extend(NodeList, $.ArrayList, {
+$.NodeList = $.extend(NodeList, $.ArrayList, {
 	
 	getDOMNodes: function () {
 		return this._items;
@@ -126,7 +118,7 @@ $.extend(NodeList, $.ArrayList, {
 	removeClass: function () {
 		var args = arguments;
 		return this.each(function (el) {
-			A.each(SLICE.call(args), function (name) {
+			$Array.forEach(SLICE.call(args), function (name) {
 				el.className = Lang.trim(el.className.replace(classRE(name), ' '));
 			});
 		});
@@ -140,7 +132,7 @@ $.extend(NodeList, $.ArrayList, {
 	addClass: function () {
 		var args = arguments;
 		return this.each(function (el) {
-			A.each(SLICE.call(args), function (name) {
+			$Array.forEach(SLICE.call(args), function (name) {
 				if (!classRE(name).test(el.className)) {
 					el.className += (el.className ? ' ' : '') + name;
 				}
@@ -178,31 +170,27 @@ $.extend(NodeList, $.ArrayList, {
 	 * <ul>
 	 * <li><strong>top</strong>: top position in px</li>
 	 * <li><strong>left</strong>: left position in px</li>
-	 * <li><strong>width</strong>: width in px</li>
-	 * <li><strong>height</strong>: height in px</li>
 	 * </ul>
-	 * @method offset
-	 * @return {Hash}
+	 * @method position
+	 * @return {Object}
 	 */
-	offset: function (left, top) {
+	position: function (left, top) {
 		if (Lang.isNumber(left) || Lang.isNumber(top)) {
 			return this.each(function (node) {
 				node = $(node);
 				var parentOffset = node.offsetParent().offset();
 				if (Lang.isNumber(left)) {
-					node.css('left', left - parentOffset.left + 'px');
+					node.css('left', left - parentOffset.left);
 				}
 				if (Lang.isNumber(top)) {
-					node.css('top', top - parentOffset.top + 'px');
+					node.css('top', top - parentOffset.top);
 				}
 			});
 		} else {
 			var node = this.getDOMNode();
 			var offset = {
 				left: 0,
-				top: 0,
-				width: node.offsetWidth,
-				height: node.offsetHeight
+				top: 0
 			};
 			var doc = node.ownerDocument;
 			try {
@@ -225,6 +213,28 @@ $.extend(NodeList, $.ArrayList, {
 			return offset;
 		}
 	},
+	offset: function () {
+		return $.mix(this.position(), this.size());
+	},
+	size: function (width, height) {
+		var node = this.getDOMNode();
+		if (Lang.isNumber(width)) {
+			width += 'px';
+		}
+		if (Lang.isNumber(height)) {
+			height += 'px';
+		}
+		if (Lang.isString(width) || Lang.isString(height)) {
+			this.css('width', width);
+			this.css('height', height);
+		} else {
+			return {
+				width: node.offsetWidth,
+				height: node.offsetHeight
+			};
+		}
+		return this;
+	},
 	/**
 	 * Returns a new NodeList with all the offset parents of this one
 	 * @method offsetParent
@@ -233,7 +243,7 @@ $.extend(NodeList, $.ArrayList, {
 	offsetParent: function () {
 		return this.map(function(node) {
 			var offsetParent = node.offsetParent || document.body;
-			while (offsetParent && (!rroot.test(offsetParent.nodeName) && $(offsetParent).css("position") === "static")) {
+			while (offsetParent && (!rroot.test(offsetParent.nodeName) && $(offsetParent).css('position') === 'static')) {
 				offsetParent = offsetParent.offsetParent;
 			}
 			return offsetParent;
@@ -374,7 +384,7 @@ $.extend(NodeList, $.ArrayList, {
 	/**
 	 * Gets or sets tag attributes to the nodes in the collection
 	 * @method attr
-	 * @param {String|Hash} key
+	 * @param {String|Object} key
 	 * @param {String} [value]
 	 * @chainable
 	 */
@@ -389,7 +399,7 @@ $.extend(NodeList, $.ArrayList, {
 			return this.getDOMNode()[key];
 		}
 		return this.each(function (node) {
-			Hash.each(attrs, function (name, val) {
+			$Object.each(attrs, function (name, val) {
 				node[name] = val;
 			});
 		});
@@ -397,7 +407,7 @@ $.extend(NodeList, $.ArrayList, {
 	/**
 	 * Gets or sets CSS styles
 	 * @method css
-	 * @param {String|Hash} key
+	 * @param {String|Object} key
 	 * @param {String} [value]
 	 * @chainable
 	 */
@@ -411,14 +421,16 @@ $.extend(NodeList, $.ArrayList, {
 			return $(this.getDOMNode()).currentStyle()[key];
 		}
 		return this.each(function (node) {
-			Hash.each(css, function (prop, value) {
-				if (prop == "opacity" && $.UA.ie) {
-					node.style.filter = "alpha(opacity=" + Math.ceil(value * 100) + ")";
+			$Object.each(css, function (prop, value) {
+				if (prop == 'opacity' && $.UA.ie) {
+					node.style.filter = 'alpha(opacity=' + Math.ceil(value * 100) + ')';
 				} else {
-					if (Lang.isNumber(value) && prop != "zIndex" && prop != "zoom" && prop != "opacity") {
-						value += "px";
+					if (Lang.isNumber(value)) {
+						value += (prop != 'zIndex' && prop != 'zoom' && prop != 'opacity') ? '' : 'px';
 					}
-					node.style[prop] = value;
+					if (Lang.isString(value)) {
+						node.style[prop] = value;
+					}
 				}
 			});
 		});
@@ -464,7 +476,7 @@ $.extend(NodeList, $.ArrayList, {
 				result.push.apply(result, newChildren);
 			}
 		});
-		return new (this.constructor)(result);
+		return new this.constructor(result);
 	},
 	/**
 	 * Adds an event listener to all the nods in the list
@@ -477,7 +489,7 @@ $.extend(NodeList, $.ArrayList, {
 	on: function (type, callback, thisp) {
 		var handlers = [];
 		if (Lang.isObject(type, true)) {
-			$.Hash.each(type, function (evType, fn) {
+			$Object.each(type, function (evType, fn) {
 				this.each(function (node) {
 					handlers.push(addEvent(node, evType, fn, thisp));
 				});
@@ -503,6 +515,18 @@ $.extend(NodeList, $.ArrayList, {
 			} else {
 				EventCache.clear(node, type);
 			}
+		});
+	},
+	/**
+	 * Fires an event as if it was created from a user interaction
+	 * @method trigger
+	 * @param {String} type
+	 * @param {Object} data optional. Extra data to pass in the event
+	 * @chainable
+	 */
+	trigger: function (type, data) {
+		return this.each(function (node) {
+			triggerEvent(node, type, data);
 		});
 	},
 	/**
@@ -543,7 +567,7 @@ $.extend(NodeList, $.ArrayList, {
 	 */
 	contentDoc: function () {
 		return this.map(function (node) {
-			if (node.nodeName == "IFRAME") {
+			if (node.nodeName == 'IFRAME') {
 				return node.contentDocument || node.contentWindow.document || node.document;
 			}
 		});
@@ -577,12 +601,12 @@ $.extend(NodeList, $.ArrayList, {
 		this.each(function (node) {
 			result.push(node);
 		});
-		A.each(arguments, function (nodelist) {
+		$Array.forEach(SLICE.call(arguments), function (nodelist) {
 			$(nodelist).each(function (node) {
 				result.push(node);
 			});
 		});
-		return new (this.constructor)(result);
+		return new this.constructor(result);
 	},
 	/**
 	 * Sets or returns the value of the node. Useful mostly for form elements
@@ -590,7 +614,7 @@ $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	value: function (val) {
-		return this.attr("value", val);
+		return this.attr('value', val);
 	}
 });
 
@@ -606,7 +630,7 @@ PROTO = NodeList.prototype;
 	 * @method focus
 	 * @chainable
 	 */
-A.each(['blur', 'focus'], function (method) {
+$Array.forEach(['blur', 'focus'], function (method) {
 	PROTO[method] = function () {
 		return this.each(function (node) {
 			try {
@@ -626,7 +650,7 @@ A.each(['blur', 'focus'], function (method) {
 	 * @method previous
 	 * @return {NodeList}
 	 */
-A.each(['next', 'previous'], function (method) {
+$Array.forEach(['next', 'previous'], function (method) {
 	PROTO[method] = function () {
 		return this.map(function (node) {
 			do {
@@ -651,14 +675,14 @@ A.each(['next', 'previous'], function (method) {
 	 * @param {String|Number} [height]
 	 * @chainable
 	 */
-A.each(['Width', 'Height'], function (size) {
+$Array.forEach(['Width', 'Height'], function (size) {
 	var method = size.toLowerCase();
 	PROTO[method] = function (value) {
 		if (Lang.isValue(value)) {
 			if (Lang.isNumber(value) && value < 0) {
 				value = 0;
 			}
-			value = Lang.isString(value) ? value : value + "px";
+			value = Lang.isString(value) ? value : value + 'px';
 			return this.each(function (node) {
 				node.style[method] = value;
 			});
@@ -679,7 +703,7 @@ A.each(['Width', 'Height'], function (size) {
 	 * @param {Number} left
 	 * @chainable
 	 */
-A.each(['Left', 'Top'], function (direction) {
+$Array.forEach(['Left', 'Top'], function (direction) {
 	PROTO['offset' + direction] = function (val) {
 		if (Lang.isValue(val)) {
 			return direction == 'Left' ? this.offset(val) : this.offset(null, val);
@@ -689,16 +713,7 @@ A.each(['Left', 'Top'], function (direction) {
 	};
 });
 
-$.add({
-
-	NodeList: NodeList,
-	
-	DOM: DOM,
-	
-	pxToFloat: function (px) {
-		return Lang.isNumber(parseFloat(px)) ? parseFloat(px) :
-			   Lang.isString(px) ? parseFloat(px.substr(0, px.length - 2)) : px;
-	}
-});
-
-addEvent($.win, "unload", EventCache.flush);
+$.pxToFloat = function (px) {
+	return Lang.isNumber(parseFloat(px)) ? parseFloat(px) :
+		   Lang.isString(px) ? parseFloat(px.substr(0, px.length - 2)) : px;
+};

@@ -1,6 +1,6 @@
 
-if (!Lang.isNumber(jet.Button.checkbox)) {
-	jet.Button.checkbox = 0;
+if (!Lang.isNumber(ButtonNS.checkbox)) {
+	ButtonNS.checkbox = 0;
 }
 
 /**
@@ -53,6 +53,6 @@ $.CheckBoxGroup = Base.create('checkbox-group', Widget, [WidgetParent], {
 	}
 }, {
 	initializer: function () {
-		this.set(NAME, this.getClassName(+jet.Button.checkbox));
+		this.set(NAME, this.getClassName(+ButtonNS.checkbox));
 	}
 });

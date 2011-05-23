@@ -175,8 +175,8 @@ $.EventTarget = Class.create('EventTarget', null, {
 			i = 0;
 		if (eventType && callback) {
 			while (i < events.length) {
-				if (events[i].fn == calback) {
-					events[i].splice(i, 1);
+				if (events[i].fn == callback) {
+					events.splice(i, 1);
 				} else {
 					i++;
 				}
@@ -489,15 +489,11 @@ var BOUNDING_BOX = 'boundingBox',
 	VISIBILITY = 'visibility',
 	DESTROY = 'destroy';
 
-if (!jet.Widget) {
-	jet.Widget = {};
+var WidgetNS = jet.namespace('Widget');
+if (!Lang.isNumber(WidgetNS._uid)) {
+	WidgetNS._uid = -1;
 }
-if (!Lang.isNumber(jet.Widget._uid)) {
-	jet.Widget._uid = -1;
-}
-if (!jet.Widget._instances) {
-	jet.Widget._instances = {};
-}
+jet.namespace('Widget._instances');
 
 /**
  * Base class for all widgets. 

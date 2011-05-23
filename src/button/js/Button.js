@@ -19,9 +19,7 @@ var BOUNDING_BOX = "boundingBox",
 	NAME = 'name',
 	PILL = 'pill';
 
-if (!jet.Button) {
-	jet.Button = {};
-}
+var ButtonNS = jet.namepace('Button');
 
 /**
  * A button widget

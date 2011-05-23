@@ -164,8 +164,8 @@ $.EventTarget = Class.create('EventTarget', null, {
 			i = 0;
 		if (eventType && callback) {
 			while (i < events.length) {
-				if (events[i].fn == calback) {
-					events[i].splice(i, 1);
+				if (events[i].fn == callback) {
+					events.splice(i, 1);
 				} else {
 					i++;
 				}

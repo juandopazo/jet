@@ -4,23 +4,9 @@ var OP = Object.prototype,
 
 /**
  * Utilities for object oriented programming in JavaScript.
- * JET doesn't provide a classical OOP environment like Prototype with Class methods,
- * but instead it helps you take advantage of JavaScript's own prototypical OOP strategy
  * @class jet~extend
  * @static
  */
-/**
- * Object function by Douglas Crockford
- * <a href="https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1">link</a>
- * @private
- * @param {Object} o
- */
-var toObj = function (o) {
-	var F = function () {};
-	F.prototype = o;
-	return new F();
-};
-
 /**
  * Allows for an inheritance strategy based on prototype chaining.
  * When exteiding a class with extend, you keep all prototypic methods from all superclasses
@@ -38,7 +24,7 @@ $.extend = function (r, s, px, ax) {
 		$.error("extend failed, verify dependencies");
 	}
 
-	var sp = s.prototype, rp = toObj(sp);
+	var sp = s.prototype, rp = $.Object(sp);
 	r.prototype = rp;
 
 	rp.constructor = r;

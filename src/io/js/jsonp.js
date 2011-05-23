@@ -1,12 +1,10 @@
 
-if (!jet.IO) {
-	jet.IO = {};
-}
-if (!jet.IO.jsonpCallbacks) {
-	jet.IO.jsonpCallbacks = [];
+var ioNS = jet.namespace('IO');
+if (!ioNS.jsonpCallbacks) {
+	ioNS.jsonpCallbacks = [];
 }
 
-$.jsonp = function (settings) {
+function jsonp(url, settings) {
 	settings = settings || {};
 	var jsonCallbackParam = settings.jsonCallbackParam || "p";
 	var success = function (result) {
@@ -18,17 +16,16 @@ $.jsonp = function (settings) {
 		}
 	};
 	var error = function (result) {
-		if (settings.error) {
-			settings.error(result);
+		if (settings.failure) {
+			settings.failure(result);
 		}
 		if (settings.complete) {
 			settings.complete(result);
 		}
 	};
-	var callbacks = jet.IO.jsonpCallbacks;
+	var callbacks = ioNS.jsonpCallbacks;
 	var index = callbacks.length;
 	var loaded = false;
-	var url = settings.url;
 	if (url) {
 		callbacks[index] = function (data) {
 			loaded = true;

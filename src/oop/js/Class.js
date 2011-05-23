@@ -40,7 +40,7 @@ $.mix(Class, {
 		
 		return $.mix(BuiltClass, {
 			NAME: name,
-			inherit: function (_name, _proto, _attrs) {
+			subclass: function (_name, _proto, _attrs) {
 				return Class.create(_name, BuiltClass, _proto, _attrs);
 			},
 			mixin: function (exts) {

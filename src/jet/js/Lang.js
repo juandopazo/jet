@@ -3,7 +3,8 @@ var OP = Object.prototype,
 	AP = Array.prototype,
 	SP = String.prototype,
 	SLICE = AP.slice,
-	TOSTRING = OP.toString;
+	TOSTRING = OP.toString,
+	_Array, Hash;
 
  //A couple of functions of this module are used throughout the Loader.
  //Should this be defined as any other module with the jet.add() method?
@@ -17,8 +18,6 @@ var ARRAY		= "array",
 	STRING		= "string",
 	UNDEFINED	= "undefined";
 	
-var _Array, Hash;
-
 /**
  * Provides utility methods for finding object types and other
  * methods that javascript provides in some browsers but not in others such as trim()
@@ -179,12 +178,12 @@ var Lang = (function () {
 			var n;
 			if (Lang.isHash(o)) {
 				n = {};
-				Hash.each(o, function (key, value) {
+				$Object.each(o, function (key, value) {
 					n[key] = clone(value);
 				});
 			} else if (Lang.isArray(o)) {
 				n = [];
-				_Array.each(o, function (value) {
+				_Array.forEach(o, function (value) {
 					n[n.length] = clone(value);
 				});
 			} else {
@@ -213,4 +212,17 @@ if (Function.prototype.bind) {
 		bound.prototype = new nop();
 		return bound;
 	};
+}
+
+function namespace(name) {
+	var names = name.split('.'),
+		o = this,
+		i = 0;
+	for (; i < names.length; i++) {
+		if (!o[names[i]]) {
+			o[names[i]] = {};
+		}
+		o = o[names[i]];
+	}
+	return o;
 }

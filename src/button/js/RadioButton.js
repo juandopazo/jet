@@ -1,6 +1,6 @@
 
-if (!Lang.isNumber(jet.Button.radio)) {
-	jet.Button.radio = 0;
+if (!Lang.isNumber(ButtonNS.radio)) {
+	ButtonNS.radio = 0;
 }
 
 /**
@@ -60,6 +60,6 @@ $.RadioGroup = Base.create('radio-group', Widget, [WidgetParent], {
 	}
 }, {
 	initializer: function () {
-		this.set(NAME, this.getClassName(++jet.Button.radio));
+		this.set(NAME, this.getClassName(++ButtonNS.radio));
 	}
 });

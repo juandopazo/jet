@@ -13,9 +13,7 @@ if (!window.jet) {
 
 var doc = document;
 	
-var NODE = 'node',
-	BASE = 'base',
-	CSS = 'css',
+var CSS = 'css',
 	IO = 'io',
 	WIDGET_PARENTCHILD = 'widget-parentchild',
 	SOLID = 'solid';
@@ -31,16 +29,16 @@ var GlobalConfig = {
 				log: {},
 				oop: {},
 				node: ['oop'],
-				xsl: [NODE],
+				xsl: ['node'],
 				swf: {},
-				json: [NODE],
-				cookie: [BASE],
-				sizzle: [NODE],
-				base: [NODE],
-				io: ['json'],
+				json: ['node'],
+				cookie: ['base'],
+				sizzle: ['node'],
+				base: ['node'],
+				io: ['json', 'deferred'],
 				deferred: ['oop'],
-				'io-xdr': [NODE, 'swf', IO],
-				history: [BASE, 'json'],
+				'io-xdr': ['node', 'swf', IO],
+				history: ['base', 'json'],
 				'resize-styles': {
 					type: CSS,
 					beacon: {
@@ -48,7 +46,7 @@ var GlobalConfig = {
 						value: SOLID
 					}
 				},
-				resize: [BASE, 'resize-styles'],
+				resize: ['base', 'resize-styles'],
 				'button-styles': {
 					type: CSS,
 					beacon: {
@@ -64,7 +62,7 @@ var GlobalConfig = {
 						value: SOLID
 					}
 				},
-				container: [BASE, 'widget-alignment', 'widget-stack', 'container-styles'],
+				container: ['base', 'widget-alignment', 'widget-stack', 'container-styles'],
 				'progressbar-styles': {
 					type: CSS,
 					beacon: {
@@ -72,11 +70,11 @@ var GlobalConfig = {
 						value: "pointer"
 					}
 				},
-				progressbar: [BASE, 'progressbar-styles'],
-				dragdrop: [BASE],
-				imageloader: [BASE],
-				anim: [BASE],
-				datasource: [BASE],
+				progressbar: ['base', 'progressbar-styles'],
+				dragdrop: ['base'],
+				imageloader: ['base'],
+				anim: ['base'],
+				datasource: ['base'],
 				'datatable-styles': {
 					type: CSS,
 					beacon: {
@@ -101,13 +99,15 @@ var GlobalConfig = {
 				},
 				tabview: [WIDGET_PARENTCHILD, 'tabview-styles'],
 				treeview: [WIDGET_PARENTCHILD, 'treeview-styles'],
-				'widget-alignment': [BASE],
-				'widget-stack': [BASE],
-				'widget-parentchild': [BASE],
-				'widget-sandbox': [BASE],
+				'widget-alignment': ['base'],
+				'widget-stack': ['base'],
+				'widget-parentchild': ['base'],
+				'widget-sandbox': ['base'],
 				menu: [WIDGET_PARENTCHILD, 'container'],
 				vector: ['anim'],
-				layout: ['resize', WIDGET_PARENTCHILD]
+				layout: ['resize', WIDGET_PARENTCHILD],
+				transition: ['node','anim','deferred'],
+				selector: ['node']
 			}
 		}
 	}
@@ -116,7 +116,8 @@ var OP = Object.prototype,
 	AP = Array.prototype,
 	SP = String.prototype,
 	SLICE = AP.slice,
-	TOSTRING = OP.toString;
+	TOSTRING = OP.toString,
+	_Array, Hash;
 
  //A couple of functions of this module are used throughout the Loader.
  //Should this be defined as any other module with the jet.add() method?
@@ -130,8 +131,6 @@ var ARRAY		= "array",
 	STRING		= "string",
 	UNDEFINED	= "undefined";
 	
-var _Array, Hash;
-
 /**
  * Provides utility methods for finding object types and other
  * methods that javascript provides in some browsers but not in others such as trim()
@@ -292,12 +291,12 @@ var Lang = (function () {
 			var n;
 			if (Lang.isHash(o)) {
 				n = {};
-				Hash.each(o, function (key, value) {
+				$Object.each(o, function (key, value) {
 					n[key] = clone(value);
 				});
 			} else if (Lang.isArray(o)) {
 				n = [];
-				_Array.each(o, function (value) {
+				_Array.forEach(o, function (value) {
 					n[n.length] = clone(value);
 				});
 			} else {
@@ -327,12 +326,26 @@ if (Function.prototype.bind) {
 		return bound;
 	};
 }
+
+function namespace(name) {
+	var names = name.split('.'),
+		o = this,
+		i = 0;
+	for (; i < names.length; i++) {
+		if (!o[names[i]]) {
+			o[names[i]] = {};
+		}
+		o = o[names[i]];
+	}
+	return o;
+}
+
 /**
  * Utilities for working with Arrays
  * @class Array
  * @static
  */
-_Array = {
+var _Array = {
 	/**
 	 * Iterates through an array
 	 * @method each
@@ -396,17 +409,36 @@ _Array = {
 };
 
 _Array.each = _Array.forEach;
+var mix = function (a, b, overwrite) {
+	a = a || {};
+	b = b || {};
+	if (b.hasOwnProperty) {
+		for (var x in b) {
+			if (b.hasOwnProperty(x) && (!a[x] || overwrite)) {
+				a[x] = b[x];
+			}
+		}
+	}
+	return a;
+};
+
 /**
  * Utilities for working with object literals
- * Throughout jet the Hash type means an object lieteral
- * @class Hash
+ * Throughout jet the Object type means an object lieteral
+ * @class Object
  * @static
  */
-Hash = {
+var $Object = Hash = function (proto) {
+	var F = function () {};
+	F.prototype = proto;
+	return new F();
+};
+
+mix($Object, {
 	/**
 	 * Iterats through a hash
 	 * @method each
-	 * @param {Hash} hash
+	 * @param {Object} hash
 	 * @param {Function} fn
 	 * @param {Object} [thisp] Sets the value of the this keyword 
 	 */
@@ -423,12 +455,12 @@ Hash = {
 	/**
 	 * Returns an array with all the keys of a hash
 	 * @method keys
-	 * @param {Hash} hash
+	 * @param {Object} hash
 	 * @return {Array}
 	 */
 	keys: function (hash) {
 		var keys = [];
-		Hash.each(hash, function (key) {
+		$Object.each(hash, function (key) {
 			keys[keys.length] = key;
 		});
 		return keys;
@@ -441,12 +473,13 @@ Hash = {
 	 */
 	values: function (hash) {
 		var values = [];
-		Hash.each(hash, function (key, value) {
+		$Object.each(hash, function (key, value) {
 			values[values.length] = value;
 		});
 		return values;
-	}
-};var ArrayMethods,
+	},
+	mix: mix
+});var ArrayMethods,
 	ArrayHelperMethods,
 	ARRAYLIST_PROTO;
 
@@ -677,19 +710,6 @@ var domReady = function (fn, lib, _doc) {
 	}
 };
 
-var mix = function (a, b, overwrite) {
-	a = a || {};
-	b = b || {};
-	if (b.hasOwnProperty) {
-		for (var x in b) {
-			if (b.hasOwnProperty(x) && (!a[x] || overwrite)) {
-				a[x] = b[x];
-			}
-		}
-	}
-	return a;
-};
-
 /**
  * Loads scripts and CSS files.
  * Included in the jet() core
@@ -877,9 +897,9 @@ function buildJet(config) {
 		return query;
 	};
 	
-	var add = function (o) {
+	function add(o) {
 		mix($, o, true);
-	};
+	}
 	
 	if (config.win.JSON) {
 		$.JSON = config.win.JSON;
@@ -887,6 +907,8 @@ function buildJet(config) {
 	
 	add({
 		bind: bind,
+		
+		namespace: bind(namespace, $),
 		
 		/**
 		 * A pointer to the last Windo that was referenced by the $() function
@@ -942,7 +964,7 @@ function buildJet(config) {
 		/**
 		 * Adds properties to the $ object (shortcut for adding classes)
 		 * @method add
-		 * @param {Hash} key/value pairs of class/function names and definitions
+		 * @param {Object} key/value pairs of class/function names and definitions
 		 */
 		add: add,
 		
@@ -1007,7 +1029,7 @@ var update = function () {
 			core = buildJet(queueList[i].config);
 			core.use = makeUse(queueList[i].config, core.Get);
 			for (j = 0; j < requiredLength; j++) {
-				modules[required[j].name](core);
+				modules[required[j].name].call(core, core);
 			}
 			domReady(queueList.splice(i, 1)[0].main, core);
 		} else {
@@ -1399,6 +1421,8 @@ jet.add = function (moduleName, expose) {
 	update();
 };
 
+jet.namespace = bind(namespace, jet);
+
 
 }());
 
@@ -1420,23 +1444,9 @@ jet.add('oop', function ($) {
 
 /**
  * Utilities for object oriented programming in JavaScript.
- * JET doesn't provide a classical OOP environment like Prototype with Class methods,
- * but instead it helps you take advantage of JavaScript's own prototypical OOP strategy
  * @class jet~extend
  * @static
  */
-/**
- * Object function by Douglas Crockford
- * <a href="https://docs.google.com/viewer?url=http://javascript.crockford.com/hackday.ppt&pli=1">link</a>
- * @private
- * @param {Object} o
- */
-var toObj = function (o) {
-	var F = function () {};
-	F.prototype = o;
-	return new F();
-};
-
 /**
  * Allows for an inheritance strategy based on prototype chaining.
  * When exteiding a class with extend, you keep all prototypic methods from all superclasses
@@ -1454,7 +1464,7 @@ $.extend = function (r, s, px, ax) {
 		$.error("extend failed, verify dependencies");
 	}
 
-	var sp = s.prototype, rp = toObj(sp);
+	var sp = s.prototype, rp = $.Object(sp);
 	r.prototype = rp;
 
 	rp.constructor = r;
@@ -1538,7 +1548,7 @@ $.mix(Class, {
 		
 		return $.mix(BuiltClass, {
 			NAME: name,
-			inherit: function (_name, _proto, _attrs) {
+			subclass: function (_name, _proto, _attrs) {
 				return Class.create(_name, BuiltClass, _proto, _attrs);
 			},
 			mixin: function (exts) {
@@ -1639,19 +1649,23 @@ $.mix(Class, {
 jet.add('node', function ($) {
 
 			
-var ON = "on",
+var ON = 'on',
 	Lang = $.Lang,
-	Hash = $.Hash,
-	A = $.Array,
-	AP = Array.prototype;
+	$Object = $.Object,
+	$Array = $.Array,
+	AP = Array.prototype,
+	SLICE = AP.slice,
+	NONE = 'none',
+	rroot = /^(?:body|html)$/i,
+	PROTO;
 
+var Event = $.namespace('Event');
 /**
  * Keeps a record of all listeners attached to the DOM in order to remove them when necessary
- * @class EventCache
+ * @class Event.Cache
  * @static
- * @private
  */
-var EventCache = (function () {
+var EventCache = Event.Cache = (function () {
 	var cache = {};
 	
 	var getCache = function (type) {
@@ -1672,41 +1686,6 @@ var EventCache = (function () {
 			};
 		}
 		detachEvent(obj, type, fn);
-	};
-	
-	/**
-	 * Removes all listeners from a node
-	 * @method clear
-	 * @param {DOMNode} obj
-	 */
-	var clear = function (obj, type) {
-		var c, i = 0;
-		if (type) {
-			c = getCache(type);
-			while (i < c.length) {
-				if (c[i].obj == obj) {
-					detachEvent(obj, type, c[i].fn);
-					c.splice(i, 1);
-				} else {
-					i++;
-				}
-			}
-		} else {
-			for (type in cache) {
-				if (cache.hasOwnProperty(type)) {
-					c = cache[type];
-					i = 0;
-					while (i < c.length) {
-						if (c[i].obj == obj) {
-							detachEvent(obj, type, c[i].fn);
-							c.splice(i, 1);
-						} else {
-							i++;
-						}
-					}
-				}
-			}
-		}
 	};
 	
 	return {
@@ -1745,7 +1724,40 @@ var EventCache = (function () {
 				}
 			}
 		},
-		clear: clear,
+		/**
+		 * Removes all listeners from a node
+		 * @method clear
+		 * @param {DOMNode} obj
+		 */
+		clear: function (obj, type) {
+			var c, i = 0;
+			if (type) {
+				c = getCache(type);
+				while (i < c.length) {
+					if (c[i].obj == obj) {
+						detachEvent(obj, type, c[i].fn);
+						c.splice(i, 1);
+					} else {
+						i++;
+					}
+				}
+			} else {
+				for (type in cache) {
+					if (cache.hasOwnProperty(type)) {
+						c = cache[type];
+						i = 0;
+						while (i < c.length) {
+							if (c[i].obj == obj) {
+								detachEvent(obj, type, c[i].fn);
+								c.splice(i, 1);
+							} else {
+								i++;
+							}
+						}
+					}
+				}
+			}
+		},
 		/**
 		 * Removes all listeners from all nodes recorded in the cache
 		 * @method flush
@@ -1753,50 +1765,75 @@ var EventCache = (function () {
 		flush: function () {
 			for (var o in cache) {
 				if (cache.hasOwnProperty(o)) {
-					clear(o);
+					EventCache.clear(o);
 				}
 			}
 		}
 	};
 }());
 
+var makeHandler = function (callback, thisp) {
+	return function (e) {
+		e.target = e.srcElement;
+		e.preventDefault = function () {
+			e.returnValue = false;
+		};
+		e.stopPropagation = function () {
+			e.cancelBubble = true;
+		};
+		callback.call(thisp || e.srcElement, e);
+	};
+};
+
 // adds a DOM event and provides event object normalization
 var addEvent = function (obj, type, callback, thisp) {
 	if (obj.addEventListener) {
 		addEvent = function (obj, type, callback, thisp) {
-			if (thisp) {
-				callback = $.bind(callback, thisp);
-			}
-			obj.addEventListener(type, callback, false);
-			EventCache.add(obj, type, callback);
+			var handlerFn = thisp ? $.bind(callback, thisp) : callback;
+			obj.addEventListener(type, handlerFn, false);
+			EventCache.add(obj, type, callback, handlerFn);
 			return {
 				obj: obj,
 				type: type,
-				fn: callback
+				fn: handlerFn
 			};
 		};
 	} else if (obj.attachEvent) {
 		addEvent = function (obj, type, callback, thisp) {
-			obj.attachEvent(ON + type, function (ev) {
-				ev.target = ev.srcElement;
-				ev.preventDefault = function () {
-					ev.returnValue = false;
-				};
-				ev.stopPropagation = function () {
-					ev.cancelBubble = true;
-				};
-				callback.call(thisp || obj, ev);
-			});
-			EventCache.add(obj, type, callback);
+			// Use makeHandler to prevent the handler function from having obj in its scope
+			var handlerFn = makeHandler(callback, thisp);
+			obj.attachEvent(ON + type, handlerFn);
+			EventCache.add(obj, type, handlerFn);
 			return {
 				obj: obj,
 				type: type,
-				fn: callback
+				fn: handlerFn
 			};
 		};
 	}
 	return addEvent(obj, type, callback, thisp);
 };
+
+var triggerEvent = function (node, type, data) {
+	var doc = $.config.doc;
+	if (doc.createEvent) {
+		triggerEvent = function (node, type, data) {
+			var e = node.ownerDocument.createEvent('Events');
+			e.initEvent(event, true, true)
+			$.mix(e, data);
+			node.dispatchEvent(e);
+		};
+	} else {
+		triggerEvent = function (node, type, data) {
+			var e = node.ownerDocument.createEventObject();
+			$.mix(e, data);
+			node.fireEvent(ON + type, e);
+		};
+	}
+	triggerEvent(node, type, data);
+};
+
+addEvent($.win, 'unload', EventCache.flush);
 
 /**
  * A collection of DOM Event handlers for later detaching
@@ -1807,7 +1844,7 @@ var addEvent = function (obj, type, callback, thisp) {
 function DOMEventHandler(handlers) {
 	this._handlers = handlers || [];
 }
-DOMEventHandler.prototype = {
+$.DOMEventHandler = $.mix(DOMEventHandler.prototype, {
 	/**
 	 * Unbinds all event handlers from their hosts
 	 * @method detach
@@ -1818,7 +1855,8 @@ DOMEventHandler.prototype = {
 		}
 		this._handlers = [];
 	}
-};
+});
+
 
 var DOCUMENT_ELEMENT = "documentElement";
 var GET_COMPUTED_STYLE = "getComputedStyle";
@@ -1829,7 +1867,7 @@ var CURRENT_STYLE = "currentStyle";
  * @class DOM
  * @static
  */
-var DOM = {
+var DOM = $.DOM = {
 	/**
 	 * Returns the window object to which the current document belongs
 	 * @method getWindowFromDocument
@@ -1917,15 +1955,8 @@ var ready = function (fn) {
 	return this;
 };
 
-var Lang = $.Lang,
-	A = $.Array,
-	NONE = "none",
-	SLICE = Array.prototype.slice,
-	rroot = /^(?:body|html)$/i,
-	PROTO;
-
 function classRE(name) {
-	return new RegExp("(^|\\s)" + name + "(\\s|$)");
+	return new RegExp('(^|\\s)' + name + '(\\s|$)');
 }
 /**
  * A collection of DOM Nodes
@@ -1960,13 +1991,12 @@ function NodeList(nodes, root) {
 			tmp[i] = nodes[i];
 		}
 		nodes = tmp;
-		//nodes = SLICE.call(nodes);
 	} else {
-		//$.error("Wrong argument for NodeList");
+		//$.error('Wrong argument for NodeList');
 	}
 	this._items = nodes;
 }
-$.extend(NodeList, $.ArrayList, {
+$.NodeList = $.extend(NodeList, $.ArrayList, {
 	
 	getDOMNodes: function () {
 		return this._items;
@@ -2032,7 +2062,7 @@ $.extend(NodeList, $.ArrayList, {
 	removeClass: function () {
 		var args = arguments;
 		return this.each(function (el) {
-			A.each(SLICE.call(args), function (name) {
+			$Array.forEach(SLICE.call(args), function (name) {
 				el.className = Lang.trim(el.className.replace(classRE(name), ' '));
 			});
 		});
@@ -2046,7 +2076,7 @@ $.extend(NodeList, $.ArrayList, {
 	addClass: function () {
 		var args = arguments;
 		return this.each(function (el) {
-			A.each(SLICE.call(args), function (name) {
+			$Array.forEach(SLICE.call(args), function (name) {
 				if (!classRE(name).test(el.className)) {
 					el.className += (el.className ? ' ' : '') + name;
 				}
@@ -2084,31 +2114,27 @@ $.extend(NodeList, $.ArrayList, {
 	 * <ul>
 	 * <li><strong>top</strong>: top position in px</li>
 	 * <li><strong>left</strong>: left position in px</li>
-	 * <li><strong>width</strong>: width in px</li>
-	 * <li><strong>height</strong>: height in px</li>
 	 * </ul>
-	 * @method offset
-	 * @return {Hash}
+	 * @method position
+	 * @return {Object}
 	 */
-	offset: function (left, top) {
+	position: function (left, top) {
 		if (Lang.isNumber(left) || Lang.isNumber(top)) {
 			return this.each(function (node) {
 				node = $(node);
 				var parentOffset = node.offsetParent().offset();
 				if (Lang.isNumber(left)) {
-					node.css('left', left - parentOffset.left + 'px');
+					node.css('left', left - parentOffset.left);
 				}
 				if (Lang.isNumber(top)) {
-					node.css('top', top - parentOffset.top + 'px');
+					node.css('top', top - parentOffset.top);
 				}
 			});
 		} else {
 			var node = this.getDOMNode();
 			var offset = {
 				left: 0,
-				top: 0,
-				width: node.offsetWidth,
-				height: node.offsetHeight
+				top: 0
 			};
 			var doc = node.ownerDocument;
 			try {
@@ -2131,6 +2157,28 @@ $.extend(NodeList, $.ArrayList, {
 			return offset;
 		}
 	},
+	offset: function () {
+		return $.mix(this.position(), this.size());
+	},
+	size: function (width, height) {
+		var node = this.getDOMNode();
+		if (Lang.isNumber(width)) {
+			width += 'px';
+		}
+		if (Lang.isNumber(height)) {
+			height += 'px';
+		}
+		if (Lang.isString(width) || Lang.isString(height)) {
+			this.css('width', width);
+			this.css('height', height);
+		} else {
+			return {
+				width: node.offsetWidth,
+				height: node.offsetHeight
+			};
+		}
+		return this;
+	},
 	/**
 	 * Returns a new NodeList with all the offset parents of this one
 	 * @method offsetParent
@@ -2139,7 +2187,7 @@ $.extend(NodeList, $.ArrayList, {
 	offsetParent: function () {
 		return this.map(function(node) {
 			var offsetParent = node.offsetParent || document.body;
-			while (offsetParent && (!rroot.test(offsetParent.nodeName) && $(offsetParent).css("position") === "static")) {
+			while (offsetParent && (!rroot.test(offsetParent.nodeName) && $(offsetParent).css('position') === 'static')) {
 				offsetParent = offsetParent.offsetParent;
 			}
 			return offsetParent;
@@ -2280,7 +2328,7 @@ $.extend(NodeList, $.ArrayList, {
 	/**
 	 * Gets or sets tag attributes to the nodes in the collection
 	 * @method attr
-	 * @param {String|Hash} key
+	 * @param {String|Object} key
 	 * @param {String} [value]
 	 * @chainable
 	 */
@@ -2295,7 +2343,7 @@ $.extend(NodeList, $.ArrayList, {
 			return this.getDOMNode()[key];
 		}
 		return this.each(function (node) {
-			Hash.each(attrs, function (name, val) {
+			$Object.each(attrs, function (name, val) {
 				node[name] = val;
 			});
 		});
@@ -2303,7 +2351,7 @@ $.extend(NodeList, $.ArrayList, {
 	/**
 	 * Gets or sets CSS styles
 	 * @method css
-	 * @param {String|Hash} key
+	 * @param {String|Object} key
 	 * @param {String} [value]
 	 * @chainable
 	 */
@@ -2317,14 +2365,16 @@ $.extend(NodeList, $.ArrayList, {
 			return $(this.getDOMNode()).currentStyle()[key];
 		}
 		return this.each(function (node) {
-			Hash.each(css, function (prop, value) {
-				if (prop == "opacity" && $.UA.ie) {
-					node.style.filter = "alpha(opacity=" + Math.ceil(value * 100) + ")";
+			$Object.each(css, function (prop, value) {
+				if (prop == 'opacity' && $.UA.ie) {
+					node.style.filter = 'alpha(opacity=' + Math.ceil(value * 100) + ')';
 				} else {
-					if (Lang.isNumber(value) && prop != "zIndex" && prop != "zoom" && prop != "opacity") {
-						value += "px";
+					if (Lang.isNumber(value)) {
+						value += (prop != 'zIndex' && prop != 'zoom' && prop != 'opacity') ? '' : 'px';
 					}
-					node.style[prop] = value;
+					if (Lang.isString(value)) {
+						node.style[prop] = value;
+					}
 				}
 			});
 		});
@@ -2370,7 +2420,7 @@ $.extend(NodeList, $.ArrayList, {
 				result.push.apply(result, newChildren);
 			}
 		});
-		return new (this.constructor)(result);
+		return new this.constructor(result);
 	},
 	/**
 	 * Adds an event listener to all the nods in the list
@@ -2383,7 +2433,7 @@ $.extend(NodeList, $.ArrayList, {
 	on: function (type, callback, thisp) {
 		var handlers = [];
 		if (Lang.isObject(type, true)) {
-			$.Hash.each(type, function (evType, fn) {
+			$Object.each(type, function (evType, fn) {
 				this.each(function (node) {
 					handlers.push(addEvent(node, evType, fn, thisp));
 				});
@@ -2409,6 +2459,18 @@ $.extend(NodeList, $.ArrayList, {
 			} else {
 				EventCache.clear(node, type);
 			}
+		});
+	},
+	/**
+	 * Fires an event as if it was created from a user interaction
+	 * @method trigger
+	 * @param {String} type
+	 * @param {Object} data optional. Extra data to pass in the event
+	 * @chainable
+	 */
+	trigger: function (type, data) {
+		return this.each(function (node) {
+			triggerEvent(node, type, data);
 		});
 	},
 	/**
@@ -2449,7 +2511,7 @@ $.extend(NodeList, $.ArrayList, {
 	 */
 	contentDoc: function () {
 		return this.map(function (node) {
-			if (node.nodeName == "IFRAME") {
+			if (node.nodeName == 'IFRAME') {
 				return node.contentDocument || node.contentWindow.document || node.document;
 			}
 		});
@@ -2483,12 +2545,12 @@ $.extend(NodeList, $.ArrayList, {
 		this.each(function (node) {
 			result.push(node);
 		});
-		A.each(arguments, function (nodelist) {
+		$Array.forEach(SLICE.call(arguments), function (nodelist) {
 			$(nodelist).each(function (node) {
 				result.push(node);
 			});
 		});
-		return new (this.constructor)(result);
+		return new this.constructor(result);
 	},
 	/**
 	 * Sets or returns the value of the node. Useful mostly for form elements
@@ -2496,7 +2558,7 @@ $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	value: function (val) {
-		return this.attr("value", val);
+		return this.attr('value', val);
 	}
 });
 
@@ -2512,7 +2574,7 @@ PROTO = NodeList.prototype;
 	 * @method focus
 	 * @chainable
 	 */
-A.each(['blur', 'focus'], function (method) {
+$Array.forEach(['blur', 'focus'], function (method) {
 	PROTO[method] = function () {
 		return this.each(function (node) {
 			try {
@@ -2532,7 +2594,7 @@ A.each(['blur', 'focus'], function (method) {
 	 * @method previous
 	 * @return {NodeList}
 	 */
-A.each(['next', 'previous'], function (method) {
+$Array.forEach(['next', 'previous'], function (method) {
 	PROTO[method] = function () {
 		return this.map(function (node) {
 			do {
@@ -2557,14 +2619,14 @@ A.each(['next', 'previous'], function (method) {
 	 * @param {String|Number} [height]
 	 * @chainable
 	 */
-A.each(['Width', 'Height'], function (size) {
+$Array.forEach(['Width', 'Height'], function (size) {
 	var method = size.toLowerCase();
 	PROTO[method] = function (value) {
 		if (Lang.isValue(value)) {
 			if (Lang.isNumber(value) && value < 0) {
 				value = 0;
 			}
-			value = Lang.isString(value) ? value : value + "px";
+			value = Lang.isString(value) ? value : value + 'px';
 			return this.each(function (node) {
 				node.style[method] = value;
 			});
@@ -2585,7 +2647,7 @@ A.each(['Width', 'Height'], function (size) {
 	 * @param {Number} left
 	 * @chainable
 	 */
-A.each(['Left', 'Top'], function (direction) {
+$Array.forEach(['Left', 'Top'], function (direction) {
 	PROTO['offset' + direction] = function (val) {
 		if (Lang.isValue(val)) {
 			return direction == 'Left' ? this.offset(val) : this.offset(null, val);
@@ -2595,18 +2657,9 @@ A.each(['Left', 'Top'], function (direction) {
 	};
 });
 
-$.add({
-
-	NodeList: NodeList,
-	
-	DOM: DOM,
-	
-	pxToFloat: function (px) {
-		return Lang.isNumber(parseFloat(px)) ? parseFloat(px) :
-			   Lang.isString(px) ? parseFloat(px.substr(0, px.length - 2)) : px;
-	}
-});
-
-addEvent($.win, "unload", EventCache.flush);
+$.pxToFloat = function (px) {
+	return Lang.isNumber(parseFloat(px)) ? parseFloat(px) :
+		   Lang.isString(px) ? parseFloat(px.substr(0, px.length - 2)) : px;
+};
 			
 });

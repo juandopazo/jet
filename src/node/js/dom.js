@@ -8,7 +8,7 @@ var CURRENT_STYLE = "currentStyle";
  * @class DOM
  * @static
  */
-var DOM = {
+var DOM = $.DOM = {
 	/**
 	 * Returns the window object to which the current document belongs
 	 * @method getWindowFromDocument

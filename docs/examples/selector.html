@@ -22,7 +22,7 @@
 				</li>
 			</ul>
 			<div class="jet-tabview-panel-container">
-				<div class="jet-tab-panel jet-tab-panel-selected">Que tal?</div>
+				<div class="jet-tab-panel jet-tab-panel-selected"><a href="#">Que tal?</a></div>
 				<div class="jet-tab-panel">Ta luego</div>
 			</div>
 		</div>
@@ -30,14 +30,13 @@
 	<script src="../../build/jet.js"></script>
 	<script>
 		jet({
-			base: '../../build',
-			loadCss: false
-		}).use('tabview', function ($) {
+			base: '../../build/',
+			combine: false
+		}).use('selector', function ($) {
 			
-			var widget = new $.TabView({
-				boundingBox: $('#test').first()
-			});
-			widget.render();
+			var nodelist = $('div a').getDOMNodes();
+			
+			console.log(nodelist);
 			
 		});
 	</script>

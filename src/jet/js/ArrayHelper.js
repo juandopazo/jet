@@ -4,7 +4,7 @@
  * @class Array
  * @static
  */
-_Array = {
+var _Array = {
 	/**
 	 * Iterates through an array
 	 * @method each

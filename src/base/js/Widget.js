@@ -8,15 +8,11 @@ var BOUNDING_BOX = 'boundingBox',
 	VISIBILITY = 'visibility',
 	DESTROY = 'destroy';
 
-if (!jet.Widget) {
-	jet.Widget = {};
+var WidgetNS = jet.namespace('Widget');
+if (!Lang.isNumber(WidgetNS._uid)) {
+	WidgetNS._uid = -1;
 }
-if (!Lang.isNumber(jet.Widget._uid)) {
-	jet.Widget._uid = -1;
-}
-if (!jet.Widget._instances) {
-	jet.Widget._instances = {};
-}
+jet.namespace('Widget._instances');
 
 /**
  * Base class for all widgets. 

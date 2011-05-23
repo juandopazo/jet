@@ -2,8 +2,7 @@ var Lang = $.Lang,
 	$_Array = $.Array,
 	AP = Array.prototype,
 	SLICE = AP.slice,
-	PUSH = AP.push,
-	PROMISE_PROTO;
+	PUSH = AP.push;
 
 /*
  * Turns a value into an array with the value as its first element, or takes an array and spreads
@@ -38,13 +37,15 @@ $_Array.spread = function (args) {
  * @param {Function|Array} doneCallbacks A function or array of functions to run when the promise is resolved
  * @param {Function|Array} failCallbacks A function or array of functions to run when the promise is rejected
  */
-function Promise(doneCallbacks, failCallbacks) {
-	this._done = $_Array.spread(doneCallbacks);
-	this._fail = $_Array.spread(failCallbacks);
-	this._resolved = false;
-	this._rejected = false;
+function Promise(config) {
+	config = config || {};
+	this._config = config;
+	this._done = [];
+	this._fail = [];
+	this.resolved = false;
+	this.rejected = false;
 }
-PROMISE_PROTO = Promise.prototype = {
+Promise.prototype = {
 	
 	/**
 	 * @method then
@@ -54,8 +55,20 @@ PROMISE_PROTO = Promise.prototype = {
 	 * @chainable
 	 */
 	then: function (doneCallbacks, failCallbacks) {
-		PUSH.apply(this._done, $_Array.spread(doneCallbacks));
-		PUSH.apply(this._fail, $_Array.spread(failCallbacks));
+		doneCallbacks = $_Array.spread(doneCallbacks);
+		failCallbacks = $_Array.spread(failCallbacks);
+		var resolved = this.resolved,
+			rejected = this.rejected;
+		if (resolved) {
+			this._notify(doneCallbacks, this._args || [], this);
+		} else if (!rejected){
+			PUSH.apply(this._done, doneCallbacks);
+		}
+		if (rejected) {
+			this._notify(failCallbacks, this._args || [], this);
+		} else if (!resolved){
+			PUSH.apply(this._fail, failCallbacks);
+		}
 		return this;
 	},
 	
@@ -117,7 +130,9 @@ PROMISE_PROTO = Promise.prototype = {
 	 * @chainable
 	 */
 	resolveWith: function (context, args) {
-		return this.notify(true, args, context);
+		this.resolved = true;
+		this._args = args;
+		return this._notify(this._done, args, context);
 	},
 	
 	/**
@@ -128,7 +143,9 @@ PROMISE_PROTO = Promise.prototype = {
 	 * @chainable
 	 */
 	rejectWith: function (context, args) {
-		return this.notify(false, args, context);
+		this.rejected = true;
+		this._args = args;
+		return this.notify(this._fail, args, context);
 	},
 	
 	/**
@@ -139,25 +156,19 @@ PROMISE_PROTO = Promise.prototype = {
 	 * @param {Object} thisp Context to apply to the callbacks
 	 * @chainable
 	 */
-	notify: function (success, args, thisp) {
-		if (!this._resolved && !this._rejected) {
-			var callbacks = success ? this._done : this._fail,
-				length = callbacks.length,
-				i = 0;
-			this[success ? '_resolved' : '_rejected'] = true;
-			for (; i < length; i++) {
-				callbacks[i].apply(thisp, args);
-			}
+	_notify: function (callbacks, args, thisp) {
+		var length = callbacks.length,
+			i = 0;
+		for (; i < length; i++) {
+			callbacks[i].apply(thisp, args);
 		}
 		return this;
 	},
 	
-	isResolved: function () {
-		return this._resolved;
-	},
-	
-	isRejected: function () {
-		return this._rejected;
+	defer: function (callback, context) {
+		var promise = new this.constructor(this._config, true);
+		this.then($.bind(callback, context || this, promise));
+		return promise;
 	}
 	
 };

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Transition test</title>
+	<style>
+		#test {
+			
+		}
+	</style>
+</head>
+<body>
+	<div id="test"></div>
+	<script src="../../build/jet.js"></script>
+	<script>
+	jet({
+		base: '../../build/',
+		combine: false
+	}).use('transition', function ($) {
+		
+		var transition = new $.Transition();
+		console.log(transition);
+		
+	});
+	</script>
+</body>
+</html>
