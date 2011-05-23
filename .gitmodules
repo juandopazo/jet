@@ -1,3 +1,6 @@
 [submodule "src/sizzle/js/sizzle"]
 	path = src/sizzle/js/sizzle
 	url = git://github.com/jquery/sizzle.git
+[submodule "src/selector/js/qwery"]
+	path = src/selector/js/qwery
+	url = git://github.com/ded/qwery.git
