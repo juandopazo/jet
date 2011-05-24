@@ -1,3 +1,4 @@
+
 /**
  * Deferred is a class designed to serve as extension for other classes, allowing them to
  * declare methods that run asynchronously and keep track of its promise
@@ -31,7 +32,6 @@ Deferred.prototype = {
 	 * @param {Function|Array} doneCallbacks Takes any number of functions or arrays of functions to run when the promise is resolved
 	 * @chainable 
 	 */
-	done: PROMISE_PROTO.done,
 
 	/**
 	 * @method fail
@@ -39,7 +39,6 @@ Deferred.prototype = {
 	 * @param {Function|Array} failCallbacks Takes any number of functions or arrays of functions to run when the promise is rejected
 	 * @chainable 
 	 */
-	fail: PROMISE_PROTO.fail,
 	
 	/**
 	 * @method always
@@ -47,20 +46,20 @@ Deferred.prototype = {
 	 * @param {Function|Array} callbacks Takes any number of functions or arrays of functions to run when the promise is rejected or resolved
 	 * @chainable 
 	 */
-	always: PROMISE_PROTO.always,
 	
-	promise: function (fn) {
-		var promise = new Promise();
-		var self = this;
-		var switchPromise = $.bind(function () {
-			this._currPromise = promise;
-		}, this);
+	defer: function (fn) {
+		var promise = new Promise(),
+		
+			switchPromise = Y.bind(function () {
+				this._cpromise = promise;
+			}, this);
+			
 		if (fn) {
 			if (this._promise) {
-				this._promise.then([$.bind(fn, promise, this), switchPromise], switchPromise);
+				this._promise.then([Y.bind(fn, this, promise), switchPromise], switchPromise);
 			} else {
-				fn.call(promise, promise);
-				this._currPromise = promise;
+				fn.call(this, promise);
+				this._cpromise = promise;
 			}
 		}
 		this._promise = promise;
@@ -95,9 +94,9 @@ Deferred.prototype = {
 	 * @chainable
 	 */
 	resolveWith: function (context, args) {
-		var promise = this._currPromise;
+		var promise = this._cpromise;
 		if (promise) {
-			promise.resolve.apply(context, args);
+			promise.resolveWith(context, args);
 		}
 		return this;
 	},
@@ -110,14 +109,14 @@ Deferred.prototype = {
 	 * @chainable
 	 */
 	rejectWith: function (context, args) {
-		var promise = this._currPromise;
+		var promise = this._cpromise;
 		if (promise) {
-			promise.reject.apply(context, args);
+			promise.rejectWith(context, args);
 		}
 		return this;
 	},
 	/**
-	 * @method notify
+	 * @method _notify
 	 * @description Notifies the success or failure callbacks
 	 * @param {Boolean} success Whether to notify the success or failure callbacks
 	 * @param {Array} args A list of arguments to pass to the callbacks
@@ -125,16 +124,19 @@ Deferred.prototype = {
 	 * @chainable
 	 * @private
 	 */
-	_notify: PROMISE_PROTO.notify,
 	
 	isResolved: function () {
-		return this._currPromise.isResolved();
+		return this._cpromise.resolved;
 	},
 	
 	isRejected: function () {
-		return this._currPromise.isRejected();
+		return this._cpromise.rejected;
 	}
 	
 };
+
+$Array.each(['done', 'fail', 'always', '_notify'], function (method) {
+	Deferred.prototype[method] = Promise.prototype[method];
+});
 
 $.Deferred = Deferred;

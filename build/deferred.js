@@ -10,7 +10,7 @@
 jet.add('deferred', function ($) {
 
 			var Lang = $.Lang,
-	$_Array = $.Array,
+	$Array = $.Array,
 	AP = Array.prototype,
 	SLICE = AP.slice,
 	PUSH = AP.push;
@@ -22,7 +22,7 @@ jet.add('deferred', function ($) {
  * @return Array
  * @private
  */
-$_Array.spread = function (args) {
+$Array.spread = function (args) {
 	args = !args ? [] :
 			args.length ? SLICE.call(args) :
 			[args];
@@ -66,8 +66,8 @@ Promise.prototype = {
 	 * @chainable
 	 */
 	then: function (doneCallbacks, failCallbacks) {
-		doneCallbacks = $_Array.spread(doneCallbacks);
-		failCallbacks = $_Array.spread(failCallbacks);
+		doneCallbacks = $Array.spread(doneCallbacks);
+		failCallbacks = $Array.spread(failCallbacks);
 		var resolved = this.resolved,
 			rejected = this.rejected;
 		if (resolved) {
