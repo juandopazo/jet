@@ -16,7 +16,7 @@ var GlobalConfig = {
 			modules: {
 				log: {},
 				oop: {},
-				node: ['oop'],
+				node: {},
 				xsl: ['node'],
 				swf: {},
 				json: ['node'],
@@ -24,7 +24,7 @@ var GlobalConfig = {
 				sizzle: ['node'],
 				base: ['node'],
 				io: ['json', 'deferred'],
-				deferred: ['oop'],
+				deferred: {},
 				'io-xdr': ['node', 'swf', IO],
 				history: ['base', 'json'],
 				'resize-styles': {

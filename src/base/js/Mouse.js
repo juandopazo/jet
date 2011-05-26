@@ -7,7 +7,7 @@
  * @extends Utility
  * @param {Object} config Object literal specifying configuration properties
  */
-var Mouse = $.Mouse = $.Base.create('mouse', $.Utility, [], {
+$.Mouse = $.Base.create('mouse', $.Utility, [], {
 	
 	ATTRS: {
 		/**
@@ -52,9 +52,9 @@ var Mouse = $.Mouse = $.Base.create('mouse', $.Utility, [], {
 }, {
 	
 	_buildShim: function () {
-		if (!Mouse.shim) {
+		if (!$.Mouse.shim) {
 			var pageSize = this.get('pageSize');
-			Mouse.shim = $('<iframe/>').attr({
+			$.Mouse.shim = $('<iframe/>').attr({
 				frameborder: '0',
 				src: 'javascript:;'
 			}).css({
@@ -68,7 +68,7 @@ var Mouse = $.Mouse = $.Base.create('mouse', $.Utility, [], {
 				zIndex: 20000000
 			}).appendTo($.config.doc.body).hide();
 		}
-		return Mouse.shim;
+		return $.Mouse.shim;
 	},
 	
 	_onTrackingChange: function (e) {
@@ -197,11 +197,11 @@ var Mouse = $.Mouse = $.Base.create('mouse', $.Utility, [], {
 		}
 	});
 	
-	$_Array.each(['on', 'once', 'fire'], function (eventMethod) {
+	$Array.each(['on', 'once', 'fire'], function (eventMethod) {
 		$[eventMethod] = $.bind($_event[eventMethod], $_event);
 	});
 	
-	$_Array.each(['load', 'unload'], function (name) {
+	$Array.each(['load', 'unload'], function (name) {
 		$(win).on(name, function () {
 			$_event.fire(name);
 		});

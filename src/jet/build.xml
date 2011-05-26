@@ -73,7 +73,7 @@
 				<fixcrlf eol="crlf"/>
 			</filterchain>
 			<filelist dir="${tmpdir}" files="${filename}"/>
-			<filelist dir="${builddir}" files="oop.js,node.js"/>
+			<filelist dir="${builddir}" files="node.js"/>
 		</concat>
 		<concat destfile="${builddir}/${ant.project.name}.min.js" append="yes">
 			<header trimleading="yes">/*
@@ -88,11 +88,11 @@
 				<fixcrlf eol="crlf"/>
 			</filterchain>
 			<filelist dir="${tmpdir}" files="${ant.project.name}.min.js"/>
-			<filelist dir="${builddir}" files="oop.min.js,node.min.js"/>
+			<filelist dir="${builddir}" files="node.min.js"/>
 		</concat>
 		<delete>
-			<filelist dir="${builddir}" files="oop.js,node.js"/>
-			<filelist dir="${builddir}" files="oop.min.js,node.min.js"/>
+			<filelist dir="${builddir}" files="node.js"/>
+			<filelist dir="${builddir}" files="node.min.js"/>
 		</delete>
 		<delete dir="${tmpdir}"/>
 	</target>

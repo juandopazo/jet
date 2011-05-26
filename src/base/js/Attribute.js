@@ -5,18 +5,26 @@
  * @extends EventTarget
  * @constructor
  */
-$.Attribute = Class.create('Attribute', $.EventTarget, {
+function Attribute(state) {
+	this._state = state || {};
+	this._attrs = {};
 	
-	initializer: function (state) {
-		this._state = state || {};
-		this._attrs = {};
-		
-		Class.walk(this, function (constructor) {
-			if (constructor.ATTRS) {
-				this.addAttrs(constructor.ATTRS);
-			}
-		});
-	},
+	var classes = [];
+	var constructor = this.constructor;
+	while (constructor) {
+		classes.unshift(constructor);
+		constructor = constructor.superclass && constructor.superclass.constructor;
+	}
+	
+	this._classes = classes;
+	
+	$Array.each(classes, function (constructor) {
+		if (constructor.ATTRS) {
+			this.addAttrs(constructor.ATTRS);
+		}
+	}, this);
+}
+$.extend(Attribute, EventTarget, {
 	
 	/**
 	 * Adds a configuration attribute, along with its options
@@ -152,3 +160,5 @@ $.Attribute = Class.create('Attribute', $.EventTarget, {
 		return result;
 	}
 });
+
+$.Attribute = Attribute;

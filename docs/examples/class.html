@@ -10,34 +10,29 @@
 	</style>
 </head>
 <body>
-	<script src="http://jet.nodester.com/jet?jet.js"></script>
+	<script src="http://localhost/jet/build/jet.js"></script>
 	<script>
-		jet(function ($) {
+		jet({
+			base: '../../build/',
+			combine: false
+		}).use(function ($) {
 			
-			var Class = $.Class;
+			function Super() {
+				
+			}
 			
-			var Person = Class.create('Person', null, {
-				
-				initializer: function (name) {
-					this.name = name;
-				},
-				
-				say: function (message) {
-					return this.name + ': ' + message;
+			function Test() {
+				var classes = [];
+				var constructor = this.constructor;
+				while (constructor) {
+					classes.unshift(constructor);
+					constructor = constructor.superclass && constructor.superclass.constructor;
 				}
-				
-			});
+				console.log(classes)
+			}
+			$.extend(Test, Super);
 			
-			var Pirate = Person.inherit('Pirate', {
-				
-				say: function () {
-					return Pirate.superclass.say.apply(this, arguments) + ', arr!'; 
-				}
-				
-			});
-			
-			var blackbeard = new Pirate('Blackbeard');
-			console.log(blackbeard.say('Ahoy matey'));
+			var test = new Test();
 			
 		});
 	</script>

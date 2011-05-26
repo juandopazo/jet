@@ -14,12 +14,10 @@ jet.add('base', function ($) {
 
 var Hash = $.Hash,
 	Lang = $.Lang,
-	$_Array = $.Array,
+	$Array = $.Array,
 	SLICE = Array.prototype.slice,
 	extend = $.extend;
 	
-var Class = $.Class;
-
 var TRACKING = "tracking",
 	MOUSEMOVE = "mousemove",
 	MOUSEUP = "mouseup",
@@ -36,8 +34,6 @@ var TRACKING = "tracking",
  * @constructor
  */
 function CustomEvent(type, target, onPrevented, args) {
-	
-	var self = this;
 	
 	/**
 	 * @property type
@@ -61,9 +57,9 @@ function CustomEvent(type, target, onPrevented, args) {
 	
 	Hash.each(args || {}, function (name, val) {
 		if (!Lang.isValue(self[name])) {
-			self[name] = val;
+			this[name] = val;
 		}
-	});
+	}, this);
 }
 
 /**
@@ -89,11 +85,12 @@ function CustomEvent(type, target, onPrevented, args) {
  * @class EventTarget
  * @constructor
  */
-$.EventTarget = Class.create('EventTarget', null, {
+function EventTarget() {
+	this._events = {};
+}
+EventTarget.prototype = {
 	
-	initializer: function () {
-		this._events = {};
-	},
+	constructor: EventTarget,
 	
 	_attach: function (eventType, handler) {
 		handler.o = handler.o || this;
@@ -223,25 +220,35 @@ $.EventTarget = Class.create('EventTarget', null, {
 		}
 		return returnValue;
 	}
-});
+};
+
+$.EventTarget = EventTarget;
 /**
  * Provides get() and set() methods, along with getters, setters and options for configuration attributres
  * @class Attribute
  * @extends EventTarget
  * @constructor
  */
-$.Attribute = Class.create('Attribute', $.EventTarget, {
+function Attribute(state) {
+	this._state = state || {};
+	this._attrs = {};
 	
-	initializer: function (state) {
-		this._state = state || {};
-		this._attrs = {};
-		
-		Class.walk(this, function (constructor) {
-			if (constructor.ATTRS) {
-				this.addAttrs(constructor.ATTRS);
-			}
-		});
-	},
+	var classes = [];
+	var constructor = this.constructor;
+	while (constructor) {
+		classes.unshift(constructor);
+		constructor = constructor.superclass && constructor.superclass.constructor;
+	}
+	
+	this._classes = classes;
+	
+	$Array.each(classes, function (constructor) {
+		if (constructor.ATTRS) {
+			this.addAttrs(constructor.ATTRS);
+		}
+	}, this);
+}
+$.extend(Attribute, EventTarget, {
 	
 	/**
 	 * Adds a configuration attribute, along with its options
@@ -377,6 +384,8 @@ $.Attribute = Class.create('Attribute', $.EventTarget, {
 		return result;
 	}
 });
+
+$.Attribute = Attribute;
 /**
  * Base class for all widgets and utilities.
  * @class Base
@@ -384,25 +393,24 @@ $.Attribute = Class.create('Attribute', $.EventTarget, {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.Base = Class.create('Base', $.Attribute, {
+function Base(config) {
+	config = config || {};
+	function attachEvent(name, fn) {
+		this.on(name, Lang.isString(fn) ? this[fn] : fn);
+	}
 	
-	initializer: function (config) {
-		config = config || {};
-		function attachEvent(name, fn) {
-			this.on(name, Lang.isString(fn) ? this[fn] : fn);
-		}
-		
-		Class.walk(this, function (constructor) {
-			$_Array.each(constructor.EXTS || [], function (extension) {
-				Hash.each(extension.EVENTS, attachEvent, this);
-			}, this);
-			Hash.each(constructor.EVENTS, attachEvent, this);
-		});
-		
-		Hash.each(config.on, attachEvent, this);
+	$Array.each(this._classes, function (constructor) {
+		$_Array.each(constructor.EXTS || [], function (extension) {
+			Hash.each(extension.EVENTS, attachEvent, this);
+		}, this);
+		Hash.each(constructor.EVENTS, attachEvent, this);
+	}, this);
+	
+	Hash.each(config.on, attachEvent, this);
 
-		this._handlers = [$($.config.win).on(UNLOAD, this.destroy, this)];
-	},
+	this._handlers = [$($.config.win).on(UNLOAD, this.destroy, this)];
+}
+$.extend(Base, Attribute, {
 	
 	/**
 	 * Starts the destruction lifecycle
@@ -414,11 +422,11 @@ $.Base = Class.create('Base', $.Attribute, {
 		 * @event destroy
 		 */
 		if (this.fire(DESTROY)) {
-			Class.walk(this, function (constructor) {
+			$Array.each(this._classes, function (constructor) {
 				if (constructor.prototype.hasOwnProperty('destructor')) {
 					constructor.prototype.destructor.call(this);
 				}
-			});
+			}, this);
 
 			$_Array.each(this._handlers, function (handler) {
 				if (handler.detach) {
@@ -449,6 +457,8 @@ $.Base = Class.create('Base', $.Attribute, {
 	}
 	
 });
+
+$.Base = Base;
 
 /**
  * Basic class for all utilities
@@ -732,7 +742,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 			var contentBox = this.get(CONTENT_BOX);
 			var srcNode = this.get(SRC_NODE);
 			var className, classPrefix = this.get(CLASS_PREFIX);
-			var classes = Class.getClasses(this);
+			var classes = $.clone(this._classes);
 			Hash.each($.Widget.DOM_EVENTS, function (name, activated) {
 				if (activated) {
 					self._handlers.push(boundingBox.on(name, self._domEventProxy, self));
@@ -749,7 +759,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 				classes.splice(0, 4);
 			}
 			
-			$_Array.each([WIDTH, HEIGHT], function (size) {
+			$Array.each([WIDTH, HEIGHT], function (size) {
 				var value = self.get(size);
 				if (Lang.isNumber(value)) {
 					boundingBox[size](value);
@@ -760,7 +770,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 				});
 			});
 			
-			$_Array.each(classes, function (construct) {
+			$Array.each(classes, function (construct) {
 				className = [classPrefix, construct.NAME].join(DASH);
 				boundingBox.addClass(className);
 				contentBox.addClass([className, CONTENT].join(DASH));
@@ -786,8 +796,8 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 			 */
 			if (this.fire('render')) {
 				
-				$_Array.each(['renderUI', 'bindUI', 'syncUI'], function (method) {
-					$_Array.each(classes, function (constructor) {
+				$Array.each(['renderUI', 'bindUI', 'syncUI'], function (method) {
+					$Array.each(classes, function (constructor) {
 						if (constructor.prototype.hasOwnProperty(method)) {
 							constructor.prototype[method].call(self, boundingBox, contentBox);
 						}
@@ -823,7 +833,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		var self = this;
 		var boundingBox = this.get(BOUNDING_BOX);
 		if (boundingBox.getDOMNode() && boundingBox.inDoc()) {
-			$_Array.each(this._classes, function (someClass) {
+			$Array.each(this._classes, function (someClass) {
 				Hash.each(someClass.HTML_PARSER || {}, function (attr, parser) {
 					var val = parser.call(self, boundingBox);
 					if (Lang.isValue(val) && (!(val instanceof $.NodeList) || val.getDOMNode())) {
@@ -888,7 +898,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
  * @extends Utility
  * @param {Object} config Object literal specifying configuration properties
  */
-var Mouse = $.Mouse = $.Base.create('mouse', $.Utility, [], {
+$.Mouse = $.Base.create('mouse', $.Utility, [], {
 	
 	ATTRS: {
 		/**
@@ -933,9 +943,9 @@ var Mouse = $.Mouse = $.Base.create('mouse', $.Utility, [], {
 }, {
 	
 	_buildShim: function () {
-		if (!Mouse.shim) {
+		if (!$.Mouse.shim) {
 			var pageSize = this.get('pageSize');
-			Mouse.shim = $('<iframe/>').attr({
+			$.Mouse.shim = $('<iframe/>').attr({
 				frameborder: '0',
 				src: 'javascript:;'
 			}).css({
@@ -949,7 +959,7 @@ var Mouse = $.Mouse = $.Base.create('mouse', $.Utility, [], {
 				zIndex: 20000000
 			}).appendTo($.config.doc.body).hide();
 		}
-		return Mouse.shim;
+		return $.Mouse.shim;
 	},
 	
 	_onTrackingChange: function (e) {
@@ -1078,11 +1088,11 @@ var Mouse = $.Mouse = $.Base.create('mouse', $.Utility, [], {
 		}
 	});
 	
-	$_Array.each(['on', 'once', 'fire'], function (eventMethod) {
+	$Array.each(['on', 'once', 'fire'], function (eventMethod) {
 		$[eventMethod] = $.bind($_event[eventMethod], $_event);
 	});
 	
-	$_Array.each(['load', 'unload'], function (name) {
+	$Array.each(['load', 'unload'], function (name) {
 		$(win).on(name, function () {
 			$_event.fire(name);
 		});

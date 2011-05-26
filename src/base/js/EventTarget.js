@@ -3,12 +3,10 @@
 
 var Hash = $.Hash,
 	Lang = $.Lang,
-	$_Array = $.Array,
+	$Array = $.Array,
 	SLICE = Array.prototype.slice,
 	extend = $.extend;
 	
-var Class = $.Class;
-
 var TRACKING = "tracking",
 	MOUSEMOVE = "mousemove",
 	MOUSEUP = "mouseup",
@@ -25,8 +23,6 @@ var TRACKING = "tracking",
  * @constructor
  */
 function CustomEvent(type, target, onPrevented, args) {
-	
-	var self = this;
 	
 	/**
 	 * @property type
@@ -50,9 +46,9 @@ function CustomEvent(type, target, onPrevented, args) {
 	
 	Hash.each(args || {}, function (name, val) {
 		if (!Lang.isValue(self[name])) {
-			self[name] = val;
+			this[name] = val;
 		}
-	});
+	}, this);
 }
 
 /**
@@ -78,11 +74,12 @@ function CustomEvent(type, target, onPrevented, args) {
  * @class EventTarget
  * @constructor
  */
-$.EventTarget = Class.create('EventTarget', null, {
+function EventTarget() {
+	this._events = {};
+}
+EventTarget.prototype = {
 	
-	initializer: function () {
-		this._events = {};
-	},
+	constructor: EventTarget,
 	
 	_attach: function (eventType, handler) {
 		handler.o = handler.o || this;
@@ -212,4 +209,6 @@ $.EventTarget = Class.create('EventTarget', null, {
 		}
 		return returnValue;
 	}
-});
+};
+
+$.EventTarget = EventTarget;

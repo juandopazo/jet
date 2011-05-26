@@ -6,25 +6,24 @@
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.Base = Class.create('Base', $.Attribute, {
+function Base(config) {
+	config = config || {};
+	function attachEvent(name, fn) {
+		this.on(name, Lang.isString(fn) ? this[fn] : fn);
+	}
 	
-	initializer: function (config) {
-		config = config || {};
-		function attachEvent(name, fn) {
-			this.on(name, Lang.isString(fn) ? this[fn] : fn);
-		}
-		
-		Class.walk(this, function (constructor) {
-			$_Array.each(constructor.EXTS || [], function (extension) {
-				Hash.each(extension.EVENTS, attachEvent, this);
-			}, this);
-			Hash.each(constructor.EVENTS, attachEvent, this);
-		});
-		
-		Hash.each(config.on, attachEvent, this);
+	$Array.each(this._classes, function (constructor) {
+		$_Array.each(constructor.EXTS || [], function (extension) {
+			Hash.each(extension.EVENTS, attachEvent, this);
+		}, this);
+		Hash.each(constructor.EVENTS, attachEvent, this);
+	}, this);
+	
+	Hash.each(config.on, attachEvent, this);
 
-		this._handlers = [$($.config.win).on(UNLOAD, this.destroy, this)];
-	},
+	this._handlers = [$($.config.win).on(UNLOAD, this.destroy, this)];
+}
+$.extend(Base, Attribute, {
 	
 	/**
 	 * Starts the destruction lifecycle
@@ -36,11 +35,11 @@ $.Base = Class.create('Base', $.Attribute, {
 		 * @event destroy
 		 */
 		if (this.fire(DESTROY)) {
-			Class.walk(this, function (constructor) {
+			$Array.each(this._classes, function (constructor) {
 				if (constructor.prototype.hasOwnProperty('destructor')) {
 					constructor.prototype.destructor.call(this);
 				}
-			});
+			}, this);
 
 			$_Array.each(this._handlers, function (handler) {
 				if (handler.detach) {
@@ -71,3 +70,5 @@ $.Base = Class.create('Base', $.Attribute, {
 	}
 	
 });
+
+$.Base = Base;

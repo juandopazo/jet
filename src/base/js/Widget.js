@@ -251,7 +251,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 			var contentBox = this.get(CONTENT_BOX);
 			var srcNode = this.get(SRC_NODE);
 			var className, classPrefix = this.get(CLASS_PREFIX);
-			var classes = Class.getClasses(this);
+			var classes = $.clone(this._classes);
 			Hash.each($.Widget.DOM_EVENTS, function (name, activated) {
 				if (activated) {
 					self._handlers.push(boundingBox.on(name, self._domEventProxy, self));
@@ -268,7 +268,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 				classes.splice(0, 4);
 			}
 			
-			$_Array.each([WIDTH, HEIGHT], function (size) {
+			$Array.each([WIDTH, HEIGHT], function (size) {
 				var value = self.get(size);
 				if (Lang.isNumber(value)) {
 					boundingBox[size](value);
@@ -279,7 +279,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 				});
 			});
 			
-			$_Array.each(classes, function (construct) {
+			$Array.each(classes, function (construct) {
 				className = [classPrefix, construct.NAME].join(DASH);
 				boundingBox.addClass(className);
 				contentBox.addClass([className, CONTENT].join(DASH));
@@ -305,8 +305,8 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 			 */
 			if (this.fire('render')) {
 				
-				$_Array.each(['renderUI', 'bindUI', 'syncUI'], function (method) {
-					$_Array.each(classes, function (constructor) {
+				$Array.each(['renderUI', 'bindUI', 'syncUI'], function (method) {
+					$Array.each(classes, function (constructor) {
 						if (constructor.prototype.hasOwnProperty(method)) {
 							constructor.prototype[method].call(self, boundingBox, contentBox);
 						}
@@ -342,7 +342,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		var self = this;
 		var boundingBox = this.get(BOUNDING_BOX);
 		if (boundingBox.getDOMNode() && boundingBox.inDoc()) {
-			$_Array.each(this._classes, function (someClass) {
+			$Array.each(this._classes, function (someClass) {
 				Hash.each(someClass.HTML_PARSER || {}, function (attr, parser) {
 					var val = parser.call(self, boundingBox);
 					if (Lang.isValue(val) && (!(val instanceof $.NodeList) || val.getDOMNode())) {
