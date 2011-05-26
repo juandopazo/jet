@@ -9,7 +9,7 @@ var CSS = 'css',
 var GlobalConfig = {
 	base: location.protocol + '//github.com/juandopazo/jet/raw/master/build/',
 	combine: true,
-	root: location.protocol + '//jet.nodester.com/',
+	root: location.protocol + '//jet.no.de/',
 	modules: {},
 	groups: {
 		jet: {
