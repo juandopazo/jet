@@ -42,7 +42,7 @@ $.SimpleDialog = Base.create('dialog', $.Panel, [], {
 		buttonGroup.get(BOUNDING_BOX).css(VISIBILITY, 'inherit');
 	},
 	
-	initializer: function () {
+	bindUI: function () {
 		this.after('visibleChange', this._bgVisibleChange);
 	}
 	

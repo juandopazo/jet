@@ -58,7 +58,7 @@ function buildJet(config) {
 	 */
 	// @TODO: consider moving this to the Node module
 	var $ = function Jet(query, root) {
-		root = root || $.context;
+		root = root || $.config.doc;
 		root = root.ownerDocument || root;
 		if (Lang.isString(query)) {
 			query = $.find(query, root);
@@ -103,7 +103,7 @@ function buildJet(config) {
 		 * @param {HTMLElement|Document} root
 		 */
 		find: function (query, root) {
-			root = root || $.context;
+			root = root || $.config.doc;
 			var c = query.charAt(0), test, node = null;
 			if (c === '<' && query.charAt(query.length - 1) === '>') {
 				if (query.match(/</g).length === 1) {

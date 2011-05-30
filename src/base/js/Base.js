@@ -12,7 +12,7 @@ function Base(config) {
 	config = config || {};
 	
 	var constrct = this.constructor;
-	var classes = this._classes = [];
+	var classes = this._classes;
 	var i;
 
 	this._handlers = [$($.config.win).on(UNLOAD, this.destroy, this)];
@@ -20,14 +20,8 @@ function Base(config) {
 	function attachEvent(name, fn) {
 		this.on(name, Lang.isString(fn) ? this[fn] : fn);
 	}
-	while (constrct != Base) {
-		classes.unshift(constrct);
-		constrct = constrct.superclass.constructor;
-	}
+	
 	for (i = 0; i < classes.length; i++) {
-		if (classes[i].ATTRS) {
-			this.addAttrs(classes[i].ATTRS);
-		}
 		if (classes[i].EVENTS) {
 			Hash.each(classes[i].EVENTS, attachEvent, this);
 		}

@@ -6,13 +6,14 @@ var BOUNDING_BOX = 'boundingBox',
 	CLASS_PREFIX = 'classPrefix',
 	UNLOAD = 'unload',
 	VISIBILITY = 'visibility',
-	DESTROY = 'destroy';
-
-var WidgetNS = jet.namespace('Widget');
+	DESTROY = 'destroy',
+	
+	WidgetNS = jet.namespace('Widget'),
+	widgetInstances = jet.namespace('Widget._instances');
+	
 if (!Lang.isNumber(WidgetNS._uid)) {
 	WidgetNS._uid = -1;
 }
-jet.namespace('Widget._instances');
 
 /**
  * Base class for all widgets. 
@@ -166,8 +167,8 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		node = $(node).getDOMNode();
 		var de = node.ownerDocument.documentElement;
 		while (node && node != de) {
-			if (node.id && jet.Widget._instances[node.id]) {
-				return jet.Widget._instances[node.id];
+			if (node.id && widgetInstances[node.id]) {
+				return widgetInstances[node.id];
 			}
 			node = node.parentNode;
 		}
@@ -246,26 +247,28 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 	 */
 	render: function (target) {
 		if (!this.get('rendered')) {
-			var self = this;
-			var boundingBox = this.get(BOUNDING_BOX);
-			var contentBox = this.get(CONTENT_BOX);
-			var srcNode = this.get(SRC_NODE);
-			var className, classPrefix = this.get(CLASS_PREFIX);
-			var classes = $.clone(this._classes);
+			var self = this,
+				boundingBox = this.get(BOUNDING_BOX),
+				contentBox = this.get(CONTENT_BOX),
+				srcNode = this.get(SRC_NODE),
+				className, classPrefix = this.get(CLASS_PREFIX),
+				classes = this._classes;
+				
 			Hash.each($.Widget.DOM_EVENTS, function (name, activated) {
 				if (activated) {
 					self._handlers.push(boundingBox.on(name, self._domEventProxy, self));
 				}
 			});
+			
 			if (target) {
-				srcNode = target;
-				self.set(SRC_NODE, target);
+				srcNode = $(target);
+				self.set(SRC_NODE, srcNode);
 			}
 
 			if (this.constructor == $.Widget) {
 				classes = [$.Widget];
 			} else {
-				classes.splice(0, 4);
+				classes = classes.slice(2);
 			}
 			
 			$Array.each([WIDTH, HEIGHT], function (size) {
@@ -335,6 +338,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 	},
 	
 	destructor: function () {
+		delete widgetInstances[this.get('id')];
 		this.get(BOUNDING_BOX).remove(true);
 	},
 	
@@ -363,14 +367,11 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 	
 	_widgetIdChange: function (e) {
 		this.get('boundingBox').attr('id', e.newVal);
-		jet.Widget._instances[e.newVal] = this;
-		delete jet.Widget._instances[e.prevVal];
+		widgetInstances[e.newVal] = this;
+		delete widgetInstances[e.prevVal];
 	},
-	
 	initializer: function () {
-		this._handlers = [$($.config.win).on(UNLOAD, this.destroy, this)];
-		
-		this._uid = ++jet.Widget._uid;
+		this._uid = ++WidgetNS._uid;
 		
 		var id = this.get('id');
 		if (!id) {
@@ -379,7 +380,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		}
 		this.after('idChange', this._widgetIdChange);
 				
-		jet.Widget._instances[id] = this;
+		widgetInstances[id] = this;
 		
 		if (!this.get(BOUNDING_BOX)) {
 			this.set(BOUNDING_BOX, this.BOUNDING_TEMPLATE);

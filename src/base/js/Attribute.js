@@ -12,7 +12,7 @@ function Attribute(state) {
 	
 	var classes = [];
 	var constructor = this.constructor;
-	while (constructor) {
+	while (constructor !== Attribute) {
 		classes.unshift(constructor);
 		constructor = constructor.superclass && constructor.superclass.constructor;
 	}

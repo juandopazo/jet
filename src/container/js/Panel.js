@@ -6,10 +6,11 @@
  * @constructor
  */
 function PanelBase() {
-	this.on('render', this._pbRenderUI);
-	this.after('closeChange', this._toggleCloseButton);
+	this.set('closeButton', this.get('closeButton'));
+	this.set(UNDERLAY, this.get(UNDERLAY));
+	
+	this.after('closeChange', this._uiCloseChange);
 }
-
 PanelBase.ATTRS = {
 	/**
 	 * @attribute close
@@ -27,6 +28,7 @@ PanelBase.ATTRS = {
 	 * @readOnly
 	 */
 	underlay: {
+		value: '<div/>',
 		setter: $
 	},
 	/**
@@ -42,28 +44,14 @@ PanelBase.ATTRS = {
 		value: '<a/>',
 		setter: $
 	}
-		
+	
 };
 PanelBase.prototype = {
 	
 	CONTENT_TEMPLATE: '<div/>',
 	CLOSE_TEMPLATE: '<a/>',
 	
-	_pbRenderUI: function (e) {
-		var height = this.get(HEIGHT);
-		var contentBox = this.get(CONTENT_BOX);
-		var closeButton = this.get('closeButton').addClass("container-close");
-		var boundingBox = this.get(BOUNDING_BOX);
-		closeButton.on(CLICK, this._onCloseButton, this);
-		closeButton.appendTo(contentBox);
-		boundingBox.append(this.get(UNDERLAY));
-		if (this.get(SHADOW)) {
-			boundingBox.addClass(SHADOW);
-		}
-		this._handlers.push($($.config.doc).on('keyup', this._onContextKeyUp, this));
-	},
-	
-	_toggleCloseButton: function (e) {
+	_uiCloseChange: function (e) {
 		this.get('closeButton').toggle(e.newVal);
 	},
 	
@@ -78,8 +66,22 @@ PanelBase.prototype = {
 		if (e.keyCode == 27 && this.get("focused")) {
 			this._onCloseButton(e);
 		}
-	}
+	},
 	
+	renderUI: function (boundingBox, contentBox) {
+		this.get('closeButton').addClass("container-close").appendTo(contentBox);
+		boundingBox.append(this.get(UNDERLAY).addClass(UNDERLAY));
+		if (this.get(SHADOW)) {
+			boundingBox.addClass(SHADOW);
+		}
+	},
+	
+	bindUI: function () {
+		this._handlers.push(
+			$($.config.doc).on('keyup', this._onContextKeyUp, this),
+			this.get('closeButton').on(CLICK, this._onCloseButton, this)
+		);
+	}
 };
 
 /**
@@ -91,16 +93,7 @@ PanelBase.prototype = {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.Panel = Base.create('panel', $.Overlay, [PanelBase], {}, {
-	initializer: function () {
-		this.set('closeButton', this.get('closeButton'));
-		this.set(UNDERLAY, $(NEW_DIV).addClass(UNDERLAY));
-		
-		this.after('heightChange', function (e) {
-			this.get(CONTENT_BOX).height(e.newVal);
-		}, this);
-	}
-});
+$.Panel = Base.create('panel', $.Overlay, [PanelBase]);
 
 /**
  * An panel with static position and a close button
@@ -110,13 +103,4 @@ $.Panel = Base.create('panel', $.Overlay, [PanelBase], {}, {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.StaticPanel = Base.create('panel', $.Module, [PanelBase], {}, {
-	initializer: function () {
-		this.set('closeButton', this.get('closeButton'));
-		this.set(UNDERLAY, $(NEW_DIV).addClass(UNDERLAY));
-
-		this.after('heightChange', function (e) {
-			this.get(CONTENT_BOX).height(e.newVal);
-		}, this);
-	}
-});
+$.StaticPanel = Base.create('panel', $.Module, [PanelBase]);

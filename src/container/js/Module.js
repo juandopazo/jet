@@ -125,10 +125,6 @@ $.Module = Base.create('module', Widget, [], {
 		this.set(HEADER, this.get(HEADER));
 		this.set(BODY, this.get(BODY));
 		this.set(FOOTER, this.get(FOOTER));
-
-		A.each(['Header', 'Body', 'Footer'], function (section) {
-			this.after(section.toLowerCase() + 'ContentChange', this['_ui' + section + 'Change']);
-		}, this);
 	},
 	
 	_uiHeaderChange: function (e) {
@@ -142,12 +138,12 @@ $.Module = Base.create('module', Widget, [], {
 	},
 	
 	renderUI: function () {
-		var self = this;
 		var contentBox = this.get(CONTENT_BOX);
 		// append the header, body and footer to the bounding box if present
 		A.each([HEADER, BODY, FOOTER], function (name) {
-			var value = self.get(name + 'Content');
-			var node = self.get(name).addClass(name);
+			var value = this.get(name + 'Content'),
+				node = this.get(name).addClass(this.getClassName(name));
+				
 			if (Lang.isValue(value)) {
 				if (value.nodeType) {
 					value = $(value);
@@ -159,6 +155,12 @@ $.Module = Base.create('module', Widget, [], {
 				}
 				node.appendTo(contentBox);
 			}
-		});
+		}, this);
+	},
+	
+	bindUI: function () {
+		A.each(['Header', 'Body', 'Footer'], function (section) {
+			this.after(section.toLowerCase() + 'ContentChange', this['_ui' + section + 'Change']);
+		}, this);
 	}
 });

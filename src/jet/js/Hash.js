@@ -4,7 +4,7 @@ var mix = function (a, b, overwrite) {
 	b = b || {};
 	if (b.hasOwnProperty) {
 		for (var x in b) {
-			if (b.hasOwnProperty(x) && (!a[x] || overwrite)) {
+			if (b.hasOwnProperty(x) && (!a.hasOwnProperty(x) || overwrite)) {
 				a[x] = b[x];
 			}
 		}

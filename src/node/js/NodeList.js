@@ -18,6 +18,7 @@ function classRE(name) {
  * A collection of DOM Nodes
  * @class NodeList
  * @constructor
+ * @extends ArrayList
  * @param {Array|DOMCollection|DOMNode} nodes
  * @param {DOMNode|Document} root
  */
@@ -258,7 +259,7 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	append: function (appended) {
 		var node = this.getDOMNode();
 		$(appended).each(function (app) {
-			node.appendChild(app)
+			node.appendChild(app);
 		});
 		return this;
 	},

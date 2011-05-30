@@ -413,7 +413,7 @@ var mix = function (a, b, overwrite) {
 	b = b || {};
 	if (b.hasOwnProperty) {
 		for (var x in b) {
-			if (b.hasOwnProperty(x) && (!a[x] || overwrite)) {
+			if (b.hasOwnProperty(x) && (!a.hasOwnProperty(x) || overwrite)) {
 				a[x] = b[x];
 			}
 		}
@@ -885,7 +885,7 @@ function buildJet(config) {
 	 */
 	// @TODO: consider moving this to the Node module
 	var $ = function Jet(query, root) {
-		root = root || $.context;
+		root = root || $.config.doc;
 		root = root.ownerDocument || root;
 		if (Lang.isString(query)) {
 			query = $.find(query, root);
@@ -930,7 +930,7 @@ function buildJet(config) {
 		 * @param {HTMLElement|Document} root
 		 */
 		find: function (query, root) {
-			root = root || $.context;
+			root = root || $.config.doc;
 			var c = query.charAt(0), test, node = null;
 			if (c === '<' && query.charAt(query.length - 1) === '>') {
 				if (query.match(/</g).length === 1) {
@@ -1813,6 +1813,7 @@ function classRE(name) {
  * A collection of DOM Nodes
  * @class NodeList
  * @constructor
+ * @extends ArrayList
  * @param {Array|DOMCollection|DOMNode} nodes
  * @param {DOMNode|Document} root
  */
@@ -2053,7 +2054,7 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	append: function (appended) {
 		var node = this.getDOMNode();
 		$(appended).each(function (app) {
-			node.appendChild(app)
+			node.appendChild(app);
 		});
 		return this;
 	},
