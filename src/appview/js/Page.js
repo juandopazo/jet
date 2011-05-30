@@ -128,15 +128,16 @@
 		
 		renderUI: function (boundingBox) {
 			
-			var loadScreen = this.get('loadScreen').addClass(this.getClassName('loadscreen')).appendTo(boundingBox)
+			var loadScreen = this.get('loadScreen').addClass(this.getClassName('loadscreen')).appendTo(boundingBox);
 			
 			var back = this.get('back');
 			var forward = this.get('forward');
 			var nav = this.get('nav');
 			
-			this.loader.rendselfeen);
+			// @TODO check if this works
+			this.loader.render(loadScreen);
 			$('<span/>').html(this.get('loadingText')).appendTo(loadScreen);
-			this._uiToggleLoadscreen({newVal: this.get('loading') });
+			this._uiToggleLoadscreen({ newVal: this.get('loading') });
 			
 			if (back) {
 				back = new $.Button(back);
