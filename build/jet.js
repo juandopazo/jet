@@ -2010,9 +2010,9 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 		}
 	},
 	offset: function () {
-		return $.mix(this.position(), this.size());
+		return $.mix(this.position(), this.offsetSize());
 	},
-	size: function (width, height) {
+	offsetSize: function (width, height) {
 		var node = this.getDOMNode();
 		if (Lang.isNumber(width)) {
 			width += 'px';
@@ -2030,6 +2030,12 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 			};
 		}
 		return this;
+	},
+	width: function (val) {
+		return this.offsetSize(val);
+	},
+	height: function (val) {
+		return this.offsetSize(null, val);
 	},
 	/**
 	 * Returns a new NodeList with all the offset parents of this one

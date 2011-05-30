@@ -277,7 +277,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 					boundingBox[size](value);
 				}
 				self.after(size + 'Change', function (e) {
-					newVal = Lang.isNumber(e.newVal) ? e.newVal : '';
+					var newVal = Lang.isNumber(e.newVal) ? e.newVal : '';
 					self.get(BOUNDING_BOX)[size](e.newVal);
 				});
 			});
