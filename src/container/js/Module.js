@@ -125,6 +125,10 @@ $.Module = Base.create('module', Widget, [], {
 		this.set(HEADER, this.get(HEADER));
 		this.set(BODY, this.get(BODY));
 		this.set(FOOTER, this.get(FOOTER));
+
+		A.each(['Header', 'Body', 'Footer'], function (section) {
+			this.after(section.toLowerCase() + 'ContentChange', this['_ui' + section + 'Change']);
+		}, this);
 	},
 	
 	_uiHeaderChange: function (e) {
@@ -156,11 +160,5 @@ $.Module = Base.create('module', Widget, [], {
 				node.appendTo(contentBox);
 			}
 		});
-	},
-	
-	bindUI: function () {
-		A.each(['Header', 'Body', 'Footer'], function (section) {
-			this.after(section.toLowerCase() + 'ContentChange', this['_ui' + section + 'Change']);
-		}, this);
 	}
 });

@@ -214,9 +214,8 @@ if (Function.prototype.bind) {
 	};
 }
 
-function namespace(name) {
+function namespace(o, name) {
 	var names = name.split('.'),
-		o = this,
 		i = 0;
 	for (; i < names.length; i++) {
 		if (!o[names[i]]) {

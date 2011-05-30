@@ -36,6 +36,10 @@ $.Tooltip = Base.create('tooltip', Widget, [$.WidgetAlignment], {
 		}
 	},
 	
+	initializer: function () {
+		this.after('show', this._uiShowTooltip);
+	},
+	
 	renderUI: function () {
 		this.set('align', {
 			node: this.get('srcNode'),
@@ -45,7 +49,6 @@ $.Tooltip = Base.create('tooltip', Widget, [$.WidgetAlignment], {
 	
 	bindUI: function () {
 		var srcNode = this.get('srcNode');
-		this.after('show', this._uiShowTooltip);
 		this._handlers.push(srcNode.on('mouseover', this.show, this), srcNode.on('mouseout', this.hide, this));
 	},
 	

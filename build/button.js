@@ -30,9 +30,7 @@ var BOUNDING_BOX = "boundingBox",
 	NAME = 'name',
 	PILL = 'pill';
 
-if (!jet.Button) {
-	jet.Button = {};
-}
+var ButtonNS = jet.namespace('Button');
 
 /**
  * A button widget
@@ -126,38 +124,38 @@ var Button = $.Button = Base.create('button', Widget, [WidgetChild], {
 	
 	initializer: function () {
 		this.set(LABEL_NODE, this.get(LABEL_NODE) || this.LABEL_TEMPLATE);
-		this._onDomFocus = $.bind(this.focus, this);
-		this._onDomBlur = $.bind(this.blur, this);
+
+		this.after('enabledChange', this._uiEnabledChange);
+		this.after('labelContentChange', this._uiLabelChange);
+		this.after('textChange', this._uiTextChange);
+		this.after('focusedChange', this._uiFocusedChange);
 	},
 	
-	renderUI: function (boundingBox) {
-		var id = this.getClassName('content', this._uid);
-		var labelNode = this.get(LABEL_NODE);
-		var label = this.get('labelContent');
-		this.get(CONTENT_BOX).attr(ID, id).html(this.get('text'));
+	renderUI: function (boundingBox, contentBox) {
+		var id = this.getClassName('content', this._uid),
+			labelNode = this.get(LABEL_NODE),
+			label = this.get('labelContent');
+		
+		contentBox.attr(ID, id).html(this.get('text'));
+		
 		labelNode.getDOMNode().setAttribute('for', id);
 		if (Lang.isString(label)) {
 			boundingBox.prepend(labelNode.html(label));
 		}
 	},
 	
-	bindUI: function () {
-		var contentBox = this.get('contentBox');
-		
-		this.after('enabledChange', this._uiEnabledChange);
-		this.after('labelContentChange', this._uiLabelChange);
-		this.after('textChange', this._uiTextChange);
-		this.after('focusedChange', this._uiFocusedChange);
-
-		this._handlers.push(contentBox.on(FOCUS, this._onDomFocus, this), contentBox.on(BLUR, this._onDomBlur, this));
+	bindUI: function (bb, contentBox) {
+		this._handlers.push(
+			contentBox.on(FOCUS, this.focus, this),
+			contentBox.on(BLUR, this.blur, this)
+		);
 	},
 	
-	syncUI: function () {
-		this.get('contentBox').getDOMNode().disabled = !this.get(ENABLED);
+	syncUI: function (bb, contentBox) {
+		contentBox.getDOMNode().disabled = !this.get(ENABLED);
 	},
 	
 	destructor: function () {
-		this.get(CONTENT_BOX).unbind(FOCUS, this._onDomFocus).unbind(BLUR, this._onDomBlur);
 		this.get(LABEL_NODE).remove();
 	}
 	
@@ -203,6 +201,10 @@ $.ButtonGroup = Base.create('button-group', Widget, [WidgetParent], {
 	
 	_uiPillChange: function (e) {
 		this.get(BOUNDING_BOX).toggleClass(this.getClassName(PILL), e.newVal);
+	},
+	
+	initializer: function () {
+		this.after('pillChange', this._uiPillChange);
 	},
 	
 	renderUI: function (boundingBox) {
@@ -251,8 +253,11 @@ $.ComboOption = Base.create('combo-option', Widget, [WidgetChild], {
 		this.get('boundingBox').removeClass(this.getClassName('hover'));
 	},
 	
-	bindUI: function (boundingBox, contentBox) {
+	initializer: function () {
 		this.after('textChange', this._uiTextChange);
+	},
+	
+	bindUI: function (boundingBox, contentBox) {
 		boundingBox.on('click', this.select, this);
 		
 		this.on('mouseover', this._uiOptHover);
@@ -379,8 +384,8 @@ $.ComboBox = Base.create('combobox', Widget, [WidgetParent], {
 		this._setMinWidth();
 	}
 });
-if (!Lang.isNumber(jet.Button.radio)) {
-	jet.Button.radio = 0;
+if (!Lang.isNumber(ButtonNS.radio)) {
+	ButtonNS.radio = 0;
 }
 
 /**
@@ -390,20 +395,23 @@ if (!Lang.isNumber(jet.Button.radio)) {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.RadioButton = Base.create('radio', Button, [], {
-	EVENTS: {
-		afterSelectionChange: function (e) {
-			this.get(CONTENT_BOX).getDOMNode().checked = !!e.newVal;
-		},
-		render: function () {
-			this.get(CONTENT_BOX).attr({
-				type: 'radio',
-				name: this.get(PARENT).get(NAME)
-			});
-		}
+$.RadioButton = Base.create('radio', Button, [], {}, {
+	CONTENT_TEMPLATE: '<input/>',
+	
+	_rbSelectionChange: function (e) {
+		this.get(CONTENT_BOX).getDOMNode().checked = !!e.newVal;
+	},
+	
+	initializer: function () {
+		this.after('selectionChange', this._rbSelectionChange);
+	},
+	
+	renderUI: function (bb, contentBox) {
+		contentBox.attr({
+			type: 'radio',
+			name: this.get(PARENT).get(NAME)
+		});
 	}
-}, {
-	CONTENT_TEMPLATE: '<input/>'
 });
 
 /**
@@ -440,11 +448,11 @@ $.RadioGroup = Base.create('radio-group', Widget, [WidgetParent], {
 	}
 }, {
 	initializer: function () {
-		this.set(NAME, this.getClassName(++jet.Button.radio));
+		this.set(NAME, this.getClassName(++ButtonNS.radio));
 	}
 });
-if (!Lang.isNumber(jet.Button.checkbox)) {
-	jet.Button.checkbox = 0;
+if (!Lang.isNumber(ButtonNS.checkbox)) {
+	ButtonNS.checkbox = 0;
 }
 
 /**
@@ -468,7 +476,7 @@ $.CheckBox = Base.create('checkbox', Button, [], {}, {
 		});
 	},
 	
-	bindUI: function () {
+	initializer: function () {
 		this.after('selectedChange', this._uiCheckBoxSelect);
 	}
 });
@@ -497,7 +505,7 @@ $.CheckBoxGroup = Base.create('checkbox-group', Widget, [WidgetParent], {
 	}
 }, {
 	initializer: function () {
-		this.set(NAME, this.getClassName(+jet.Button.checkbox));
+		this.set(NAME, this.getClassName(+ButtonNS.checkbox));
 	}
 });
 			

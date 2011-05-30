@@ -22,10 +22,8 @@ jet.add('deferred', function ($) {
  * @return Array
  * @private
  */
-$Array.spread = function (args) {
-	args = !args ? [] :
-			args.length ? SLICE.call(args) :
-			[args];
+$Array._spread = function (args) {
+	args = Lang.isArray(args) ? args : [args];
 	var i = 0;
 	while (i < args.length) {
 		if (Lang.isArray(args[i])) {
@@ -48,9 +46,7 @@ $Array.spread = function (args) {
  * @param {Function|Array} doneCallbacks A function or array of functions to run when the promise is resolved
  * @param {Function|Array} failCallbacks A function or array of functions to run when the promise is rejected
  */
-function Promise(config) {
-	config = config || {};
-	this._config = config;
+function Promise() {
 	this._done = [];
 	this._fail = [];
 	this.resolved = false;
@@ -66,18 +62,16 @@ Promise.prototype = {
 	 * @chainable
 	 */
 	then: function (doneCallbacks, failCallbacks) {
-		doneCallbacks = $Array.spread(doneCallbacks);
-		failCallbacks = $Array.spread(failCallbacks);
-		var resolved = this.resolved,
-			rejected = this.rejected;
-		if (resolved) {
+		doneCallbacks = $Array._spread(doneCallbacks);
+		failCallbacks = $Array._spread(failCallbacks);
+		if (this.resolved) {
 			this._notify(doneCallbacks, this._args || [], this);
-		} else if (!rejected){
+		} else if (!this.rejected){
 			PUSH.apply(this._done, doneCallbacks);
 		}
-		if (rejected) {
+		if (this.rejected) {
 			this._notify(failCallbacks, this._args || [], this);
-		} else if (!resolved){
+		} else if (!this.resolved){
 			PUSH.apply(this._fail, failCallbacks);
 		}
 		return this;
@@ -90,7 +84,7 @@ Promise.prototype = {
 	 * @chainable 
 	 */
 	done: function () {
-		return this.then(arguments);
+		return this.then(SLICE.call(arguments));
 	},
 	
 	/**
@@ -100,7 +94,7 @@ Promise.prototype = {
 	 * @chainable 
 	 */
 	fail: function () {
-		return this.then(null, arguments);
+		return this.then(null, SLICE.call(arguments));
 	},
 	
 	/**
@@ -110,7 +104,8 @@ Promise.prototype = {
 	 * @chainable 
 	 */
 	always: function () {
-		return this.then(arguments, arguments);
+		var args = SLICE.call(arguments);
+		return this.then(args, args);
 	},
 	
 	/**
@@ -120,7 +115,7 @@ Promise.prototype = {
 	 * @chainable
 	 */
 	resolve: function () {
-		return this.resolveWith(this, arguments);
+		return this.resolveWith(this, SLICE.call(arguments));
 	},
 	
 	/**
@@ -130,7 +125,7 @@ Promise.prototype = {
 	 * @chainable
 	 */
 	reject: function () {
-		return this.rejectWith(this, arguments);
+		return this.rejectWith(this, SLICE.call(arguments));
 	},
 	
 	/**
@@ -156,7 +151,7 @@ Promise.prototype = {
 	rejectWith: function (context, args) {
 		this.rejected = true;
 		this._args = args;
-		return this.notify(this._fail, args, context);
+		return this._notify(this._fail, args, context);
 	},
 	
 	/**
@@ -166,41 +161,221 @@ Promise.prototype = {
 	 * @param {Array} args A list of arguments to pass to the callbacks
 	 * @param {Object} thisp Context to apply to the callbacks
 	 * @chainable
+	 * @private
 	 */
 	_notify: function (callbacks, args, thisp) {
-		var length = callbacks.length,
-			i = 0;
-		for (; i < length; i++) {
+		for (var i = 0, length = callbacks.length; i < length; i++) {
 			callbacks[i].apply(thisp, args);
 		}
 		return this;
 	},
 	
 	defer: function (callback, context) {
-		var promise = new this.constructor(this._config, true);
+		var promise = new this.constructor();
 		this.then($.bind(callback, context || this, promise));
 		return promise;
 	}
 	
 };
+
+$.Promise = Promise;/**
+ * Deferred is a class designed to serve as extension for other classes, allowing them to
+ * declare methods that run asynchronously and keep track of its promise
+ * @class Deferred
+ * @constructor
+ */
+function Deferred() {
+	this._fail = [];
+}
+Deferred.prototype = {
+	
+	/**
+	 * @method then
+	 * @description Adds callbacks to the last promise made. If no promise was made it calls the success callbacks immediately
+	 * @param {Function|Array} doneCallbacks A function or array of functions to run when the promise is resolved
+	 * @param {Function|Array} failCallbacks A function or array of functions to run when the promise is rejected
+	 * @chainable
+	 */
+	then: function (doneCallbacks, failCallbacks) {
+		var next = this._next;
+		
+		if (doneCallbacks || failCallbacks) {
+			doneCallbacks = YArray._spread(doneCallbacks);
+			if (next) {
+				YArray.each(doneCallbacks, function (deferred, i) {
+					if (deferred.end) {
+						doneCallbacks[i] = function () {
+							deferred.end();
+						};
+					}
+				});
+				next.then(doneCallbacks, failCallbacks);
+			} else {
+				doneCallbacks = YArray.filter(doneCallbacks, function (callback) {
+					return !callback.end;
+				});
+				this._notify(doneCallbacks);
+			}
+		}
+		return this;
+	},
+	
+	_switchPromise: function (next) {
+		this._current = next;
+	},
+
+	defer: function (fn, context) {
+		context = context || this;
+		var promise = new Promise(),
+			switchPromise = $.bind(this._switchPromise, this, promise);
+		
+		if (fn) {
+			fn = $.bind(fn, context, promise);
+			
+			promise.fail($.bind(this._notifyFailure, this));
+			
+			if (this._next) {
+				this._next.then([fn, switchPromise], switchPromise);
+			} else {
+				this._starter = fn;
+				this._current = promise;
+			}
+		}
+		this._next = promise;
+		return this;
+	},
+	
+	end: function (doneCallbacks, failCallbacks) {
+		this.then(doneCallbacks);
+		this._fail.push.apply(this._fail, YArray._spread(failCallbacks));
+		if (this._starter) {
+			this._starter();
+		}
+		return this;
+	},
+	
+	/**
+	 * @method resolveWith
+	 * @description Resolves the promise and notifies all callbacks
+	 * @param {Object} context The object to use as context for the callbacks
+	 * @param {Array} args A list of arguments that will be passed to the success callbacks
+	 * @chainable
+	 */
+	resolveWith: function (context, args) {
+		var promise = this._current;
+		if (promise) {
+			promise.resolve.apply(context, args);
+		}
+		return this;
+	},
+	
+	/**
+	 * @method rejectWith
+	 * @description Rejects the promise and notifies all callbacks
+	 * @param {Object} context The object to use as context for the callbacks
+	 * @param {Array} args A list of arguments that will be passed to the failure callbacks
+	 * @chainable
+	 */
+	rejectWith: function (context, args) {
+		var promise = this._current;
+		if (promise) {
+			promise.reject.apply(context, args);
+		}
+		return this;
+	},
+
+	isResolved: function () {
+		return this._current.isResolved();
+	},
+	
+	isRejected: function () {
+		return this._current.isRejected();
+	},
+	
+	_notifyFailure: function () {
+		var args = arguments;
+		YArray.each(this._fail, function (callback) { callback.apply(this, args); }, this);
+		return this;
+	}
+	
+};
+
+	/**
+	 * @method done
+	 * @description Adds callbacks to the success list
+	 * @param {Function|Array} doneCallbacks Takes any number of functions or arrays of functions to run when the promise is resolved
+	 * @chainable 
+	 */
+
+	/**
+	 * @method fail
+	 * @description Adds callbacks to the failure list
+	 * @param {Function|Array} failCallbacks Takes any number of functions or arrays of functions to run when the promise is rejected
+	 * @chainable 
+	 */
+	
+	/**
+	 * @method always
+	 * @description Adds callbacks to both the failure and the success lists
+	 * @param {Function|Array} callbacks Takes any number of functions or arrays of functions to run when the promise is rejected or resolved
+	 * @chainable 
+	 */
+	
+	/**
+	 * @method resolve
+	 * @description Resolves the <strong>current</strong> promise and notifies all callbacks
+	 * @param {Object} o Any number of arguments that will be passed to the success callbacks
+	 * @chainable
+	 */
+
+	/**
+	 * @method reject
+	 * @description Rejects the <strong>current</strong> promise and notifies all callbacks
+	 * @param {Object} o Any number of arguments that will be passed to the failure callbacks
+	 * @chainable
+	 */
+	/**
+	 * @method _notify
+	 * @description Notifies the success or failure callbacks
+	 * @param {Boolean} success Whether to notify the success or failure callbacks
+	 * @param {Array} args A list of arguments to pass to the callbacks
+	 * @param {Object} thisp Context to apply to the callbacks
+	 * @chainable
+	 * @private
+	 */
+	
+$Array.each(['done', 'fail', 'always', 'resolve', 'reject', '_notify'], function (method) {
+	Deferred.prototype[method] = Promise.prototype[method];
+});
+
+$.Deferred = Deferred;
 /**
- * A method to wait for a series of asynchronous calls to be completed
- * @class jet~when
+ * Methods for working with asynchronous calls
+ * @class jet~deferred
  * @static
  */
+
+/**
+ * Returns a promise for a (possibly) asynchronous call.
+ * Calls a given function that receives the new promise as parameter and must call resolve()
+ * or reject() at a certain point
+ * @method defer
+ * @param {Function} fn A function that encloses an async call.
+ * @return Promise
+ */
 $.defer = function (fn, context) {
-	var promise = new Promise();
-	fn.call(context, promise);
-	return promise;
+	var deferred = new $.Deferred();
+	return deferred.defer(fn, context);
 };
+
 /**
  * @method when
  * @description Waits for a series of asynchronous calls to be completed
  * @param {Deferred|Array} deferred Any number of Deferred instances or arrays of instances
- * @return {Deferred} deferred A Deferred instance
+ * @return Promise
  */
 $.when = function () {
-	var deferreds = $_Array.spread(arguments),
+	var deferreds = $Array._spread(SLICE.call(arguments)),
 		args = [],
 		i = 0,
 		resolved = 0,
@@ -232,7 +407,7 @@ $.when = function () {
 		}
 
 		while (i < deferreds.length) {
-			deferreds[i].then(done, fail);
+			deferreds[i].end(done, fail);
 			i++;
 		}		
 	});

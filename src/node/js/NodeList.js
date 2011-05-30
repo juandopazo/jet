@@ -426,7 +426,7 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 					node.style.filter = 'alpha(opacity=' + Math.ceil(value * 100) + ')';
 				} else {
 					if (Lang.isNumber(value)) {
-						value += (prop != 'zIndex' && prop != 'zoom' && prop != 'opacity') ? '' : 'px';
+						value += (prop != 'zIndex' && prop != 'zoom' && prop != 'opacity') ? 'px' : '';
 					}
 					if (Lang.isString(value)) {
 						node.style[prop] = value;

@@ -7,21 +7,35 @@
  * @param {Object} config Object literal specifying widget configuration properties
  */
 function Base(config) {
+	Base.superclass.constructor.apply(this, arguments);
+	
 	config = config || {};
+	
+	var constrct = this.constructor;
+	var classes = this._classes = [];
+	var i;
+
+	this._handlers = [$($.config.win).on(UNLOAD, this.destroy, this)];
+
 	function attachEvent(name, fn) {
 		this.on(name, Lang.isString(fn) ? this[fn] : fn);
 	}
-	
-	$Array.each(this._classes, function (constructor) {
-		$_Array.each(constructor.EXTS || [], function (extension) {
-			Hash.each(extension.EVENTS, attachEvent, this);
-		}, this);
-		Hash.each(constructor.EVENTS, attachEvent, this);
-	}, this);
-	
-	Hash.each(config.on, attachEvent, this);
-
-	this._handlers = [$($.config.win).on(UNLOAD, this.destroy, this)];
+	while (constrct != Base) {
+		classes.unshift(constrct);
+		constrct = constrct.superclass.constructor;
+	}
+	for (i = 0; i < classes.length; i++) {
+		if (classes[i].ATTRS) {
+			this.addAttrs(classes[i].ATTRS);
+		}
+		if (classes[i].EVENTS) {
+			Hash.each(classes[i].EVENTS, attachEvent, this);
+		}
+		if (classes[i][PROTO].hasOwnProperty('initializer')) {
+			classes[i][PROTO].initializer.call(this, config);
+		}
+	}
+	Hash.each(this.get("on"), attachEvent, this);
 }
 $.extend(Base, Attribute, {
 	
@@ -41,7 +55,7 @@ $.extend(Base, Attribute, {
 				}
 			}, this);
 
-			$_Array.each(this._handlers, function (handler) {
+			$Array.each(this._handlers, function (handler) {
 				if (handler.detach) {
 					handler.detach();
 				}
@@ -66,7 +80,34 @@ $.extend(Base, Attribute, {
 	},
 	
 	create: function (name, superclass, extensions, attrs, proto) {
-		return Class.create(name, superclass || $.Base, proto, attrs).mixin(extensions || []);
+		extensions = extensions || [];
+		function BuiltClass() {
+			var args = arguments;
+			var self = this;
+			BuiltClass.superclass.constructor.apply(this, args);
+			$Array.each(BuiltClass.EXTS, function (extension) {
+				extension.apply(self, args);
+				Hash.each(extension.EVENTS || {}, function (type, fn) {
+					self.on(type, fn);
+				});
+			});
+		}
+		extend(BuiltClass, superclass || Base, proto, attrs || {});
+		$.mix(BuiltClass, {
+			NAME: name,
+			EXTS: extensions
+		}, true);
+		$Array.each(extensions, function (extension) {
+			$.mix(BuiltClass[PROTO], extension[PROTO]);
+			Hash.each(extension, function (prop, val) {
+				if (!BuiltClass[prop]) {
+					BuiltClass[prop] = val;
+				} else if (Lang.isObject(BuiltClass[prop]) && Lang.isObject(val)) {
+					$.mix(BuiltClass[prop], val);
+				}
+			});
+		});
+		return BuiltClass;
 	}
 	
 });

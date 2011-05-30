@@ -11,10 +11,8 @@ var Lang = $.Lang,
  * @return Array
  * @private
  */
-$Array.spread = function (args) {
-	args = !args ? [] :
-			args.length ? SLICE.call(args) :
-			[args];
+$Array._spread = function (args) {
+	args = Lang.isArray(args) ? args : [args];
 	var i = 0;
 	while (i < args.length) {
 		if (Lang.isArray(args[i])) {
@@ -37,9 +35,7 @@ $Array.spread = function (args) {
  * @param {Function|Array} doneCallbacks A function or array of functions to run when the promise is resolved
  * @param {Function|Array} failCallbacks A function or array of functions to run when the promise is rejected
  */
-function Promise(config) {
-	config = config || {};
-	this._config = config;
+function Promise() {
 	this._done = [];
 	this._fail = [];
 	this.resolved = false;
@@ -55,18 +51,16 @@ Promise.prototype = {
 	 * @chainable
 	 */
 	then: function (doneCallbacks, failCallbacks) {
-		doneCallbacks = $Array.spread(doneCallbacks);
-		failCallbacks = $Array.spread(failCallbacks);
-		var resolved = this.resolved,
-			rejected = this.rejected;
-		if (resolved) {
+		doneCallbacks = $Array._spread(doneCallbacks);
+		failCallbacks = $Array._spread(failCallbacks);
+		if (this.resolved) {
 			this._notify(doneCallbacks, this._args || [], this);
-		} else if (!rejected){
+		} else if (!this.rejected){
 			PUSH.apply(this._done, doneCallbacks);
 		}
-		if (rejected) {
+		if (this.rejected) {
 			this._notify(failCallbacks, this._args || [], this);
-		} else if (!resolved){
+		} else if (!this.resolved){
 			PUSH.apply(this._fail, failCallbacks);
 		}
 		return this;
@@ -79,7 +73,7 @@ Promise.prototype = {
 	 * @chainable 
 	 */
 	done: function () {
-		return this.then(arguments);
+		return this.then(SLICE.call(arguments));
 	},
 	
 	/**
@@ -89,7 +83,7 @@ Promise.prototype = {
 	 * @chainable 
 	 */
 	fail: function () {
-		return this.then(null, arguments);
+		return this.then(null, SLICE.call(arguments));
 	},
 	
 	/**
@@ -99,7 +93,8 @@ Promise.prototype = {
 	 * @chainable 
 	 */
 	always: function () {
-		return this.then(arguments, arguments);
+		var args = SLICE.call(arguments);
+		return this.then(args, args);
 	},
 	
 	/**
@@ -109,7 +104,7 @@ Promise.prototype = {
 	 * @chainable
 	 */
 	resolve: function () {
-		return this.resolveWith(this, arguments);
+		return this.resolveWith(this, SLICE.call(arguments));
 	},
 	
 	/**
@@ -119,7 +114,7 @@ Promise.prototype = {
 	 * @chainable
 	 */
 	reject: function () {
-		return this.rejectWith(this, arguments);
+		return this.rejectWith(this, SLICE.call(arguments));
 	},
 	
 	/**
@@ -145,7 +140,7 @@ Promise.prototype = {
 	rejectWith: function (context, args) {
 		this.rejected = true;
 		this._args = args;
-		return this.notify(this._fail, args, context);
+		return this._notify(this._fail, args, context);
 	},
 	
 	/**
@@ -155,20 +150,21 @@ Promise.prototype = {
 	 * @param {Array} args A list of arguments to pass to the callbacks
 	 * @param {Object} thisp Context to apply to the callbacks
 	 * @chainable
+	 * @private
 	 */
 	_notify: function (callbacks, args, thisp) {
-		var length = callbacks.length,
-			i = 0;
-		for (; i < length; i++) {
+		for (var i = 0, length = callbacks.length; i < length; i++) {
 			callbacks[i].apply(thisp, args);
 		}
 		return this;
 	},
 	
 	defer: function (callback, context) {
-		var promise = new this.constructor(this._config, true);
+		var promise = new this.constructor();
 		this.then($.bind(callback, context || this, promise));
 		return promise;
 	}
 	
 };
+
+$.Promise = Promise;

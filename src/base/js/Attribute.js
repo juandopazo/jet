@@ -6,6 +6,7 @@
  * @constructor
  */
 function Attribute(state) {
+	Attribute.superclass.constructor.apply(this, arguments);
 	this._state = state || {};
 	this._attrs = {};
 	

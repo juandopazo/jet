@@ -29,6 +29,10 @@ $.ButtonGroup = Base.create('button-group', Widget, [WidgetParent], {
 		this.get(BOUNDING_BOX).toggleClass(this.getClassName(PILL), e.newVal);
 	},
 	
+	initializer: function () {
+		this.after('pillChange', this._uiPillChange);
+	},
+	
 	renderUI: function (boundingBox) {
 		boundingBox.toggleClass(this.getClassName(PILL), this.get(PILL));
 	}

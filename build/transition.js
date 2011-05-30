@@ -14,17 +14,10 @@ function TransitionNative() {
 	
 }
 
-function TransitionTimer() {
+function TransitionTimer(node, config) {
 	
 }
 
-function Transition() {
-	($.UA.support.cssTransitions ? TransitionNative : TransitionTimer).apply(this, arguments);
-}
-$.Object.each(($.UA.support.cssTransitions ? TransitionNative : TransitionTimer).prototype, function (name, fn) {
-	Transition.prototype[name] = fn;
-});
-
-$.Transition = Transition;
+$.Transition = $.Base.create('transition', $.Base, [$.UA.support.cssTransitions ? TransitionNative : TransitionTimer]);
 			
 });

@@ -1,7 +1,7 @@
 
-var win = $.win;
-var Lang = $.Lang,
-	Hash = $.Hash;
+var win = $.config.win,
+	Lang = $.Lang,
+	$Object = $.Object;
 
 var XML = "xml",
 XSL = "xsl",
@@ -17,7 +17,7 @@ var newAXO = function (t) {
 
 var hashToURI = function (hash) {
 	var result = [];
-	Hash.each(hash, function (key, value) {
+	$Object.each(hash, function (key, value) {
 		result.push(key + "=" + value);
 	});
 	return result.join("&");
@@ -133,7 +133,7 @@ var getResultByContentType = function (xhr, dataType, onError) {
 /**
  * Makes an ajax request
  * @method ajax
- * @param {Hash} settings
+ * @param {Object} settings
  */
 function ajax(url, settings) {
 	var xhr = getAjaxObject();

@@ -80,7 +80,9 @@ function buildJet(config) {
 	add({
 		bind: bind,
 		
-		namespace: bind(namespace, $),
+		namespace: function (ns) {
+			return namespace($, ns);
+		},
 		
 		/**
 		 * A pointer to the last Windo that was referenced by the $() function
@@ -134,9 +136,9 @@ function buildJet(config) {
 		 */
 		extend: function (r, s, px, ax) {
 
-			/*if (!s || !r) {
-				$.error("extend failed, verify dependencies");
-			}*/
+			if (!s || !r) {
+				throw new Error("extend failed, verify dependencies");
+			}
 		
 			var sp = s.prototype, rp = $.Object(sp);
 			r.prototype = rp;

@@ -430,4 +430,6 @@ jet.add = function (moduleName, expose) {
 	update();
 };
 
-jet.namespace = bind(namespace, jet);
+jet.namespace = function (ns) {
+	return namespace(jet, ns);
+};

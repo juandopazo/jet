@@ -24,7 +24,7 @@ $.CheckBox = Base.create('checkbox', Button, [], {}, {
 		});
 	},
 	
-	bindUI: function () {
+	initializer: function () {
 		this.after('selectedChange', this._uiCheckBoxSelect);
 	}
 });

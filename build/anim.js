@@ -173,7 +173,7 @@ if (!jet.TimeFrame) {
 			}
 		};
 	}());
-	jet.TimeFrame = $.mix(new $.EventTarget(), TimeFrame);
+	$.mix(new $.EventTarget(), TimeFrame);
 }
 /**
  * A Tween is a variation of a property during a lapse of time that has a certain easing associated

@@ -10,13 +10,12 @@
 jet.add('tabview', function ($) {
 
 			
-var SELECTED = 'selected';
-var Lang = $.Lang;
-var ArrayHelper = $.Array,
+var SELECTED = 'selected',
+	Lang = $.Lang,
 	Base = $.Base,
-	Widget = $.Widget;
-
-var LI = '<li/>',
+	Widget = $.Widget,
+	
+	LI = '<li/>',
 	DIV = '<div/>',
 	BOUNDING_BOX = 'boundingBox',
 	CONTENT_BOX = 'contentBox',

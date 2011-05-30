@@ -37,7 +37,7 @@ var transform = function (xml, xsl, parameters) {
 /**
  * @method xsl
  * @description Makes a XSL transformation. Loads the files with Ajax if needed. <strong>Requires the io-xsl submodule</strong>
- * @param {Hash} settings
+ * @param {Object} settings
  */
 function xslt(xml, xsl, settings) {
 	var parameters = settings.params;

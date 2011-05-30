@@ -41,8 +41,11 @@ $.ComboOption = Base.create('combo-option', Widget, [WidgetChild], {
 		this.get('boundingBox').removeClass(this.getClassName('hover'));
 	},
 	
-	bindUI: function (boundingBox, contentBox) {
+	initializer: function () {
 		this.after('textChange', this._uiTextChange);
+	},
+	
+	bindUI: function (boundingBox, contentBox) {
 		boundingBox.on('click', this.select, this);
 		
 		this.on('mouseover', this._uiOptHover);

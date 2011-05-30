@@ -327,9 +327,8 @@ if (Function.prototype.bind) {
 	};
 }
 
-function namespace(name) {
+function namespace(o, name) {
 	var names = name.split('.'),
-		o = this,
 		i = 0;
 	for (; i < names.length; i++) {
 		if (!o[names[i]]) {
@@ -908,7 +907,9 @@ function buildJet(config) {
 	add({
 		bind: bind,
 		
-		namespace: bind(namespace, $),
+		namespace: function (ns) {
+			return namespace($, ns);
+		},
 		
 		/**
 		 * A pointer to the last Windo that was referenced by the $() function
@@ -962,9 +963,9 @@ function buildJet(config) {
 		 */
 		extend: function (r, s, px, ax) {
 
-			/*if (!s || !r) {
-				$.error("extend failed, verify dependencies");
-			}*/
+			if (!s || !r) {
+				throw new Error("extend failed, verify dependencies");
+			}
 		
 			var sp = s.prototype, rp = $.Object(sp);
 			r.prototype = rp;
@@ -1479,7 +1480,9 @@ jet.add = function (moduleName, expose) {
 	update();
 };
 
-jet.namespace = bind(namespace, jet);
+jet.namespace = function (ns) {
+	return namespace(jet, ns);
+};
 
 
 }());
@@ -2218,7 +2221,7 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 					node.style.filter = 'alpha(opacity=' + Math.ceil(value * 100) + ')';
 				} else {
 					if (Lang.isNumber(value)) {
-						value += (prop != 'zIndex' && prop != 'zoom' && prop != 'opacity') ? '' : 'px';
+						value += (prop != 'zIndex' && prop != 'zoom' && prop != 'opacity') ? 'px' : '';
 					}
 					if (Lang.isString(value)) {
 						node.style[prop] = value;

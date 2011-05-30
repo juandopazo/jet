@@ -138,11 +138,11 @@ $.mix(WidgetParent, {
 			var self = this;
 			var multiple = this.get(MULTIPLE);
 			var selection = multiple ? [] : null;
-			this.each(this.add);
+			this.forEach(this.add);
 			Hash.each(Widget.DOM_EVENTS, function (name) {
 				self.on(name, self._domEventChildrenProxy);
 			});
-			this.each(function (child) {
+			this.forEach(function (child) {
 				if (child.get(SELECTED)) {
 					if (multiple) {
 						selection.push(child);
@@ -159,7 +159,7 @@ $.mix(WidgetParent, {
 		
 		afterSelectionChange: function (e, newVal) {
 			if (newVal && !this.get(MULTIPLE)) {
-				this.each(function (child) {
+				this.forEach(function (child) {
 					if (child != newVal && Lang.isFunction(child.unselect)) {
 						child.unselect();
 					}
@@ -173,7 +173,7 @@ $.mix(WidgetParent, {
 			var children;
 			//@TODO: check the use of childrenContainer
 			var childrenContainer = this.get(CONTENT_BOX);
-			childrenContainer.children().each(function (node) {
+			childrenContainer.children().forEach(function (node) {
 				children = children || [];
 				children.push({
 					srcNode: childrenContainer,
@@ -192,7 +192,7 @@ WidgetParent.prototype = {
 		var multiple = this.get(MULTIPLE);
 		if (multiple) {
 			selection = [];
-			this.each(function (child) {
+			this.forEach(function (child) {
 				if (child.get(SELECTED)) {
 					selection.push(child);
 				}
@@ -200,7 +200,7 @@ WidgetParent.prototype = {
 		} else {
 			if (e.newVal) {
 				selection = e.target;
-				this.each(function (child) {
+				this.forEach(function (child) {
 					if (child != e.target && child.get(SELECTED)) {
 						child.unselect();
 					}
@@ -214,7 +214,7 @@ WidgetParent.prototype = {
 		child = child.get(INDEX);
 		var children = this.get(CHILDREN);
 		children.splice(child, 1);
-		A.each(children, function (item, i) {
+		A.forEach(children, function (item, i) {
 			if (i >= child) {
 				item.set(INDEX, i);
 			}
@@ -296,13 +296,13 @@ WidgetParent.prototype = {
 	},
 	
 	/**
-	 * @method each
+	 * @method forEach
 	 * @description Iterates through all this widget children
 	 * @param {Function} fn Callback
 	 * @chainable
 	 */
 	forEach: function (fn, thisp) {
-		A.each(this.get(CHILDREN), fn, thisp || this);
+		A.forEach(this.get(CHILDREN), fn, thisp || this);
 		return this;
 	},
 	
@@ -312,7 +312,7 @@ WidgetParent.prototype = {
 	 * @return Number
 	 */
 	 size: function () {
-	 	return (this.get(CHILDREN) || []).length;
+		return this.get(CHILDREN).length;
 	 }
 	
 };

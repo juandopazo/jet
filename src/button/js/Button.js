@@ -19,7 +19,7 @@ var BOUNDING_BOX = "boundingBox",
 	NAME = 'name',
 	PILL = 'pill';
 
-var ButtonNS = jet.namepace('Button');
+var ButtonNS = jet.namespace('Button');
 
 /**
  * A button widget
@@ -113,38 +113,38 @@ var Button = $.Button = Base.create('button', Widget, [WidgetChild], {
 	
 	initializer: function () {
 		this.set(LABEL_NODE, this.get(LABEL_NODE) || this.LABEL_TEMPLATE);
-		this._onDomFocus = $.bind(this.focus, this);
-		this._onDomBlur = $.bind(this.blur, this);
+
+		this.after('enabledChange', this._uiEnabledChange);
+		this.after('labelContentChange', this._uiLabelChange);
+		this.after('textChange', this._uiTextChange);
+		this.after('focusedChange', this._uiFocusedChange);
 	},
 	
-	renderUI: function (boundingBox) {
-		var id = this.getClassName('content', this._uid);
-		var labelNode = this.get(LABEL_NODE);
-		var label = this.get('labelContent');
-		this.get(CONTENT_BOX).attr(ID, id).html(this.get('text'));
+	renderUI: function (boundingBox, contentBox) {
+		var id = this.getClassName('content', this._uid),
+			labelNode = this.get(LABEL_NODE),
+			label = this.get('labelContent');
+		
+		contentBox.attr(ID, id).html(this.get('text'));
+		
 		labelNode.getDOMNode().setAttribute('for', id);
 		if (Lang.isString(label)) {
 			boundingBox.prepend(labelNode.html(label));
 		}
 	},
 	
-	bindUI: function () {
-		var contentBox = this.get('contentBox');
-		
-		this.after('enabledChange', this._uiEnabledChange);
-		this.after('labelContentChange', this._uiLabelChange);
-		this.after('textChange', this._uiTextChange);
-		this.after('focusedChange', this._uiFocusedChange);
-
-		this._handlers.push(contentBox.on(FOCUS, this._onDomFocus, this), contentBox.on(BLUR, this._onDomBlur, this));
+	bindUI: function (bb, contentBox) {
+		this._handlers.push(
+			contentBox.on(FOCUS, this.focus, this),
+			contentBox.on(BLUR, this.blur, this)
+		);
 	},
 	
-	syncUI: function () {
-		this.get('contentBox').getDOMNode().disabled = !this.get(ENABLED);
+	syncUI: function (bb, contentBox) {
+		contentBox.getDOMNode().disabled = !this.get(ENABLED);
 	},
 	
 	destructor: function () {
-		this.get(CONTENT_BOX).unbind(FOCUS, this._onDomFocus).unbind(BLUR, this._onDomBlur);
 		this.get(LABEL_NODE).remove();
 	}
 	

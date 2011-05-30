@@ -80,6 +80,9 @@ $.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment, $.WidgetStack],
 		if (!this.get(MODAL_BOX)) {
 			this.set(MODAL_BOX, this.MODAL_TEMPLATE);
 		}
+
+		this.after('show', this._showModal);
+		this.after('hide', this._hideModal);
 	},
 	
 	renderUI: function (boundingBox) {
@@ -96,15 +99,14 @@ $.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment, $.WidgetStack],
 		}).width(screenSize.width).height(screenSize.height).appendTo($.config.doc.body);
 	},
 	
-	bindUI: function () {
-		this.after('show', this._showModal);
-		this.after('hide', this._hideModal);
-		this.on('mousedown', this.focus);
-		this._handlers.push($($.config.win).on(RESIZE, this._resizeModal, this));
-	},
-	
-	syncUI: function (boundingBox) {
+	bindUI: function (boundingBox) {
 		var head = this.get(HEADER);
+		
+		this._handlers.push(
+			$($.config.win).on(RESIZE, this._resizeModal, this),
+			boundingBox.on('mousedown', this.focus, this)
+		);
+
 		if (this.get('draggable')) {
 			this.dd = new $.Drag({
 				node: boundingBox,
@@ -114,8 +116,6 @@ $.Overlay = Base.create('overlay', $.Module, [$.WidgetAlignment, $.WidgetStack],
 	},
 	
 	destructor: function () {
-		if (this.dd) {
-			this.dd.destroy();
-		}
+		this.dd && this.dd.destroy();
 	}
 });

@@ -10,20 +10,23 @@ if (!Lang.isNumber(ButtonNS.radio)) {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.RadioButton = Base.create('radio', Button, [], {
-	EVENTS: {
-		afterSelectionChange: function (e) {
-			this.get(CONTENT_BOX).getDOMNode().checked = !!e.newVal;
-		},
-		render: function () {
-			this.get(CONTENT_BOX).attr({
-				type: 'radio',
-				name: this.get(PARENT).get(NAME)
-			});
-		}
+$.RadioButton = Base.create('radio', Button, [], {}, {
+	CONTENT_TEMPLATE: '<input/>',
+	
+	_rbSelectionChange: function (e) {
+		this.get(CONTENT_BOX).getDOMNode().checked = !!e.newVal;
+	},
+	
+	initializer: function () {
+		this.after('selectionChange', this._rbSelectionChange);
+	},
+	
+	renderUI: function (bb, contentBox) {
+		contentBox.attr({
+			type: 'radio',
+			name: this.get(PARENT).get(NAME)
+		});
 	}
-}, {
-	CONTENT_TEMPLATE: '<input/>'
 });
 
 /**
