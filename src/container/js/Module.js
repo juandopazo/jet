@@ -142,7 +142,7 @@ $.Module = Base.create('module', Widget, [], {
 		// append the header, body and footer to the bounding box if present
 		A.each([HEADER, BODY, FOOTER], function (name) {
 			var value = this.get(name + 'Content'),
-				node = this.get(name).addClass(this.getClassName(name));
+				node = this.get(name).addClass(name);
 				
 			if (Lang.isValue(value)) {
 				if (value.nodeType) {
