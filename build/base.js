@@ -395,20 +395,19 @@ $.Attribute = Attribute;
  * @param {Object} config Object literal specifying widget configuration properties
  */
 function Base(config) {
-	Base.superclass.constructor.apply(this, arguments);
-	
 	config = config || {};
+	Base.superclass.constructor.call(this, config);
 	
-	var constrct = this.constructor;
 	var classes = this._classes;
-	var i;
+	var i, events = this.get('on');
+	var attachEvent = function (name, fn) {
+		this.on(name, Lang.isString(fn) ? this[fn] : fn);
+	};
 
 	this._handlers = [$($.config.win).on(UNLOAD, this.destroy, this)];
 
-	function attachEvent(name, fn) {
-		this.on(name, Lang.isString(fn) ? this[fn] : fn);
-	}
-	
+	Hash.each(events, attachEvent, this);
+
 	for (i = 0; i < classes.length; i++) {
 		if (classes[i].EVENTS) {
 			Hash.each(classes[i].EVENTS, attachEvent, this);
@@ -417,7 +416,6 @@ function Base(config) {
 			classes[i][PROTO].initializer.call(this, config);
 		}
 	}
-	Hash.each(this.get("on"), attachEvent, this);
 }
 $.extend(Base, Attribute, {
 	
@@ -454,7 +452,7 @@ $.extend(Base, Attribute, {
 		 * @writeOnce
 		 */
 		on: {
-			writeOnce: true,
+			//writeOnce: true,
 			getter: function (val) {
 				return val || {};
 			}
