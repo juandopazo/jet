@@ -2019,32 +2019,30 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 		}
 	},
 	offset: function () {
-		return $.mix(this.position(), this.offsetSize());
+		return $.mix(this.position(), {
+			width: this.width(),
+			height: this.height()
+		});
 	},
-	offsetSize: function (width, height) {
+	width: function (width) {
 		var node = this.getDOMNode();
 		if (Lang.isNumber(width)) {
 			width += 'px';
 		}
+		if (Lang.isString(width)) {
+			return this.css('width', width);
+		}
+		return node.offsetWidth;
+	},
+	height: function (height) {
+		var node = this.getDOMNode();
 		if (Lang.isNumber(height)) {
 			height += 'px';
 		}
-		if (Lang.isString(width) || Lang.isString(height)) {
-			this.css('width', width);
-			this.css('height', height);
-		} else {
-			return {
-				width: node.offsetWidth,
-				height: node.offsetHeight
-			};
+		if (Lang.isString(height)) {
+			return this.css('height', height);
 		}
-		return this;
-	},
-	width: function (val) {
-		return this.offsetSize(val);
-	},
-	height: function (val) {
-		return this.offsetSize(null, val);
+		return node.offsetHeight;
 	},
 	/**
 	 * Returns a new NodeList with all the offset parents of this one

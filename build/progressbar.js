@@ -109,9 +109,9 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 	},
 	
 	EVENTS: {
-		valueChange: function (e, newVal, oldVal) {
-			if (this.fire(PROGRESS, newVal)) {
-				this._update(newVal);
+		valueChange: function (e) {
+			if (this.fire(PROGRESS, { value: e.newVal })) {
+				this._update(e.newVal);
 			} else {
 				e.preventDefault();
 			}
@@ -136,6 +136,16 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 	}
 	
 }, {
+	_onTween: function (e) {
+		if (!this.fire(PROGRESS, { value: e.value })) {
+			e.preventDefault();
+		}
+	},
+	
+	_onTweenEnd: function () {
+		this.fire('end');
+	},
+	
 	_update: function (value) {
 		var self = this;
 		var min = this.get("minValue");
@@ -146,21 +156,18 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 		var easing = this.get("easing");
 		var duration = this.get("duration");
 		if (this.get("animate")) {
-			var tween = new $.Tween({
+			if (this._tween) {
+				this._tween.unbind('tween', this._onTween);
+				this._tween.unbind('end', this._onTweenEnd);
+				this._tween.destroy();
+			}
+			var tween = this._tween = new $.Tween({
 				node: bar,
 				duration: duration,
-				easing: easing,
-				on: {
-					tween: function (e, value) {
-						if (!this.fire(PROGRESS, value)) {
-							e.preventDefault();
-						}
-					},
-					end: function () {
-						this.fire(END);
-					}
-				}
+				easing: easing
 			});
+			tween.on('tween', this._onTween, this);
+			tween.on('end', this._onTweenEnd, this);
 			switch (direction) {
 				case "ttb":
 				case "btt":
@@ -185,7 +192,7 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 					newSize *= width;
 					bar.width(newSize);
 			}
-			this.fire(PROGRESS, newSize);
+			this.fire(PROGRESS, { value: newSize });
 			this.fire(END);
 		}
 	}

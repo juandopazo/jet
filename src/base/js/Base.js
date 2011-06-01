@@ -52,6 +52,8 @@ $.extend(Base, Attribute, {
 					handler.detach();
 				}
 			});
+			
+			this.unbind();
 		}
 	}
 	
