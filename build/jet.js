@@ -2458,7 +2458,7 @@ $Array.forEach(['next', 'previous'], function (method) {
 			do {
 				node = node[method + 'Sibling'];
 			}
-			while (node && node.nodeType == 1);
+			while (node && node.nodeType !== 1);
 			return node;
 		});
 	};
