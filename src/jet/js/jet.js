@@ -120,7 +120,7 @@ function makeUse(config, get) {
 		var request = SLICE.call(arguments);
 		var i = 0, module, minify, groupReqId, groupName, modName, group;
 		var fn = request.pop();
-		var groupRequests = {};
+		var groupRequests = {}, url;
 		
 		// if "*" is used, include everything
 		if (_Array.indexOf(request, '*') > -1) {
@@ -187,7 +187,16 @@ function makeUse(config, get) {
 			if (groupRequests.hasOwnProperty(groupReqId)) {
 				if (groupRequests[groupReqId].length > 0) {
 					groupName = groupReqId.substr(0, groupReqId.length - groupRequests[groupReqId].type.length);
-					get[groupRequests[groupReqId].type == 'css' ? 'css' : 'script'](config.groups[groupName].root + groupName + '?' + groupRequests[groupReqId].join('&'));
+					url = config.groups[groupName].root + groupName + '?' + groupRequests[groupReqId].join('&');
+					if (groupRequests[groupReqId].type != 'css') {
+						get.script(url);
+					} else {
+						get.css(url, function () {
+							for (i = 0; i < groupRequests[groupReqId].length; i++) {
+								jet.add(groupRequests[groupReqId][i].split('.')[0], function () {});
+							}
+						});
+					}
 				}
 			}
 		}

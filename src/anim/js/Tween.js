@@ -220,5 +220,9 @@ var Tween = Base.create('tween', Base, [], {
 	reverse: function () {
 		var from = this.get('from');
 		return this.set('from', this.get('to')).set('to', from);
+	},
+	
+	destructor: function () {
+		this.stop();
 	}
 });

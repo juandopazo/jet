@@ -1,10 +1,14 @@
-.jet-pbar-container {
+.jet-progressbar-content {
 	overflow: hidden;
 	border: 1px solid #333;
 	background: url(http://yui.yahooapis.com/2.8.1/build/progressbar/assets/skins/sam/back-h.png) repeat-x;
 }
 
-.jet-pbar-bar {
+.jet-progressbar-ltr .jet-progressbar-content {
+	height: 100%;
+}
+
+.jet-progressbar-bar {
 	display: inline-block;
 	background: url(http://yui.yahooapis.com/2.8.1/build/progressbar/assets/skins/sam/bar-h.png) repeat-x;
 }

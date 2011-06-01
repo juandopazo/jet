@@ -169,6 +169,7 @@ EventTarget.prototype = {
 	 */
 	unbind: function (eventType, callback) {
 		var events = this._events[eventType] || [],
+			type,
 			i = 0;
 		if (eventType && callback) {
 			while (i < events.length) {
@@ -181,7 +182,11 @@ EventTarget.prototype = {
 		} else if (eventType) {
 			this._events[eventType] = [];
 		} else {
-			this._events = {};
+			for (type in this._events) {
+				if (this._events.hasOwnProperty(type)) {
+					this._events[type] = [];
+				}
+			}
 		}
 		return this;
 	},
@@ -192,27 +197,16 @@ EventTarget.prototype = {
 	 * Extra parameters will be passed to all event listeners
 	 */
 	fire: function (eventType, args) {
-		var collection = this._events;
-		var handlers = collection[eventType] || [];
-		var returnValue = true;
-		if (collection["*"]) {
-			handlers = handlers.concat(collection["*"]);
-		}
-		var i = 0;
-		var callback;
-		var e = new CustomEvent(eventType, this, function () {
-			returnValue = false;
-		}, args);
+		var handlers = this._events[eventType] = this._events[eventType] || [],
+			returnValue = true,
+			e = new CustomEvent(eventType, this, function () { returnValue = false; }, args),
+			i = 0;
+			
 		while (i < handlers.length) {
-			callback = handlers[i].fn;
-			if (Lang.isFunction(callback)) {
-				callback.call(handlers[i].o, e);
-			// if the event handler is an object with a handleEvent method,
-			// that method is used but the context is the object itself
-			} else if (Lang.isObject(callback) && Lang.isFunction(callback.handleEvent)) {
-				callback.handleEvent.call(handlers[i].o || callback, e);
+			if (Lang.isFunction(handlers[i].fn)) {
+				handlers[i].fn.call(handlers[i].o, e);
 			}
-			if (handlers[i].once) {
+			if (!handlers[i] || handlers[i].once) {
 				handlers.splice(i, 1);
 			} else {
 				i++;
@@ -440,6 +434,8 @@ $.extend(Base, Attribute, {
 					handler.detach();
 				}
 			});
+			
+			this.unbind();
 		}
 	}
 	
