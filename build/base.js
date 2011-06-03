@@ -293,7 +293,8 @@ $.extend(Attribute, EventTarget, {
 				}
 				args = {
 					newVal: attrValue,
-					prevVal: oldValue
+					prevVal: oldValue,
+					attrName: attrName
 				};
 				if (attrValue !== oldValue && this.fire(attrName + "Change", args)) {
 					state[attrName] = attrValue;
