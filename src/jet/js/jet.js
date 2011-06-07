@@ -158,7 +158,7 @@ function makeUse(config, get) {
 				}
 			}
 			group = config.groups[module.group];
-			if (!Lang.isObject(module) || (module.type == CSS && !group.loadCss)) {
+			if (!Lang.isObject(module) || (module.type == CSS && !group.fetchCSS)) {
 				request.splice(i, 1);
 				i--;
 			} else {
@@ -355,12 +355,12 @@ window.jet = function (o) {
 	 */
 	config.minify = Lang.isBoolean(config.minify) ? config.minify : false;
 	/**
-	 * @attribute loadCss
+	 * @attribute fetchCSS
 	 * @description If true, css modules are loaded
 	 * @type Boolean
 	 * @default true
 	 */
-	config.loadCss = Lang.isBoolean(config.loadCss) ? config.loadCss : true;
+	config.fetchCSS = Lang.isBoolean(config.fetchCSS) ? config.fetchCSS : true;
 	/**
 	 * @attribute modules
 	 * @description Allows to define your own modules. Currently the same as using object literals in the use() method
@@ -387,7 +387,7 @@ window.jet = function (o) {
 		Hash.each({
 			minify: BOOLEAN,
 			combine: BOOLEAN,
-			loadCss: BOOLEAN,
+			fetchCSS: BOOLEAN,
 			root: STRING,
 			base: STRING
 		}, function (prop, type) {
