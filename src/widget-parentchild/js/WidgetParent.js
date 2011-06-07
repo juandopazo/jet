@@ -212,7 +212,7 @@ WidgetParent.prototype = {
 	
 	_unHookChild: function (child) {
 		child = child.get(INDEX);
-		this.splice(child, 1);
+		this._items.splice(child, 1);
 		this.forEach(function (item, i) {
 			if (i >= child) {
 				item.set(INDEX, i);
