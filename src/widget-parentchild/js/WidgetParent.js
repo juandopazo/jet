@@ -1,8 +1,5 @@
 
 var Lang = $.Lang,
-	A = $.Array,
-	Hash = $.Hash,
-	Base = $.Base,
 	Widget = $.Widget;
 	
 var SELECTED = 'selected',
@@ -170,7 +167,7 @@ WidgetParent.prototype = {
 			selection = multiple ? [] : null;
 			
 		this.forEach(this.add);
-		Hash.each(Widget.DOM_EVENTS, function (name) {
+		$.Hash.each(Widget.DOM_EVENTS, function (name) {
 			self.on(name, self._domEventChildrenProxy);
 		});
 		
@@ -215,9 +212,8 @@ WidgetParent.prototype = {
 	
 	_unHookChild: function (child) {
 		child = child.get(INDEX);
-		var children = this._items;
-		children.splice(child, 1);
-		A.forEach(children, function (item, i) {
+		this.splice(child, 1);
+		this.forEach(function (item, i) {
 			if (i >= child) {
 				item.set(INDEX, i);
 			}
@@ -226,7 +222,7 @@ WidgetParent.prototype = {
 	
 	_domEventChildrenProxy: function (e) {
 		var targetWidget = Widget.getByNode(e.domEvent.target);
-		if (targetWidget && A.indexOf(this.get(CHILDREN), targetWidget) > -1) {
+		if (this.indexOf(targetWidget) > -1) {
 			targetWidget.fire(e.type, { domEvent: e.domEvent });
 		}
 	},
