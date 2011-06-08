@@ -11,9 +11,6 @@ jet.add('widget-parentchild', function ($) {
 
 			
 var Lang = $.Lang,
-	A = $.Array,
-	Hash = $.Hash,
-	Base = $.Base,
 	Widget = $.Widget;
 	
 var SELECTED = 'selected',
@@ -33,13 +30,14 @@ var SELECTED = 'selected',
 /**
  * A widget extension that makes the current widget contein child widgets
  * @class WidgetParent
+ * @uses ArrayList
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-function WidgetParent() {
-	if (!this.get(CHILDREN)) {
-		this.set(CHILDREN, []);
-	}
+function WidgetParent(config) {
+	this._items = this._items || [];
+	this.on('render', this._renderChildren);
+	this.after('selectionChange', this._handleMultipleChildren);
 }
 $.mix(WidgetParent, {
 	
@@ -71,9 +69,17 @@ $.mix(WidgetParent, {
 		/**
 		 * @attribute children
 		 * @description An array of instances or configuration objects representing the widget's children
+		 * @type Array
 		 * @default []
 		 */
 		children: {
+			validator: Lang.isArray,
+			setter: function (val) {
+				this._items = val;
+			},
+			getter: function () {
+				return this._items;
+			}
 		},
 		
 		/**
@@ -134,29 +140,6 @@ $.mix(WidgetParent, {
 	},
 	
 	EVENTS: {
-		render: function () {
-			var self = this;
-			var multiple = this.get(MULTIPLE);
-			var selection = multiple ? [] : null;
-			this.forEach(this.add);
-			Hash.each(Widget.DOM_EVENTS, function (name) {
-				self.on(name, self._domEventChildrenProxy);
-			});
-			this.forEach(function (child) {
-				if (child.get(SELECTED)) {
-					if (multiple) {
-						selection.push(child);
-					} else {
-						selection = child;
-					}
-				}
-			});
-			this.set(SELECTION, selection);
-			if (!selection) {
-				this.set(SELECTED_INDEX, 0);
-			}
-		},
-		
 		afterSelectionChange: function (e, newVal) {
 			if (newVal && !this.get(MULTIPLE)) {
 				this.forEach(function (child) {
@@ -187,9 +170,37 @@ $.mix(WidgetParent, {
 });
 WidgetParent.prototype = {
 	
+	constructor: WidgetParent,
+	
+	_renderChildren: function () {
+		var self = this,
+			multiple = this.get(MULTIPLE),
+			selection = multiple ? [] : null;
+			
+		this.forEach(this.add, this);
+		$.Object.each(Widget.DOM_EVENTS, function (name) {
+			self.on(name, self._domEventChildrenProxy);
+		});
+		
+		this.forEach(function (child) {
+			if (child.get(SELECTED)) {
+				if (multiple) {
+					selection.push(child);
+				} else {
+					selection = child;
+				}
+			}
+		});
+		this.set(SELECTION, selection);
+		if (!selection) {
+			this.set(SELECTED_INDEX, 0);
+		}
+	},
+	
 	_onChildSelect: function (e) {
-		var selection = null;
-		var multiple = this.get(MULTIPLE);
+		var selection = null,
+			multiple = this.get(MULTIPLE);
+			
 		if (multiple) {
 			selection = [];
 			this.forEach(function (child) {
@@ -212,9 +223,8 @@ WidgetParent.prototype = {
 	
 	_unHookChild: function (child) {
 		child = child.get(INDEX);
-		var children = this.get(CHILDREN);
-		children.splice(child, 1);
-		A.forEach(children, function (item, i) {
+		this._items.splice(child, 1);
+		this.forEach(function (item, i) {
 			if (i >= child) {
 				item.set(INDEX, i);
 			}
@@ -223,7 +233,7 @@ WidgetParent.prototype = {
 	
 	_domEventChildrenProxy: function (e) {
 		var targetWidget = Widget.getByNode(e.domEvent.target);
-		if (targetWidget && A.indexOf(this.get(CHILDREN), targetWidget) > -1) {
+		if (this.indexOf(targetWidget) > -1) {
 			targetWidget.fire(e.type, { domEvent: e.domEvent });
 		}
 	},
@@ -236,9 +246,9 @@ WidgetParent.prototype = {
 	 * @chainable
 	 */
 	add: function (child, index) {
-		var ChildType = this.get('childType');
-		var self = this;
-		var children = this.get(CHILDREN);
+		var ChildType = this.get('childType'),
+			self = this,
+			children = this._items;
 		if (!Lang.isNumber(index)) {
 			index = children.length;
 		}
@@ -264,16 +274,6 @@ WidgetParent.prototype = {
 	},
 	
 	/**
-	 * @method item
-	 * @description Returns a child based on an index
-	 * @param index [Number] Index of the child to be returned
-	 * @return WidgetChild
-	 */
-	item: function (index) {
-		return this.get(CHILDREN)[index || 0];
-	},
-	
-	/**
 	 * @method remove
 	 * @description Removes a child
 	 * @param {WidgetChild|Number} child The child widget or its index
@@ -284,7 +284,7 @@ WidgetParent.prototype = {
 			child = this.item(child);
 		}
 		if (child && this.fire('removeChild', { child: child })) {
-			var children = this.get(CHILDREN);
+			var children = this._items;
 			if (Lang.isNumber(child)) {
 				child = children[child];
 			}
@@ -295,29 +295,14 @@ WidgetParent.prototype = {
 		return this;
 	},
 	
-	/**
-	 * @method forEach
-	 * @description Iterates through all this widget children
-	 * @param {Function} fn Callback
-	 * @chainable
-	 */
-	forEach: function (fn, thisp) {
-		A.forEach(this.get(CHILDREN), fn, thisp || this);
-		return this;
-	},
-	
-	/**
-	 * @method size
-	 * @description Returns the ammount of children of this parent widget
-	 * @return Number
-	 */
-	 size: function () {
-		return this.get(CHILDREN).length;
-	 }
+	item: function (index) {
+		return this._items[index || 0];
+	}
 	
 };
 
-WidgetParent.prototype.each = WidgetParent.prototype.forEach;
+$.mix(WidgetParent.prototype, $.ArrayList.prototype);
+
 /**
  * An extension that turns a widget into a child widget
  * @class WidgetChild
@@ -375,7 +360,7 @@ $.mix(WidgetChild, {
 		render: function () {
 			var self = this;
 			var boundingBox = this.get(BOUNDING_BOX);
-			Hash.each(Widget.DOM_EVENTS, function (name) {
+			$.Object.each(Widget.DOM_EVENTS, function (name) {
 				boundingBox.unbind(name, self._domEventProxy);
 			});
 			if (this.get(SELECTED)) {

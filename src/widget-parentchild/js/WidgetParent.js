@@ -24,9 +24,7 @@ var SELECTED = 'selected',
  * @param {Object} config Object literal specifying widget configuration properties
  */
 function WidgetParent(config) {
-	config = config || {};
-	this._items = config.children || [];
-	
+	this._items = this._items || [];
 	this.on('render', this._renderChildren);
 	this.after('selectionChange', this._handleMultipleChildren);
 }
@@ -161,13 +159,15 @@ $.mix(WidgetParent, {
 });
 WidgetParent.prototype = {
 	
+	constructor: WidgetParent,
+	
 	_renderChildren: function () {
 		var self = this,
 			multiple = this.get(MULTIPLE),
 			selection = multiple ? [] : null;
 			
-		this.forEach(this.add);
-		$.Hash.each(Widget.DOM_EVENTS, function (name) {
+		this.forEach(this.add, this);
+		$.Object.each(Widget.DOM_EVENTS, function (name) {
 			self.on(name, self._domEventChildrenProxy);
 		});
 		
@@ -282,6 +282,10 @@ WidgetParent.prototype = {
 			this.fire('afterRemoveChild', { child: child });
 		}
 		return this;
+	},
+	
+	item: function (index) {
+		return this._items[index || 0];
 	}
 	
 };

@@ -56,7 +56,7 @@ $.mix(WidgetChild, {
 		render: function () {
 			var self = this;
 			var boundingBox = this.get(BOUNDING_BOX);
-			Hash.each(Widget.DOM_EVENTS, function (name) {
+			$.Object.each(Widget.DOM_EVENTS, function (name) {
 				boundingBox.unbind(name, self._domEventProxy);
 			});
 			if (this.get(SELECTED)) {
