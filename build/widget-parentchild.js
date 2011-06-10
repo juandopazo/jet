@@ -139,18 +139,6 @@ $.mix(WidgetParent, {
 		}
 	},
 	
-	EVENTS: {
-		afterSelectionChange: function (e, newVal) {
-			if (newVal && !this.get(MULTIPLE)) {
-				this.forEach(function (child) {
-					if (child != newVal && Lang.isFunction(child.unselect)) {
-						child.unselect();
-					}
-				});
-			}
-		}
-	},
-	
 	HTML_PARSER: {
 		children: function () {
 			var children;
@@ -171,6 +159,16 @@ $.mix(WidgetParent, {
 WidgetParent.prototype = {
 	
 	constructor: WidgetParent,
+	
+	_handleMultipleChildren: function (e, newVal) {
+		if (newVal && !this.get(MULTIPLE)) {
+			this.forEach(function (child) {
+				if (child != newVal && Lang.isFunction(child.unselect)) {
+					child.unselect();
+				}
+			});
+		}
+	},
 	
 	_renderChildren: function () {
 		var self = this,
