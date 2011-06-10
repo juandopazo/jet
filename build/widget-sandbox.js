@@ -527,9 +527,13 @@ var FRAME = 'frame',
  * @constructor
  */
 function WidgetSandbox() {
-	this.frame = new $.Frame({
-		linkedcss: this.get('extraCss')
+	var frame = this.frame = new $.Frame({
+		linkedcss: this.get('extraCss'),
+		on: {
+			contentReady: $.bind(this._onFrameReady, this)
+		}
 	});
+	this.after('render', this._renderFrame);
 }
 
 $.WidgetSandbox = $.mix(WidgetSandbox, {
@@ -544,16 +548,6 @@ $.WidgetSandbox = $.mix(WidgetSandbox, {
 			writeOnce: true,
 			value: []
 		}
-	},
-	
-	EVENTS: {
-		
-		afterRender: function () {
-			var frame = this.frame;
-			frame.on('contentReady', this._onFrameReady, this);
-			frame.render(this.get('boundingBox'));
-		}
-		
 	}
 	
 });
@@ -566,6 +560,10 @@ WidgetSandbox.prototype = {
 	 */
 	getInstance: function () {
 		return this.frame.getInstance();
+	},
+	
+	_renderFrame: function () {
+		this.frame.render(this.get('boundingBox'));
 	},
 	
 	_onFrameReady: function () {
