@@ -8,13 +8,8 @@ var BOUNDING_BOX = 'boundingBox',
 	VISIBILITY = 'visibility',
 	DESTROY = 'destroy',
 	
-	WidgetNS = jet.namespace('Widget'),
 	widgetInstances = jet.namespace('Widget._instances');
 	
-if (!Lang.isNumber(WidgetNS._uid)) {
-	WidgetNS._uid = -1;
-}
-
 /**
  * Base class for all widgets. 
  * Provides show, hide, render and destroy methods, the rendering process logic
@@ -232,6 +227,70 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 	blur: function () {
 		return this.set('focused', false);
 	},
+	
+	_renderUI: function (boundingBox, contentBox, classes) {
+		var classPrefix = this.get(CLASS_PREFIX),
+			className;
+		
+		$Array.each(classes, function (construct) {
+			className = [classPrefix, construct.NAME].join(DASH);
+			boundingBox.addClass(className);
+			contentBox.addClass([className, CONTENT].join(DASH));
+		});
+
+		if (boundingBox.getDOMNode() !== contentBox.getDOMNode()) {
+			boundingBox.append(contentBox.css(VISIBILITY, 'inherit'));
+		}
+		boundingBox.attr('id', this.get('id'));
+		
+		if (!boundingBox.inDoc()) {
+			boundingBox.appendTo(this.get('srcNode'));
+		}
+	},
+	
+	_bindUI: function (boundingBox, contentBox, classes) {
+		var self = this;
+		
+		Hash.each($.Widget.DOM_EVENTS, function (name, activated) {
+			if (activated) {
+				self._handlers.push(boundingBox.on(name, self._domEventProxy, self));
+			}
+		});
+	},
+	
+	_syncUI: function (boundingBox, contentBox, classes) {
+		$Array.each([WIDTH, HEIGHT], function (size) {
+			var value = this.get(size);
+			if (Lang.isValue(value)) {
+				boundingBox[size](value);
+			}
+		}, this);
+		this._toggleVisibility({ newVal: this.get('visible') });
+		this._toggleDisabled({ newVal: this.get('disabled') });
+	},
+	
+	renderer: function () {
+		var boundingBox = this.get('boundingBox'),
+			contentBox = this.get('contentBox'),
+			self = this,
+			classes = this._classes;
+		
+		if (this.constructor === $.Widget) {
+			classes = [$.Widget];
+		} else {
+			classes = classes.slice(2);
+		}
+			
+		$Array.each(['renderUI', 'bindUI', 'syncUI'], function (method) {
+			self['_' + method](boundingBox, contentBox, classes);
+			$Array.each(classes, function (constructor) {
+				if (constructor.prototype.hasOwnProperty(method)) {
+					constructor.prototype[method].call(self, boundingBox, contentBox);
+				}
+			});
+		});
+	},
+	
 	/**
 	 * Starts the rendering process. The rendering process is based on custom events.
 	 * The widget class fires a 'render' event to which all subclasses must subscribe.
@@ -247,60 +306,10 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 	 */
 	render: function (target) {
 		if (!this.get('rendered')) {
-			var self = this,
-				boundingBox = this.get(BOUNDING_BOX),
-				contentBox = this.get(CONTENT_BOX),
-				srcNode = this.get(SRC_NODE),
-				className, classPrefix = this.get(CLASS_PREFIX),
-				classes = this._classes;
-				
-			Hash.each($.Widget.DOM_EVENTS, function (name, activated) {
-				if (activated) {
-					self._handlers.push(boundingBox.on(name, self._domEventProxy, self));
-				}
-			});
-			
 			if (target) {
-				srcNode = $(target);
-				self.set(SRC_NODE, srcNode);
+				this.set('srcNode', target);
 			}
 
-			if (this.constructor == $.Widget) {
-				classes = [$.Widget];
-			} else {
-				classes = classes.slice(2);
-			}
-			
-			$Array.each([WIDTH, HEIGHT], function (size) {
-				var value = self.get(size);
-				if (Lang.isNumber(value)) {
-					boundingBox[size](value);
-				}
-				self.after(size + 'Change', function (e) {
-					var newVal = Lang.isNumber(e.newVal) ? e.newVal : '';
-					self.get(BOUNDING_BOX)[size](e.newVal);
-				});
-			});
-			
-			$Array.each(classes, function (construct) {
-				className = [classPrefix, construct.NAME].join(DASH);
-				boundingBox.addClass(className);
-				contentBox.addClass([className, CONTENT].join(DASH));
-			});
-			
-			if (boundingBox.getDOMNode() != contentBox.getDOMNode()) {
-				boundingBox.append(contentBox.css(VISIBILITY, 'inherit'));
-			}
-			if (!boundingBox.attr('id')) {
-				boundingBox.attr('id', this.get('id'));
-			}
-			
-			this._toggleVisibility({
-				newVal: this.get('visible')
-			});
-			this._toggleDisabled({
-				newVal: this.get('disabled')
-			});
 			/**
 			 * Render event. Preventing the default behavior will stop the rendering process
 			 * @event render
@@ -308,30 +317,15 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 			 */
 			if (this.fire('render')) {
 				
-				$Array.each(['renderUI', 'bindUI', 'syncUI'], function (method) {
-					$Array.each(classes, function (constructor) {
-						if (constructor.prototype.hasOwnProperty(method)) {
-							constructor.prototype[method].call(self, boundingBox, contentBox);
-						}
-					});
-				});
+				this.renderer();
 				
-				if (!boundingBox.inDoc()) {
-					boundingBox.appendTo(srcNode);
-				}
-				/**
-				 * Fires after the render process is finished
-				 * @event afterRender
-				 */
 				this.set('rendered', true).focus();
-				setTimeout(function () {
 					/**
 					 * Fires after the render lifecycle finished. It is also fired after a timeout of 0 milliseconds, 
 					 * so it is added to the execution queue rather than fired synchronously 
 					 * @event afterRender
 					 */
-					self.fire('afterRender');
-				}, 0);
+				setTimeout($.bind(this.fire, this, 'afterRender'), 0);
 			}
 		}
 		return this;
@@ -370,10 +364,13 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		widgetInstances[e.newVal] = this;
 		delete widgetInstances[e.prevVal];
 	},
+	
 	initializer: function () {
-		this._uid = ++WidgetNS._uid;
+		this._uid = $.guid();
 		
-		var id = this.get('id');
+		var self = this,
+			id = this.get('id');
+			
 		if (!id) {
 			id = this.getClassName(this._uid);
 			this.set('id', id);
@@ -391,6 +388,12 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		
 		this.after('visibleChange', this._toggleVisibility);
 		this.after('disabledChange', this._toggleDisabled);
+		
+		$Array.each([WIDTH, HEIGHT], function (size) {
+			self.after(size + 'Change', function (e) {
+				self.get(BOUNDING_BOX)[size](e.newVal);
+			});
+		});
 		
 		this._parseHTML();
 	},
