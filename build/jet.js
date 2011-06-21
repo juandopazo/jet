@@ -1086,7 +1086,18 @@ var update = function () {
 			 * Create a new instance of the core, call each module and the queue's callback 
 			 */
 			core = buildJet(queueList[i].config);
-			core.use = makeUse(queueList[i].config, core.Get);
+			core.use = (function () {
+				var use = makeUse(queueList[i].config, core.Get);
+				return function () {
+					var args = SLICE.call(arguments);
+					fn = args.pop();
+					args.push(function (subcore) {
+						subcore = subcore.mix(subcore, core);
+						fn.call(subcore, subcore);
+					});
+					use.apply(null, args);
+				};
+			}());
 			for (j = 0; j < requiredLength; j++) {
 				modules[required[j].name].call(core, core);
 			}
