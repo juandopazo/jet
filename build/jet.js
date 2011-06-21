@@ -529,12 +529,12 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 	},
 	/**
 	 * @method item
-	 * @description Returns a new ArrayList with the nth element of the current list
+	 * @description Returns the nth element of the current list
 	 * @param {Number} nth
 	 * @return ArrayList
 	 */
 	item: function (index) {
-		return new (this.constructor)([this._items[index]]);
+		return this._items[index || 0];
 	}
 };
 
@@ -625,7 +625,7 @@ Hash.each(ArrayMethods, function (method, returnArrayList) {
 			args.push(arg._items || arg);
 		}
 
-		ret = AP[name].apply(this._items, args);
+		ret = AP[method].apply(this._items, args);
 
 		return returnArrayList ? new (this.constructor)(ret) : ret;
 	};
@@ -1869,6 +1869,10 @@ function NodeList(nodes, root) {
 	this._items = nodes;
 }
 $.NodeList = $.extend(NodeList, $.ArrayList, {
+	
+	item: function (index) {
+		return new (this.constructor)([this._items[index]]);
+	},
 	
 	getDOMNodes: function () {
 		return this._items;

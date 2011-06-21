@@ -55,6 +55,10 @@ function NodeList(nodes, root) {
 }
 $.NodeList = $.extend(NodeList, $.ArrayList, {
 	
+	item: function (index) {
+		return new (this.constructor)([this._items[index]]);
+	},
+	
 	getDOMNodes: function () {
 		return this._items;
 	},
