@@ -174,16 +174,6 @@ $.Menu = Base.create('menu', Widget, [$.WidgetParent], {
 				child._handlers.push(child.on('mouseover', $.bind(this._onMenuMouseOver, this)));
 				child._handlers.push(child.on('mouseout', $.bind(this._onMenuMouseOut, this)));
 			}
-		},
-		click: function (e) {
-			var target = e.domEvent.target;
-			var selection;
-			if (!this.get('multiple') && target == this.get(BOUNDING_BOX)[0] || target == this.get(CONTENT_BOX)[0]) {
-				selection = this.get('selection');
-				if (selection) {
-					selection.unselect();
-				}
-			}
 		}
 	}
 }, {

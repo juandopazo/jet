@@ -149,11 +149,11 @@ WidgetParent.prototype = {
 	
 	constructor: WidgetParent,
 	
-	_handleMultipleChildren: function (e, newVal) {
-		if (newVal && !this.get(MULTIPLE)) {
+	_handleMultipleChildren: function (e) {
+		if (!this.get(MULTIPLE)) {
 			this.forEach(function (child) {
-				if (child != newVal && Lang.isFunction(child.unselect)) {
-					child.unselect();
+				if (child !== e.newVal) {
+					child.set(SELECTED, false);
 				}
 			});
 		}
@@ -195,15 +195,11 @@ WidgetParent.prototype = {
 					selection.push(child);
 				}
 			});
-		} else {
-			if (e.newVal) {
-				selection = e.target;
-				this.forEach(function (child) {
-					if (child != e.target && child.get(SELECTED)) {
-						child.unselect();
-					}
-				});
-			}
+		} else if (e.newVal) {
+			selection = e.target;
+		} else if (!e.prevVal && this.get('atLastOne')) {
+			e.preventDefault();
+			return;
 		}
 		this.set(SELECTION, selection);
 	},
@@ -250,7 +246,7 @@ WidgetParent.prototype = {
 			children[index] = child;
 			child.render(this.get('childrenContainer'));
 			
-			child.on('afterSelectedChange', $.bind(this._onChildSelect, this));
+			child.on('selectedChange', this._onChildSelect, this);
 			child.on('destroy', function (e) {
 				self._unHookChild(e.target);
 			});

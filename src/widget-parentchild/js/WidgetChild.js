@@ -64,13 +64,6 @@ $.mix(WidgetChild, {
 			}
 		},
 		
-		selectedChange: function (e) {
-			var parent = this.get(PARENT);
-			if (!e.newVal && parent && parent.size() > 1 && parent.get('selection') == this && !parent.get('multiple') && parent.get('atLeastOne')) {
-				e.preventDefault();
-			}
-		},
-		
 		afterSelectedChange: function (e) {
 			this.get(BOUNDING_BOX).toggleClass(this.getClassName(SELECTED), e.newVal);
 		}
