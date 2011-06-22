@@ -24,13 +24,33 @@ var SELECTED = 'selected',
  * @param {Object} config Object literal specifying widget configuration properties
  */
 function WidgetParent(config) {
-	this._items = this._items || [];
+	config = config || {};
+	var multiple = this.get(MULTIPLE),
+		selection = multiple ? [] : null;
+		
+	$.ArrayList.call(this);
+	
 	this.on('render', this._renderChildren);
 	this.after('selectionChange', this._handleMultipleChildren);
+	
+	this.add(config.children || []);
+
+	this.forEach(function (child) {
+		if (child.get(SELECTED)) {
+			if (multiple) {
+				selection.push(child);
+			} else {
+				selection = child;
+			}
+		}
+	});
+	if (selection) {
+		this.set(SELECTION, selection);
+	} else {
+		this.set(SELECTED_INDEX, 0);
+	}
 }
 $.mix(WidgetParent, {
-	
-	NAME: 'widget-parent',
 	
 	ATTRS: {
 			
@@ -62,10 +82,7 @@ $.mix(WidgetParent, {
 		 * @default []
 		 */
 		children: {
-			validator: Lang.isArray,
-			setter: function (val) {
-				this._items = val;
-			},
+			readOnly: true,
 			getter: function () {
 				return this._items;
 			}
@@ -161,25 +178,17 @@ WidgetParent.prototype = {
 	
 	_renderChildren: function () {
 		var self = this,
-			multiple = this.get(MULTIPLE),
-			selection = multiple ? [] : null;
+			container = this.get('childrenContainer');
 			
-		this.forEach(this.add, this);
 		$.Object.each(Widget.DOM_EVENTS, function (name) {
 			self.on(name, self._domEventChildrenProxy);
 		});
 		
 		this.forEach(function (child) {
-			if (child.get(SELECTED)) {
-				if (multiple) {
-					selection.push(child);
-				} else {
-					selection = child;
-				}
-			}
+			child.render(container);
 		});
-		this.set(SELECTION, selection);
-		if (!selection) {
+		
+		if (!this.get('selection')) {
 			this.set(SELECTED_INDEX, 0);
 		}
 	},
@@ -204,9 +213,9 @@ WidgetParent.prototype = {
 		this.set(SELECTION, selection);
 	},
 	
-	_unHookChild: function (child) {
-		child = child.get(INDEX);
-		this._items.splice(child, 1);
+	_unHookChild: function (e) {
+		var child = e.target.get(INDEX);
+		this.splice(child, 1);
 		this.forEach(function (item, i) {
 			if (i >= child) {
 				item.set(INDEX, i);
@@ -221,6 +230,31 @@ WidgetParent.prototype = {
 		}
 	},
 	
+	_add: function (child, index) {
+		var ChildType = this.get('childType');
+		
+		if (child && this.fire('addChild', { child: child, index: index })) {
+			
+			if (!(child instanceof ChildType)) {
+				child.parent = this;
+				child.index = index;
+				child = new (ChildType)(child);
+			} else {
+				child.set(PARENT, this);
+			}
+			
+			this.splice(index, 0, child);
+			if (this.get('rendered')) {
+				child.render(this.get('childrenContainer'));
+			}
+			
+			child.on('selectedChange', this._onChildSelect, this);
+			child.on('destroy', this._unHookChild, this);
+			
+			this.fire('afterAddChild', { child: child, index: index });
+		}
+	},
+	
 	/**
 	 * @method add
 	 * @description Adds a Widget as a child. If the specified Widget already has a parent it will be removed from its current parent before being added as a child
@@ -229,29 +263,15 @@ WidgetParent.prototype = {
 	 * @chainable
 	 */
 	add: function (child, index) {
-		var ChildType = this.get('childType'),
-			self = this,
-			children = this._items;
 		if (!Lang.isNumber(index)) {
-			index = children.length;
+			index = this.size();
 		}
-		if (child && this.fire('addChild', { child: child, index: index })) {
-			if (!(child instanceof ChildType)) {
-				child.parent = this;
-				child.index = index;
-				child = new (ChildType)(child);
-			} else {
-				child.set(PARENT, this);
-			}
-			children[index] = child;
-			child.render(this.get('childrenContainer'));
-			
-			child.on('selectedChange', this._onChildSelect, this);
-			child.on('destroy', function (e) {
-				self._unHookChild(e.target);
-			});
-			
-			this.fire('afterAddChild', { child: child, index: index });
+		if (Lang.isArray(child)) {
+			$.Array.forEach(child, function (c, i) {
+				this._add(c, index + i);
+			}, this);
+		} else {
+			this._add(child, index);
 		}
 		return this;
 	},
@@ -267,19 +287,18 @@ WidgetParent.prototype = {
 			child = this.item(child);
 		}
 		if (child && this.fire('removeChild', { child: child })) {
-			var children = this._items;
-			if (Lang.isNumber(child)) {
-				child = children[child];
-			}
-			this._unHookChild(child);
 			child.destroy();
 			this.fire('afterRemoveChild', { child: child });
 		}
 		return this;
 	},
 	
-	item: function (index) {
-		return this._items[index || 0];
+	removeAll: function () {
+		while (this.size() > 0) {
+			console.log('removeAll', this.size().toString(), this.item(0));
+			this.remove(0);
+		}
+		return this;
 	}
 	
 };

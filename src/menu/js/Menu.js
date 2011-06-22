@@ -36,9 +36,11 @@ $.Menu = Base.create('menu', Widget, [$.WidgetParent], {
 		},
 		afterAddChild: function (e) {
 			var child = e.child;
-			if (this.get('interaction') == OS_INTERACTION) {
-				child._handlers.push(child.on('mouseover', $.bind(this._onMenuMouseOver, this)));
-				child._handlers.push(child.on('mouseout', $.bind(this._onMenuMouseOut, this)));
+			if (this.get('interaction') === OS_INTERACTION) {
+				child._handlers.push(
+					child.on('mouseover', this._onMenuMouseOver, this),
+					child.on('mouseout', this._onMenuMouseOut, this)
+				);
 			}
 		}
 	}
