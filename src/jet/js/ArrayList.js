@@ -55,32 +55,46 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 	 */
 	item: function (index) {
 		return this._items[index || 0];
-	}
-};
-
-ArrayMethods = {
+	},
 	/** Returns a new ArrayList combining the given ArrayList(s) 
 	  * @method concat
 	  * @param {ArrayList | Array} valueN Arrays/ArrayLists and/or values to
 	  * concatenate to the resulting ArrayList
 	  * @return {ArrayList} A new ArrayList comprised of this ArrayList joined with the input.
 	  */
-	'concat': 1,
+	concat: function () {
+		var args = [],
+			length = arguments.length,
+			i = 0;
+		
+		for (; i < length; i++) {
+			if (arguments[i] && arguments[i]._items) {
+				args[args.length] = arguments[i]._items;
+			} else {
+				args[args.length] = arguments[i];
+			}
+		}
+		
+		return new this.constructor(AP.apply(this._items, args));
+	}
+};
+
+ArrayMethods = {
 	/** Removes the first last from the ArrayList and returns it.
 	  * @method pop
 	  * @return {Object} The last item in the ArrayList.
 	  */
-	'pop': 0,
+	pop: 0,
 	/** Adds the given Node(s) to the end of the ArrayList. 
 	  * @method push
 	  * @param {Node | DOMNode} nodes One or more nodes to add to the end of the ArrayList. 
 	  */
-	'push': 0,
+	push: 0,
 	/** Removes the first item from the ArrayList and returns it.
 	  * @method shift
 	  * @return {Object} The first item in the ArrayList.
 	  */
-	'shift': 0,
+	shift: 0,
 	/** Returns a new ArrayList comprising the Nodes in the given range. 
 	  * @method slice
 	  * @param {Number} begin Zero-based index at which to begin extraction.
@@ -91,7 +105,7 @@ ArrayMethods = {
 	  If end is omitted, slice extracts to the end of the sequence.
 	  * @return {ArrayList} A new ArrayList comprised of this ArrayList joined with the input.
 	  */
-	'slice': 1,
+	slice: 1,
 	/** Changes the content of the ArrayList, adding new elements while removing old elements.
 	  * @method splice
 	  * @param {Number} index Index at which to start changing the array. If negative, will begin that many elements from the end.
@@ -100,12 +114,12 @@ ArrayMethods = {
 	  The elements to add to the array. If you don't specify any elements, splice simply removes elements from the array.
 	  * @return {ArrayList} The element(s) removed.
 	  */
-	'splice': 1,
+	splice: 1,
 	/** Adds the given Node(s) to the beginning of the ArrayList. 
 	  * @method push
 	  * @param {Object} nodes One or more nodes to add to the ArrayList. 
 	  */
-	'unshift': 0
+	unshift: 0
 };
 
 ArrayHelperMethods = {
@@ -136,17 +150,7 @@ ArrayHelperMethods = {
 Hash.each(ArrayMethods, function (method, returnArrayList) {
 	
 	ARRAYLIST_PROTO[method] = function () {
-		var args = [],
-			i = 0,
-			arg,
-			ret;
-
-		while (typeof (arg = arguments[i++]) != 'undefined') { // use arraylists 
-			args.push(arg._items || arg);
-		}
-
-		ret = AP[method].apply(this._items, args);
-
+		var ret = AP[method].apply(this._items, arguments);
 		return returnArrayList ? new (this.constructor)(ret) : ret;
 	};
 	
