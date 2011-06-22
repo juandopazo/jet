@@ -7,7 +7,7 @@
  */
 function Attribute(state) {
 	Attribute.superclass.constructor.apply(this, arguments);
-	this._state = state || {};
+	this._state = state ? $.clone(state) : {};
 	this._attrs = {};
 	
 	var classes = [];
