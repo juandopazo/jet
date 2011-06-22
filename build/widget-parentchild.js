@@ -306,7 +306,6 @@ WidgetParent.prototype = {
 	
 	removeAll: function () {
 		while (this.size() > 0) {
-			console.log('removeAll', this.size().toString(), this.item(0));
 			this.remove(0);
 		}
 		return this;
