@@ -163,6 +163,12 @@ function buildJet(config) {
 			return r;
 		},
 		
+		/**
+		 * Creates a copy of the provided object
+		 * @method clone
+		 * @param {Object} o
+		 * @param {Boolean} deep. If true, all properties are cloned recursively
+		 */
 		clone: function clone(o, deep) {
 			var n;
 			if (Lang.isArray(o)) {

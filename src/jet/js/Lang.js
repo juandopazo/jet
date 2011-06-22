@@ -168,28 +168,6 @@ var Lang = (function () {
 		random: function (num) {
 			num = Math.random() * num;
 			return num === 0 ? 0 : Math.ceil(num) - 1;
-		},
-		/**
-		 * Clones an object, returning a copy with the sames properties
-		 * @method clone
-		 * @param {Object} o
-		 */
-		clone: function clone(o) {
-			var n;
-			if (Lang.isHash(o)) {
-				n = {};
-				$Object.each(o, function (key, value) {
-					n[key] = clone(value);
-				});
-			} else if (Lang.isArray(o)) {
-				n = [];
-				_Array.forEach(o, function (value) {
-					n[n.length] = clone(value);
-				});
-			} else {
-				n = o;
-			}
-			return n;
 		}
 	};
 }());
