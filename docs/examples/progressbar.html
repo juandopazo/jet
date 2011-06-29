@@ -16,24 +16,37 @@
 
 <body>
 	<div id="test"></div>
-	<script type="text/javascript" src="http://jet.no.de/jet?jet.min.js"></script>
+	<script type="text/javascript" src="http://localhost/jet/build/jet.js"></script>
 	<script type="text/javascript">
 		jet({
-			loadCss: true
+			base: '/jet/build/',
+			combine: false,
+			minify: false
 		}).use('anim', 'progressbar', function ($) {
 			
-			var pbar = new $.ProgressBar({
-				animate: true,
-				easing: "easein",
-				duration: 1000
+			var test = $('#test'),
+			
+				pbar = new $.ProgressBar({
+					animate: true,
+					easing: "easein",
+					duration: 1000,
+					on: {
+						progress: function (e) {
+							test.html(Math.ceil(e.value / 2) + "%");
+						},
+						end: function () {
+							setTimeout(function () {
+								pbar.set("value", $.Lang.random(100));
+							}, 0);
+						}
+					}
+				});
+			pbar.render().set("value", $.Lang.random(100));
+			
+			pbar.on('click', function () {
+				pbar.destroy();
+				pbar = null;
 			});
-			pbar.on("progress", function (e, value) {
-				$("#test").html(Math.ceil(value / 2) + "%");
-			}).render(document.body).on("end", function () {
-				setTimeout(function () {
-					pbar.set("value", $.Lang.random(100));
-				}, 0);
-			}).set("value", $.Lang.random(100));
 			
 		});
 	</script>
