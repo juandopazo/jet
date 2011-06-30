@@ -87,9 +87,7 @@ function CustomEvent(type, target, onPrevented, args) {
 function EventTarget() {
 	this._events = {};
 }
-EventTarget.prototype = {
-	
-	constructor: EventTarget,
+$.mix(EventTarget.prototype, {
 	
 	_attach: function (eventType, handler) {
 		handler.o = handler.o || this;
@@ -213,6 +211,6 @@ EventTarget.prototype = {
 		}
 		return returnValue;
 	}
-};
+});
 
 $.EventTarget = EventTarget;
