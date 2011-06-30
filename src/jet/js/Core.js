@@ -169,25 +169,7 @@ function buildJet(config) {
 		 * @param {Object} o
 		 * @param {Boolean} deep. If true, all properties are cloned recursively
 		 */
-		clone: function clone(o, deep) {
-			var n;
-			if (Lang.isArray(o)) {
-				n = [].concat(o);
-				if (deep) {
-					_Array.each(n, function (val, i) {
-						n[i] = deep ? $.clone(val, deep) : val;
-					});
-				}
-			} else if (o.hasOwnProperty && Lang.isObject(o, true)) {
-				n = {};
-				Hash.each(o, function (prop, val) {
-					n[prop] = deep ? clone(val, deep) : val;
-				});
-			} else {
-				n = o;
-			}
-			return n;
-		},
+		clone: clone,
 		
 		/**
 		 * Copies all properties from B to A.
