@@ -154,7 +154,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 		*/
 		use: {
 			writeOnce: true,
-			value: []
+			value: ['node']
 		},
 		/**
 		* @attribute container
@@ -337,8 +337,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 		if (!this._ready) {
 			this._ready = true;
 			this._iframe.css('visibility', '');
-			var inst = this.getInstance(),
-				args = this.get('use');
+			var inst = this.getInstance();
 			
 			/**
 			 * @event contentReady
@@ -346,14 +345,14 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 			 */
 			this.fire('contentReady');
 
-			if (e) {
+			/*if (e) {
 				inst.config.doc = e.target.getDOMNode() || e.target;
-			}
+			}*/
 			//TODO Circle around and deal with CSS loading...
 			/*args.push($.bind(function() {
 				this.fire('ready');
 			}, this));*/
-			inst.use.apply(inst, args);
+			//inst.use.apply(inst, args);
 
 			inst(inst.config.doc.documentElement).addClass('jet-js-enabled');
 		}
@@ -477,6 +476,8 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 
 		this._create($.bind(function(res) {
 
+			res.win.jet = jet;
+
 			var inst, timer,
 			
 				cb = $.bind(function(i) {
@@ -485,18 +486,20 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 					this._instanceLoaded(i);
 				}, this),
 				
-				args = this.get('use'),
-				config = {
+				args = [],
+				config = $.mix($.config, {
 					win: res.win,
 					doc: res.doc
-				},
+				}, true, true),
 				
 				fn = $.bind(function() {
 					config = this._resolveWinDoc(config);
 					inst = jet(config);
+					var req = this.get('use');
+					req.push(cb);
 
 					try {
-						inst.use('node', cb);
+						inst.use.apply(inst, req);
 						if (timer) {
 							clearInterval(timer);
 						}
@@ -529,6 +532,7 @@ var FRAME = 'frame',
 function WidgetSandbox() {
 	var frame = this.frame = new $.Frame({
 		linkedcss: this.get('extraCss'),
+		use: this.get('use'),
 		on: {
 			contentReady: $.bind(this._onFrameReady, this)
 		}
@@ -546,6 +550,9 @@ $.WidgetSandbox = $.mix(WidgetSandbox, {
 		
 		extraCss: {
 			writeOnce: true,
+			value: []
+		},
+		use: {
 			value: []
 		}
 	}

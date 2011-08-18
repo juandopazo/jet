@@ -12,6 +12,7 @@ var FRAME = 'frame',
 function WidgetSandbox() {
 	var frame = this.frame = new $.Frame({
 		linkedcss: this.get('extraCss'),
+		use: this.get('use'),
 		on: {
 			contentReady: $.bind(this._onFrameReady, this)
 		}
@@ -29,6 +30,9 @@ $.WidgetSandbox = $.mix(WidgetSandbox, {
 		
 		extraCss: {
 			writeOnce: true,
+			value: []
+		},
+		use: {
 			value: []
 		}
 	}
