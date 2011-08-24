@@ -20,11 +20,11 @@ function Base(config) {
 
 	this._handlers = [$($.config.win).on(UNLOAD, this.destroy, this)];
 
-	Hash.each(events, attachEvent, this);
+	$Object.each(events, attachEvent, this);
 
 	for (i = 0; i < classes.length; i++) {
 		if (classes[i].EVENTS) {
-			Hash.each(classes[i].EVENTS, attachEvent, this);
+			$Object.each(classes[i].EVENTS, attachEvent, this);
 		}
 		if (classes[i][PROTO].hasOwnProperty('initializer')) {
 			classes[i][PROTO].initializer.call(this, config);
@@ -83,7 +83,7 @@ $.extend(Base, Attribute, {
 			BuiltClass.superclass.constructor.apply(this, args);
 			$Array.each(BuiltClass.EXTS, function (extension) {
 				extension.apply(self, args);
-				Hash.each(extension.EVENTS || {}, function (type, fn) {
+				$Object.each(extension.EVENTS || {}, function (type, fn) {
 					self.on(type, fn);
 				});
 			});
@@ -95,7 +95,7 @@ $.extend(Base, Attribute, {
 		}, true);
 		$Array.each(extensions, function (extension) {
 			$.mix(BuiltClass[PROTO], extension[PROTO]);
-			Hash.each(extension, function (prop, val) {
+			$Object.each(extension, function (prop, val) {
 				if (!BuiltClass[prop]) {
 					BuiltClass[prop] = val;
 				} else if (Lang.isObject(BuiltClass[prop]) && Lang.isObject(val)) {

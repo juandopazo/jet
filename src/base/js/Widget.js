@@ -176,7 +176,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 	CONTENT_TEMPLATE: '<div/>',
 
 	_domEventProxy: function (e) {
-		this.fire(e.type, { domEvent: e });
+		this.fire(e.type, { domEvent: e, currentTarget: $.Widget.getByNode(e.target) });
 	},
 	
 	/**
@@ -251,7 +251,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 	_bindUI: function (boundingBox, contentBox, classes) {
 		var self = this;
 		
-		Hash.each($.Widget.DOM_EVENTS, function (name, activated) {
+		$Object.each($.Widget.DOM_EVENTS, function (name, activated) {
 			if (activated) {
 				self._handlers.push(boundingBox.on(name, self._domEventProxy, self));
 			}
@@ -341,7 +341,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		var boundingBox = this.get(BOUNDING_BOX);
 		if (boundingBox.getDOMNode() && boundingBox.inDoc()) {
 			$Array.each(this._classes, function (someClass) {
-				Hash.each(someClass.HTML_PARSER || {}, function (attr, parser) {
+				$Object.each(someClass.HTML_PARSER || {}, function (attr, parser) {
 					var val = parser.call(self, boundingBox);
 					if (Lang.isValue(val) && (!(val instanceof $.NodeList) || val.getDOMNode())) {
 						self.set(attr, val);

@@ -1,7 +1,7 @@
 "use strict";
 
 
-var Hash = $.Object,
+var $Object = $.Object,
 	Lang = $.Lang,
 	$Array = $.Array,
 	SLICE = Array.prototype.slice,
@@ -54,7 +54,7 @@ function EventFacade(type, target, onPrevented, args) {
 		}
 	};
 	
-	Hash.each(args || {}, function (name, val) {
+	$Object.each(args || {}, function (name, val) {
 		if (!Lang.isValue(self[name])) {
 			this[name] = val;
 		}
@@ -107,7 +107,7 @@ $.mix(EventTarget.prototype, {
 	
 	_on: function (eventType, callback, thisp, once) {
 		if (Lang.isObject(eventType)) {
-			Hash.each(eventType, function (type, fn) {
+			$Object.each(eventType, function (type, fn) {
 				this._attach(type, {
 					fn: fn,
 					o: callback,
@@ -125,7 +125,7 @@ $.mix(EventTarget.prototype, {
 	},
 	
 	/**
-	 * Adds an event listener 
+	 * Adds an event listener
 	 * @method on
 	 * @param {String} eventType Name of the event to listen to
 	 * @param {Function} callback Callback to execute when the event fires

@@ -31,7 +31,7 @@ $.extend(Attribute, EventTarget, {
 	 * Adds a configuration attribute, along with its options
 	 * @method addAttr
 	 * @param {String} attrName
-	 * @param {Hash} config
+	 * @param {$Object} config
 	 * @chainable
 	 */
 	addAttr: function (attrName, config) {
@@ -59,7 +59,7 @@ $.extend(Attribute, EventTarget, {
 		return this;
 	},
 	
-	_set: function (attrName, attrValue) {
+	_set: function (attrName, attrValue, extraArgs) {
 		var attrConfig = this._attrs;
 		var state = this._state;
 		var config = attrConfig[attrName] = attrConfig[attrName] || {};
@@ -78,6 +78,9 @@ $.extend(Attribute, EventTarget, {
 					prevVal: oldValue,
 					attrName: attrName
 				};
+				if (Lang.isObject(extraArgs)) {
+					$.mix(args, extraArgs);
+				}
 				if (attrValue !== oldValue && this.fire(attrName + "Change", args)) {
 					state[attrName] = attrValue;
 					this.fire('after' + Lang.capitalize(attrName) + 'Change', args);
@@ -119,12 +122,14 @@ $.extend(Attribute, EventTarget, {
 	 * @param {Object} attrValue
 	 * @chainable
 	 */
-	set: function (attrName, attrValue) {
+	set: function (attrName, attrValue, args) {
 		var self = this;
 		if (Lang.isObject(attrName)) {
-			Hash.each(attrName, this._set, this);
+			$Object.each(attrName, function (name, value) {
+				this._set(name, value, args);
+			}, this);
 		} else {
-			this._set(attrName, attrValue);
+			this._set(attrName, attrValue, args);
 		}
 		return this;
 	},
@@ -141,22 +146,22 @@ $.extend(Attribute, EventTarget, {
 	/**
 	 * Adds several configuration attributes
 	 * @method addAttrs
-	 * @param {Hash} config - key/value pairs of attribute names and configs
+	 * @param {$Object} config - key/value pairs of attribute names and configs
 	 * @chainable
 	 */
 	addAttrs: function (config) {
-		Hash.each(config, this.addAttr, this);
+		$Object.each(config, this.addAttr, this);
 		return this;
 	},
 	/**
 	 * Returns a key/value paired object with all attributes
 	 * @method getAttrs
-	 * @return {Hash}
+	 * @return {$Object}
 	 */
 	getAttrs: function () {
 		var result = {};
 		var self = this;
-		Hash.each(this._state, function (key) {
+		$Object.each(this._state, function (key) {
 			result[key] = self.get(key);
 		});
 		return result;
