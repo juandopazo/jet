@@ -108,9 +108,6 @@ $.mix(WidgetParent, {
 			wriceOnce: true
 		},
 		
-		atLeastOne: {
-			value: false
-		},
 		/**
 		 * @attribute selectedIndex
 		 * @description The index of the currently selected item
@@ -206,9 +203,6 @@ WidgetParent.prototype = {
 			});
 		} else if (e.newVal) {
 			selection = e.target;
-		} else if (!e.prevVal && this.get('atLastOne')) {
-			e.preventDefault();
-			return;
 		}
 		this.set(SELECTION, selection);
 	},
