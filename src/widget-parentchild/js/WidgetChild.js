@@ -5,7 +5,9 @@
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-function WidgetChild() {}
+function WidgetChild() {
+	this.after('selectedChange', this._childSelectedChange);
+}
 $.mix(WidgetChild, {
 	
 	NAME: 'widget-child',
@@ -62,10 +64,6 @@ $.mix(WidgetChild, {
 			if (this.get(SELECTED)) {
 				boundingBox.addClass(this.getClassName(SELECTED));
 			}
-		},
-		
-		afterSelectedChange: function (e) {
-			this.get(BOUNDING_BOX).toggleClass(this.getClassName(SELECTED), e.newVal);
 		}
 	},
 	
@@ -77,6 +75,9 @@ $.mix(WidgetChild, {
 	
 });
 WidgetChild.prototype = {
+	_childSelectedChange: function (e) {
+		this.get(BOUNDING_BOX).toggleClass(this.getClassName(SELECTED), e.newVal);
+	},
 	/**
 	 * @method select
 	 * @description Selects this widget

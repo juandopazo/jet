@@ -31,7 +31,7 @@ function WidgetParent(config) {
 	$.ArrayList.call(this);
 	
 	this.on('render', this._renderChildren);
-	this.after('selectionChange', this._handleMultipleChildren);
+	this.after('selectionChange', this._onSelectionChange);
 	
 	this.add(config.children || []);
 
@@ -163,13 +163,13 @@ WidgetParent.prototype = {
 	
 	constructor: WidgetParent,
 	
-	_handleMultipleChildren: function (e) {
-		if (!this.get(MULTIPLE)) {
-			this.forEach(function (child) {
-				if (child !== e.newVal) {
-					child.set(SELECTED, false);
-				}
+	_onSelectionChange: function (e) {
+		if (this.get(MULTIPLE)) {
+			this.forEach(function(child) {
+				child.set(SELECTED, $.Array.indexOf(child, e.newVal) === -1, { src: '_onSelectionChange' });
 			});
+		} else if (e.prevVal) {
+			e.prevVal.set(SELECTED, false, { src: '_onSelectionChange' });
 		}
 	},
 	
@@ -191,20 +191,21 @@ WidgetParent.prototype = {
 	},
 	
 	_onChildSelect: function (e) {
-		var selection = null,
-			multiple = this.get(MULTIPLE);
-			
-		if (multiple) {
-			selection = [];
-			this.forEach(function (child) {
-				if (child.get(SELECTED)) {
-					selection.push(child);
-				}
-			});
-		} else if (e.newVal) {
-			selection = e.target;
+		if (e.src !== '_onSelectionChange') {
+			var selection = null;
+				
+			if (this.get(MULTIPLE)) {
+				selection = [];
+				this.forEach(function (child) {
+					if (child.get(SELECTED)) {
+						selection.push(child);
+					}
+				});
+			} else if (e.newVal) {
+				selection = e.target;
+			}
+			this.set(SELECTION, selection);
 		}
-		this.set(SELECTION, selection);
 	},
 	
 	_unHookChild: function (e) {
