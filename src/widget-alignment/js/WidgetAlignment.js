@@ -155,7 +155,7 @@ WidgetAlignment.prototype = {
 			alignOffset = align.offset || [0, 0],
 			
 			target = align.node ? $(align.node) : null,
-			boundingBox = this.get('alignedBox'),
+			boundingBox = this.get('alignedNode'),
 			
 			targetOffset = target ? target.offset() : null,
 			boundingOffset = boundingBox.offset(),
@@ -235,7 +235,7 @@ $.mix(WidgetAlignment, {
 			}
 		},
 		
-		alignedBox: {
+		alignedNode: {
 			value: 'boundingBox',
 			getter: function(val) {
 				return $.Lang.isString(val) ? this.get(val) : val;
@@ -249,7 +249,7 @@ $.mix(WidgetAlignment, {
 			var fixed = this.get(FIXED),
 				win = $(this.get('win'));
 				
-			this.get('alignedBox').css('position', (fixed && UA_SUPPORTS_FIXED) ? FIXED : 'absolute');
+			this.get('alignedNode').css('position', (fixed && UA_SUPPORTS_FIXED) ? FIXED : 'absolute');
 			this._handlers.push(win.on('resize', this._repositionUI, this));
 			
 			if (fixed && !UA_SUPPORTS_FIXED) {
