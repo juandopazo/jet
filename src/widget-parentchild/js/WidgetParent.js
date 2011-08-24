@@ -242,7 +242,7 @@ WidgetParent.prototype = {
 				child.render(this.get('childrenContainer'));
 			}
 			
-			child.on('selectedChange', this._onChildSelect, this);
+			child.after('selectedChange', this._onChildSelect, this);
 			child.on('destroy', this._unHookChild, this);
 			
 			this.fire('afterAddChild', { child: child, index: index });
