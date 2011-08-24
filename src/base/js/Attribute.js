@@ -108,7 +108,7 @@ $.extend(Attribute, EventTarget, {
 			attrConfig[attrName].readOnly = true;
 		}
 		if (!Lang.isValue(state[attrName])) {
-			state[attrName] = config.value;
+			state[attrName] = config.valueFn ? config.valueFn() : config.value;
 		}
 		return config.getter ? config.getter.call(this, state[attrName], attrName) : state[attrName];
 	},

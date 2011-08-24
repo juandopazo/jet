@@ -29,10 +29,10 @@ $.guid = function () {
 
 /**
  * A custom event object, only to be used by EventTarget
- * @class CustomEvent
+ * @class EventFacade
  * @constructor
  */
-function CustomEvent(type, target, onPrevented, args) {
+function EventFacade(type, target, onPrevented, args) {
 	
 	/**
 	 * @property type
@@ -60,6 +60,8 @@ function CustomEvent(type, target, onPrevented, args) {
 		}
 	}, this);
 }
+
+$.EventFacade = EventFacade;
 
 /**
  * <p>A class designed to be inherited or used by other classes to provide custom events.</p>
@@ -196,7 +198,7 @@ $.mix(EventTarget.prototype, {
 	fire: function (eventType, args) {
 		var handlers = this._events[eventType] = this._events[eventType] || [],
 			returnValue = true,
-			e = new CustomEvent(eventType, this, function () { returnValue = false; }, args),
+			e = new $.EventFacade(eventType, this, function () { returnValue = false; }, args),
 			i = 0;
 			
 		while (i < handlers.length) {
