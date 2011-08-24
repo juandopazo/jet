@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Contains test</title>
+</head>
+<body>
+	<div id="test">
+		<p id="a">
+			<span id="b">hello</span>
+		</p>
+	</div>
+	<div id="c"></div>
+	<script src="/jet/build/jet.js"></script>
+	<script>
+		jet(function ($) {
+			console.log($('div').contains(document.getElementById('b')));
+		});
+	</script>
+</body>
+</html>

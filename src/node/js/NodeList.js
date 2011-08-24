@@ -624,6 +624,34 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	 */
 	value: function (val) {
 		return this.attr('value', val);
+	},
+	/**
+	 * Returns true if the nodelist contains a certain node or selector
+	 * @param {Node|String} node or selector
+	 * @return {Boolean}
+	 */
+	contains: function(selector) {
+		if (Lang.isString(selector)) {
+			return this.find(selector).size() > 0;
+		} else {
+			selector = $(selector).getDOMNode();
+			if (selector.nodeType) {
+				var contains = false;
+				this.children().each(function (node) {
+					$.walkTheDOM(node, function(n) {
+						if (n === selector) {
+							contains = true;
+							return false;
+						}
+					});
+					if (contains) {
+						return false;
+					}
+				});
+				return contains;
+			}
+		}
+		return false;
 	}
 });
 

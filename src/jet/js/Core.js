@@ -16,8 +16,8 @@ function buildJet(config) {
 		fn(node);
 		node = node.firstChild;
 		while (node) {
-			if (node.nodeType != 3) {
-				walkTheDOM(node, fn);
+			if (node.nodeType != 3 && walkTheDOM(node, fn) === false) {
+				return;
 			}
 			node = node.nextSibling;
 		}

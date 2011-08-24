@@ -699,7 +699,7 @@ var UA = (function () {
 		mac: p ? /mac/.test(p) : /mac/.test(ua),
 		
 		support: {
-			fixed: !ie || (ie > 7 && document.documentMode > 6)
+			fixed: !ie || ie === 7 || (ie > 7 && document.documentMode > 6)
 		}
 	};
 }());
@@ -848,8 +848,8 @@ function buildJet(config) {
 		fn(node);
 		node = node.firstChild;
 		while (node) {
-			if (node.nodeType != 3) {
-				walkTheDOM(node, fn);
+			if (node.nodeType != 3 && walkTheDOM(node, fn) === false) {
+				return;
 			}
 			node = node.nextSibling;
 		}
@@ -2432,6 +2432,34 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	 */
 	value: function (val) {
 		return this.attr('value', val);
+	},
+	/**
+	 * Returns true if the nodelist contains a certain node or selector
+	 * @param {Node|String} node or selector
+	 * @return {Boolean}
+	 */
+	contains: function(selector) {
+		if (Lang.isString(selector)) {
+			return this.find(selector).size() > 0;
+		} else {
+			selector = $(selector).getDOMNode();
+			if (selector.nodeType) {
+				var contains = false;
+				this.children().each(function (node) {
+					$.walkTheDOM(node, function(n) {
+						if (n === selector) {
+							contains = true;
+							return false;
+						}
+					});
+					if (contains) {
+						return false;
+					}
+				});
+				return contains;
+			}
+		}
+		return false;
 	}
 });
 
