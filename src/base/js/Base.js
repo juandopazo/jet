@@ -10,6 +10,8 @@ function Base(config) {
 	config = config || {};
 	Base.superclass.constructor.call(this, config);
 	
+	this.name = this.constructor.NAME;
+	
 	var classes = this._classes;
 	var i, events = this.get('on');
 	var attachEvent = function (name, fn) {
