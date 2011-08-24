@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Menu test</title>
+	<link rel="stylesheet" href="/jet/src/menu/css/menu.css"/>
+	<style>
+		body {
+			margin 0;
+			padding: 0;
+			font-family: Arial, Helvetica, sans-serif;
+			font-size: 13px;
+		}
+		
+		.jet-menubar-content {
+			background: #e3e9ff;
+			border-top: 2px solid #bbccff;
+			height: 26px;
+			line-height: 26px;
+		}
+		
+		.jet-menuitem-hover, .jet-menuitem-selected {
+			background: #6688ee;
+		}
+		.jet-menuitem-hover .jet-menuitem-content,
+		.jet-menuitem-selected .jet-menuitem-content {
+			color: #fff;
+		}
+		.jet-menuitem-hover .jet-menuitem .jet-menuitem-content,
+		.jet-menuitem-selected .jet-menuitem .jet-menuitem-content {
+			color: #000;
+		}
+		.jet-menuitem-hover .jet-menuitem .jet-menuitem-hover {
+			background: #6688ee;
+		}
+		.jet-menuitem-hover .jet-menuitem-hover .jet-menuitem-content {
+			color: #fff;
+		}
+		
+		.jet-simplemenu-content {
+			margin: 0;
+			padding: 0;
+		}
+		.jet-simplemenu .jet-menuitem {
+			display: inline-block;
+		}
+		
+
+	</style>
+</head>
+<body>
+	<script src="/jet/build/jet.js"></script>
+	<script>
+		jet({
+			base: '/jet/build/',
+			combine: false
+		}).use('menu', function ($) {
+			
+			var menu = new $.SimpleMenu({
+				children: [{
+					label: 'foo'
+				}, {
+					label: 'bar'
+				}, {
+					label: 'baz'
+				}]
+			});
+			menu.render();
+			
+		});
+	</script>
+</body>
+</html>
