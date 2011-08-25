@@ -275,7 +275,7 @@ var Resize = $.Resize = $.Base.create('resize', $.Utility, [], {
 			self._handlers.push(handle.on('mousedown', self._onHandleMouseDown, self), handle.on('mouseover', self._onHandleMouseOver, self), handle.on('mouseout', self._onHandleMouseOut, self));
 			handle.append($(NEW_DIV).addClass(handleClass + '-inner', handleClass + '-inner-' + type)).appendTo(node);
 		});
-		node.addClass(resizeClass).css('display', 'block');
+		node.addClass(resizeClass);
 		if (this.get('hiddenHandles')) {
 			node.addClass(resizeClass + '-hidden');
 		} else if (this.get(HOVER)) {
