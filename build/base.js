@@ -999,7 +999,7 @@ $.Mouse = $.Base.create('mouse', $.Utility, [], {
 			var pageSize = this.get('pageSize');
 			$.Mouse.shim = $('<iframe/>').attr({
 				frameborder: '0',
-				src: 'javascript:;'
+				src: 'javascript:' + ($.UA.ie ? 'false;' : ';')
 			}).css({
 				opacity: 0,
 				position: 'absolute',
