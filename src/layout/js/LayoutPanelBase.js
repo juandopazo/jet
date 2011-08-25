@@ -1,0 +1,153 @@
+
+var Resize = $.Resize;
+
+/**
+ * Base class used to create both the Layout and LayoutPanel classes.
+ * Provides functionality to resize panels keeping the declared layout structure
+ * @class LayoutPanelBase
+ * @constructor
+ */
+function LayoutPanelBase() {}
+
+LayoutPanelBase.Vertical = 'v';
+LayoutPanelBase.Horizontal = 'h';
+
+$.mix(LayoutPanelBase, {
+	
+	ATTRS: {
+		/**
+		 * @config direction
+		 * @description Direction in which this panel can be resized
+		 * @default LayoutPanelBase.Vertical
+		 * @writeOnce
+		 */
+		direction: {
+			value: LayoutPanelBase.Vertical,
+			writeOnce: true
+		},
+		/**
+		 * @config minSize
+		 * @description Minimum size the panel can acquire. Applies to width or height depending on the 'direction' attribute
+		 * @default 0
+		 * @writeOnce
+		 */
+		minSize: {
+			value: 0,
+			wriceOnce: true
+		},
+		/**
+		 * @config shim
+		 * @description Whether the resize utility should use a shim to protect the mouse movements
+		 * @default false
+		 * @writeOnce
+		 */
+		shim: {
+			value: false,
+			writeOnce: true
+		},
+		/**
+		 * @config defaultChildType
+		 * @description Default type to apply to children
+		 * @default LayoutPanel
+		 */
+		defaultChildType: {
+			value: 'LayoutPanel'
+		}
+	},
+	
+	EVENTS: {
+		afterRender: '_uiLayoutRender',
+		afterAddChild: '_setupChildResize',
+		removeChild: '_destroyChildResize'
+	},
+	
+	HTML_PARSER: {
+		direction: function (boundingBox) {
+			return boundingBox.hasClass(this.getClassName(LayoutPanelBase.Horizontal)) ? LayoutPanelBase.Horizontal : LayoutPanelBase.Vertical;
+		}
+	}
+});
+
+LayoutPanelBase.prototype = {
+		
+	_uiLayoutRender: function () {
+		var direction = this.get('direction');
+		var boundingBox = this.get('boundingBox');
+		var sizeType = direction == LayoutPanelBase.Horizontal ? 'width' : 'height';
+		var setSize = 0;
+		var freeSize = 0;
+		var childrenNumber = this.get('children').length;
+		if (childrenNumber > 0) {
+			boundingBox.addClass(this.getClassName(direction));
+		}
+		this.each(function (child) {
+			setSize += child.get(sizeType) || 0;
+		});
+		freeSize = (boundingBox[sizeType]() - setSize) / childrenNumber;
+		this.each(function (child) {
+			if (!child.get(sizeType)) {
+				child.set(sizeType, freeSize);
+			}
+		});
+	},
+	
+	_setupChildResize: function (e) {
+		
+		var Resize = $.Resize;
+		var minSize = this.get('minSize');
+		var direction = this.get('direction');
+		var child = e.child;
+			
+		if (e.index > 0) {
+			
+			child.resize = new Resize({
+				node: child.get('boundingBox'),
+				handles: [direction == LayoutPanelBase.Horizontal ? Resize.Left : Resize.Top],
+				minWidth: minSize,
+				minHeight: minSize,
+				shim: this.get('shim')
+			});
+			
+			child.resize.on('resize:start', this._onChildResizeStart, child);
+			child.resize.on('resize', this._onChildResize, child);
+			
+		}
+			
+		child.get('boundingBox').addClass(child.getClassName('child', direction));
+	},
+	
+	_destroyChildResize: function (e) {
+		
+		e.child.resize.destroy();
+		e.child.resize = null;
+		
+	},
+	
+	_onChildResizeStart: function (e) {
+		
+		var previous = this.previous();
+		var previousBoundingBox = previous.get('boundingBox');
+		
+		previous._originalWidth = previousBoundingBox.width();
+		previous._originalHeight = previousBoundingBox.height(); 
+		
+	},
+	
+	_onChildResize: function (e) {
+		var childResize = e.target;
+		var previous = this.previous();
+		var previousBoundingBox = previous.get('boundingBox');
+		
+		if (this.get('parent').get('direction') == LayoutPanelBase.Horizontal) {
+			
+			previousBoundingBox.width(childResize.get('originalWidth') - e.width + previous._originalWidth);
+			
+		} else {
+			
+			previousBoundingBox.height(childResize.get('originalHeight') - e.height + previous._originalHeight);
+			
+		}
+	}
+};
+
+$.LayoutPanelBase = LayoutPanelBase;
