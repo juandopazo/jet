@@ -42,7 +42,7 @@ function WidgetParent(config) {
 	$.ArrayList.call(this);
 	
 	this.on('render', this._renderChildren);
-	this.after('selectionChange', this._handleMultipleChildren);
+	this.after('selectionChange', this._onSelectionChange);
 	
 	this.add(config.children || []);
 
@@ -119,9 +119,6 @@ $.mix(WidgetParent, {
 			wriceOnce: true
 		},
 		
-		atLeastOne: {
-			value: false
-		},
 		/**
 		 * @attribute selectedIndex
 		 * @description The index of the currently selected item
@@ -177,13 +174,13 @@ WidgetParent.prototype = {
 	
 	constructor: WidgetParent,
 	
-	_handleMultipleChildren: function (e) {
-		if (!this.get(MULTIPLE)) {
-			this.forEach(function (child) {
-				if (child !== e.newVal) {
-					child.set(SELECTED, false);
-				}
+	_onSelectionChange: function (e) {
+		if (this.get(MULTIPLE)) {
+			this.forEach(function(child) {
+				child.set(SELECTED, $.Array.indexOf(child, e.newVal) === -1, { src: '_onSelectionChange' });
 			});
+		} else if (e.prevVal) {
+			e.prevVal.set(SELECTED, false, { src: '_onSelectionChange' });
 		}
 	},
 	
@@ -205,23 +202,21 @@ WidgetParent.prototype = {
 	},
 	
 	_onChildSelect: function (e) {
-		var selection = null,
-			multiple = this.get(MULTIPLE);
-			
-		if (multiple) {
-			selection = [];
-			this.forEach(function (child) {
-				if (child.get(SELECTED)) {
-					selection.push(child);
-				}
-			});
-		} else if (e.newVal) {
-			selection = e.target;
-		} else if (!e.prevVal && this.get('atLastOne')) {
-			e.preventDefault();
-			return;
+		if (e.src !== '_onSelectionChange') {
+			var selection = null;
+				
+			if (this.get(MULTIPLE)) {
+				selection = [];
+				this.forEach(function (child) {
+					if (child.get(SELECTED)) {
+						selection.push(child);
+					}
+				});
+			} else if (e.newVal) {
+				selection = e.target;
+			}
+			this.set(SELECTION, selection);
 		}
-		this.set(SELECTION, selection);
 	},
 	
 	_unHookChild: function (e) {
@@ -259,7 +254,7 @@ WidgetParent.prototype = {
 				child.render(this.get('childrenContainer'));
 			}
 			
-			child.on('selectedChange', this._onChildSelect, this);
+			child.after('selectedChange', this._onChildSelect, this);
 			child.on('destroy', this._unHookChild, this);
 			
 			this.fire('afterAddChild', { child: child, index: index });
@@ -321,7 +316,9 @@ $.mix(WidgetParent.prototype, $.ArrayList.prototype);
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-function WidgetChild() {}
+function WidgetChild() {
+	this.after('selectedChange', this._childSelectedChange);
+}
 $.mix(WidgetChild, {
 	
 	NAME: 'widget-child',
@@ -378,10 +375,6 @@ $.mix(WidgetChild, {
 			if (this.get(SELECTED)) {
 				boundingBox.addClass(this.getClassName(SELECTED));
 			}
-		},
-		
-		afterSelectedChange: function (e) {
-			this.get(BOUNDING_BOX).toggleClass(this.getClassName(SELECTED), e.newVal);
 		}
 	},
 	
@@ -393,6 +386,9 @@ $.mix(WidgetChild, {
 	
 });
 WidgetChild.prototype = {
+	_childSelectedChange: function (e) {
+		this.get(BOUNDING_BOX).toggleClass(this.getClassName(SELECTED), e.newVal);
+	},
 	/**
 	 * @method select
 	 * @description Selects this widget

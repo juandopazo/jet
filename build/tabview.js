@@ -53,17 +53,17 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 			value: 'click'
 		},
 		/**
-		 * @attribute labelContent
+		 * @attribute label
 		 * @description Gets/sets the content of the tab's label
 		 */
-		labelContent: {
+		label: {
 			value: ''
 		},
 		/**
-		 * @attribute panelContent
+		 * @attribute content
 		 * @description Gets/sets the content of the tab's panel
 		 */
-		panelContent: {
+		content: {
 			value: ''
 		},
 		/**
@@ -82,13 +82,13 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 		panel: function () {
 			return this.get(PARENT).get('panelContainer').children(this.get('index'));
 		},
-		panelContent: function () {
+		content: function () {
 			var panel = this.get('panelNode');
 			if (panel) {
 				return panel.html();
 			}
 		},
-		labelContent: function () {
+		label: function () {
 			var label = this.get(CONTENT_BOX);
 			if (label) {
 				return label.html();
@@ -140,8 +140,8 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 	},
 	
 	renderUI: function () {
-		this.get(CONTENT_BOX).attr(HREF, this.get(HREF)).html(this.get('labelContent'));
-		var panel = this.get('panelNode').html(this.get('panelContent')).addClass(this.getClassName(PANEL));
+		this.get(CONTENT_BOX).attr(HREF, this.get(HREF)).html(this.get('label'));
+		var panel = this.get('panelNode').html(this.get('content')).addClass(this.getClassName(PANEL));
 		var panelContainer = this.get(PARENT).get(PANEL_CONTAINER);
 		if (panel.parent().getDOMNode() != panelContainer.getDOMNode()) {
 			panel.appendTo(panelContainer);					

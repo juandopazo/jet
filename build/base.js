@@ -12,7 +12,7 @@ jet.add('base', function ($) {
 			"use strict";
 
 
-var Hash = $.Object,
+var $Object = $.Object,
 	Lang = $.Lang,
 	$Array = $.Array,
 	SLICE = Array.prototype.slice,
@@ -40,10 +40,10 @@ $.guid = function () {
 
 /**
  * A custom event object, only to be used by EventTarget
- * @class CustomEvent
+ * @class EventFacade
  * @constructor
  */
-function CustomEvent(type, target, onPrevented, args) {
+function EventFacade(type, target, onPrevented, args) {
 	
 	/**
 	 * @property type
@@ -65,12 +65,14 @@ function CustomEvent(type, target, onPrevented, args) {
 		}
 	};
 	
-	Hash.each(args || {}, function (name, val) {
+	$Object.each(args || {}, function (name, val) {
 		if (!Lang.isValue(self[name])) {
 			this[name] = val;
 		}
 	}, this);
 }
+
+$.EventFacade = EventFacade;
 
 /**
  * <p>A class designed to be inherited or used by other classes to provide custom events.</p>
@@ -116,7 +118,7 @@ $.mix(EventTarget.prototype, {
 	
 	_on: function (eventType, callback, thisp, once) {
 		if (Lang.isObject(eventType)) {
-			Hash.each(eventType, function (type, fn) {
+			$Object.each(eventType, function (type, fn) {
 				this._attach(type, {
 					fn: fn,
 					o: callback,
@@ -134,7 +136,7 @@ $.mix(EventTarget.prototype, {
 	},
 	
 	/**
-	 * Adds an event listener 
+	 * Adds an event listener
 	 * @method on
 	 * @param {String} eventType Name of the event to listen to
 	 * @param {Function} callback Callback to execute when the event fires
@@ -207,7 +209,7 @@ $.mix(EventTarget.prototype, {
 	fire: function (eventType, args) {
 		var handlers = this._events[eventType] = this._events[eventType] || [],
 			returnValue = true,
-			e = new CustomEvent(eventType, this, function () { returnValue = false; }, args),
+			e = new $.EventFacade(eventType, this, function () { returnValue = false; }, args),
 			i = 0;
 			
 		while (i < handlers.length) {
@@ -257,7 +259,7 @@ $.extend(Attribute, EventTarget, {
 	 * Adds a configuration attribute, along with its options
 	 * @method addAttr
 	 * @param {String} attrName
-	 * @param {Hash} config
+	 * @param {$Object} config
 	 * @chainable
 	 */
 	addAttr: function (attrName, config) {
@@ -285,7 +287,7 @@ $.extend(Attribute, EventTarget, {
 		return this;
 	},
 	
-	_set: function (attrName, attrValue) {
+	_set: function (attrName, attrValue, extraArgs) {
 		var attrConfig = this._attrs;
 		var state = this._state;
 		var config = attrConfig[attrName] = attrConfig[attrName] || {};
@@ -304,6 +306,9 @@ $.extend(Attribute, EventTarget, {
 					prevVal: oldValue,
 					attrName: attrName
 				};
+				if (Lang.isObject(extraArgs)) {
+					$.mix(args, extraArgs);
+				}
 				if (attrValue !== oldValue && this.fire(attrName + "Change", args)) {
 					state[attrName] = attrValue;
 					this.fire('after' + Lang.capitalize(attrName) + 'Change', args);
@@ -334,7 +339,7 @@ $.extend(Attribute, EventTarget, {
 			attrConfig[attrName].readOnly = true;
 		}
 		if (!Lang.isValue(state[attrName])) {
-			state[attrName] = config.value;
+			state[attrName] = config.valueFn ? config.valueFn() : config.value;
 		}
 		return config.getter ? config.getter.call(this, state[attrName], attrName) : state[attrName];
 	},
@@ -345,12 +350,14 @@ $.extend(Attribute, EventTarget, {
 	 * @param {Object} attrValue
 	 * @chainable
 	 */
-	set: function (attrName, attrValue) {
+	set: function (attrName, attrValue, args) {
 		var self = this;
 		if (Lang.isObject(attrName)) {
-			Hash.each(attrName, this._set, this);
+			$Object.each(attrName, function (name, value) {
+				this._set(name, value, args);
+			}, this);
 		} else {
-			this._set(attrName, attrValue);
+			this._set(attrName, attrValue, args);
 		}
 		return this;
 	},
@@ -367,22 +374,22 @@ $.extend(Attribute, EventTarget, {
 	/**
 	 * Adds several configuration attributes
 	 * @method addAttrs
-	 * @param {Hash} config - key/value pairs of attribute names and configs
+	 * @param {$Object} config - key/value pairs of attribute names and configs
 	 * @chainable
 	 */
 	addAttrs: function (config) {
-		Hash.each(config, this.addAttr, this);
+		$Object.each(config, this.addAttr, this);
 		return this;
 	},
 	/**
 	 * Returns a key/value paired object with all attributes
 	 * @method getAttrs
-	 * @return {Hash}
+	 * @return {$Object}
 	 */
 	getAttrs: function () {
 		var result = {};
 		var self = this;
-		Hash.each(this._state, function (key) {
+		$Object.each(this._state, function (key) {
 			result[key] = self.get(key);
 		});
 		return result;
@@ -401,6 +408,8 @@ function Base(config) {
 	config = config || {};
 	Base.superclass.constructor.call(this, config);
 	
+	this.name = this.constructor.NAME;
+	
 	var classes = this._classes;
 	var i, events = this.get('on');
 	var attachEvent = function (name, fn) {
@@ -409,11 +418,11 @@ function Base(config) {
 
 	this._handlers = [$($.config.win).on(UNLOAD, this.destroy, this)];
 
-	Hash.each(events, attachEvent, this);
+	$Object.each(events, attachEvent, this);
 
 	for (i = 0; i < classes.length; i++) {
 		if (classes[i].EVENTS) {
-			Hash.each(classes[i].EVENTS, attachEvent, this);
+			$Object.each(classes[i].EVENTS, attachEvent, this);
 		}
 		if (classes[i][PROTO].hasOwnProperty('initializer')) {
 			classes[i][PROTO].initializer.call(this, config);
@@ -472,7 +481,7 @@ $.extend(Base, Attribute, {
 			BuiltClass.superclass.constructor.apply(this, args);
 			$Array.each(BuiltClass.EXTS, function (extension) {
 				extension.apply(self, args);
-				Hash.each(extension.EVENTS || {}, function (type, fn) {
+				$Object.each(extension.EVENTS || {}, function (type, fn) {
 					self.on(type, fn);
 				});
 			});
@@ -484,7 +493,7 @@ $.extend(Base, Attribute, {
 		}, true);
 		$Array.each(extensions, function (extension) {
 			$.mix(BuiltClass[PROTO], extension[PROTO]);
-			Hash.each(extension, function (prop, val) {
+			$Object.each(extension, function (prop, val) {
 				if (!BuiltClass[prop]) {
 					BuiltClass[prop] = val;
 				} else if (Lang.isObject(BuiltClass[prop]) && Lang.isObject(val)) {
@@ -706,7 +715,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 	CONTENT_TEMPLATE: '<div/>',
 
 	_domEventProxy: function (e) {
-		this.fire(e.type, { domEvent: e });
+		this.fire(e.type, { domEvent: e, currentTarget: $.Widget.getByNode(e.target) });
 	},
 	
 	/**
@@ -781,7 +790,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 	_bindUI: function (boundingBox, contentBox, classes) {
 		var self = this;
 		
-		Hash.each($.Widget.DOM_EVENTS, function (name, activated) {
+		$Object.each($.Widget.DOM_EVENTS, function (name, activated) {
 			if (activated) {
 				self._handlers.push(boundingBox.on(name, self._domEventProxy, self));
 			}
@@ -871,7 +880,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		var boundingBox = this.get(BOUNDING_BOX);
 		if (boundingBox.getDOMNode() && boundingBox.inDoc()) {
 			$Array.each(this._classes, function (someClass) {
-				Hash.each(someClass.HTML_PARSER || {}, function (attr, parser) {
+				$Object.each(someClass.HTML_PARSER || {}, function (attr, parser) {
 					var val = parser.call(self, boundingBox);
 					if (Lang.isValue(val) && (!(val instanceof $.NodeList) || val.getDOMNode())) {
 						self.set(attr, val);

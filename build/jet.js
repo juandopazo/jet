@@ -595,7 +595,7 @@ ArrayMethods = {
 	  The elements to add to the array. If you don't specify any elements, splice simply removes elements from the array.
 	  * @return {ArrayList} The element(s) removed.
 	  */
-	splice: 1,
+	splice: 0,
 	/** Adds the given Node(s) to the beginning of the ArrayList. 
 	  * @method push
 	  * @param {Object} nodes One or more nodes to add to the ArrayList. 
