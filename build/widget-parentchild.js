@@ -299,6 +299,22 @@ WidgetParent.prototype = {
 		return this;
 	},
 	
+	/**
+	 * @method first
+	 */
+	first: function() {
+		return this.item(0);
+	},
+	/**
+	 * @method last
+	 */
+	last: function() {
+		return this.item(this.size() - 1);
+	},
+	/**
+	 * @method removeAll
+	 * @chainable
+	 */
 	removeAll: function () {
 		while (this.size() > 0) {
 			this.remove(0);
