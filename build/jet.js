@@ -844,7 +844,7 @@ function buildJet(config) {
 	 * @param {HTMLElement} node
 	 * @param {Function} fn
 	 */
-	var walkTheDOM = function (node, fn) {
+	function walkTheDOM(node, fn) {
 		fn(node);
 		node = node.firstChild;
 		while (node) {
@@ -890,8 +890,9 @@ function buildJet(config) {
 	 */
 	// @TODO: consider moving this to the Node module
 	var $ = function Jet(query, root) {
-		root = root || $.config.doc;
-		root = root.ownerDocument || root;
+		root = !root ? $.config.doc :
+				root instanceof $.NodeList ? root.getDOMNode() :
+				root;
 		if (Lang.isString(query)) {
 			query = $.find(query, root);
 			query = new $.NodeList(Lang.isValue(query) ? query : []);
