@@ -258,7 +258,7 @@ $.mix(WidgetAlignment, {
 	EVENTS: {
 		render: function () {
 			var fixed = this.get(FIXED),
-				win = $(this.get('win'));
+				win = $($.config.win);
 				
 			this.get('alignedNode').css('position', (fixed && UA_SUPPORTS_FIXED) ? FIXED : 'absolute');
 			this._handlers.push(win.on('resize', this._repositionUI, this));
