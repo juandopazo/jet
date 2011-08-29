@@ -414,7 +414,8 @@ var DataTable = Base.create('dt', Widget, [], {
 	 * @param {RecordSet} newRecordSet
 	 */
 	onDataReturnAddRows: function (e) {
-		this.get(RECORDSET).push(e.data);
+		var recordSet = this.get(RECORDSET);
+		recordSet.push.apply(recordSet, e.data._items);
 		this.addRows(e.data);
 	}
 	
