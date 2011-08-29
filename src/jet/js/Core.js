@@ -79,6 +79,10 @@ function buildJet(config) {
 	}
 	
 	add({
+		instanceOf: function(o, type) {
+			return !!(o && o.hasOwnProperty && (o instanceof type));
+		},
+		
 		bind: bind,
 		
 		namespace: function (ns) {
