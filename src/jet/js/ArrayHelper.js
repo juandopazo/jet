@@ -75,7 +75,7 @@ var _Array = {
 		return arr.map(fn, thisp);
 	} : function (arr, fn, thisp) {
 		var result = [];
-		ArrayHelper.forEach(arr, function (item, i) {
+		_Array.forEach(arr, function (item, i) {
 			result[i] = fn.call(thisp, item, i, arr);
 		});
 		return result;
