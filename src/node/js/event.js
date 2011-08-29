@@ -46,12 +46,13 @@ var EventCache = Event.Cache = (function () {
 		 * @param {String} type
 		 * @param {Function} fn
 		 */
-		add: function (obj, type, fn) {
+		add: function (obj, type, callback, listener) {
 			if (obj.nodeType) {
 				var c = getCache(type);
 				c[c.length] = {
 					obj: obj,
-					fn: fn
+					callback: callback,
+					listener: listener
 				};
 			}
 		},
@@ -63,11 +64,11 @@ var EventCache = Event.Cache = (function () {
 		 * @param {Function} fn
 		 */
 		remove: function (obj, type, fn) {
-			detachEvent(obj, type, fn);
 			var c = getCache(type),
 			i = 0;
 			while (i < c.length) {
-				if (c[i].obj == obj && c[i].fn == fn) {
+				if (c[i].obj == obj && c[i].callback == callback) {
+					detachEvent(obj, type, c[i].listener);
 					c.splice(i, 1);
 				} else {
 					i++;
@@ -85,7 +86,7 @@ var EventCache = Event.Cache = (function () {
 				c = getCache(type);
 				while (i < c.length) {
 					if (c[i].obj == obj) {
-						detachEvent(obj, type, c[i].fn);
+						detachEvent(obj, type, c[i].listener);
 						c.splice(i, 1);
 					} else {
 						i++;
@@ -98,7 +99,7 @@ var EventCache = Event.Cache = (function () {
 						i = 0;
 						while (i < c.length) {
 							if (c[i].obj == obj) {
-								detachEvent(obj, type, c[i].fn);
+								detachEvent(obj, type, c[i].listener);
 								c.splice(i, 1);
 							} else {
 								i++;
@@ -131,6 +132,10 @@ var makeHandler = function (callback, thisp) {
 		e.stopPropagation = function () {
 			e.cancelBubble = true;
 		};
+		e.halt = function() {
+			e.stopPropagation();
+			e.preventDefault();
+		};
 		callback.call(thisp || e.srcElement, e);
 	};
 };
@@ -139,7 +144,13 @@ var makeHandler = function (callback, thisp) {
 var addEvent = function (obj, type, callback, thisp) {
 	if (obj.addEventListener) {
 		addEvent = function (obj, type, callback, thisp) {
-			var handlerFn = thisp ? $.bind(callback, thisp) : callback;
+			var handlerFn = function(e) {
+				e.halt = function() {
+					e.stopPropagation();
+					e.preventDefault();
+				};
+				callback.call(thisp || this, e);
+			}
 			obj.addEventListener(type, handlerFn, false);
 			EventCache.add(obj, type, callback, handlerFn);
 			return {
@@ -153,7 +164,7 @@ var addEvent = function (obj, type, callback, thisp) {
 			// Use makeHandler to prevent the handler function from having obj in its scope
 			var handlerFn = makeHandler(callback, thisp);
 			obj.attachEvent(ON + type, handlerFn);
-			EventCache.add(obj, type, handlerFn);
+			EventCache.add(obj, type, callback, handlerFn);
 			return {
 				obj: obj,
 				type: type,
@@ -201,7 +212,7 @@ $.DOMEventHandler = $.mix(DOMEventHandler.prototype, {
 	 */
 	detach: function () {
 		for (var handlers = this._handlers, i = 0, length = handlers.length; i < length; i++) {
-			EventCache.remove(handlers[i].obj, handlers[i].type, handlers[i].fn);
+			EventCache.remove(handlers[i].obj, handlers[i].type, handlers[i].callback);
 		}
 		this._handlers = [];
 	}

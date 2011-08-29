@@ -53,6 +53,9 @@ function EventFacade(type, target, onPrevented, args) {
 			onPrevented();
 		}
 	};
+	this.halt = function() {
+		this.preventDefault();
+	};
 	
 	$Object.each(args || {}, function (name, val) {
 		if (!Lang.isValue(self[name])) {
