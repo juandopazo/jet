@@ -63,7 +63,7 @@ var EventCache = Event.Cache = (function () {
 		 * @param {String} type
 		 * @param {Function} fn
 		 */
-		remove: function (obj, type, fn) {
+		remove: function (obj, type, callback) {
 			var c = getCache(type),
 			i = 0;
 			while (i < c.length) {
