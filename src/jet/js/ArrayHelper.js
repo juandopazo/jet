@@ -64,6 +64,21 @@ var _Array = {
 			}
 		}
 		return -1;
+	},
+	/**
+	 * Calls a given function on all items of an array and returns a new array with the return value of each call
+	 * @param {Array} array Array to map
+	 * @param {Function} fn Function to call on each item
+	 * @pram {Object} thisp Optional context to apply to the given function
+	 */
+	map: AP.map ? function (arr, fn, thisp) {
+		return arr.map(fn, thisp);
+	} : function (arr, fn, thisp) {
+		var result = [];
+		ArrayHelper.forEach(arr, function (item, i) {
+			result[i] = fn.call(thisp, item, i, arr);
+		});
+		return result;
 	}
 };
 
