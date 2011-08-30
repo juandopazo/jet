@@ -7,7 +7,10 @@ var Resize = $.Resize;
  * @class LayoutPanelBase
  * @constructor
  */
-function LayoutPanelBase() {}
+function LayoutPanelBase() {
+	this.after('widthChange', this._onSizeChange);
+	this.after('heightChange', this._onSizeChange);
+}
 
 LayoutPanelBase.Vertical = 'v';
 LayoutPanelBase.Horizontal = 'h';
@@ -69,6 +72,20 @@ $.mix(LayoutPanelBase, {
 });
 
 LayoutPanelBase.prototype = {
+	
+	_onSizeChange: function(e) {
+		if (this.size() > 0 && $.Lang.isNumber(e.prevVal) && $.Lang.isNumber(e.newVal)) {
+			var lastChild = this.last(),
+				sizeType = this.get('direction') === LayoutPanelBase.Vertical ? 'height' : 'width',
+				size = 0,
+				child = this.first();
+			while (child !== lastChild) {
+				size += child.get(sizeType);
+				child = child.next();
+			}
+			lastChild.set(sizeType, Math.floor(e.newVal - size));
+		}
+	},
 		
 	_uiLayoutRender: function () {
 		var direction = this.get('direction');

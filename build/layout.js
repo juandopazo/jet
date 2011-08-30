@@ -18,7 +18,10 @@ var Resize = $.Resize;
  * @class LayoutPanelBase
  * @constructor
  */
-function LayoutPanelBase() {}
+function LayoutPanelBase() {
+	this.after('widthChange', this._onSizeChange);
+	this.after('heightChange', this._onSizeChange);
+}
 
 LayoutPanelBase.Vertical = 'v';
 LayoutPanelBase.Horizontal = 'h';
@@ -80,6 +83,20 @@ $.mix(LayoutPanelBase, {
 });
 
 LayoutPanelBase.prototype = {
+	
+	_onSizeChange: function(e) {
+		if (this.size() > 0 && $.Lang.isNumber(e.prevVal) && $.Lang.isNumber(e.newVal)) {
+			var lastChild = this.last(),
+				sizeType = this.get('direction') === LayoutPanelBase.Vertical ? 'height' : 'width',
+				size = 0,
+				child = this.first();
+			while (child !== lastChild) {
+				size += child.get(sizeType);
+				child = child.next();
+			}
+			lastChild.set(sizeType, Math.floor(e.newVal - size));
+		}
+	},
 		
 	_uiLayoutRender: function () {
 		var direction = this.get('direction');
@@ -161,7 +178,7 @@ LayoutPanelBase.prototype = {
 	}
 };
 
-
+$.LayoutPanelBase = LayoutPanelBase;
 /**
  * A Layout Panel is a resizable block which size is constrained by the other blocks in the same container
  * @class LayoutPanel
@@ -172,7 +189,7 @@ LayoutPanelBase.prototype = {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.LayoutPanel = $.Base.create('layout-panel', $.Widget, [LayoutPanelBase, $.WidgetParent, $.WidgetChild], {}, {
+$.LayoutPanel = $.Base.create('layout-panel', $.Widget, [$.LayoutPanelBase, $.WidgetParent, $.WidgetChild], {}, {
 	
 	CONTENT_TEMPLATE: null
 	
@@ -187,7 +204,7 @@ $.LayoutPanel = $.Base.create('layout-panel', $.Widget, [LayoutPanelBase, $.Widg
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.Layout = $.Base.create('layout', $.Widget, [LayoutPanelBase, $.WidgetParent], {}, {
+$.Layout = $.Base.create('layout', $.Widget, [$.LayoutPanelBase, $.WidgetParent], {}, {
 	
 	CONTENT_TEMPLATE: null
 	
