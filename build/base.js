@@ -28,16 +28,6 @@ var TRACKING = "tracking",
 	PROTO = 'prototype',
 	DASH = '-';
 
-var Env = jet.namespace('Env');
-
-if (!Lang.isNumber(Env._uid)) {
-	Env._uid = 0;
-}
-
-$.guid = function () {
-	return ++Env._uid;
-};
-
 /**
  * A custom event object, only to be used by EventTarget
  * @class EventFacade
@@ -63,6 +53,9 @@ function EventFacade(type, target, onPrevented, args) {
 		if (onPrevented) {
 			onPrevented();
 		}
+	};
+	this.halt = function() {
+		this.preventDefault();
 	};
 	
 	$Object.each(args || {}, function (name, val) {
@@ -911,7 +904,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 			id = this.get('id');
 			
 		if (!id) {
-			id = this.getClassName(this._uid);
+			id = this._uid;
 			this.set('id', id);
 		}
 		this.after('idChange', this._widgetIdChange);
@@ -1140,7 +1133,7 @@ $.Mouse = $.Base.create('mouse', $.Utility, [], {
 		}
 	});
 	
-	$Array.each(['on', 'once', 'fire'], function (eventMethod) {
+	$Array.each(['on', 'once', 'fire', 'unbind'], function (eventMethod) {
 		$[eventMethod] = $.bind($_event[eventMethod], $_event);
 	});
 	

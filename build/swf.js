@@ -416,13 +416,10 @@ var swfobject = function () {
 	
 	/* Cross-browser dynamic SWF creation
 	*/
-	function createSWF(attObj, parObj, id) {
-		var r, el = getElementById(id);
+	function createSWF(attObj, parObj, el) {
+		var r;
 		if (ua.wk && ua.wk < 312) { return r; }
 		if (el) {
-			if (typeof attObj.id == UNDEF) { // if no 'id' is defined for the object element, it will inherit the 'id' from the alternative content
-				attObj.id = id;
-			}
 			if (ua.ie && ua.win) { // Internet Explorer + the HTML object element + W3C DOM methods do not combine: fall back to outerHTML
 				var att = "";
 				for (var i in attObj) {
@@ -444,9 +441,10 @@ var swfobject = function () {
 						par += '<param name="' + j + '" value="' + parObj[j] + '" />';
 					}
 				}
-				el.outerHTML = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"' + att + '>' + par + '</object>';
+				el.innerHTML = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"' + att + '>' + par + '</object>';
+				//el.outerHTML = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"' + att + '>' + par + '</object>';
 				objIdArr[objIdArr.length] = attObj.id; // stored to fix object 'leaks' on unload (dynamic publishing only)
-				r = getElementById(attObj.id);	
+				r = el.firstChild;	
 			}
 			else { // well-behaving browsers
 				var o = createElement(OBJECT);
@@ -466,7 +464,8 @@ var swfobject = function () {
 						createObjParam(o, n, parObj[n]);
 					}
 				}
-				el.parentNode.replaceChild(o, el);
+				el.appendChild(o);
+				//el.parentNode.replaceChild(o, el);
 				r = o;
 			}
 		}
@@ -656,56 +655,57 @@ var swfobject = function () {
 			}
 		},
 		
-		embedSWF: function (swfUrlStr, replaceElemIdStr, widthStr, heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn) {
-			var callbackObj = {success:false, id:replaceElemIdStr};
-			if (ua.w3 && !(ua.wk && ua.wk < 312) && swfUrlStr && replaceElemIdStr && widthStr && heightStr && swfVersionStr) {
-				setVisibility(replaceElemIdStr, false);
-				addDomLoadEvent(function () {
-					widthStr += ""; // auto-convert to string
-					heightStr += "";
-					var att = {};
-					if (attObj && typeof attObj === OBJECT) {
-						for (var i in attObj) { // copy object to avoid the use of references, because web authors often reuse attObj for multiple SWFs
-							att[i] = attObj[i];
+		embedSWF: function (swfUrlStr, node, widthStr, heightStr, swfVersionStr, xiSwfUrlStr, flashvarsObj, parObj, attObj, callbackFn) {
+			var callbackObj = {success: false, node: $(node) };
+			if (ua.w3 && !(ua.wk && ua.wk < 312) && swfUrlStr && node && widthStr && heightStr && swfVersionStr) {
+				node.css('visibility', 'hidden');
+				//setVisibility(replaceElemIdStr, false);
+				widthStr += ""; // auto-convert to string
+				heightStr += "";
+				var att = {};
+				if (attObj && typeof attObj === OBJECT) {
+					for (var i in attObj) { // copy object to avoid the use of references, because web authors often reuse attObj for multiple SWFs
+						att[i] = attObj[i];
+					}
+				}
+				att.data = swfUrlStr;
+				att.width = widthStr;
+				att.height = heightStr;
+				var par = {}; 
+				if (parObj && typeof parObj === OBJECT) {
+					for (var j in parObj) { // copy object to avoid the use of references, because web authors often reuse parObj for multiple SWFs
+						par[j] = parObj[j];
+					}
+				}
+				if (flashvarsObj && typeof flashvarsObj === OBJECT) {
+					for (var k in flashvarsObj) { // copy object to avoid the use of references, because web authors often reuse flashvarsObj for multiple SWFs
+						if (typeof par.flashvars != UNDEF) {
+							par.flashvars += "&" + k + "=" + flashvarsObj[k];
+						}
+						else {
+							par.flashvars = k + "=" + flashvarsObj[k];
 						}
 					}
-					att.data = swfUrlStr;
-					att.width = widthStr;
-					att.height = heightStr;
-					var par = {}; 
-					if (parObj && typeof parObj === OBJECT) {
-						for (var j in parObj) { // copy object to avoid the use of references, because web authors often reuse parObj for multiple SWFs
-							par[j] = parObj[j];
-						}
-					}
-					if (flashvarsObj && typeof flashvarsObj === OBJECT) {
-						for (var k in flashvarsObj) { // copy object to avoid the use of references, because web authors often reuse flashvarsObj for multiple SWFs
-							if (typeof par.flashvars != UNDEF) {
-								par.flashvars += "&" + k + "=" + flashvarsObj[k];
-							}
-							else {
-								par.flashvars = k + "=" + flashvarsObj[k];
-							}
-						}
-					}
-					if (hasPlayerVersion(swfVersionStr)) { // create SWF
-						var obj = createSWF(att, par, replaceElemIdStr);
-						if (att.id == replaceElemIdStr) {
-							setVisibility(replaceElemIdStr, true);
-						}
-						callbackObj.success = true;
-						callbackObj.ref = obj;
-					}
-					else if (xiSwfUrlStr && canExpressInstall()) { // show Adobe Express Install
-						att.data = xiSwfUrlStr;
-						showExpressInstall(att, par, replaceElemIdStr, callbackFn);
-						return;
-					}
-					else { // show alternative content
-						setVisibility(replaceElemIdStr, true);
-					}
-					if (callbackFn) { callbackFn(callbackObj); }
-				});
+				}
+				if (hasPlayerVersion(swfVersionStr)) { // create SWF
+					var obj = createSWF(att, par, node.getDOMNode());
+					node.css('visibility', 'visible');
+					// if (att.id == replaceElemIdStr) {
+						// setVisibility(replaceElemIdStr, true);
+					// }
+					callbackObj.success = true;
+					callbackObj.ref = obj;
+				}
+				else if (xiSwfUrlStr && canExpressInstall()) { // show Adobe Express Install
+					att.data = xiSwfUrlStr;
+					showExpressInstall(att, par, replaceElemIdStr, callbackFn);
+					return;
+				}
+				else { // show alternative content
+					node.css('visibility', 'visible');
+					//setVisibility(replaceElemIdStr, true);
+				}
+				if (callbackFn) { callbackFn(callbackObj); }
 			}
 			else if (callbackFn) { callbackFn(callbackObj);	}
 		},
@@ -788,6 +788,48 @@ var swfobject = function () {
 	};
 }();
 
-$.swfobject = swfobject;
+function SWF(node, url, opts) {
+	SWF.superclass.constructor.apply(this, arguments);
+	node = $(node);
+	opts = opts || {};
+	var self = this;
+	var version = opts.version || '9.0.0';
+	if (opts.on) {
+		$.Object.each(opts.on, function (eventName, callback) {
+			self.on(eventName, callback);
+		});
+	}
+	var fsCommandFunc = function(cmd, args) {
+		console.log(cmd, args);
+	};
+	var attachFscommand = function(node) {
+		if (node.attachEvent) {
+			node.attachEvent('FSCommand', fsCommandFunc);
+		} else {
+			node.ownerDocument.defaultView[node.id + '_DoFSCommand'] = fsCommandFunc;
+		}
+	}
+	swfobject.embedSWF(url, node, opts.width, opts.height, version, null, null, null, null, function (e) {
+		var node = e.ref;
+		if (!node.id) {
+			node.id = 'jet_flash' + $.guid();
+		}
+		SWF.enableVBScript(node.id);
+		attachFscommand(node);
+	});
+}
+$.extend(SWF, $.EventTarget);
+
+SWF.enableVBScript = function (id) {
+	var vbScript = $('<script/>').attr({
+		type: 'text/VBScript',
+		text: 'on error resume next\n' +
+			  'Sub ' + id + '_FSCommand(ByVal command, ByVal args)\n' +
+			  '  call ' + id + '_DoFSCommand(command, args)\n' +
+			  'end sub'
+	}).appendTo('body');
+}
+
+$.SWF = SWF;
 			
 });

@@ -320,7 +320,7 @@ var DataTable = Base.create('dt', Widget, [], {
 	
 	_addRow: function (row) {
 		if (this.fire('addRow', { data: row })) {
-			if (!Record.hasInstance(row)) {
+			if (!$.instanceOf(row, Record)) {
 				row = new $.Record(row);
 			}
 			var recordIdPrefix = this.get(RECORD_ID_PREFIX);
@@ -370,11 +370,11 @@ var DataTable = Base.create('dt', Widget, [], {
 		if (this.fire('addRows', { data: rows })) {
 			if (Lang.isArray(rows)) {
 				A.each(rows, function (row) {
-					if (!Record.hasInstance(row)) {
+					if (!$.instanceOf(row, Record)) {
 						row = new $.Record(row);
 					}
 				});
-			} else if (RecordSet.hasInstance(rows)) {
+			} else if ($.instanceOf(rows, RecordSet)) {
 				rows = rows.getRecords();
 			}
 			var trs = [];
@@ -447,7 +447,7 @@ var DataTable = Base.create('dt', Widget, [], {
 	 * @return NodeList
 	 */
 	getNextTr: function (tr) {
-		if (Record.hasInstance(tr)) {
+		if ($.instanceOf(tr, Record)) {
 			tr = tr.getId();
 		}
 		if (Lang.isNumber(tr)) {
@@ -463,7 +463,7 @@ var DataTable = Base.create('dt', Widget, [], {
 	 * @return NodeList
 	 */
 	getFirstTd: function (row) {
-		if (Record.hasInstance(row)) {
+		if ($.instanceOf(row, Record)) {
 			row = row.getId();
 		}
 		if (Lang.isNumber(row)) {
@@ -479,7 +479,7 @@ var DataTable = Base.create('dt', Widget, [], {
 	 * @return NodeList
 	 */
 	getNextTd: function (td) {
-		if (Record.hasInstance(td)) {
+		if ($.instanceOf(td, Record)) {
 			td = td.getId();
 		}
 		if (Lang.isNumber(td)) {
@@ -548,7 +548,8 @@ var DataTable = Base.create('dt', Widget, [], {
 	 * @param {RecordSet} newRecordSet
 	 */
 	onDataReturnAddRows: function (e) {
-		this.get(RECORDSET).push(e.data);
+		var recordSet = this.get(RECORDSET);
+		recordSet.push.apply(recordSet, e.data._items);
 		this.addRows(e.data);
 	}
 	

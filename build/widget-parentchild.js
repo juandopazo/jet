@@ -177,7 +177,7 @@ WidgetParent.prototype = {
 	_onSelectionChange: function (e) {
 		if (this.get(MULTIPLE)) {
 			this.forEach(function(child) {
-				child.set(SELECTED, $.Array.indexOf(child, e.newVal) === -1, { src: '_onSelectionChange' });
+				child.set(SELECTED, $.Array.indexOf(e.newVal, child) === -1, { src: '_onSelectionChange' });
 			});
 		} else if (e.prevVal) {
 			e.prevVal.set(SELECTED, false, { src: '_onSelectionChange' });
@@ -259,26 +259,40 @@ WidgetParent.prototype = {
 			
 			this.fire('afterAddChild', { child: child, index: index });
 		}
+		return child;
+	},
+	
+	/**
+	 * @method addChild
+	 * @description Adds a Widget as a child. If the specified Widget already has a parent it will be removed from its current parent before being added as a child
+	 * @param child <Widget|Object> The Widget instance, or configuration object for the Widget to be added as a child
+	 * @param index <Number> (Optional.) Number representing the position at which the child should be inserted
+	 * @return {Widget} child
+	 */
+	addChild: function(child, index) {
+		var result, self = this;
+		if (!Lang.isNumber(index)) {
+			index = this.size();
+		}
+		if (Lang.isArray(child)) {
+			result = $.Array.map(child, function (c, i) {
+				return self._add(c, index + i);
+			});
+		} else {
+			result = this._add(child, index);
+		}
+		return result;
 	},
 	
 	/**
 	 * @method add
-	 * @description Adds a Widget as a child. If the specified Widget already has a parent it will be removed from its current parent before being added as a child
+	 * @description Same as addChild, but chainable
 	 * @param child <Widget|Object> The Widget instance, or configuration object for the Widget to be added as a child
 	 * @param index <Number> (Optional.) Number representing the position at which the child should be inserted
 	 * @chainable
 	 */
 	add: function (child, index) {
-		if (!Lang.isNumber(index)) {
-			index = this.size();
-		}
-		if (Lang.isArray(child)) {
-			$.Array.forEach(child, function (c, i) {
-				this._add(c, index + i);
-			}, this);
-		} else {
-			this._add(child, index);
-		}
+		this.addChild(child, index);
 		return this;
 	},
 	

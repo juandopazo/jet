@@ -281,6 +281,14 @@ var Lang = (function () {
 		random: function (num) {
 			num = Math.random() * num;
 			return num === 0 ? 0 : Math.ceil(num) - 1;
+		},
+		/**
+		 * A shim for ES5's Date.now()
+		 * @method now
+		 * @return {Number} ms Current time in milliseconds
+		 */
+		now: function() {
+			return (new Date).getTime();
 		}
 	};
 }());
@@ -382,6 +390,21 @@ var _Array = {
 			}
 		}
 		return -1;
+	},
+	/**
+	 * Calls a given function on all items of an array and returns a new array with the return value of each call
+	 * @param {Array} array Array to map
+	 * @param {Function} fn Function to call on each item
+	 * @pram {Object} thisp Optional context to apply to the given function
+	 */
+	map: AP.map ? function (arr, fn, thisp) {
+		return arr.map(fn, thisp);
+	} : function (arr, fn, thisp) {
+		var result = [];
+		_Array.forEach(arr, function (item, i) {
+			result[i] = fn.call(thisp, item, i, arr);
+		});
+		return result;
 	}
 };
 
@@ -902,6 +925,8 @@ function buildJet(config) {
 		return query;
 	};
 	
+	var Env = namespace(jet, 'Env');
+	
 	function add(o) {
 		mix($, o, true);
 	}
@@ -910,7 +935,18 @@ function buildJet(config) {
 		$.JSON = config.win.JSON;
 	}
 	
+	function guid() {
+		return ['jet', Lang.now(), Env.guidCount++].join('_');
+	}
+	Env.guidCount = 0;
+	
 	add({
+		guid: guid,
+		
+		instanceOf: function(o, type) {
+			return !!(o && o.hasOwnProperty && (o instanceof type));
+		},
+		
 		bind: bind,
 		
 		namespace: function (ns) {
@@ -1561,12 +1597,13 @@ var EventCache = Event.Cache = (function () {
 		 * @param {String} type
 		 * @param {Function} fn
 		 */
-		add: function (obj, type, fn) {
+		add: function (obj, type, callback, listener) {
 			if (obj.nodeType) {
 				var c = getCache(type);
 				c[c.length] = {
 					obj: obj,
-					fn: fn
+					callback: callback,
+					listener: listener
 				};
 			}
 		},
@@ -1577,12 +1614,12 @@ var EventCache = Event.Cache = (function () {
 		 * @param {String} type
 		 * @param {Function} fn
 		 */
-		remove: function (obj, type, fn) {
-			detachEvent(obj, type, fn);
+		remove: function (obj, type, callback) {
 			var c = getCache(type),
 			i = 0;
 			while (i < c.length) {
-				if (c[i].obj == obj && c[i].fn == fn) {
+				if (c[i].obj == obj && c[i].callback == callback) {
+					detachEvent(obj, type, c[i].listener);
 					c.splice(i, 1);
 				} else {
 					i++;
@@ -1600,7 +1637,7 @@ var EventCache = Event.Cache = (function () {
 				c = getCache(type);
 				while (i < c.length) {
 					if (c[i].obj == obj) {
-						detachEvent(obj, type, c[i].fn);
+						detachEvent(obj, type, c[i].listener);
 						c.splice(i, 1);
 					} else {
 						i++;
@@ -1613,7 +1650,7 @@ var EventCache = Event.Cache = (function () {
 						i = 0;
 						while (i < c.length) {
 							if (c[i].obj == obj) {
-								detachEvent(obj, type, c[i].fn);
+								detachEvent(obj, type, c[i].listener);
 								c.splice(i, 1);
 							} else {
 								i++;
@@ -1646,6 +1683,10 @@ var makeHandler = function (callback, thisp) {
 		e.stopPropagation = function () {
 			e.cancelBubble = true;
 		};
+		e.halt = function() {
+			e.stopPropagation();
+			e.preventDefault();
+		};
 		callback.call(thisp || e.srcElement, e);
 	};
 };
@@ -1654,7 +1695,13 @@ var makeHandler = function (callback, thisp) {
 var addEvent = function (obj, type, callback, thisp) {
 	if (obj.addEventListener) {
 		addEvent = function (obj, type, callback, thisp) {
-			var handlerFn = thisp ? $.bind(callback, thisp) : callback;
+			var handlerFn = function(e) {
+				e.halt = function() {
+					e.stopPropagation();
+					e.preventDefault();
+				};
+				callback.call(thisp || this, e);
+			}
 			obj.addEventListener(type, handlerFn, false);
 			EventCache.add(obj, type, callback, handlerFn);
 			return {
@@ -1668,7 +1715,7 @@ var addEvent = function (obj, type, callback, thisp) {
 			// Use makeHandler to prevent the handler function from having obj in its scope
 			var handlerFn = makeHandler(callback, thisp);
 			obj.attachEvent(ON + type, handlerFn);
-			EventCache.add(obj, type, handlerFn);
+			EventCache.add(obj, type, callback, handlerFn);
 			return {
 				obj: obj,
 				type: type,
@@ -1716,7 +1763,7 @@ $.DOMEventHandler = $.mix(DOMEventHandler.prototype, {
 	 */
 	detach: function () {
 		for (var handlers = this._handlers, i = 0, length = handlers.length; i < length; i++) {
-			EventCache.remove(handlers[i].obj, handlers[i].type, handlers[i].fn);
+			EventCache.remove(handlers[i].obj, handlers[i].type, handlers[i].callback);
 		}
 		this._handlers = [];
 	}
