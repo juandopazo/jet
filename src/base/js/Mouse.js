@@ -197,7 +197,7 @@ $.Mouse = $.Base.create('mouse', $.Utility, [], {
 		}
 	});
 	
-	$Array.each(['on', 'once', 'fire'], function (eventMethod) {
+	$Array.each(['on', 'once', 'fire', 'unbind'], function (eventMethod) {
 		$[eventMethod] = $.bind($_event[eventMethod], $_event);
 	});
 	

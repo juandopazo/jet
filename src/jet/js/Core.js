@@ -70,6 +70,8 @@ function buildJet(config) {
 		return query;
 	};
 	
+	var Env = namespace(jet, 'Env');
+	
 	function add(o) {
 		mix($, o, true);
 	}
@@ -78,7 +80,14 @@ function buildJet(config) {
 		$.JSON = config.win.JSON;
 	}
 	
+	function guid() {
+		return ['jet', Lang.now(), Env.guidCount++].join('_');
+	}
+	Env.guidCount = 0;
+	
 	add({
+		guid: guid,
+		
 		instanceOf: function(o, type) {
 			return !!(o && o.hasOwnProperty && (o instanceof type));
 		},

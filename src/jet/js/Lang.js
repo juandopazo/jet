@@ -168,6 +168,14 @@ var Lang = (function () {
 		random: function (num) {
 			num = Math.random() * num;
 			return num === 0 ? 0 : Math.ceil(num) - 1;
+		},
+		/**
+		 * A shim for ES5's Date.now()
+		 * @method now
+		 * @return {Number} ms Current time in milliseconds
+		 */
+		now: function() {
+			return (new Date).getTime();
 		}
 	};
 }());

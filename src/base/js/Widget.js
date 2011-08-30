@@ -372,7 +372,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 			id = this.get('id');
 			
 		if (!id) {
-			id = this.getClassName(this._uid);
+			id = this._uid;
 			this.set('id', id);
 		}
 		this.after('idChange', this._widgetIdChange);

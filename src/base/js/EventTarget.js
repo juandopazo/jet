@@ -17,16 +17,6 @@ var TRACKING = "tracking",
 	PROTO = 'prototype',
 	DASH = '-';
 
-var Env = jet.namespace('Env');
-
-if (!Lang.isNumber(Env._uid)) {
-	Env._uid = 0;
-}
-
-$.guid = function () {
-	return ++Env._uid;
-};
-
 /**
  * A custom event object, only to be used by EventTarget
  * @class EventFacade
