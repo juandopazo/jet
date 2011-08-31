@@ -1,15 +1,4 @@
-/**
- * SWFObject adapted to Jet
- * @module swf
- * @requires 
- * 
- * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
- * Code licensed under the BSD License
- * https://github.com/juandopazo/jet/blob/master/LICENSE.md
-*/
-jet.add('swf', function ($) {
 
-			
 var FSCOMMAND_EVENT = 'FSCommand';
 
 /**
@@ -242,20 +231,24 @@ $.SWF = $.Base.create('swf', $.Widget, [], {
 	_trackLoadStatus: function (swfNode) {
 		var timeout,
 			self = this,
+			percentLoadedAvailable = true;
 			loaded = false;
-		(function track() {
-			try {
-				if (swfNode.PercentLoaded() === 100) {
-					loaded = true;
-					self.fire('load');
-				} else {
-					timeout = setTimeout($.bind(track, self, swfNode), 50);
-				}
-			} catch (e) {
+		try {
+			swfNode.PercentLoaded();
+		} catch (e) {
+			percentLoadedAvailable = false;
+		}
+		function track() {
+			if (swfNode.PercentLoaded() === 100) {
 				loaded = true;
 				self.fire('load');
+			} else {
+				timeout = setTimeout($.bind(track, self, swfNode), 50);
 			}
-		}());
+		}
+		if (percentLoadedAvailable) {
+			track();
+		}
 		setTimeout(function () {
 			if (timeout) {
 				clearTimeout(timeout);
@@ -295,7 +288,4 @@ $.SWF = $.Base.create('swf', $.Widget, [], {
 			delete this._fscmdHandler;
 		}
 	}
-});
-
-			
 });
