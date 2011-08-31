@@ -18,7 +18,7 @@ var GlobalConfig = {
 				oop: {},
 				node: {},
 				xsl: ['node'],
-				swf: {},
+				swf: ['base'],
 				json: ['node'],
 				cookie: ['base'],
 				sizzle: ['node'],
