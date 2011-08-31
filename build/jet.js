@@ -778,14 +778,20 @@ Get.prototype = {
 		}
 		return this;
 	},
-	/**
-	 * Loads a CSS file
-	 * @method css
-	 * @param {String} url
-	 * @chainable
-	 */
-	css: function (url, callback) {
-		callback = callback || function() {};
+	_createStyle: function (url, callback) {
+		var node = this._create('style'),
+			interval;
+		node.textContent = '@import "' + url + '"';
+		interval = setInterval(function () {
+			try {
+				node.sheet.cssRules; // <--- MAGIC: only populated when file is loaded
+				callback();
+				clearInterval(interval);
+			} catch (e) {}
+		}, 50);
+		this._insert(node);
+	},
+	_createLink: function (url, callback) {
 		var node = this._create('link', {
 			type: 'text/css',
 			rel: 'stylesheet',
@@ -816,10 +822,20 @@ Get.prototype = {
 					callback(node);
 				}
 			}, 50);
+		}
+	},
+	/**
+	 * Loads a CSS file
+	 * @method css
+	 * @param {String} url
+	 * @chainable
+	 */
+	css: function (url, callback) {
+		callback = callback || function() {};
+		if (UA.gecko) {
+			this._createStyle(url, callback);
 		} else {
-			if (Lang.isFunction(callback)) {
-				setTimeout(callback, 80);
-			}
+			this._createLink(url, callback);
 		}
 		return this;
 	},
