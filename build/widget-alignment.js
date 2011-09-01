@@ -83,7 +83,7 @@ WidgetAlignment.prototype = {
 				targetTop = screenHeight - boundingHeight;
 			}
 		}
-		return targetTop + PX;
+		return targetTop;
 	},
 	
 	_getPositionLeft: function (boundingAlignHoriz, targetAlignHoriz, boundingWidth, targetWidth, targetLeft, offsetLeft, screenWidth, fixed, constrain) {
@@ -117,7 +117,7 @@ WidgetAlignment.prototype = {
 				targetLeft = screenWidth - boundingWidth;
 			}
 		}
-		return targetLeft + PX;
+		return targetLeft;
 	},
 	
 	_getPositionBottom: function (boundingAlignVert, boundingHeight, offsetTop, fixed, constrain) {
@@ -137,7 +137,7 @@ WidgetAlignment.prototype = {
 		if (constrain) {
 			bottom = Math.max(bottom, 0);
 		}
-		return bottom + PX;
+		return bottom;
 	},
 	
 	_getPositionRight: function (boundingAlignHoriz, boundingWidth, offsetLeft, fixed, constrain) {
@@ -157,7 +157,7 @@ WidgetAlignment.prototype = {
 		if (constrain) {
 			right = Math.max(right, 0);
 		}
-		return right + PX;
+		return right;
 	},
 	
 	_repositionUI: function () {
@@ -190,22 +190,23 @@ WidgetAlignment.prototype = {
 		
 		if (!target) {
 			if (targetAlignVert == BOTTOM) {
-				resultingPosition.bottom = this._getPositionBottom(boundingAlignVert, boundingOffset.height, alignOffset[1], fixed, constrain);
+				resultingPosition.bottom = this._getPositionBottom(boundingAlignVert, boundingOffset.height, alignOffset[1], fixed, constrain) + PX;
 			} else {
-				resultingPosition.top = getPositionTop(boundingAlignVert, targetAlignVert, boundingOffset.height, screenSize.height, 0, alignOffset[1] || 0, screenSize.height, fixed, constrain);
+				resultingPosition.top = getPositionTop(boundingAlignVert, targetAlignVert, boundingOffset.height, screenSize.height, 0, alignOffset[1] || 0, screenSize.height, fixed, constrain) + PX;
 			}
 			if (targetAlignHoriz == RIGHT) {
-				resultingPosition.right = this._getPositionRight(boundingAlignHoriz, boundingOffset.width, alignOffset[0], fixed, constrain);
+				resultingPosition.right = this._getPositionRight(boundingAlignHoriz, boundingOffset.width, alignOffset[0], fixed, constrain) + PX;
 			} else {
-				resultingPosition.left = getPositionLeft(boundingAlignHoriz, targetAlignHoriz, boundingOffset.width, screenSize.width, 0, alignOffset[0] || 0, screenSize.width, fixed, constrain);
+				resultingPosition.left = getPositionLeft(boundingAlignHoriz, targetAlignHoriz, boundingOffset.width, screenSize.width, 0, alignOffset[0] || 0, screenSize.width, fixed, constrain) + PX;
 			}
+			boundingBox.css(resultingPosition);
 		} else {
 			resultingPosition = {
 				left: getPositionLeft(boundingAlignHoriz, targetAlignHoriz, boundingOffset.width, targetOffset.width, targetOffset.left, alignOffset[0] || 0, screenSize.width, fixed, constrain),
 				top: getPositionTop(boundingAlignVert, targetAlignVert, boundingOffset.height, targetOffset.height, targetOffset.top, alignOffset[1] || 0, screenSize.height, fixed, constrain)
 			};
+			boundingBox.position(resultingPosition.left, resultingPosition.top);
 		}			
-		boundingBox.css(resultingPosition);
 	}
 };
 $.mix(WidgetAlignment, {
