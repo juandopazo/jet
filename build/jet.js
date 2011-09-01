@@ -957,6 +957,17 @@ function buildJet(config) {
 	Env.guidCount = 0;
 	
 	add({
+		later: function (ms, context, callback) {
+			if (arguments.length === 2) {
+				callback = context;
+				context = null;
+			}
+			var args = Array.prototype.slice.call(arguments, 3);
+			setTimeout(function () {
+				callback.apply(context, args);
+			}, ms);
+		},
+		
 		guid: guid,
 		
 		instanceOf: function(o, type) {
@@ -2042,6 +2053,44 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 			node.className = name;
 		});
 	},
+	_getPosition: function() {
+		var node = this.getDOMNode();
+		var offset = {
+			left: 0,
+			top: 0
+		};
+		var doc = node.ownerDocument;
+		try {
+			if (node.getBoundingClientRect) {
+				var box  = node.getBoundingClientRect();
+				var body = doc.body;
+				var de = doc[DOCUMENT_ELEMENT];
+				offset.left = box.left + DOM.scrollLeft() - (de.clientLeft || body.clientLeft || 0);
+				offset.top = box.top + DOM.scrollTop() - (de.clientTop || body.clientTop || 0);
+			} else if (node.offsetParent) {
+				// Not interested in supporting other browsers very well
+				do {
+					offset.left += node.offsetLeft;
+					offset.top += node.offsetTop;
+					node = node.offsetParent;
+				} while (node);
+			}
+		} catch (e) {}
+		
+		return offset;
+	},
+	_setPosition: function(left, top) {
+		return this.each(function (domNode) {
+			var node = $(domNode);
+			var parentOffset = node.offsetParent().position();
+			if (Lang.isNumber(left)) {
+				node.css('left', left - parentOffset.left);
+			}
+			if (Lang.isNumber(top)) {
+				node.css('top', top - parentOffset.top);
+			}
+		});
+	},
 	/**
 	 * Returns an object literal containing:
 	 * <ul>
@@ -2052,43 +2101,7 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	 * @return {Object}
 	 */
 	position: function (left, top) {
-		if (Lang.isNumber(left) || Lang.isNumber(top)) {
-			return this.each(function (node) {
-				node = $(node);
-				var parentOffset = node.offsetParent().offset();
-				if (Lang.isNumber(left)) {
-					node.css('left', left - parentOffset.left);
-				}
-				if (Lang.isNumber(top)) {
-					node.css('top', top - parentOffset.top);
-				}
-			});
-		} else {
-			var node = this.getDOMNode();
-			var offset = {
-				left: 0,
-				top: 0
-			};
-			var doc = node.ownerDocument;
-			try {
-				if (node.getBoundingClientRect) {
-					var box  = node.getBoundingClientRect();
-					var body = doc.body;
-					var de = doc[DOCUMENT_ELEMENT];
-					offset.left = box.left + DOM.scrollLeft() - (de.clientLeft || body.clientLeft || 0);
-					offset.top = box.top + DOM.scrollTop() - (de.clientTop || body.clientTop || 0);
-				} else if (node.offsetParent) {
-					// Not interested in supporting other browsers very well
-					do {
-						offset.left += node.offsetLeft;
-						offset.top += node.offsetTop;
-						node = node.offsetParent;
-					} while (node);
-				}
-			} catch (e) {}
-			
-			return offset;
-		}
+		return (Lang.isNumber(left) || Lang.isNumber(top)) ? this._setPosition(left, top) : this._getPosition();
 	},
 	offset: function () {
 		return $.mix(this.position(), {
@@ -2123,8 +2136,14 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	 */
 	offsetParent: function () {
 		return this.map(function(node) {
-			var offsetParent = node.offsetParent || document.body;
-			while (offsetParent && (!rroot.test(offsetParent.nodeName) && $(offsetParent).css('position') === 'static')) {
+			var offsetParent;
+			try {
+				offsetParent = node.offsetParent;
+			} catch (e) {}
+			if (!offsetParent) {
+				offsetParent = $.config.doc.body;
+			}
+			while (offsetParent && !rroot.test(offsetParent.nodeName) && $(offsetParent).css('position') === 'static') {
 				offsetParent = offsetParent.offsetParent;
 			}
 			return offsetParent;
