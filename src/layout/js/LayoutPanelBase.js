@@ -35,7 +35,7 @@ $.mix(LayoutPanelBase, {
 		 * @writeOnce
 		 */
 		minSize: {
-			value: 0,
+			value: 5,
 			wriceOnce: true
 		},
 		/**
