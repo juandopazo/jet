@@ -56,7 +56,9 @@ $.MenuItem = $.Base.create('menuitem', $.Widget, [$.WidgetChild, $.WidgetParent,
 		this.after('labelContentChange', function(e) {
 			this._updateLabel(e.newVal);
 		});
-		this.after('selectedChange', this._repositionUI);
+		this.after('selectedChange', function () {
+			$.later(0, this, this._repositionUI);
+		});
 	},
 	
 	renderUI: function(boundingBox, contentBox) {

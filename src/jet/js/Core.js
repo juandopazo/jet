@@ -86,6 +86,17 @@ function buildJet(config) {
 	Env.guidCount = 0;
 	
 	add({
+		later: function (ms, context, callback) {
+			if (arguments.length === 2) {
+				callback = context;
+				context = null;
+			}
+			var args = Array.prototype.slice.call(arguments, 3);
+			setTimeout(function () {
+				callback.apply(context, args);
+			}, ms);
+		},
+		
 		guid: guid,
 		
 		instanceOf: function(o, type) {
