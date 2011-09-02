@@ -272,7 +272,7 @@ var Lang = (function () {
 			return str.slice(0, i + 1);
 		},
 		capitalize: function (str) {
-			return str.substr(0, 1).toUpperCase() + str.substr(1).toLowerCase();
+			return str.substr(0, 1).toUpperCase() + str.substr(1);
 		},
 		/**
 		 * A more traditional random function. Returns a random integer between 0 and num-1

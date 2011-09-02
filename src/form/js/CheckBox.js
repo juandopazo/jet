@@ -22,10 +22,18 @@ $.CheckBox = $.Base.create('checkbox', $.FormField, [], {
 		this.after('checkedChange', this._syncAttr2Dom);
 	},
 	
+	renderUI: function() {
+		this._inputNode.attr('type', 'checkbox');
+	},
+	
 	bindUI: function () {
 		this._handlers.push(
 			this._inputNode.on('click', $.bind(this._syncDom2Attr, this, 'checked'))
 		);
+	},
+	
+	syncUI: function() {
+		this._inputNode.attr('checked', this.get('checked'));
 	},
 	
 	initializer: function () {

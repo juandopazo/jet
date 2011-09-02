@@ -282,12 +282,14 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		}
 			
 		$Array.each(['renderUI', 'bindUI', 'syncUI'], function (method) {
+			self.fire(method);
 			self['_' + method](boundingBox, contentBox, classes);
 			$Array.each(classes, function (constructor) {
 				if (constructor.prototype.hasOwnProperty(method)) {
 					constructor.prototype[method].call(self, boundingBox, contentBox);
 				}
 			});
+			self.fire('after' + Lang.capitalize(method));
 		});
 	},
 	

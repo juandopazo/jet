@@ -40,18 +40,17 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 	},
 	
 	initializer: function() {
-		var inputId = this.get('id') + '_input';
 		this._inputNode = $('<input/>').attr({
 			type: 'text',
-			id: inputId
+			id: this.get('id') + '_input'
 		});
-		this.get('contentBox').attr('for', inputId);
 		
 		this.after('valueChange', this._syncAttr2Dom);
 		this.after('legendChange', this.syncUI);
 	},
 	renderUI: function(boundingBox, contentBox) {
 		this._inputNode.value(this.get('value')).prependTo(boundingBox);
+		contentBox.attr('htmlFor', this._inputNode.attr('id'));
 	},
 	bindUI: function() {
 		this._handlers.push(
