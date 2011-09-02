@@ -226,11 +226,11 @@ WidgetParent.prototype = {
 	},
 	
 	_add: function (child, index) {
-		var ChildType = this.get('childType');
+		var ChildType = child.childType || this.get('childType');
 		
 		if (child && this.fire('addChild', { child: child, index: index })) {
 			
-			if (!(child instanceof ChildType)) {
+			if (!$.instanceOf(child, $.Widget)) {
 				child.parent = this;
 				child.index = index;
 				child = new (ChildType)(child);
