@@ -107,7 +107,8 @@ var GlobalConfig = {
 				vector: ['anim'],
 				layout: ['resize', WIDGET_PARENTCHILD],
 				transition: ['node','anim','deferred'],
-				selector: ['node']
+				selector: ['node'],
+				form: ['widget']
 			}
 		}
 	}
