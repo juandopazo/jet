@@ -74,7 +74,7 @@ $.MenuItem = $.Base.create('menuitem', $.Widget, [$.WidgetChild, $.WidgetParent,
 		this.on('click', function(e) {
 			if (e.currentTarget === this) {
 				e.domEvent.preventDefault();
-				this.select();
+				this.set('selected', !this.get('selected'));
 			}
 		});
 	},
