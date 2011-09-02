@@ -33,6 +33,9 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 		 */
 		label: {
 			value: ''
+		},
+		htmlType: {
+			value: 'text'
 		}
 	}
 }, {
@@ -52,7 +55,6 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 	
 	initializer: function() {
 		this._inputNode = $('<input/>').attr({
-			type: 'text',
 			id: this.get('id') + '_input'
 		});
 		
@@ -60,7 +62,7 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 		this.after('legendChange', this.syncUI);
 	},
 	renderUI: function(boundingBox, contentBox) {
-		this._inputNode.value(this.get('value')).prependTo(boundingBox);
+		this._inputNode.attr('type', this.get('htmlType')).value(this.get('value')).prependTo(boundingBox);
 		contentBox.attr('htmlFor', this._inputNode.attr('id'));
 	},
 	bindUI: function() {
@@ -89,15 +91,14 @@ $.CheckBox = $.Base.create('checkbox', $.FormField, [], {
 		 */
 		checked: {
 			value: false
+		},
+		htmlType: {
+			value: 'checkbox'
 		}
 	}
 }, {
 	initializer: function () {
 		this.after('checkedChange', this._syncAttr2Dom);
-	},
-	
-	renderUI: function() {
-		this._inputNode.attr('type', 'checkbox');
 	},
 	
 	bindUI: function () {

@@ -15,15 +15,14 @@ $.CheckBox = $.Base.create('checkbox', $.FormField, [], {
 		 */
 		checked: {
 			value: false
+		},
+		htmlType: {
+			value: 'checkbox'
 		}
 	}
 }, {
 	initializer: function () {
 		this.after('checkedChange', this._syncAttr2Dom);
-	},
-	
-	renderUI: function() {
-		this._inputNode.attr('type', 'checkbox');
 	},
 	
 	bindUI: function () {
