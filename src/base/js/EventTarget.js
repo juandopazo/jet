@@ -84,35 +84,61 @@ function EventTarget() {
 }
 $.mix(EventTarget.prototype, {
 	
-	_attach: function (eventType, handler) {
-		handler.o = handler.o || this;
-		
-		var collection = this._events;
-		if (!collection[eventType]) {
-			collection[eventType] = [];
+	_publish: function(eventName, config) {
+		config = config || {};
+		var _event = this._events[eventName];
+		if (!_event) {
+			_event = this._events[eventName] = {
+				listeners: [],
+				afterListeners: []
+			};
 		}
-		
-		if (Lang.isObject(handler.fn)) {
-			collection[eventType].push(handler);
+		if (Lang.isFunction(config.defaultFn)) {
+			_event.defaultFn = config.defaultFn;
+		}
+		if (Lang.isFunction(config.stoppedFn)) {
+			_event.stoppedFn = config.stoppedFn;
+		}
+	},
+	
+	publish: function(eventName, config) {
+		if (Lang.isObject(eventName)) {
+			$Object.each(eventName, function (name, conf) {
+				if (!this._events[name]) {
+					this._publish(name, conf);
+				}
+			}, this);
+		} else if (!this._events[eventName]) {
+			this._publish(eventName, config);
 		}
 		return this;
 	},
 	
-	_on: function (eventType, callback, thisp, once) {
+	getEvent: function(eventName) {
+		return this._events[eventName] || this._publish(eventName);
+	},
+	
+	_attach: function (after, once, eventType, callback, context) {
+		var handler = {
+			fn: callback,
+			o: context || this,
+			once: once
+		};
+		var event = this.getEvent(eventType);
+		
+		if (Lang.isObject(handler.fn)) {
+			event[after ? 'afterListeners' : 'listeners'].push(handler);
+		}
+		return this;
+	},
+	
+	_on: function (eventType, callback, thisp, once, after) {
 		if (Lang.isObject(eventType)) {
 			$Object.each(eventType, function (type, fn) {
-				this._attach(type, {
-					fn: fn,
-					o: callback,
-					once: once
-				});
+				this._attach(after, once, type, fn, callback);
 			}, this);
 		} else {
-			this._attach(eventType, {
-				fn: callback,
-				o: thisp,
-				once: once
-			});
+			this._attach(after, once, eventType, callback, thisp);
 		}
 		return this;
 	},
@@ -142,7 +168,7 @@ $.mix(EventTarget.prototype, {
 	},
 	
 	/**
-	 * Listens to an 'after' event. This is a shortcut for writing on('afterEvent'), callback)
+	 * Listens to an 'after' event. This listeners are called after the defaultFn defined when publishing the event
 	 * @method after
 	 * @param {String} eventType Name of the event to listen to
 	 * @param {Function} callback Callback to execute when the event fires
@@ -150,23 +176,28 @@ $.mix(EventTarget.prototype, {
 	 * @chainable
 	 */
 	after: function (eventType, callback, thisp) {
-		return this.on('after' + eventType.charAt(0).toUpperCase() + eventType.substr(1), callback, thisp);
+		return this._on(eventType, callback, thisp, false, true);
 	},
 	/**
-	 * Removes and event listener
-	 * @method unbind
-	 * @param {String} eventType
-	 * @param {Function} callback
+	 * Listens to an 'after' event just once
+	 * @method after
+	 * @param {String} eventType Name of the event to listen to
+	 * @param {Function} callback Callback to execute when the event fires
+	 * @param {Object} thisp Optional. Context on which the callback will run
 	 * @chainable
 	 */
-	unbind: function (eventType, callback) {
-		var events = this._events[eventType] || [],
+	onceAfter: function(eventType, callback, thisp) {
+		return this._on(eventType, callback, thisp, true, true);
+	},
+	_unbind: function (after, eventType, callback) {
+		var event = this.getEvent(eventType),
+			listeners = event[after ? 'afterListeners' : 'listener'];
 			type,
 			i = 0;
 		if (eventType && callback) {
-			while (i < events.length) {
-				if (events[i].fn == callback) {
-					events.splice(i, 1);
+			while (i < listeners.length) {
+				if (listeners[i].fn == callback) {
+					listeners.splice(i, 1);
 				} else {
 					i++;
 				}
@@ -176,11 +207,37 @@ $.mix(EventTarget.prototype, {
 		} else {
 			for (type in this._events) {
 				if (this._events.hasOwnProperty(type)) {
-					this._events[type] = [];
+					delete this._events[type];
 				}
 			}
 		}
 		return this;
+	},
+	/**
+	 * Removes and event listener
+	 * @method unbind
+	 * @param {String} eventType
+	 * @param {Function} callback
+	 * @chainable
+	 */
+	unbind: function (eventType, callback) {
+		return this._unbind(false, eventType, callback);
+	},
+	unbindAfter: function (eventType, callback) {
+		return this._unbind(true, eventType, callback);
+	},
+	_fire: function (handlers, args) {
+		var i = 0;
+		while (i < handlers.length) {
+			if (Lang.isFunction(handlers[i].fn)) {
+				handlers[i].fn.apply(handlers[i].o, args);
+			}
+			if (!handlers[i] || handlers[i].once) {
+				handlers.splice(i, 1);
+			} else {
+				i++;
+			}
+		}
 	},
 	/**
 	 * Fires an event, executing all its listeners
@@ -189,21 +246,26 @@ $.mix(EventTarget.prototype, {
 	 * Extra parameters will be passed to all event listeners
 	 */
 	fire: function (eventType, args) {
-		var handlers = this._events[eventType] = this._events[eventType] || [],
+		var event = this.getEvent(eventType),
+			beforeListeners = event.listeners,
+			afterListeners = event.afterListeners,
 			returnValue = true,
-			e = new $.EventFacade(eventType, this, function () { returnValue = false; }, args),
-			i = 0;
-			
-		while (i < handlers.length) {
-			if (Lang.isFunction(handlers[i].fn)) {
-				handlers[i].fn.call(handlers[i].o, e);
+			e = new $.EventFacade(eventType, this, function () { returnValue = false; }, args);
+		
+		args = [e].concat(SLICE.call(arguments, 2));
+		
+		this._fire(beforeListeners, args);
+		if (returnValue) {
+			if (Lang.isFunction(event.defaultFn)) {
+				event.defaultFn.apply(this, args);
 			}
-			if (!handlers[i] || handlers[i].once) {
-				handlers.splice(i, 1);
-			} else {
-				i++;
+			if (returnValue) {
+				this._fire(afterListeners, args);
 			}
+		} else if (Lang.isFunction(event.stoppedFn)) {
+			event.stoppedFn.apply(this, args);
 		}
+		
 		return returnValue;
 	}
 });

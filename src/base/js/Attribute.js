@@ -27,6 +27,10 @@ function Attribute(state) {
 }
 $.extend(Attribute, EventTarget, {
 	
+	_defAttrChange: function(e) {
+		this._state[e.attrName] = e.newVal;
+	},
+	
 	/**
 	 * Adds a configuration attribute, along with its options
 	 * @method addAttr
@@ -56,6 +60,9 @@ $.extend(Attribute, EventTarget, {
 		if (isValue && config.setter) {
 			state[attrName] = config.setter.call(this, state[attrName]);
 		}
+		this.publish(attrName + 'Change', {
+			defaultFn: this._defAttrChange
+		});
 		return this;
 	},
 	
@@ -81,9 +88,8 @@ $.extend(Attribute, EventTarget, {
 				if (Lang.isObject(extraArgs)) {
 					$.mix(args, extraArgs);
 				}
-				if (attrValue !== oldValue && this.fire(attrName + "Change", args)) {
-					state[attrName] = attrValue;
-					this.fire('after' + Lang.capitalize(attrName) + 'Change', args);
+				if (attrValue !== oldValue) {
+					this.fire(attrName + "Change", args);
 				}
 			}
 			if (config.writeOnce && !config.readOnly) {

@@ -282,14 +282,14 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		}
 			
 		$Array.each(['renderUI', 'bindUI', 'syncUI'], function (method) {
-			self.fire(method);
-			self['_' + method](boundingBox, contentBox, classes);
-			$Array.each(classes, function (constructor) {
-				if (constructor.prototype.hasOwnProperty(method)) {
-					constructor.prototype[method].call(self, boundingBox, contentBox);
-				}
-			});
-			self.fire('after' + Lang.capitalize(method));
+			if (self.fire(method)) {
+				self['_' + method](boundingBox, contentBox, classes);
+				$Array.each(classes, function (constructor) {
+					if (constructor.prototype.hasOwnProperty(method)) {
+						constructor.prototype[method].call(self, boundingBox, contentBox);
+					}
+				});
+			}
 		});
 	},
 	
@@ -319,15 +319,12 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 			 */
 			if (this.fire('render')) {
 				
-				this.renderer();
-				
 				this.set('rendered', true).focus();
 					/**
 					 * Fires after the render lifecycle finished. It is also fired after a timeout of 0 milliseconds, 
 					 * so it is added to the execution queue rather than fired synchronously 
 					 * @event afterRender
 					 */
-				setTimeout($.bind(this.fire, this, 'afterRender'), 0);
 			}
 		}
 		return this;
@@ -387,6 +384,12 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		if (!this.get(CONTENT_BOX)) {
 			this.set(CONTENT_BOX, this.CONTENT_TEMPLATE || this.get(BOUNDING_BOX));
 		}
+		
+		this.publish({
+			render: {
+				defaultFn: this.renderer
+			}
+		});
 		
 		this.after('visibleChange', this._toggleVisibility);
 		this.after('disabledChange', this._toggleDisabled);
