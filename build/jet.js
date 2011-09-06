@@ -108,7 +108,8 @@ var GlobalConfig = {
 				layout: ['resize', WIDGET_PARENTCHILD],
 				transition: ['node','anim','deferred'],
 				selector: ['node'],
-				form: ['base']
+				form: ['base'],
+				'array-extras': {}
 			}
 		}
 	}
