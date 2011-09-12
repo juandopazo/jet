@@ -17,6 +17,17 @@ var TRACKING = "tracking",
 	PROTO = 'prototype',
 	DASH = '-';
 
+var BOUNDING_BOX = 'boundingBox',
+	CONTENT_BOX = 'contentBox',
+	SRC_NODE = 'srcNode',
+	CONTENT = 'content',
+	CLASS_PREFIX = 'classPrefix',
+	UNLOAD = 'unload',
+	VISIBILITY = 'visibility',
+	DESTROY = 'destroy',
+	
+	widgetInstances = jet.namespace('Widget._instances');
+	
 /**
  * A custom event object, only to be used by EventTarget
  * @class EventFacade
@@ -48,7 +59,7 @@ function EventFacade(type, target, onPrevented, args) {
 	};
 	
 	$Object.each(args || {}, function (name, val) {
-		if (!Lang.isValue(self[name])) {
+		if (!Lang.isValue(this[name])) {
 			this[name] = val;
 		}
 	}, this);

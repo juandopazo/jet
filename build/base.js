@@ -28,6 +28,17 @@ var TRACKING = "tracking",
 	PROTO = 'prototype',
 	DASH = '-';
 
+var BOUNDING_BOX = 'boundingBox',
+	CONTENT_BOX = 'contentBox',
+	SRC_NODE = 'srcNode',
+	CONTENT = 'content',
+	CLASS_PREFIX = 'classPrefix',
+	UNLOAD = 'unload',
+	VISIBILITY = 'visibility',
+	DESTROY = 'destroy',
+	
+	widgetInstances = jet.namespace('Widget._instances');
+	
 /**
  * A custom event object, only to be used by EventTarget
  * @class EventFacade
@@ -59,7 +70,7 @@ function EventFacade(type, target, onPrevented, args) {
 	};
 	
 	$Object.each(args || {}, function (name, val) {
-		if (!Lang.isValue(self[name])) {
+		if (!Lang.isValue(this[name])) {
 			this[name] = val;
 		}
 	}, this);
@@ -530,17 +541,6 @@ $.Utility = $.Base.create('utility', $.Base, [], {
 		return [this.get(CLASS_PREFIX), this.constructor.NAME].concat(SLICE.call(arguments)).join(DASH);
 	}
 });
-var BOUNDING_BOX = 'boundingBox',
-	CONTENT_BOX = 'contentBox',
-	SRC_NODE = 'srcNode',
-	CONTENT = 'content',
-	CLASS_PREFIX = 'classPrefix',
-	UNLOAD = 'unload',
-	VISIBILITY = 'visibility',
-	DESTROY = 'destroy',
-	
-	widgetInstances = jet.namespace('Widget._instances');
-	
 /**
  * Base class for all widgets. 
  * Provides show, hide, render and destroy methods, the rendering process logic
@@ -660,8 +660,8 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		  * @type Boolean
 		  */
 		 visible: {
-		 	value: true,
-		 	validator: Lang.isBoolean
+			value: true,
+			validator: Lang.isBoolean
 		 },
 		 /**
 		  * @attribute disabled
@@ -670,8 +670,8 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		  * @type Boolean
 		  */
 		 disabled: {
-		 	value: false,
-		 	validator: Lang.isBoolean
+			value: false,
+			validator: Lang.isBoolean
 		 }
 	},
 	
@@ -1126,7 +1126,7 @@ $.Mouse = $.Base.create('mouse', $.Utility, [], {
 		}
 		lastScrollLeft = scrollLeft;
 		lastScrollTop = scrollTop;
-	}
+	};
 	
 	$($.config.win).on('scroll', function () {
 		if (!interval) {

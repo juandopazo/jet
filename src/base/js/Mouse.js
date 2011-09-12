@@ -189,7 +189,7 @@ $.Mouse = $.Base.create('mouse', $.Utility, [], {
 		}
 		lastScrollLeft = scrollLeft;
 		lastScrollTop = scrollTop;
-	}
+	};
 	
 	$($.config.win).on('scroll', function () {
 		if (!interval) {

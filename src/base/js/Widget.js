@@ -1,15 +1,4 @@
 
-var BOUNDING_BOX = 'boundingBox',
-	CONTENT_BOX = 'contentBox',
-	SRC_NODE = 'srcNode',
-	CONTENT = 'content',
-	CLASS_PREFIX = 'classPrefix',
-	UNLOAD = 'unload',
-	VISIBILITY = 'visibility',
-	DESTROY = 'destroy',
-	
-	widgetInstances = jet.namespace('Widget._instances');
-	
 /**
  * Base class for all widgets. 
  * Provides show, hide, render and destroy methods, the rendering process logic
@@ -129,8 +118,8 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		  * @type Boolean
 		  */
 		 visible: {
-		 	value: true,
-		 	validator: Lang.isBoolean
+			value: true,
+			validator: Lang.isBoolean
 		 },
 		 /**
 		  * @attribute disabled
@@ -139,8 +128,8 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		  * @type Boolean
 		  */
 		 disabled: {
-		 	value: false,
-		 	validator: Lang.isBoolean
+			value: false,
+			validator: Lang.isBoolean
 		 }
 	},
 	
