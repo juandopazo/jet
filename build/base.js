@@ -398,11 +398,12 @@ $.Attribute = Attribute;
  * @param {Object} config Object literal specifying widget configuration properties
  */
 function Base(config) {
-	config = config || {};
+	config = arguments[0] = config || {};
 	Base.superclass.constructor.call(this, config);
 	
 	this.name = this.constructor.NAME;
 	
+	var self = this, args = arguments;
 	var classes = this._classes;
 	var i, events = this.get('on');
 	var attachEvent = function (name, fn) {
@@ -417,6 +418,12 @@ function Base(config) {
 		if (classes[i].EVENTS) {
 			$Object.each(classes[i].EVENTS, attachEvent, this);
 		}
+		$Array.each(classes[i].EXTS || [], function (extension) {
+			extension.apply(self, args);
+			$Object.each(extension.EVENTS || {}, function (type, fn) {
+				self.on(type, fn);
+			});
+		});
 		if (classes[i][PROTO].hasOwnProperty('initializer')) {
 			classes[i][PROTO].initializer.call(this, config);
 		}
@@ -469,15 +476,7 @@ $.extend(Base, Attribute, {
 	create: function (name, superclass, extensions, attrs, proto) {
 		extensions = extensions || [];
 		function BuiltClass() {
-			var args = arguments;
-			var self = this;
-			BuiltClass.superclass.constructor.apply(this, args);
-			$Array.each(BuiltClass.EXTS, function (extension) {
-				extension.apply(self, args);
-				$Object.each(extension.EVENTS || {}, function (type, fn) {
-					self.on(type, fn);
-				});
-			});
+			BuiltClass.superclass.constructor.apply(this, arguments);
 		}
 		extend(BuiltClass, superclass || Base, proto, attrs || {});
 		$.mix(BuiltClass, {

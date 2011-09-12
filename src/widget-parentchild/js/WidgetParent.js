@@ -166,7 +166,7 @@ WidgetParent.prototype = {
 	_onSelectionChange: function (e) {
 		if (this.get(MULTIPLE)) {
 			this.forEach(function(child) {
-				child.set(SELECTED, $.Array.indexOf(e.newVal, child) === -1, { src: '_onSelectionChange' });
+				child.set(SELECTED, $.Array.indexOf(e.newVal, child) > -1, { src: '_onSelectionChange' });
 			});
 		} else if (e.prevVal) {
 			e.prevVal.set(SELECTED, false, { src: '_onSelectionChange' });
