@@ -19,6 +19,26 @@ $.defer = function (fn, context) {
 	return promise;
 };
 
+$.wait = function (ms) {
+	return this.defer(function (promise) {
+		setTimeout(function () {
+			promise.resolve();
+		}, ms);
+	});
+};
+
+$.queue = function (fns, ms) {
+	ms = ms || 10;
+	if (!Lang.isArray(fns)) {
+		fns = [fns];
+	}
+	var promise = this;
+	$Array.forEach(fns, function (fn) {
+		promise = promise.wait(ms).then(fn);
+	});
+	return promise;
+};
+
 /**
  * @method when
  * @description Waits for a series of asynchronous calls to be completed
