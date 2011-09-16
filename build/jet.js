@@ -420,7 +420,7 @@ function clone(o, deep) {
 				n[i] = deep ? clone(val, deep) : val;
 			});
 		}
-	} else if (o.hasOwnProperty && Lang.isObject(o, true)) {
+	} else if (o && o.hasOwnProperty && Lang.isObject(o, true)) {
 		n = {};
 		Hash.each(o, function (prop, val) {
 			n[prop] = deep ? clone(val, deep) : val;
@@ -783,7 +783,7 @@ Get.prototype = {
 	_createStyle: function (url, callback) {
 		var node = this._create('style'),
 			interval;
-		node.textContent = '@import "' + url + '"';
+		node.textContent = '@import "' + url + '";';
 		interval = setInterval(function () {
 			try {
 				node.sheet.cssRules; // <--- MAGIC: only populated when file is loaded
@@ -824,6 +824,14 @@ Get.prototype = {
 					callback(node);
 				}
 			}, 50);
+		} else if (UA.gecko) {
+			setTimeout(function () {
+				callback(node);
+			}, 80)
+		} else {
+			node.onload = function () {
+				callback(node);
+			};
 		}
 	},
 	/**
@@ -834,11 +842,11 @@ Get.prototype = {
 	 */
 	css: function (url, callback) {
 		callback = callback || function() {};
-		if (UA.gecko) {
-			this._createStyle(url, callback);
-		} else {
+		// if (UA.gecko) {
+			// this._createStyle(url, callback);
+		// } else {
 			this._createLink(url, callback);
-		}
+		//}
 		return this;
 	},
 	

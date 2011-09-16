@@ -8,7 +8,7 @@ function clone(o, deep) {
 				n[i] = deep ? clone(val, deep) : val;
 			});
 		}
-	} else if (o.hasOwnProperty && Lang.isObject(o, true)) {
+	} else if (o && o.hasOwnProperty && Lang.isObject(o, true)) {
 		n = {};
 		Hash.each(o, function (prop, val) {
 			n[prop] = deep ? clone(val, deep) : val;
