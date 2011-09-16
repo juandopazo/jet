@@ -19,22 +19,6 @@ function clone(o, deep) {
 	return n;
 }
 
-function mix(a, b, overwrite, clonefirst) {
-	a = a || {};
-	b = b || {};
-	if (clonefirst) {
-		a = clone(a);
-	}
-	if (b.hasOwnProperty) {
-		for (var x in b) {
-			if (b.hasOwnProperty(x) && (!a.hasOwnProperty(x) || overwrite)) {
-				a[x] = b[x];
-			}
-		}
-	}
-	return a;
-};
-
 /**
  * Utilities for working with object literals
  * Throughout jet the Object type means an object lieteral

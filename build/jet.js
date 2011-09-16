@@ -327,12 +327,42 @@ function namespace(o, name) {
 	return o;
 }
 
+function mix(a, b, overwrite, clonefirst) {
+	a = a || {};
+	b = b || {};
+	if (clonefirst) {
+		a = clone(a);
+	}
+	if (b.hasOwnProperty) {
+		for (var x in b) {
+			if (b.hasOwnProperty(x) && (!a.hasOwnProperty(x) || overwrite)) {
+				a[x] = b[x];
+			}
+		}
+	}
+	return a;
+};
+
 /**
  * Utilities for working with Arrays
  * @class Array
  * @static
  */
-var _Array = {
+var _Array = function (o) {
+	var result;
+	if (Lang.isArray(o)) {
+		result = o;
+	} else if (Lang.isObject(o) && 'length' in o) {
+		result = [];
+		for (var i = 0, length = o.length; i < length; i++) {
+			result[i] = o[i];
+		}
+	} else {
+		result = Lang.isUndefined(o) ? [] : [o];
+	}
+	return result;
+};
+mix(_Array, {
 	/**
 	 * Iterates through an array
 	 * @method each
@@ -408,7 +438,7 @@ var _Array = {
 		});
 		return result;
 	}
-};
+});
 
 _Array.each = _Array.forEach;
 function clone(o, deep) {
@@ -430,22 +460,6 @@ function clone(o, deep) {
 	}
 	return n;
 }
-
-function mix(a, b, overwrite, clonefirst) {
-	a = a || {};
-	b = b || {};
-	if (clonefirst) {
-		a = clone(a);
-	}
-	if (b.hasOwnProperty) {
-		for (var x in b) {
-			if (b.hasOwnProperty(x) && (!a.hasOwnProperty(x) || overwrite)) {
-				a[x] = b[x];
-			}
-		}
-	}
-	return a;
-};
 
 /**
  * Utilities for working with object literals

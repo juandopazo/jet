@@ -14,8 +14,9 @@
  * @return Promise
  */
 $.defer = function (fn, context) {
-	var deferred = new $.Deferred();
-	return deferred.defer(fn, context);
+	var promise = new $.Promise();
+	fn.call($, promise);
+	return promise;
 };
 
 /**
@@ -25,7 +26,7 @@ $.defer = function (fn, context) {
  * @return Promise
  */
 $.when = function () {
-	var deferreds = $Array._spread(SLICE.call(arguments)),
+	var deferreds = $Array.flatten(SLICE.call(arguments)),
 		args = [],
 		i = 0,
 		resolved = 0,

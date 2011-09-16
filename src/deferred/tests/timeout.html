@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Deferred test</title>
+</head>
+<body>
+	<script src="../../../build/jet.js"></script>
+	<script>
+jet({
+	base: '../../../build/',
+	combine: false
+}).use('deferred', function($) {
+	
+	$.wait = function (ms) {
+		return this.defer(function (promise) {
+			setTimeout(function () {
+				promise.resolve();
+			}, ms);
+		});
+	};
+	
+	$.wait(2000).then(function () {
+		console.log('chan');
+	});
+});
+	</script>
+</body>
+</html>
