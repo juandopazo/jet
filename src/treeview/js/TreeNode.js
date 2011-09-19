@@ -13,7 +13,7 @@ var EXPAND = "expand",
 	CHILDREN = "children",
 	CONTROL = "control",
 	CONTENT = 'content',
-	LABEL = "label",
+	LABEL = "labelContent",
 	HOVER = "hover",
 	DASH = "-",
 	CLICK = "click",
@@ -22,7 +22,11 @@ var EXPAND = "expand",
 	CONTROL_NODE = 'controlNode',
 	LABEL_NODE = 'labelNode',
 	BOUNDING_BOX = "boundingBox",
-	CONTENT_BOX = 'contentBox';
+	CONTENT_BOX = 'contentBox',
+	
+	controlNodeClass = 'jet-treenode-control',
+	collapsedControlClass = controlNodeClass + '-collapsed',
+	expandedControlClass = controlNodeClass + '-expanded';
 
 /*
  * @TODO:
@@ -128,23 +132,26 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 	initializer: function () {
 		this.set(LABEL_NODE, this.LABEL_TEMPLATE);
 		this.set(CONTROL_NODE, this.CONTROL_TEMPLATE);
+
+		this.after('labelContentChange', this._uiTNLabelChange);
+		this.after('titleChange', this._uiTNTitleChange);
+		this.after('selectedChange', this._uiTNSelectedChange);
 	},
 	
 	renderUI: function (boundingBox) {
 		var contentBox = this.get(CONTENT_BOX);
 		var labelNode = this.get(LABEL_NODE).html(this.get(LABEL)).addClass(this.getClassName(LABEL));
-		var controlNode = this.get(CONTROL_NODE).addClass(this.getClassName(CONTROL));
+		var controlNode = this.get(CONTROL_NODE).addClass(controlNodeClass);
 		labelNode.prependTo(boundingBox);
 		controlNode.prependTo(boundingBox);
+		
+		controlNode.addClass(this.get(SELECTED) ? expandedControlClass : collapsedControlClass);
 	},
 	
 	bindUI: function () {
 		var clickableNodes = this.get(LABEL_NODE).link(this.get(CONTROL_NODE));
 		this._handlers.push(clickableNodes.on(CLICK, $.bind(this.toggle, this)));
 		
-		this.after('labelContentChange', this._uiTNLabelChange);
-		this.after('titleChange', this._uiTNTitleChange);
-		this.after('selectedChange', this._uiTNSelectedChange);
 		this.on('click', this._uiTNClick);
 	},
 	
@@ -165,8 +172,6 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 		var eventType = oldVal ? COLLAPSE : EXPAND;
 		var controlNode = this.get(CONTROL_NODE);
 		var contentBox = this.get(CONTENT_BOX);
-		var expandedControlClass = this.getClassName(CONTROL, EXPANDED); 
-		var collapsedControlClass = this.getClassName(CONTROL, COLLAPSED); 
 		var expandedContentClass = this.getClassName(CONTENT, EXPANDED); 
 		var collapsedContentClass = this.getClassName(CONTENT, COLLAPSED); 
 		if (this.get(CHILDREN).length > 0 && this.fire(eventType) && this.get('root').fire("node:" + eventType, this)) {

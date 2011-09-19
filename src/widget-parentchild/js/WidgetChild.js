@@ -41,9 +41,14 @@ $.mix(WidgetChild, {
 		parent: {
 			value: null
 		},
+		/**
+		 * @attribute root
+		 * @description Retrieves the root parent of the Widget
+		 * @readOnly
+		 */
 		root: {
 			readOnly: true,
-			getter: function () {
+			valueFn: function () {
 				var parent = this.get(PARENT);
 				while (parent.get(PARENT)) {
 					parent = parent.get(PARENT);

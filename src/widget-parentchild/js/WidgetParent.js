@@ -184,10 +184,6 @@ WidgetParent.prototype = {
 		this.forEach(function (child) {
 			child.render(container);
 		});
-		
-		if (!this.get('selection')) {
-			this.set(SELECTED_INDEX, 0);
-		}
 	},
 	
 	_onChildSelect: function (e) {
