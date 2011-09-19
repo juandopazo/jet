@@ -130,6 +130,10 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		 disabled: {
 			value: false,
 			validator: Lang.isBoolean
+		 },
+		 focused: {
+		 	value: false,
+		 	validator: Lang.isBoolean
 		 }
 	},
 	
@@ -350,6 +354,10 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		this.get(BOUNDING_BOX).toggleClass(this.getClassName('disabled'), e.newVal);
 	},
 	
+	_toggleFocused: function(e) {
+		this.get(BOUNDING_BOX).toggleClass(this.getClassName('focused'), e.newVal);
+	},
+	
 	_widgetIdChange: function (e) {
 		this.get('boundingBox').attr('id', e.newVal);
 		widgetInstances[e.newVal] = this;
@@ -379,6 +387,7 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		
 		this.after('visibleChange', this._toggleVisibility);
 		this.after('disabledChange', this._toggleDisabled);
+		this.after('focusedChange', this._toggleFocused);
 		
 		$Array.each([WIDTH, HEIGHT], function (size) {
 			self.after(size + 'Change', function (e) {
