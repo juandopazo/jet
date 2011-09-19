@@ -19,7 +19,7 @@ $.defer = function (fn, context) {
 	return promise;
 };
 
-$.wait = function (ms) {
+$.wait = $.Promise.prototype.wait = function (ms) {
 	return this.defer(function (promise) {
 		setTimeout(function () {
 			promise.resolve();
@@ -45,14 +45,14 @@ $.queue = function (fns, ms) {
  * @param {Deferred|Array} deferred Any number of Deferred instances or arrays of instances
  * @return Promise
  */
-$.when = function () {
+$.when = $.Promise.prototype.when = function () {
 	var deferreds = $Array.flatten(SLICE.call(arguments)),
 		args = [],
 		i = 0,
 		resolved = 0,
 		rejected = 0;
 			
-	return $.defer(function (promise) {
+	return this.defer(function (promise) {
 		function notify() {
 			if (rejected > 0) {
 				promise.rejectWith(promise, args);
