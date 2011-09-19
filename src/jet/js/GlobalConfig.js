@@ -97,7 +97,8 @@ var GlobalConfig = {
 				transition: ['node','anim','deferred'],
 				selector: ['node'],
 				form: ['base'],
-				'array-extras': {}
+				'array-extras': {},
+				escape: {}
 			}
 		}
 	}
