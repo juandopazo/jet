@@ -109,7 +109,8 @@ var GlobalConfig = {
 				transition: ['node','anim','deferred'],
 				selector: ['node'],
 				form: ['base'],
-				'array-extras': {}
+				'array-extras': {},
+				escape: {}
 			}
 		}
 	}
@@ -2385,7 +2386,7 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 			var newChildren = [];
 			var length = children.length;
 			for (var i = 0; i < length; i++) {
-				if (children[i].nodeType != 3) {
+				if (children[i].nodeType === 1) {
 					newChildren[newChildren.length] = children[i];
 				}
 			}
