@@ -31,9 +31,7 @@ $.mix($.NodeList.prototype, {
 	 * @chainable
 	 */
 	fadeIn: function (duration, easing, callback) {
-		return this.animate({
-			opacity: 1 
-		}, duration, easing, callback);
+		return this.animate({ opacity: 1 }, duration, easing, callback);
 	},
 	/**
 	 * @method fadeOut
@@ -45,9 +43,7 @@ $.mix($.NodeList.prototype, {
 	 * @chainable
 	 */
 	fadeOut: function (duration, easing, callback) {
-		return this.animate({
-			opacity: 0
-		}, duration, easing, callback);
+		return this.animate({ opacity: 0 }, duration, easing, callback);
 	},
 	/**
 	 * @method fadeToggle
@@ -104,9 +100,7 @@ $.mix($.NodeList.prototype, {
 	slideUp: function (duration, easing, callback) {
 		var myself = this;
 		var overflow = myself.css('overflow');
-		return myself.css('overflow', 'hidden').animate({
-			height: 0
-		}, duration, easing, function () {
+		return myself.css('overflow', 'hidden').animate({ height: 0 }, duration, easing, function () {
 			myself.css('overflow', overflow);
 			callback.call(myself);
 		});
