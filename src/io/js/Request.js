@@ -12,7 +12,7 @@ $.extend(Request, $.Promise, {
 	
 	/**
 	 * @method abort
-	 * @description Aborts the request if available (doesn't work on JSONP transactions)
+	 * @description Aborts the request if available (doesn't work on JSONP requests)
 	 * @chainable
 	 */
 	abort: function () {
@@ -72,8 +72,8 @@ $Object.each(TRANSACTION_METHODS, Request.addMethod);
 $Object.each(TRANSACTION_METHODS, function (method) {
 	
 	$[method] = function () {
-		var transaction = new $.Request();
-		return transaction[method].apply(transaction, arguments);
+		var request = new $.Request();
+		return request[method].apply(request, arguments);
 	};
 	
 });
