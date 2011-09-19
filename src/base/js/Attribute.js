@@ -9,21 +9,6 @@ function Attribute(state) {
 	Attribute.superclass.constructor.apply(this, arguments);
 	this._state = state ? $.clone(state) : {};
 	this._attrs = {};
-	
-	var classes = [];
-	var constructor = this.constructor;
-	while (constructor !== Attribute) {
-		classes.unshift(constructor);
-		constructor = constructor.superclass && constructor.superclass.constructor;
-	}
-	
-	this._classes = classes;
-	
-	$Array.each(classes, function (constructor) {
-		if (constructor.ATTRS) {
-			this.addAttrs(constructor.ATTRS);
-		}
-	}, this);
 }
 $.extend(Attribute, EventTarget, {
 	

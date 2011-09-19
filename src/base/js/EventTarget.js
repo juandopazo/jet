@@ -109,20 +109,22 @@ $.mix(EventTarget.prototype, {
 		return this;
 	},
 	
-	_on: function (eventType, callback, thisp, once) {
+	_on: function (eventType, callback, thisp, once, args) {
 		if (Lang.isObject(eventType)) {
 			$Object.each(eventType, function (type, fn) {
 				this._attach(type, {
 					fn: fn,
 					o: callback,
-					once: once
+					once: once,
+					args: args
 				});
 			}, this);
 		} else {
 			this._attach(eventType, {
 				fn: callback,
 				o: thisp,
-				once: once
+				once: once,
+				args: args
 			});
 		}
 		return this;
@@ -137,7 +139,7 @@ $.mix(EventTarget.prototype, {
 	 * @chainable
 	 */
 	on: function (eventType, callback, thisp) {
-		return this._on(eventType, callback, thisp);
+		return this._on(eventType, callback, thisp, false, SLICE.call(arguments, 3));
 	},
 	
 	/**
@@ -149,7 +151,7 @@ $.mix(EventTarget.prototype, {
 	 * @chainable
 	 */
 	once: function (eventType, callback, thisp) {
-		return this._on(eventType, callback, thisp, true);
+		return this._on(eventType, callback, thisp, true, SLICE.call(arguments, 3));
 	},
 	
 	/**
@@ -161,7 +163,7 @@ $.mix(EventTarget.prototype, {
 	 * @chainable
 	 */
 	after: function (eventType, callback, thisp) {
-		return this.on('after' + eventType.charAt(0).toUpperCase() + eventType.substr(1), callback, thisp);
+		return this.on.apply(this, ['after' + eventType.charAt(0).toUpperCase() + eventType.substr(1)].concat(SLICE.call(arguments, 1)));
 	},
 	/**
 	 * Removes and event listener
@@ -201,13 +203,14 @@ $.mix(EventTarget.prototype, {
 	 */
 	fire: function (eventType, args) {
 		var handlers = this._events[eventType] = this._events[eventType] || [],
+			extraArgs = SLICE.call(arguments, 2),
 			returnValue = true,
 			e = new $.EventFacade(eventType, this, function () { returnValue = false; }, args),
 			i = 0;
 			
 		while (i < handlers.length) {
 			if (Lang.isFunction(handlers[i].fn)) {
-				handlers[i].fn.call(handlers[i].o, e);
+				handlers[i].fn.apply(handlers[i].o, handlers[i].args.concat([e]).concat(extraArgs));
 			}
 			if (!handlers[i] || handlers[i].once) {
 				handlers.splice(i, 1);

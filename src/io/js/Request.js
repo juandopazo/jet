@@ -1,14 +1,14 @@
 /**
- * Represents the promise of a transaction being completed.
+ * Represents the promise of an IO request being completed.
  * Can also be aborted
- * @class Transaction
+ * @class Request
  * @constructor
  * @extends Promise
  */
-function Transaction() {
-	Transaction.superclass.constructor.apply(this, arguments);
+function Request() {
+	Request.superclass.constructor.apply(this, arguments);
 }
-$.extend(Transaction, $.Deferred, {
+$.extend(Request, $.Promise, {
 	
 	/**
 	 * @method abort
@@ -24,24 +24,24 @@ $.extend(Transaction, $.Deferred, {
 	
 	/**
 	 * @method ajax
-	 * @description Calls $.ajax and returns a new Transaction
+	 * @description Calls $.ajax and returns a new Request
 	 * @param {String} url The url for the io request
 	 * @param {Object} config Config options for the io request (see $.io)
-	 * @return Transaction
+	 * @return Request
 	 */
 	
 	/**
 	 * @method jsonp
-	 * @description Calls $.jsonp and returns a new Transaction
+	 * @description Calls $.jsonp and returns a new Request
 	 * @param {String} url The url for the jsonp request
 	 * @param {Object} config Config options for the jsonp request (see $.io)
-	 * @return Transaction
+	 * @return Request
 	 */
 	
 }, {
 	
 	addMethod: function (name, fn) {
-		Transaction.prototype[name] = function (url, opts) {
+		Request.prototype[name] = function (url, opts) {
 			var config = (!Lang.isObject(opts) || Lang.isFunction(opts)) ? {} : opts,
 				on = config.on || (config.on = {}),
 				success = on.success,
@@ -59,7 +59,7 @@ $.extend(Transaction, $.Deferred, {
 	
 });
 
-$.Transaction = Transaction;
+$.Request = Request;
 
 var TRANSACTION_METHODS = {
 	ajax: ajax,
@@ -67,12 +67,12 @@ var TRANSACTION_METHODS = {
 	xslt: xslt
 };
 
-$Object.each(TRANSACTION_METHODS, Transaction.addMethod);
+$Object.each(TRANSACTION_METHODS, Request.addMethod);
 
 $Object.each(TRANSACTION_METHODS, function (method) {
 	
 	$[method] = function () {
-		var transaction = new $.Transaction();
+		var transaction = new $.Request();
 		return transaction[method].apply(transaction, arguments);
 	};
 	
