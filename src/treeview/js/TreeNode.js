@@ -1,9 +1,7 @@
 
 var Lang = $.Lang,
 	Hash = $.Hash,
-	A = $.Array,
-	Base = $.Base,
-	Widget = $.Widget;
+	A = $.Array;
 
 var EXPAND = "expand",
 	COLLAPSE = "collapse",
@@ -13,7 +11,7 @@ var EXPAND = "expand",
 	CHILDREN = "children",
 	CONTROL = "control",
 	CONTENT = 'content',
-	LABEL = "labelContent",
+	LABEL = "label",
 	HOVER = "hover",
 	DASH = "-",
 	CLICK = "click",
@@ -43,7 +41,7 @@ var EXPAND = "expand",
  * @constructor
  * @param {Object} config Object literal specifying configuration properties
  */
-$.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
+$.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild], {
 	
 	ATTRS: {
 		/**
@@ -67,7 +65,7 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 		 * @description This node's label or title
 		 * @type String|HTMLElement
 		 */
-		labelContent: {
+		label: {
 			value: ''
 		},
 		/**
@@ -119,10 +117,6 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 		this.get(CONTROL_NODE).attr(TITLE, e.newVal);
 	},
 	
-	_uiTNSelectedChange: function (e) {
-		this._expandedChange.call(this, e.newVal, e.oldVal);
-	},
-	
 	_uiTNClick: function (e) {
 		if (e.domEvent.target == this.get(LABEL_NODE)) {
 			this.set(SELECTED, !this.get(SELECTED));
@@ -133,7 +127,7 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 		this.set(LABEL_NODE, this.LABEL_TEMPLATE);
 		this.set(CONTROL_NODE, this.CONTROL_TEMPLATE);
 
-		this.after('labelContentChange', this._uiTNLabelChange);
+		this.after('labelChange', this._uiTNLabelChange);
 		this.after('titleChange', this._uiTNTitleChange);
 		this.after('selectedChange', this._uiTNSelectedChange);
 	},
@@ -144,13 +138,14 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 		var controlNode = this.get(CONTROL_NODE).addClass(controlNodeClass);
 		labelNode.prependTo(boundingBox);
 		controlNode.prependTo(boundingBox);
-		
-		controlNode.addClass(this.get(SELECTED) ? expandedControlClass : collapsedControlClass);
 	},
 	
 	bindUI: function () {
-		var clickableNodes = this.get(LABEL_NODE).link(this.get(CONTROL_NODE));
-		this._handlers.push(clickableNodes.on(CLICK, $.bind(this.toggle, this)));
+		var toggle = $.bind(this.toggle, this);
+		this._handlers.push(
+			this.get(LABEL_NODE).on(CLICK, toggle),
+			this.get(CONTROL_NODE).on(CLICK, toggle)
+		);
 		
 		this.on('click', this._uiTNClick);
 	},
@@ -161,20 +156,21 @@ $.TreeNode = Base.create('treenode', Widget, [$.WidgetParent, $.WidgetChild], {
 		if (title) {
 			this.get(CONTROL_NODE).attr(TITLE, title);
 		}
-		if (this.get('children').length > 0) {
+		if (this.size() > 0) {
 			this.get(LABEL_NODE).addClass(this.getClassName(LABEL, 'selectable'));
 		}
-		this._expandedChange(expanded, expanded);
+		this._uiTNSelectedChange({ newVal: expanded, prevVal: expanded });
 	},
 	
-	_expandedChange: function (newVal, oldVal) {
+	_uiTNSelectedChange: function (e) {
+		var newVal = e.newVal;
 		var boundingBox = this.get(BOUNDING_BOX);
-		var eventType = oldVal ? COLLAPSE : EXPAND;
+		var eventType = e.prevVal ? COLLAPSE : EXPAND;
 		var controlNode = this.get(CONTROL_NODE);
 		var contentBox = this.get(CONTENT_BOX);
 		var expandedContentClass = this.getClassName(CONTENT, EXPANDED); 
 		var collapsedContentClass = this.getClassName(CONTENT, COLLAPSED); 
-		if (this.get(CHILDREN).length > 0 && this.fire(eventType) && this.get('root').fire("node:" + eventType, this)) {
+		if (this.size() > 0 && this.fire(eventType) && this.get('root').fire("node:" + eventType, this)) {
 			controlNode.toggleClass(expandedControlClass, newVal).toggleClass(collapsedControlClass, !newVal);
 			contentBox.toggleClass(expandedContentClass, newVal).toggleClass(collapsedContentClass, !newVal);
 		}
