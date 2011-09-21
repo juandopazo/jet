@@ -582,17 +582,20 @@ WidgetSandbox.prototype = {
 		var contentBox = this.get('contentBox');
 		var newContentBox;
 		
-		try {
-			contentBox.appendTo(body);
-		} catch (e) {
+		if (contentDoc.importNode) {
 			newContentBox = contentDoc.importNode(contentBox.getDOMNode(), true);
-			body.appendChild(newContentBox);
-			this.set('contentBox', newContentBox);
-			contentBox.remove();
+		} else {
+			// @TODO use a document fragment instead of a div
+			newContentBox = contentDoc.createElement('div');
+			newContentBox.innerHTML = contentBox.attr('outerHTML');
 		}
-		
-		A.each(this.get('extraScripts'), inst.Get.script, inst.Get);
-		this.fire('ready');
+		body.appendChild(newContentBox.firstChild);
+		$.later(4, this, function () {
+			A.each(this.get('extraScripts'), inst.Get.script, inst.Get);
+			this.fire('ready');
+		});
+		this.set('contentBox', newContentBox);
+		contentBox.remove();
 	}
 	 
 };
