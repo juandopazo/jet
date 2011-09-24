@@ -11,6 +11,6 @@
     },
     "dependencies": {
         "combohandler": "0.1.2",
-        "express", "2.4.6"
+        "express": "2.4.6"
     }
 }
