@@ -8,5 +8,8 @@
         "attributesEmit": "true",
         "paths": [ "./build" ],
         "outdir": "./docs/api"
+    },
+    "dependencies": {
+        "combohandler": "0.1.2"
     }
 }
