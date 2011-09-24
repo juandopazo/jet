@@ -7,4 +7,4 @@ app = comboServer({
   }
 });
 
-app.listen(9806);
+app.listen(process.env.PORT || 3000);
