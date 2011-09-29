@@ -586,10 +586,11 @@ WidgetSandbox.prototype = {
 			newContentBox = contentDoc.importNode(contentBox.getDOMNode(), true);
 		} else {
 			// @TODO use a document fragment instead of a div
-			newContentBox = contentDoc.createElement('div');
+			newContentBox = contentDoc.createElement(this.get('boundingBox').attr('nodeName'));
 			newContentBox.innerHTML = contentBox.attr('outerHTML');
+			newContentBox = newContentBox.firstChild;
 		}
-		body.appendChild(newContentBox.firstChild);
+		body.appendChild(newContentBox);
 		$.later(4, this, function () {
 			A.each(this.get('extraScripts'), inst.Get.script, inst.Get);
 			this.fire('ready');
