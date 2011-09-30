@@ -1,6 +1,18 @@
 
 var FSCOMMAND_EVENT = 'FSCommand';
 
+function makeAttrAlias(attrName) {
+	return {
+		setter: function(val) {
+			this.set(attrName, val);
+			return this.get(attrName);
+		},
+		getter: function() {
+			return this.get(attrName);
+		}
+	};
+}
+
 /**
  * A widget based Flash implementation. Does not work with progressive enhancement yet
  * @class SWF
@@ -78,17 +90,6 @@ $.SWF = $.Base.create('swf', $.Widget, [], {
 			valueFn: $.guid
 		},
 		/**
-		 * @config movie
-		 * @description Movie SWF attribute. Maps to the src attribute
-		 * @readOnly
-		 */
-		movie: {
-			readOnly: true,
-			getter: function() {
-				return this.get('src');
-			}
-		},
-		/**
 		 * @config allowScriptAccess
 		 * @description allowScriptAccess SWF attribute
 		 * @type String
@@ -108,7 +109,8 @@ $.SWF = $.Base.create('swf', $.Widget, [], {
 		id: 1,
 		type: 1,
 		width: 1,
-		height: 1
+		height: 1,
+		data: 1
 	},
 	/**
 	 * @property SWF_ATTRS
@@ -122,7 +124,8 @@ $.SWF = $.Base.create('swf', $.Widget, [], {
 		flashvars: 1,
 		allowFullscreen: 1,
 		name: 1,
-		movie: 1,
+		movie: 'src',
+		data: 'src',
 		id: 'name',
 		allowScriptAccess: 1,
 		width: 1,
@@ -147,16 +150,6 @@ $.SWF = $.Base.create('swf', $.Widget, [], {
 		str += 'style="width:' + this.get('width') + 'px;height:' + this.get('height') + 'px;"';
 		return str + '>' + params + '</object>';
 	},
-	_getEmbedString: function() {
-		var str = '<embed ';
-		$.Object.each($.SWF.SWF_ATTRS, function(name, active) {
-			if (active) {
-				str += name + '="' + this.get(active === 1 ? name : active) + '"'
-			}
-		}, this);
-		str += 'style="width:' + this.get('width') + 'px;height:' + this.get('height') + 'px;"';
-		return str + '/>';
-	},
 	
 	_setAttrObject: function(name, value) {
 		var params = this._swfNode.children(),
@@ -173,9 +166,6 @@ $.SWF = $.Base.create('swf', $.Widget, [], {
 				value: value
 			}).appendTo(this._swfNode);
 		}
-	},
-	_setAttrEmbed: function(name, value) {
-		this._swfNode.getDOMNode().setAttribute(name, value);
 	},
 
 	_syncSwfHeight: function(e) {
@@ -195,11 +185,7 @@ $.SWF = $.Base.create('swf', $.Widget, [], {
 	 */
 	setAttr: function(name, value) {
 		if (this.get('rendered')) {
-			if (!$.UA.ie) {
-				this._setAttrEmbed(name, value);
-			} else {
-				this._setAttrObject(name, value);
-			}
+			this._setAttrObject(name, value);
 		}
 		return this;
 	},
@@ -265,7 +251,7 @@ $.SWF = $.Base.create('swf', $.Widget, [], {
 	},
 	
 	renderUI: function(boundingBox, contentBox) {
-		contentBox.html(!$.UA.ie ? this._getEmbedString() : this._getObjectString());
+		contentBox.html(this._getObjectString());
 		this._swfNode = contentBox.first();
 	},
 	
