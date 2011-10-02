@@ -7,7 +7,7 @@
  * @constructor
  * @param {Object} config Object literal specifying configuration properties
  */
-$.TreeView = Base.create('treeview', Widget, [$.WidgetParent], {
+$.TreeView = $.Base.create('treeview', $.Widget, [$.WidgetParent], {
 	ATTRS: {
 		defaultChildType: {
 			value: 'TreeNode'

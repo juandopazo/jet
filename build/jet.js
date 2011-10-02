@@ -1330,7 +1330,7 @@ function makeUse(config, get) {
 			if (groupRequests.hasOwnProperty(groupReqId)) {
 				if (groupRequests[groupReqId].length > 0) {
 					groupName = groupReqId.substr(0, groupReqId.length - groupRequests[groupReqId].type.length);
-					url = config.groups[groupName].root + groupName + '?' + groupRequests[groupReqId].join('&');
+					url = config.groups[groupName].root + groupRequests[groupReqId].join('&');
 					if (groupRequests[groupReqId].type != 'css') {
 						get.script(url);
 					} else {

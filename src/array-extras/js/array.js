@@ -39,7 +39,7 @@ ArrayExtras = {
 		return false;
 	},
 	
-	lastIndexOf: function (haystack, needle) {
+	/*lastIndexOf: function (haystack, needle) {
 		var length = haystack.length >>> 0,
 			n = length,
 			i;
@@ -65,7 +65,7 @@ ArrayExtras = {
 			}
 		}
 		return -1;
-	},
+	},*/
 	
 	/**
 	 * Creates a new array with the results of calling a provided function on every element in this array
