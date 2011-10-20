@@ -194,7 +194,9 @@ var triggerEvent = function (node, type, data) {
 	triggerEvent(node, type, data);
 };
 
-addEvent($.win, 'unload', EventCache.flush);
+if ($.UA.ie < 7) {
+    addEvent($.win, 'unload', EventCache.flush);
+}
 
 /**
  * A collection of DOM Event handlers for later detaching
