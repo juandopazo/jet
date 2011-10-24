@@ -173,7 +173,7 @@ var Lang = (function () {
 		 * @param {Object} o
 		 */
 		isNumber: function (o) {
-			return type(o) === NUMBER && isFinite(o);
+			return typeof o === NUMBER && isFinite(o);
 		},
 		/**
 		 * Returns if o is a string
@@ -181,7 +181,7 @@ var Lang = (function () {
 		 * @param {Object} o
 		 */
 		isString: function (o) {
-			return type(o) === STRING;
+			return typeof o === STRING;
 		},
 		/**
 		 * Returns if o is an array
@@ -197,7 +197,7 @@ var Lang = (function () {
 		 * @param {Object} o
 		 */
 		isFunction: function (o) {
-			return type(o) === FUNCTION;
+			return typeof o === FUNCTION;
 		},
 		isObject: function (o, failfn) {
 			var t = typeof o;
@@ -237,17 +237,17 @@ var Lang = (function () {
 		 * @param {Object} o
 		 */
 		isValue: function (o) {
-			var t = type(o);
+			var t = typeof o;
 			switch (t) {
 			case NUMBER:
 				return isFinite(o);
-			case NULL:
 			case UNDEFINED:
 				return false;
 			case BOOLEAN:
 				return true;
 			default:
-				return !!(t);
+                t = type(o);
+				return t !== NULL && !!(t);
 			}
 		},
 		is: function (o) {
@@ -982,7 +982,7 @@ function buildJet(config) {
 	Env.guidCount = 0;
 	
 	add({
-		later: function (ms, context, callback) {
+		wait: function (ms, context, callback) {
 			if (arguments.length === 2) {
 				callback = context;
 				context = null;
