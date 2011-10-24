@@ -789,6 +789,14 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 	},
 	
 	_bindUI: function (boundingBox, contentBox, classes) {
+		$.Object.each(this._domEvents, function (name, status) {
+			if (status === false) {
+				this._handlers.push(
+					boundingBox.on(name, this._domEventProxy, this)
+				);
+				this._domEvents[name] = true;
+			}
+		}, this);
 	},
 	
 	_syncUI: function (boundingBox, contentBox, classes) {
@@ -946,11 +954,19 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 
 $.Array.forEach(['on', 'once', 'after'], function (type) {
 	$.Widget.prototype[type] = function (name) {
-		if ($.Widget.DOM_EVENTS[name] && !this._domEvents[name]) {
-			this._domEvents[name] = true;
-			this._handlers.push(
-				this.get('boundingBox').on(name, this._domEventProxy, this)
-			);
+		if (!this._domEvents) {
+			this._domEvents = {};
+		}
+		if ($.Widget.DOM_EVENTS[name] && typeof this._domEvents[name] === 'undefined') {
+			var boundingBox = this.get('boundingBox');
+			if (boundingBox) {
+				this._domEvents[name] = true;
+				this._handlers.push(
+					this.get('boundingBox').on(name, this._domEventProxy, this)
+				);
+			} else {
+				this._domEvents[name] = false;
+			}
 		}
 		$.Widget.superclass[type].apply(this, arguments);
 	};
