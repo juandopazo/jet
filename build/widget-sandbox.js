@@ -591,7 +591,7 @@ WidgetSandbox.prototype = {
 			newContentBox = newContentBox.firstChild;
 		}
 		body.appendChild(newContentBox);
-		$.later(4, this, function () {
+		$.wait(4, this, function () {
 			A.each(this.get('extraScripts'), inst.Get.script, inst.Get);
 			this.fire('ready');
 		});
