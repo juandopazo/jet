@@ -30,6 +30,8 @@ function WidgetParent(config) {
 		
 	$.ArrayList.call(this);
 	
+	this._childrenContainer = this.get('contentBox');
+	
 	this.on('render', this._renderChildren);
 	this.after('selectionChange', this._onSelectionChange);
 	
@@ -128,17 +130,6 @@ $.mix(WidgetParent, {
 				var selection = this.get(SELECTION); 
 				return selection ? selection.get(INDEX) : -1;
 			}
-		},
-		/**
-		 * @attribute childrenContainer
-		 * @description The node inside which to insert the children
-		 * @default the content box
-		 */
-		childrenContainer: {
-			setter: $,
-			getter: function (val) {
-				return val || this.get(CONTENT_BOX);
-			}
 		}
 	},
 	
@@ -172,7 +163,7 @@ WidgetParent.prototype = {
 	},
 	
 	_renderChildren: function () {
-		var container = this.get('childrenContainer');
+		var container = this._childrenContainer;
 		
 		this.forEach(function (child) {
 			child.render(container);
@@ -222,7 +213,7 @@ WidgetParent.prototype = {
 			
 			this.splice(index, 0, child);
 			if (this.get('rendered')) {
-				child.render(this.get('childrenContainer'));
+				child.render(this._childrenContainer);
 			}
 			
 			child.after('selectedChange', this._onChildSelect, this);

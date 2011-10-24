@@ -50,7 +50,7 @@ $.MenuItem = $.Base.create('menuitem', $.Widget, [$.WidgetChild, $.WidgetParent,
 	CONTAINER_TEMPLATE: '<ul/>',
 	
 	_toggleContainer: function(selected) {
-		this._container.toggleClass(this.getClassName('container', 'hidden'), this.size() == 0 ? true : !selected);
+		this._childrenContainer.toggleClass(this.getClassName('container', 'hidden'), this.size() == 0 ? true : !selected);
 	},
 	_updateLabel: function(content) {
 		this.get('labelNode').html(content);
@@ -58,10 +58,9 @@ $.MenuItem = $.Base.create('menuitem', $.Widget, [$.WidgetChild, $.WidgetParent,
 	
 	initializer: function(config) {
 		this.set('labelNode', this.get('labelNode'));
-		this._container = $(this.CONTAINER_TEMPLATE);
+		this._childrenContainer = $(this.CONTAINER_TEMPLATE);
 		
-		this.set('childrenContainer', this._container);
-		this.set('alignedNode', 'childrenContainer');
+		this.set('alignedNode', this._childrenContainer);
 		this.get('align').node = this.get('contentBox');
 		
 		this.after('labelContentChange', function(e) {
@@ -75,7 +74,7 @@ $.MenuItem = $.Base.create('menuitem', $.Widget, [$.WidgetChild, $.WidgetParent,
 	renderUI: function(boundingBox, contentBox) {
 		contentBox.attr('href', '#').append(this.get('labelNode').addClass(this.getClassName('label')));
 		
-		this._container.addClass(this.getClassName('container')).appendTo(boundingBox);
+		this._childrenContainer.addClass(this.getClassName('container')).appendTo(boundingBox);
 	},
 	
 	bindUI: function(boundingBox, contentBox) {
