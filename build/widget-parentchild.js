@@ -83,7 +83,7 @@ $.mix(WidgetParent, {
 		 * @default WidgetChild
 		 */
 		defaultChildType: {
-			value: 'WidgetChild'
+			value: 'Widget'
 		},
 		
 		/**
@@ -172,8 +172,6 @@ $.mix(WidgetParent, {
 });
 WidgetParent.prototype = {
 	
-	constructor: WidgetParent,
-	
 	_onSelectionChange: function (e) {
 		if (this.get(MULTIPLE)) {
 			this.forEach(function(child) {
@@ -185,12 +183,7 @@ WidgetParent.prototype = {
 	},
 	
 	_renderChildren: function () {
-		var self = this,
-			container = this.get('childrenContainer');
-			
-		$.Object.each(Widget.DOM_EVENTS, function (name) {
-			self.on(name, self._domEventChildrenProxy);
-		});
+		var container = this.get('childrenContainer');
 		
 		this.forEach(function (child) {
 			child.render(container);
@@ -223,13 +216,6 @@ WidgetParent.prototype = {
 				item.set(INDEX, i);
 			}
 		});
-	},
-	
-	_domEventChildrenProxy: function (e) {
-		var targetWidget = Widget.getByNode(e.domEvent.target);
-		if (this.indexOf(targetWidget) > -1) {
-			targetWidget.fire(e.type, { domEvent: e.domEvent });
-		}
 	},
 	
 	_add: function (child, index) {
@@ -400,9 +386,6 @@ $.mix(WidgetChild, {
 		render: function () {
 			var self = this;
 			var boundingBox = this.get(BOUNDING_BOX);
-			$.Object.each(Widget.DOM_EVENTS, function (name) {
-				boundingBox.unbind(name, self._domEventProxy);
-			});
 			if (this.get(SELECTED)) {
 				boundingBox.addClass(this.getClassName(SELECTED));
 			}
