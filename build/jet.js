@@ -21,6 +21,7 @@ var CSS = 'css',
 var GlobalConfig = {
 	base: location.protocol + '//github.com/juandopazo/jet/raw/master/build/',
 	combine: true,
+	minify: true,
 	root: location.protocol + '//jetjs.herokuapp.com/combo?',
 	modules: {},
 	groups: {
