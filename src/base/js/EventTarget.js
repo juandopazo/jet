@@ -132,7 +132,7 @@ $.mix(EventTarget.prototype, {
 	
 	/**
 	 * Adds an event listener
-	 * @method on
+	 * @method addListener
 	 * @param {String} eventType Name of the event to listen to
 	 * @param {Function} callback Callback to execute when the event fires
 	 * @param {Object} thisp Optional. Context on which the callback will run
@@ -167,7 +167,7 @@ $.mix(EventTarget.prototype, {
 	},
 	/**
 	 * Removes and event listener
-	 * @method unbind
+	 * @method removeListener
 	 * @param {String} eventType
 	 * @param {Function} callback
 	 * @chainable
@@ -222,7 +222,22 @@ $.mix(EventTarget.prototype, {
 	}
 });
 
+/**
+ * Alias for EventTarget#addListener
+ * @method on
+ * @param {String} eventType Name of the event to listen to
+ * @param {Function} callback Callback to execute when the event fires
+ * @param {Object} thisp Optional. Context on which the callback will run
+ * @chainable
+ */
 EventTarget.prototype.on = EventTarget.prototype.addListener;
+/**
+ * Alias for EventTarget#removeListener
+ * @method unbind
+ * @param {String} eventType
+ * @param {Function} callback
+ * @chainable
+ */
 EventTarget.prototype.unbind = EventTarget.prototype.removeListener;
 
 $.EventTarget = EventTarget;
