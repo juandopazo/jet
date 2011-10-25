@@ -4424,7 +4424,7 @@
             "line": 245,
             "description": "Alias for EventTarget#removeListener",
             "itemtype": "method",
-            "name": "removeListener",
+            "name": "unbind",
             "params": [
                 {
                     "name": "eventType",
