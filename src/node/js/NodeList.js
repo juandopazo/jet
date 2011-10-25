@@ -26,7 +26,7 @@ function NodeList(nodes, root) {
 	NodeList.superclass.constructor.apply(this, arguments);
 	
 	var i = 0, length, tmp;
-	root = root || $.context;
+	root = root || $.config.doc;
 	nodes = Lang.isValue(nodes) ? nodes : [];
 	if (Lang.isArray(nodes._items)) {
 		nodes = nodes._items;

@@ -361,7 +361,7 @@ var DataSource = Base.create('datasource', $.Utility, [], {
 		 * }
 		 */
 		else if (responseType == RESPONSE_TYPE_XML) {
-			var doc = $.context;
+			var doc = $.config.doc;
 			var de = rawData.documentElement; 
 			var resultNode = de.nodeName == responseSchema.resultNode ? $(de) : $(de).find(responseSchema.resultNode).eq(0);
 			resultNode.children().each(function (node) {
@@ -398,7 +398,7 @@ var DataSource = Base.create('datasource', $.Utility, [], {
 				});
 				data[data.length] = record;
 			});
-			$.context = doc;
+			$.config.doc = doc;
 		}
 		return new RecordSet(data);
 	},

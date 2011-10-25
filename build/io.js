@@ -290,7 +290,7 @@ var transform = function (xml, xsl, parameters) {
 					xsltProcessor.setParameter(null, paramName, parameters[paramName]);
 				}
 			}
-			return $(xsltProcessor.transformToFragment(xml, $.context));
+			return $(xsltProcessor.transformToFragment(xml, $.config.doc));
 		};
 	} else if (win.ActiveXObject) {
 		transform = function (xml, xsl, parameters) {
@@ -389,7 +389,7 @@ $.extend(Request, $.Promise, {
 	
 	/**
 	 * @method abort
-	 * @description Aborts the request if available (doesn't work on JSONP transactions)
+	 * @description Aborts the request if available (doesn't work on JSONP requests)
 	 * @chainable
 	 */
 	abort: function () {
@@ -449,8 +449,8 @@ $Object.each(TRANSACTION_METHODS, Request.addMethod);
 $Object.each(TRANSACTION_METHODS, function (method) {
 	
 	$[method] = function () {
-		var transaction = new $.Request();
-		return transaction[method].apply(transaction, arguments);
+		var request = new $.Request();
+		return request[method].apply(request, arguments);
 	};
 	
 });

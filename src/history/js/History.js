@@ -12,7 +12,7 @@ var UA = $.UA,
 	A = $.Array,
 	Hash = $.Hash;
 	
-var body = $.context.body;
+var body = $.config.doc.body;
 
 var safari = false;
 	

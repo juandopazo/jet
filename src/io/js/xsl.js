@@ -12,7 +12,7 @@ var transform = function (xml, xsl, parameters) {
 					xsltProcessor.setParameter(null, paramName, parameters[paramName]);
 				}
 			}
-			return $(xsltProcessor.transformToFragment(xml, $.context));
+			return $(xsltProcessor.transformToFragment(xml, $.config.doc));
 		};
 	} else if (win.ActiveXObject) {
 		transform = function (xml, xsl, parameters) {

@@ -15,7 +15,7 @@ var DOM = $.DOM = {
 	 * @param {Document} document
 	 */
 	getWindowFromDocument: function (doc) {
-		doc = doc || $.context;
+		doc = doc || $.config.doc;
 		return doc.defaultView || doc.parentWindow || $.win;
 	},
 	/**
@@ -28,7 +28,7 @@ var DOM = $.DOM = {
 		if (Lang.isValue(value)) {
 			$.win.scrollTo(value, this.scrollTop());
 		} else {
-			var doc = $.context;
+			var doc = $.config.doc;
 			var dv = doc.defaultView;
 	        return Math.max(doc[DOCUMENT_ELEMENT].scrollLeft, doc.body.scrollLeft, (dv) ? dv.pageXOffset : 0);
 		}
@@ -44,7 +44,7 @@ var DOM = $.DOM = {
 		if (Lang.isValue(value)) {
 			$.win.scrollTo(this.scrollTop(), value);
 		} else {
-			var doc = $.context;
+			var doc = $.config.doc;
 			var dv = doc.defaultView;
 	        return Math.max(doc[DOCUMENT_ELEMENT].scrollTop, doc.body.scrollTop, (dv) ? dv.pageYOffset : 0);
 		}
