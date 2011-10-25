@@ -1822,8 +1822,8 @@ var triggerEvent = function (node, type, data) {
 	triggerEvent(node, type, data);
 };
 
-if ($.UA.ie < 7) {
-    addEvent($.win, 'unload', EventCache.flush);
+if ($.UA.ie && $.UA.ie < 7) {
+    addEvent($.config.win, 'unload', EventCache.flush);
 }
 
 /**
