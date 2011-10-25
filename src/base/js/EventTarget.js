@@ -132,13 +132,13 @@ $.mix(EventTarget.prototype, {
 	
 	/**
 	 * Adds an event listener
-	 * @method on
+	 * @method addListener
 	 * @param {String} eventType Name of the event to listen to
 	 * @param {Function} callback Callback to execute when the event fires
-	 * @param {Object} thisp Optional. Context on which the callback will run
+	 * @param {Object} [thisp] Context on which the callback will run
 	 * @chainable
 	 */
-	on: function (eventType, callback, thisp) {
+	addListener: function (eventType, callback, thisp) {
 		return this._on(eventType, callback, thisp, false, SLICE.call(arguments, 3));
 	},
 	
@@ -147,7 +147,7 @@ $.mix(EventTarget.prototype, {
 	 * @method once
 	 * @param {String} eventType Name of the event to listen to
 	 * @param {Function} callback Callback to execute when the event fires
-	 * @param {Object} thisp Optional. Context on which the callback will run
+	 * @param {Object} [thisp] Context on which the callback will run
 	 * @chainable
 	 */
 	once: function (eventType, callback, thisp) {
@@ -159,7 +159,7 @@ $.mix(EventTarget.prototype, {
 	 * @method after
 	 * @param {String} eventType Name of the event to listen to
 	 * @param {Function} callback Callback to execute when the event fires
-	 * @param {Object} thisp Optional. Context on which the callback will run
+	 * @param {Object} [thisp] Context on which the callback will run
 	 * @chainable
 	 */
 	after: function (eventType, callback, thisp) {
@@ -167,12 +167,12 @@ $.mix(EventTarget.prototype, {
 	},
 	/**
 	 * Removes and event listener
-	 * @method unbind
+	 * @method removeListener
 	 * @param {String} eventType
 	 * @param {Function} callback
 	 * @chainable
 	 */
-	unbind: function (eventType, callback) {
+	removeListener: function (eventType, callback) {
 		var events = this._events[eventType] || [],
 			type,
 			i = 0;
@@ -221,5 +221,23 @@ $.mix(EventTarget.prototype, {
 		return returnValue;
 	}
 });
+
+/**
+ * Alias for <a href="#method_addListener">addListener</a>
+ * @method on
+ * @param {String} eventType Name of the event to listen to
+ * @param {Function} callback Callback to execute when the event fires
+ * @param {Object} thisp Optional. Context on which the callback will run
+ * @chainable
+ */
+EventTarget.prototype.on = EventTarget.prototype.addListener;
+/**
+ * Alias for <a href="#method_removeListener">removeListener</a>
+ * @method unbind
+ * @param {String} eventType
+ * @param {Function} callback
+ * @chainable
+ */
+EventTarget.prototype.unbind = EventTarget.prototype.removeListener;
 
 $.EventTarget = EventTarget;

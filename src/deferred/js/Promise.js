@@ -34,7 +34,7 @@ $Array.flatten = function (arr) {
  * It runs these callbacks once a call to resolve() or reject() is made.
  * 
  * This class is designed to augment others
- * @class Deferred
+ * @class Promise
  * @constructor
  */
 function Promise(config) {
