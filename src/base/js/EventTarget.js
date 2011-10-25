@@ -222,6 +222,7 @@ $.mix(EventTarget.prototype, {
 	}
 });
 
-EventTarget.on = EventTarget.addListener;
+EventTarget.prototype.on = EventTarget.prototype.addListener;
+EventTarget.prototype.unbind = EventTarget.prototype.removeListener;
 
 $.EventTarget = EventTarget;

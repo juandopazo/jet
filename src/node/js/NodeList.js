@@ -520,12 +520,12 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	},
 	/**
 	 * Removes an event listener from all the nodes
-	 * @method unbind
+	 * @method removeListener
 	 * @param {String} type
 	 * @param {Function} callback
 	 * @chainable
 	 */
-	unbind: function (type, callback) {
+	removeListener: function (type, callback) {
 		return this.each(function (node) {
 			if (callback) {
 				EventCache.remove(node, type, callback);
@@ -569,7 +569,7 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	setContent: function (content) {
-		this.children().unbind().remove();
+		this.children().removeListener().remove();
 		return this.html(content);
 	},
 	ownerDoc: function () {
@@ -662,6 +662,8 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 		return false;
 	}
 });
+
+NodeList.prototype.unbind = NodeList.prototype.removeListener
 
 PROTO = NodeList.prototype;
 
