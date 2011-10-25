@@ -86,7 +86,7 @@ function buildJet(config) {
 	Env.guidCount = 0;
 	
 	add({
-		later: function (ms, context, callback) {
+		wait: function (ms, context, callback) {
 			if (arguments.length === 2) {
 				callback = context;
 				context = null;

@@ -63,9 +63,6 @@ $.mix(WidgetChild, {
 		render: function () {
 			var self = this;
 			var boundingBox = this.get(BOUNDING_BOX);
-			$.Object.each(Widget.DOM_EVENTS, function (name) {
-				boundingBox.unbind(name, self._domEventProxy);
-			});
 			if (this.get(SELECTED)) {
 				boundingBox.addClass(this.getClassName(SELECTED));
 			}

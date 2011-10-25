@@ -57,7 +57,7 @@ $.MenuItem = $.Base.create('menuitem', $.Widget, [$.WidgetChild, $.WidgetParent,
 			this._updateLabel(e.newVal);
 		});
 		this.after('selectedChange', function () {
-			$.later(0, this, this._repositionUI);
+			$.wait(0, this, this._repositionUI);
 		});
 	},
 	
