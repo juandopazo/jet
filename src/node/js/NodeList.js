@@ -26,7 +26,7 @@ function NodeList(nodes, root) {
 	NodeList.superclass.constructor.apply(this, arguments);
 	
 	var i = 0, length, tmp;
-	root = root || $.context;
+	root = root || $.config.doc;
 	nodes = Lang.isValue(nodes) ? nodes : [];
 	if (Lang.isArray(nodes._items)) {
 		nodes = nodes._items;
@@ -596,7 +596,7 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	 */
 	currentStyle: function () {
 		var node = this.getDOMNode();
-		return $.win[GET_COMPUTED_STYLE] ? $.win[GET_COMPUTED_STYLE](node, null) : 
+		return $.config.win[GET_COMPUTED_STYLE] ? $.config.win[GET_COMPUTED_STYLE](node, null) : 
 				node[CURRENT_STYLE] ? node[CURRENT_STYLE] : node.style;
 	},
 	/**

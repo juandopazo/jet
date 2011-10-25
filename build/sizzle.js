@@ -1428,7 +1428,7 @@ var Sizzle = window.Sizzle;
 delete window.Sizzle;
 
 $.find = function (query, root) {
-	root = root || $.context;
+	root = root || $.config.doc;
 	var test, node = null;
 	if (query.charAt(0) === '<' && query.charAt(query.length - 1) === '>') {
 		if (query.match(/</g).length === 1) {

@@ -20,8 +20,8 @@ var NEW_DIV = '<div/>',
 	LOCKED = 'locked',
 	HOVER = 'hover';
 	
-var de = $.context.documentElement,
-	db = $.context.body;
+var de = $.config.doc.documentElement,
+	db = $.config.doc.body;
 			
 /**
  * Provides a utility for resizing elements

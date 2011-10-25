@@ -12,7 +12,7 @@ var UA = $.UA,
 	A = $.Array,
 	Hash = $.Hash;
 	
-var body = $.context.body;
+var body = $.config.doc.body;
 
 var safari = false;
 	
@@ -486,8 +486,8 @@ var History = function () {
 	};
 
 	var useHashEvent = function () {
-		$($.win).on("hashchange", function () {
-			fireHistoryEvent($.win.location.hash);
+		$($.config.win).on("hashchange", function () {
+			fireHistoryEvent($.config.win.location.hash);
 		});
 	};
 	
@@ -685,7 +685,7 @@ var History = function () {
 	/*Save it as our current location*/
 	currentLocation = initialHash;
 
-	if ("onhashchange" in $.win) {
+	if ("onhashchange" in $.config.win) {
 		useHashEvent();
 	} else {
 		/*Create Safari/Opera-specific code*/
@@ -703,7 +703,7 @@ var History = function () {
 		page, which can break some of our logic related to testing whether this is the first instance a page has loaded or whether
 		it is being pulled from the cache*/
 
-		$($.win).on("unload", function () {
+		$($.config.win).on("unload", function () {
 			firstLoad = null;
 		});
 

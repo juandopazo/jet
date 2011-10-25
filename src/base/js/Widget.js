@@ -43,7 +43,9 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		 * @type DOMNode | NodeList
 		 */
 		srcNode: {
-			value: $($.context.body),
+			valueFn: function() {
+				return $('body');
+			},
 			setter: $
 		},
 		/**

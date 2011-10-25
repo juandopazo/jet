@@ -1537,7 +1537,7 @@ window.jet = function (o) {
 	
 	/**
 	 * @attribute win
-	 * @description A reference to the global object that is accesible later with $.win
+	 * @description A reference to the global object that is accesible later with $.config.win
 	 */
 	config.win = config.win || window;
 	/**
@@ -1865,8 +1865,8 @@ var DOM = $.DOM = {
 	 * @param {Document} document
 	 */
 	getWindowFromDocument: function (doc) {
-		doc = doc || $.context;
-		return doc.defaultView || doc.parentWindow || $.win;
+		doc = doc || $.config.doc;
+		return doc.defaultView || doc.parentWindow || $.config.win;
 	},
 	/**
 	 * Gets the scrolling width or makes the browser scroll
@@ -1876,9 +1876,9 @@ var DOM = $.DOM = {
 	 */
 	scrollLeft: function (value) {
 		if (Lang.isValue(value)) {
-			$.win.scrollTo(value, this.scrollTop());
+			$.config.win.scrollTo(value, this.scrollTop());
 		} else {
-			var doc = $.context;
+			var doc = $.config.doc;
 			var dv = doc.defaultView;
 	        return Math.max(doc[DOCUMENT_ELEMENT].scrollLeft, doc.body.scrollLeft, (dv) ? dv.pageXOffset : 0);
 		}
@@ -1892,9 +1892,9 @@ var DOM = $.DOM = {
 	 */
 	scrollTop: function (value) {
 		if (Lang.isValue(value)) {
-			$.win.scrollTo(this.scrollTop(), value);
+			$.config.win.scrollTo(this.scrollTop(), value);
 		} else {
-			var doc = $.context;
+			var doc = $.config.doc;
 			var dv = doc.defaultView;
 	        return Math.max(doc[DOCUMENT_ELEMENT].scrollTop, doc.body.scrollTop, (dv) ? dv.pageYOffset : 0);
 		}
@@ -1909,8 +1909,8 @@ var DOM = $.DOM = {
 			de = doc.documentElement,
 			db = doc.body;
 		return {
-			height: de.clientHeight || $.win.innerHeight || db.clientHeight,
-			width: de.clientWidth || $.win.innerWidth || db.clientWidth
+			height: de.clientHeight || $.config.win.innerHeight || db.clientHeight,
+			width: de.clientWidth || $.config.win.innerWidth || db.clientWidth
 		};
 	},
 	/**
@@ -1918,7 +1918,7 @@ var DOM = $.DOM = {
 	 * @method pageSize
 	 */
 	pageSize: function (win) {
-		win = win || $.win;
+		win = win || $.config.win;
 		var doc = win.document,
 			compatMode = doc.compatMode != "CSS1Compat",
 			innerWidth = win.innerWidth,
@@ -1961,7 +1961,7 @@ function NodeList(nodes, root) {
 	NodeList.superclass.constructor.apply(this, arguments);
 	
 	var i = 0, length, tmp;
-	root = root || $.context;
+	root = root || $.config.doc;
 	nodes = Lang.isValue(nodes) ? nodes : [];
 	if (Lang.isArray(nodes._items)) {
 		nodes = nodes._items;
@@ -2531,7 +2531,7 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	 */
 	currentStyle: function () {
 		var node = this.getDOMNode();
-		return $.win[GET_COMPUTED_STYLE] ? $.win[GET_COMPUTED_STYLE](node, null) : 
+		return $.config.win[GET_COMPUTED_STYLE] ? $.config.win[GET_COMPUTED_STYLE](node, null) : 
 				node[CURRENT_STYLE] ? node[CURRENT_STYLE] : node.style;
 	},
 	/**

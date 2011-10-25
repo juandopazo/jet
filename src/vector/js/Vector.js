@@ -102,19 +102,19 @@ try {
 		document.namespaces.add("vml", "urn:schemas-microsoft-com:vml");
 	}
 	createIENode = function (tagName) {
-		var node = $.context.createElement('<vml:' + tagName + ' class="vml">');
+		var node = $.config.doc.createElement('<vml:' + tagName + ' class="vml">');
 		return node;
 	};
 } 
 catch (e) {
 	createIENode = function (tagName) {
-		return $.context.createElement('<' + tagName + ' xmlns="urn:schemas-microsoft.com:vml" class="vml">');
+		return $.config.doc.createElement('<' + tagName + ' xmlns="urn:schemas-microsoft.com:vml" class="vml">');
 	};
 }
 
 // Setup VML behaviour
 if (!UA_SUPPORTS_SVG) {
-	var styles = $.context.createStyleSheet();
+	var styles = $.config.doc.createStyleSheet();
 	styles.addRule(".vml", "behavior:url(#default#VML)");
 	styles.addRule(".vml", "display:inline-block");
 }
@@ -219,7 +219,7 @@ Hash.each(STROKE_ATTR_MAPPING, function (asvg) {
 
 Vector_ATTRS.node = {
 	setter: UA_SUPPORTS_SVG ? function (node) {
-		return node.nodeType ? node : $.context.createElementNS(NAMESPACE_URI, node);
+		return node.nodeType ? node : $.config.doc.createElementNS(NAMESPACE_URI, node);
 	} : function (node) {
 		return node.nodeType ? node : createIENode(node);
 	}

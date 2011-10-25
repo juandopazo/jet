@@ -19,8 +19,8 @@ if (!jet.controllers) {
 	jet.controllers = {};
 
 	// TEMPORARY. Use HTML5 History instead
-	$($.win).on('hashchange', function () {
-		var action = parseUrl($.win.location.hash);
+	$($.config.win).on('hashchange', function () {
+		var action = parseUrl($.config.win.location.hash);
 		var controller = jet.controllers[action.name]; 
 		if (controller && controller[action.method]) {
 			controller[action.method].apply(controller, action.args);
@@ -44,7 +44,7 @@ $.Controller = Base.create('controller', Base, [], {
 	
 	initializer: function () {
 		var name = this.get('name');
-		var action = parseUrl($.win.location.hash);
+		var action = parseUrl($.config.win.location.hash);
 		Hash.each(this.get('methods'), function (name, fn) {
 			myself[name] = fn;
 		});
