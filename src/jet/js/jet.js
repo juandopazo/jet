@@ -380,7 +380,7 @@ window.jet = function (o) {
 	
 	/**
 	 * @attribute win
-	 * @description A reference to the global object that is accesible later with $.win
+	 * @description A reference to the global object that is accesible later with $.config.win
 	 */
 	config.win = config.win || window;
 	/**

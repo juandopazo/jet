@@ -596,7 +596,7 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	 */
 	currentStyle: function () {
 		var node = this.getDOMNode();
-		return $.win[GET_COMPUTED_STYLE] ? $.win[GET_COMPUTED_STYLE](node, null) : 
+		return $.config.win[GET_COMPUTED_STYLE] ? $.config.win[GET_COMPUTED_STYLE](node, null) : 
 				node[CURRENT_STYLE] ? node[CURRENT_STYLE] : node.style;
 	},
 	/**
