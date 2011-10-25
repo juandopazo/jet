@@ -138,7 +138,7 @@ $.mix(EventTarget.prototype, {
 	 * @param {Object} thisp Optional. Context on which the callback will run
 	 * @chainable
 	 */
-	on: function (eventType, callback, thisp) {
+	addListener: function (eventType, callback, thisp) {
 		return this._on(eventType, callback, thisp, false, SLICE.call(arguments, 3));
 	},
 	
@@ -172,7 +172,7 @@ $.mix(EventTarget.prototype, {
 	 * @param {Function} callback
 	 * @chainable
 	 */
-	unbind: function (eventType, callback) {
+	removeListener: function (eventType, callback) {
 		var events = this._events[eventType] || [],
 			type,
 			i = 0;
@@ -221,5 +221,7 @@ $.mix(EventTarget.prototype, {
 		return returnValue;
 	}
 });
+
+EventTarget.on = EventTarget.addListener;
 
 $.EventTarget = EventTarget;
