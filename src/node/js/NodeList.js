@@ -291,7 +291,7 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	},
 	/**
 	 * Insert nodes to the ones in the current node list, before their first children
-	 * @method append
+	 * @method prepend
 	 * @param {DOMNode|Array|NodeList} appended
 	 * @chainable
 	 */

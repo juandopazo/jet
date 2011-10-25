@@ -38,6 +38,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="./classes/$.html">$</a></li>
+            
                 <li><a href="./classes/AppView.html">AppView</a></li>
             
                 <li><a href="./classes/Array.html">Array</a></li>
@@ -68,8 +70,6 @@
             
                 <li><a href="./classes/Cookie.html">Cookie</a></li>
             
-                <li><a href="./classes/Core.html">Core</a></li>
-            
                 <li><a href="./classes/DataSource.html">DataSource</a></li>
             
                 <li><a href="./classes/DataSource.Ajax.html">DataSource.Ajax</a></li>
@@ -81,8 +81,6 @@
                 <li><a href="./classes/DataSource.XDR.html">DataSource.XDR</a></li>
             
                 <li><a href="./classes/DataTable.html">DataTable</a></li>
-            
-                <li><a href="./classes/Deferred.html">Deferred</a></li>
             
                 <li><a href="./classes/DOM.html">DOM</a></li>
             
@@ -124,8 +122,6 @@
             
                 <li><a href="./classes/jet.html">jet</a></li>
             
-                <li><a href="./classes/jet~deferred.html">jet~deferred</a></li>
-            
                 <li><a href="./classes/JSON.html">JSON</a></li>
             
                 <li><a href="./classes/Lang.html">Lang</a></li>
@@ -157,6 +153,8 @@
                 <li><a href="./classes/PanelBase.html">PanelBase</a></li>
             
                 <li><a href="./classes/ProgressBar.html">ProgressBar</a></li>
+            
+                <li><a href="./classes/Promise.html">Promise</a></li>
             
                 <li><a href="./classes/RadioButton.html">RadioButton</a></li>
             
@@ -491,7 +489,7 @@ $.mix(EventTarget.prototype, {
 	 * @method addListener
 	 * @param {String} eventType Name of the event to listen to
 	 * @param {Function} callback Callback to execute when the event fires
-	 * @param {Object} thisp Optional. Context on which the callback will run
+	 * @param {Object} [thisp] Context on which the callback will run
 	 * @chainable
 	 */
 	addListener: function (eventType, callback, thisp) {
@@ -503,7 +501,7 @@ $.mix(EventTarget.prototype, {
 	 * @method once
 	 * @param {String} eventType Name of the event to listen to
 	 * @param {Function} callback Callback to execute when the event fires
-	 * @param {Object} thisp Optional. Context on which the callback will run
+	 * @param {Object} [thisp] Context on which the callback will run
 	 * @chainable
 	 */
 	once: function (eventType, callback, thisp) {
@@ -515,7 +513,7 @@ $.mix(EventTarget.prototype, {
 	 * @method after
 	 * @param {String} eventType Name of the event to listen to
 	 * @param {Function} callback Callback to execute when the event fires
-	 * @param {Object} thisp Optional. Context on which the callback will run
+	 * @param {Object} [thisp] Context on which the callback will run
 	 * @chainable
 	 */
 	after: function (eventType, callback, thisp) {
@@ -579,7 +577,7 @@ $.mix(EventTarget.prototype, {
 });
 
 /**
- * Alias for EventTarget#addListener
+ * Alias for &lt;a href="#method_addListener"&gt;addListener&lt;/a&gt;
  * @method on
  * @param {String} eventType Name of the event to listen to
  * @param {Function} callback Callback to execute when the event fires
@@ -588,7 +586,7 @@ $.mix(EventTarget.prototype, {
  */
 EventTarget.prototype.on = EventTarget.prototype.addListener;
 /**
- * Alias for EventTarget#removeListener
+ * Alias for &lt;a href="#method_removeListener"&gt;removeListener&lt;/a&gt;
  * @method unbind
  * @param {String} eventType
  * @param {Function} callback

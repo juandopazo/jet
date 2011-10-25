@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Promise - Jet</title>
+    <title>$ - Jet</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.4.0/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -337,7 +337,7 @@
 
             <div class="apidocs">
                 <div id="docs-main" class="content">
-                    <h1>Promise Class</h1>
+                    <h1>$ Class</h1>
 <div class="box meta">
     
     
@@ -353,7 +353,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/build_deferred.js.html#l43"><code>build&#x2F;deferred.js:43</code></a>
+            Defined in: <a href="../files/build_jet.js.html#l898"><code>build&#x2F;jet.js:898</code></a>
         </div>
     
 
@@ -363,60 +363,9 @@
 
 
 <div class="box intro">
-    <p>A deferred keeps two lists of callbacks, one for the success scenario and another for the failure case.
-It runs these callbacks once a call to resolve() or reject() is made.</p>
-
-<p>This class is designed to augment others</p>
+    <p>Core methods</p>
 </div>
 
-
-    <div class="constructor">
-        <h2>Constructor</h2>
-        <div id="method_Promise" class="method item">
-    <h3 class="name"><code>Promise</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>Defined in
-            
-        
-        <a href="../files/build_deferred.js.html#l43"><code>build&#x2F;deferred.js:43</code></a></p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        
-    </div>
-
-    
-
-    
-
-    
-</div>
-
-    </div>
 
 
 <div id="classdocs" class="tabview">
@@ -426,6 +375,8 @@ It runs these callbacks once a call to resolve() or reject() is made.</p>
         
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
         
+        
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
         
         
         
@@ -442,7 +393,19 @@ It runs these callbacks once a call to resolve() or reject() is made.</p>
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_always">always</a>
+                                <a href="#method_$">$</a>
+
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_add">add</a>
+
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_clone">clone</a>
 
                                 
                             </li>
@@ -460,31 +423,37 @@ It runs these callbacks once a call to resolve() or reject() is made.</p>
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_done">done</a>
+                                <a href="#method_extend">extend</a>
 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_fail">fail</a>
+                                <a href="#method_mix">mix</a>
 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_reject">reject</a>
+                                <a href="#method_queue">queue</a>
 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_resolve">resolve</a>
+                                <a href="#method_wait">wait</a>
 
                                 
                             </li>
                         
                             <li class="index-item method">
-                                <a href="#method_then">then</a>
+                                <a href="#method_walkTheDOM">walkTheDOM</a>
+
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_when">when</a>
 
                                 
                             </li>
@@ -493,6 +462,20 @@ It runs these callbacks once a call to resolve() or reject() is made.</p>
                 </div>
             
 
+            
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+
+                    <ul class="index-list properties">
+                        
+                            <li class="index-item property">
+                                <a href="#property_config">config</a>
+
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
             
 
             
@@ -505,8 +488,8 @@ It runs these callbacks once a call to resolve() or reject() is made.</p>
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_always" class="method item">
-    <h3 class="name"><code>always</code></h3>
+                    <div id="method_$" class="method item">
+    <h3 class="name"><code>$</code></h3>
 
     
         <div class="args">
@@ -514,7 +497,13 @@ It runs these callbacks once a call to resolve() or reject() is made.</p>
             
                 <li class="arg">
                     
-                        <code>callbacks</code>
+                        <code>query</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>root</code>
                     
                 </li>
             
@@ -523,78 +512,8 @@ It runs these callbacks once a call to resolve() or reject() is made.</p>
     
 
     
-
-    
-
-    
-
-    
-
-    
-
-    
-        <span class="flag chainable">chainable</span>
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>Defined in
-            
-        
-        <a href="../files/build_deferred.js.html#l110"><code>build&#x2F;deferred.js:110</code></a></p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Listens to the 'complete' event</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">callbacks</code>
-                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a> | <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        Takes any number of functions or arrays of functions to run when the promise is rejected or resolved
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_defer" class="method item">
-    <h3 class="name"><code>defer</code></h3>
-
-    
-        <span class="paren">()</span>
-    
-
-    
         <span class="returns-inline">
-            <span class="type">Deferred</span>
+            <span class="type"><a href="../classes/NodeList.html" class="crosslink">NodeList</a></span>
         </span>
     
 
@@ -615,7 +534,7 @@ It runs these callbacks once a call to resolve() or reject() is made.</p>
                 <p>Defined in
             
         
-        <a href="../files/build_deferred.js.html#l159"><code>build&#x2F;deferred.js:159</code></a></p>
+        <a href="../files/build_jet.js.html#l946"><code>build&#x2F;jet.js:946</code></a></p>
 
         
 
@@ -623,17 +542,49 @@ It runs these callbacks once a call to resolve() or reject() is made.</p>
     </div>
 
     <div class="description">
-        <p>Returns a new promise. This method will be mostly used by implementors that extend this class to create
-additional asynchronous functionalityu. For example:</p>
-
-<pre class="code"><code class="prettyprint">
-wait: function (delay) {
-        return this.defer(function (promise) {
-        $.later(delay || 0, promise, promise.resolve);
-});
-}</code></pre>
+        <p>The global object is a finder method that finds HTML elements.
+The query string allows for different simple searches: "#foo" (get elemnet by id), ".foo" (gets elements by class), "foo" (get elements by tag) or an array of html elements
+For more complex queries, take a look at the Sizzle module</p>
     </div>
 
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">query</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a> | HTMLElement | <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">root</code>
+                        <span class="type">HTMLElement | Document</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
     
 
     
@@ -643,8 +594,282 @@ wait: function (delay) {
             <div class="returns-description">
                 
                     
-                        <span class="type">Deferred</span>:
+                        <span class="type"><a href="../classes/NodeList.html" class="crosslink">NodeList</a></span>:
                     
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_add" class="method item">
+    <h3 class="name"><code>add</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>key/value</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>Defined in
+            
+        
+        <a href="../files/build_jet.js.html#l1125"><code>build&#x2F;jet.js:1125</code></a></p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Adds properties to the $ object (shortcut for adding classes)</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">key/value</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        pairs of class/function names and definitions
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_clone" class="method item">
+    <h3 class="name"><code>clone</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>o</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>deep.</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>Defined in
+            
+        
+        <a href="../files/build_jet.js.html#l1107"><code>build&#x2F;jet.js:1107</code></a></p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Creates a copy of the provided object</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">o</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">deep.</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        If true, all properties are cloned recursively
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_defer" class="method item">
+    <h3 class="name"><code>defer</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>fn</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                    <p>Provided by the <a href="../modules/deferred.html">deferred</a> module.</p>
+                
+                <p>Defined in
+            
+        
+        <a href="../files/build_deferred.js.html#l180"><code>build&#x2F;deferred.js:180</code></a></p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Returns a promise for a (possibly) asynchronous call.
+Calls a given function that receives the new promise as parameter and must call resolve()
+or reject() at a certain point</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">fn</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        A function that encloses an async call.
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                    Promise
                 
             </div>
         </div>
@@ -691,10 +916,12 @@ wait: function (delay) {
         
             
                 
+                    <p>Provided by the <a href="../modules/deferred.html">deferred</a> module.</p>
+                
                 <p>Defined in
             
         
-        <a href="../files/build_deferred.js.html#l202"><code>build&#x2F;deferred.js:202</code></a></p>
+        <a href="../files/build_deferred.js.html#l195"><code>build&#x2F;deferred.js:195</code></a></p>
 
         
 
@@ -748,8 +975,8 @@ wait: function (delay) {
 </div>
 
                 
-                    <div id="method_done" class="method item">
-    <h3 class="name"><code>done</code></h3>
+                    <div id="method_extend" class="method item">
+    <h3 class="name"><code>extend</code></h3>
 
     
         <div class="args">
@@ -757,7 +984,25 @@ wait: function (delay) {
             
                 <li class="arg">
                     
-                        <code>doneCallbacks</code>
+                        <code>subclass</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>superclass</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>px</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>ax</code>
                     
                 </li>
             
@@ -776,8 +1021,6 @@ wait: function (delay) {
     
 
     
-        <span class="flag chainable">chainable</span>
-    
 
     <div class="meta">
         
@@ -786,7 +1029,7 @@ wait: function (delay) {
                 <p>Defined in
             
         
-        <a href="../files/build_deferred.js.html#l90"><code>build&#x2F;deferred.js:90</code></a></p>
+        <a href="../files/build_jet.js.html#l1069"><code>build&#x2F;jet.js:1069</code></a></p>
 
         
 
@@ -794,7 +1037,8 @@ wait: function (delay) {
     </div>
 
     <div class="description">
-        <p>Listens to the 'success' event</p>
+        <p>Allows for an inheritance strategy based on prototype chaining.
+When exteiding a class with extend, you keep all prototypic methods from all superclasses</p>
     </div>
 
     
@@ -805,14 +1049,59 @@ wait: function (delay) {
             
                 <li class="param">
                     
-                        <code class="param-name">doneCallbacks</code>
-                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a> | <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                        <code class="param-name">subclass</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        Takes any number of functions or arrays of functions to run when the promise is resolved
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">superclass</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">px</code>
+                        <span class="type">Hash</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        optional - An object literal with methods to overwrite in the subclass' prototype
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">ax</code>
+                        <span class="type">Hash</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        optional - An object literal with properties to add to the subclass' constructor
                     </div>
 
                     
@@ -828,8 +1117,8 @@ wait: function (delay) {
 </div>
 
                 
-                    <div id="method_fail" class="method item">
-    <h3 class="name"><code>fail</code></h3>
+                    <div id="method_mix" class="method item">
+    <h3 class="name"><code>mix</code></h3>
 
     
         <div class="args">
@@ -837,7 +1126,19 @@ wait: function (delay) {
             
                 <li class="arg">
                     
-                        <code>failCallbacks</code>
+                        <code>A</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>B</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[overwrite]</code>
                     
                 </li>
             
@@ -856,8 +1157,6 @@ wait: function (delay) {
     
 
     
-        <span class="flag chainable">chainable</span>
-    
 
     <div class="meta">
         
@@ -866,7 +1165,7 @@ wait: function (delay) {
                 <p>Defined in
             
         
-        <a href="../files/build_deferred.js.html#l100"><code>build&#x2F;deferred.js:100</code></a></p>
+        <a href="../files/build_jet.js.html#l1115"><code>build&#x2F;jet.js:1115</code></a></p>
 
         
 
@@ -874,7 +1173,8 @@ wait: function (delay) {
     </div>
 
     <div class="description">
-        <p>Listens to the 'failure' event</p>
+        <p>Copies all properties from B to A.
+Doesn't overwrite properties unless the overwrite parameter is true</p>
     </div>
 
     
@@ -885,174 +1185,45 @@ wait: function (delay) {
             
                 <li class="param">
                     
-                        <code class="param-name">failCallbacks</code>
-                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a> | <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        Takes any number of functions or arrays of functions to run when the promise is rejected
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_reject" class="method item">
-    <h3 class="name"><code>reject</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>o</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <span class="flag chainable">chainable</span>
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>Defined in
-            
-        
-        <a href="../files/build_deferred.js.html#l132"><code>build&#x2F;deferred.js:132</code></a></p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Rejects the promise and notifies all callbacks</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">o</code>
+                        <code class="param-name">A</code>
                         <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        Any number of arguments that will be passed to the failure callbacks
+                         
                     </div>
 
                     
                 </li>
             
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_resolve" class="method item">
-    <h3 class="name"><code>resolve</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>o</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <span class="flag chainable">chainable</span>
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>Defined in
-            
-        
-        <a href="../files/build_deferred.js.html#l121"><code>build&#x2F;deferred.js:121</code></a></p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Resolves the promise and notifies all callbacks</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
                 <li class="param">
                     
-                        <code class="param-name">o</code>
+                        <code class="param-name">B</code>
                         <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        Any number of arguments that will be passed to the success callbacks
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name optional">[overwrite]</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Boolean" class="crosslink external" target="_blank">Boolean</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
                     </div>
 
                     
@@ -1068,8 +1239,8 @@ wait: function (delay) {
 </div>
 
                 
-                    <div id="method_then" class="method item">
-    <h3 class="name"><code>then</code></h3>
+                    <div id="method_queue" class="method item">
+    <h3 class="name"><code>queue</code></h3>
 
     
         <div class="args">
@@ -1077,13 +1248,136 @@ wait: function (delay) {
             
                 <li class="arg">
                     
-                        <code>doneCallbacks</code>
+                        <code>fns</code>
                     
                 </li>
             
                 <li class="arg">
                     
-                        <code>failCallbacks</code>
+                        <code>ms</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"><a href="../classes/Promise.html" class="crosslink">Promise</a></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                    <p>Provided by the <a href="../modules/deferred.html">deferred</a> module.</p>
+                
+                <p>Defined in
+            
+        
+        <a href="../files/build_deferred.js.html#l217"><code>build&#x2F;deferred.js:217</code></a></p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Calls a number of functions separated by a certain time</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">fns</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        Array of functions to add to the queue
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">ms</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        Milliseconds to wait between each function call
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"><a href="../classes/Promise.html" class="crosslink">Promise</a></span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_wait" class="method item">
+    <h3 class="name"><code>wait</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>ms</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code class="optional">[context]</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>callback</code>
                     
                 </li>
             
@@ -1112,7 +1406,7 @@ wait: function (delay) {
                 <p>Defined in
             
         
-        <a href="../files/build_deferred.js.html#l59"><code>build&#x2F;deferred.js:59</code></a></p>
+        <a href="../files/build_jet.js.html#l985"><code>build&#x2F;jet.js:985</code></a></p>
 
         
 
@@ -1120,7 +1414,7 @@ wait: function (delay) {
     </div>
 
     <div class="description">
-        <p>Adds callbacks to the list of callbacks tracked by the promise</p>
+        <p>A wrapper for setTimeout that allows you to optionally set a context to the callback</p>
     </div>
 
     
@@ -1131,14 +1425,14 @@ wait: function (delay) {
             
                 <li class="param">
                     
-                        <code class="param-name">doneCallbacks</code>
-                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a> | <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                        <code class="param-name">ms</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
                     
 
                     
 
                     <div class="param-description">
-                        A function or array of functions to run when the promise is resolved
+                        Milliseconds to wait
                     </div>
 
                     
@@ -1146,14 +1440,30 @@ wait: function (delay) {
             
                 <li class="param">
                     
-                        <code class="param-name">failCallbacks</code>
-                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a> | <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                        <code class="param-name optional">[context]</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+                        <span class="flag optional" title="This parameter is optional.">optional</span>
                     
 
                     
 
                     <div class="param-description">
-                        A function or array of functions to run when the promise is rejected
+                        Context to apply to the callback
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">callback</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
                     </div>
 
                     
@@ -1163,6 +1473,200 @@ wait: function (delay) {
         </div>
     
 
+    
+
+    
+</div>
+
+                
+                    <div id="method_walkTheDOM" class="method item">
+    <h3 class="name"><code>walkTheDOM</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>node</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>fn</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>Defined in
+            
+        
+        <a href="../files/build_jet.js.html#l905"><code>build&#x2F;jet.js:905</code></a></p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Walks through the DOM tree starting in th branch that derives from node</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">node</code>
+                        <span class="type">HTMLElement</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">fn</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_when" class="method item">
+    <h3 class="name"><code>when</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>deferred</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                    <p>Provided by the <a href="../modules/deferred.html">deferred</a> module.</p>
+                
+                <p>Defined in
+            
+        
+        <a href="../files/build_deferred.js.html#l237"><code>build&#x2F;deferred.js:237</code></a></p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Waits for a series of asynchronous calls to be completed</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">deferred</code>
+                        <span class="type">Deferred | <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        Any number of Deferred instances or arrays of instances
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                    Promise
+                
+            </div>
+        </div>
     
 
     
@@ -1172,6 +1676,48 @@ wait: function (delay) {
             </div>
         
 
+        
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+
+                
+                    <div id="property_config" class="property item">
+    <h3 class="name"><code>config</code></h3>
+    <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>Defined in
+            
+        
+        <a href="../files/build_jet.js.html#l1144"><code>build&#x2F;jet.js:1144</code></a></p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Parsed Jet configuration object</p>
+    </div>
+
+    
+
+    
+</div>
+
+                
+            </div>
         
 
         

@@ -897,7 +897,7 @@ Get.prototype = {
 
 /**
  * Core methods
- * @class Core
+ * @class $
  * @static
  */
 function buildJet(config) {
@@ -982,6 +982,14 @@ function buildJet(config) {
 	Env.guidCount = 0;
 	
 	add({
+		/**
+		 * A wrapper for setTimeout that allows you to optionally set a context to the callback
+		 * @method wait
+		 * @param {Number} ms Milliseconds to wait
+		 * @param {Object} [context] Context to apply to the callback
+		 * @param {Function} callback
+		 * @chainable
+		 */
 		wait: function (ms, context, callback) {
 			if (arguments.length === 2) {
 				callback = context;
@@ -991,30 +999,42 @@ function buildJet(config) {
 			setTimeout(function () {
 				callback.apply(context, args);
 			}, ms);
+			return this;
 		},
 		
+		/**
+		 * Returns a unique id with the following signature: 'jet_' + Date.now() + '_' + counter
+		 * @return {String}
+		 */
 		guid: guid,
 		
+		/**
+		 * Checks if a certain object is an instance of a certain constructor
+		 * Wrapper for the instanceof operator which leaks when used on the global object
+		 * @param {Object} obj Object to check
+		 * @param {Function} constructor
+		 * @return {Boolean}
+		 */
 		instanceOf: function(o, type) {
 			return !!(o && o.hasOwnProperty && (o instanceof type));
 		},
 		
+		/**
+		 * Returns a new function bounded to the provided context
+		 * See https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function/bind
+		 * @param {Object} context
+		 * @param {Any} [extraArgs...] Extra arguments to pass to the resulting function
+		 */
 		bind: bind,
 		
+		/**
+		 * Checks if a certain object exists as a property of $ and if not, it creates it
+		 * @param {String} ns A property name or multiple properties separated by dots. ie: some.inner.namespace
+		 * @return {Object}
+		 */
 		namespace: function (ns) {
 			return namespace($, ns);
 		},
-		
-		/**
-		 * A pointer to the last Windo that was referenced by the $() function
-		 * @property win
-		 */
-		win: config.win,
-		/**
-		 * A pointer to the last Document that was referenced by the $() function.
-		 * @property context
-		 */
-		context: config.doc,
 		
 		/**
 		 * Does all the work behind the $() function
@@ -1121,6 +1141,11 @@ function buildJet(config) {
 		
 		'Object': Hash,
 		
+		/**
+		 * Parsed Jet configuration object
+		 * @property config
+		 * @type {Object}
+		 */
 		config: config,
 		
 		UA: UA
@@ -2201,7 +2226,7 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	},
 	/**
 	 * Insert nodes to the ones in the current node list, before their first children
-	 * @method append
+	 * @method prepend
 	 * @param {DOMNode|Array|NodeList} appended
 	 * @chainable
 	 */

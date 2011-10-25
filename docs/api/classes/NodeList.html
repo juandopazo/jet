@@ -38,6 +38,8 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
             
+                <li><a href="../classes/$.html">$</a></li>
+            
                 <li><a href="../classes/AppView.html">AppView</a></li>
             
                 <li><a href="../classes/Array.html">Array</a></li>
@@ -68,8 +70,6 @@
             
                 <li><a href="../classes/Cookie.html">Cookie</a></li>
             
-                <li><a href="../classes/Core.html">Core</a></li>
-            
                 <li><a href="../classes/DataSource.html">DataSource</a></li>
             
                 <li><a href="../classes/DataSource.Ajax.html">DataSource.Ajax</a></li>
@@ -81,8 +81,6 @@
                 <li><a href="../classes/DataSource.XDR.html">DataSource.XDR</a></li>
             
                 <li><a href="../classes/DataTable.html">DataTable</a></li>
-            
-                <li><a href="../classes/Deferred.html">Deferred</a></li>
             
                 <li><a href="../classes/DOM.html">DOM</a></li>
             
@@ -124,8 +122,6 @@
             
                 <li><a href="../classes/jet.html">jet</a></li>
             
-                <li><a href="../classes/jet~deferred.html">jet~deferred</a></li>
-            
                 <li><a href="../classes/JSON.html">JSON</a></li>
             
                 <li><a href="../classes/Lang.html">Lang</a></li>
@@ -157,6 +153,8 @@
                 <li><a href="../classes/PanelBase.html">PanelBase</a></li>
             
                 <li><a href="../classes/ProgressBar.html">ProgressBar</a></li>
+            
+                <li><a href="../classes/Promise.html">Promise</a></li>
             
                 <li><a href="../classes/RadioButton.html">RadioButton</a></li>
             
@@ -359,7 +357,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/build_jet.js.html#l1927"><code>build&#x2F;jet.js:1927</code></a>
+            Defined in: <a href="../files/build_jet.js.html#l1952"><code>build&#x2F;jet.js:1952</code></a>
         </div>
     
 
@@ -417,7 +415,7 @@
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l1927"><code>build&#x2F;jet.js:1927</code></a></p>
+        <a href="../files/build_jet.js.html#l1952"><code>build&#x2F;jet.js:1952</code></a></p>
 
         
 
@@ -512,12 +510,6 @@
                         
                             <li class="index-item method">
                                 <a href="#method_animate">animate</a>
-
-                                
-                            </li>
-                        
-                            <li class="index-item method">
-                                <a href="#method_append">append</a>
 
                                 
                             </li>
@@ -739,6 +731,12 @@
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_prepend">prepend</a>
+
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_prependTo">prependTo</a>
 
                                 
@@ -908,7 +906,7 @@
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2041"><code>build&#x2F;jet.js:2041</code></a></p>
+        <a href="../files/build_jet.js.html#l2066"><code>build&#x2F;jet.js:2066</code></a></p>
 
         
 
@@ -958,7 +956,7 @@ Takes multiple string parameters</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2268"><code>build&#x2F;jet.js:2268</code></a></p>
+        <a href="../files/build_jet.js.html#l2293"><code>build&#x2F;jet.js:2293</code></a></p>
 
         
 
@@ -1172,7 +1170,7 @@ Takes multiple string parameters</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2179"><code>build&#x2F;jet.js:2179</code></a></p>
+        <a href="../files/build_jet.js.html#l2204"><code>build&#x2F;jet.js:2204</code></a></p>
 
         
 
@@ -1181,86 +1179,6 @@ Takes multiple string parameters</p>
 
     <div class="description">
         <p>Appends nodes to the ones in the current node list</p>
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">appended</code>
-                        <span class="type">DOMNode | <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a> | <a href="../classes/NodeList.html" class="crosslink">NodeList</a></span>
-                    
-
-                    
-
-                    <div class="param-description">
-                         
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_append" class="method item">
-    <h3 class="name"><code>append</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>appended</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <span class="flag chainable">chainable</span>
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>Defined in
-            
-        
-        <a href="../files/build_jet.js.html#l2202"><code>build&#x2F;jet.js:2202</code></a></p>
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>Insert nodes to the ones in the current node list, before their first children</p>
     </div>
 
     
@@ -1332,7 +1250,7 @@ Takes multiple string parameters</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2192"><code>build&#x2F;jet.js:2192</code></a></p>
+        <a href="../files/build_jet.js.html#l2217"><code>build&#x2F;jet.js:2217</code></a></p>
 
         
 
@@ -1418,7 +1336,7 @@ Takes multiple string parameters</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2311"><code>build&#x2F;jet.js:2311</code></a></p>
+        <a href="../files/build_jet.js.html#l2336"><code>build&#x2F;jet.js:2336</code></a></p>
 
         
 
@@ -1504,7 +1422,7 @@ Takes multiple string parameters</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2580"><code>build&#x2F;jet.js:2580</code></a></p>
+        <a href="../files/build_jet.js.html#l2605"><code>build&#x2F;jet.js:2605</code></a></p>
 
         
 
@@ -1563,7 +1481,7 @@ Takes multiple string parameters</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2376"><code>build&#x2F;jet.js:2376</code></a></p>
+        <a href="../files/build_jet.js.html#l2401"><code>build&#x2F;jet.js:2401</code></a></p>
 
         
 
@@ -1743,7 +1661,7 @@ concatenate to the resulting ArrayList
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2490"><code>build&#x2F;jet.js:2490</code></a></p>
+        <a href="../files/build_jet.js.html#l2515"><code>build&#x2F;jet.js:2515</code></a></p>
 
         
 
@@ -1818,7 +1736,7 @@ concatenate to the resulting ArrayList
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2334"><code>build&#x2F;jet.js:2334</code></a></p>
+        <a href="../files/build_jet.js.html#l2359"><code>build&#x2F;jet.js:2359</code></a></p>
 
         
 
@@ -1906,7 +1824,7 @@ concatenate to the resulting ArrayList
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2502"><code>build&#x2F;jet.js:2502</code></a></p>
+        <a href="../files/build_jet.js.html#l2527"><code>build&#x2F;jet.js:2527</code></a></p>
 
         
 
@@ -2442,7 +2360,7 @@ concatenate to the resulting ArrayList
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2365"><code>build&#x2F;jet.js:2365</code></a></p>
+        <a href="../files/build_jet.js.html#l2390"><code>build&#x2F;jet.js:2390</code></a></p>
 
         
 
@@ -2526,7 +2444,7 @@ concatenate to the resulting ArrayList
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2292"><code>build&#x2F;jet.js:2292</code></a></p>
+        <a href="../files/build_jet.js.html#l2317"><code>build&#x2F;jet.js:2317</code></a></p>
 
         
 
@@ -2587,7 +2505,7 @@ concatenate to the resulting ArrayList
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2284"><code>build&#x2F;jet.js:2284</code></a></p>
+        <a href="../files/build_jet.js.html#l2309"><code>build&#x2F;jet.js:2309</code></a></p>
 
         
 
@@ -2646,7 +2564,7 @@ concatenate to the resulting ArrayList
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2585"><code>build&#x2F;jet.js:2585</code></a></p>
+        <a href="../files/build_jet.js.html#l2610"><code>build&#x2F;jet.js:2610</code></a></p>
 
         
 
@@ -2784,7 +2702,7 @@ The callback is passed a reference to the element and an iteration index.</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2018"><code>build&#x2F;jet.js:2018</code></a></p>
+        <a href="../files/build_jet.js.html#l2043"><code>build&#x2F;jet.js:2043</code></a></p>
 
         
 
@@ -2864,7 +2782,7 @@ The callback is passed a reference to the element and an iteration index.</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2629"><code>build&#x2F;jet.js:2629</code></a></p>
+        <a href="../files/build_jet.js.html#l2654"><code>build&#x2F;jet.js:2654</code></a></p>
 
         
 
@@ -2935,7 +2853,7 @@ The callback is passed a reference to the element and an iteration index.</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l1979"><code>build&#x2F;jet.js:1979</code></a></p>
+        <a href="../files/build_jet.js.html#l2004"><code>build&#x2F;jet.js:2004</code></a></p>
 
         
 
@@ -2992,7 +2910,7 @@ The callback is passed a reference to the element and an iteration index.</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2300"><code>build&#x2F;jet.js:2300</code></a></p>
+        <a href="../files/build_jet.js.html#l2325"><code>build&#x2F;jet.js:2325</code></a></p>
 
         
 
@@ -3167,7 +3085,7 @@ The callback is passed a reference to the element and an iteration index.</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2239"><code>build&#x2F;jet.js:2239</code></a></p>
+        <a href="../files/build_jet.js.html#l2264"><code>build&#x2F;jet.js:2264</code></a></p>
 
         
 
@@ -3258,7 +3176,7 @@ The callback is passed a reference to the element and an iteration index.</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2227"><code>build&#x2F;jet.js:2227</code></a></p>
+        <a href="../files/build_jet.js.html#l2252"><code>build&#x2F;jet.js:2252</code></a></p>
 
         
 
@@ -3433,7 +3351,7 @@ The callback is passed a reference to the element and an iteration index.</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2519"><code>build&#x2F;jet.js:2519</code></a></p>
+        <a href="../files/build_jet.js.html#l2544"><code>build&#x2F;jet.js:2544</code></a></p>
 
         
 
@@ -3632,7 +3550,7 @@ Useful for applying properties to a bigger group of nodes, while keeping the ori
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2600"><code>build&#x2F;jet.js:2600</code></a></p>
+        <a href="../files/build_jet.js.html#l2625"><code>build&#x2F;jet.js:2625</code></a></p>
 
         
 
@@ -3701,7 +3619,7 @@ Useful for applying properties to a bigger group of nodes, while keeping the ori
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2657"><code>build&#x2F;jet.js:2657</code></a></p>
+        <a href="../files/build_jet.js.html#l2682"><code>build&#x2F;jet.js:2682</code></a></p>
 
         
 
@@ -3773,7 +3691,7 @@ Useful for applying properties to a bigger group of nodes, while keeping the ori
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2159"><code>build&#x2F;jet.js:2159</code></a></p>
+        <a href="../files/build_jet.js.html#l2184"><code>build&#x2F;jet.js:2184</code></a></p>
 
         
 
@@ -3841,7 +3759,7 @@ Useful for applying properties to a bigger group of nodes, while keeping the ori
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2651"><code>build&#x2F;jet.js:2651</code></a></p>
+        <a href="../files/build_jet.js.html#l2676"><code>build&#x2F;jet.js:2676</code></a></p>
 
         
 
@@ -3935,7 +3853,7 @@ Useful for applying properties to a bigger group of nodes, while keeping the ori
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2408"><code>build&#x2F;jet.js:2408</code></a></p>
+        <a href="../files/build_jet.js.html#l2433"><code>build&#x2F;jet.js:2433</code></a></p>
 
         
 
@@ -4050,7 +3968,7 @@ Useful for applying properties to a bigger group of nodes, while keeping the ori
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2256"><code>build&#x2F;jet.js:2256</code></a></p>
+        <a href="../files/build_jet.js.html#l2281"><code>build&#x2F;jet.js:2281</code></a></p>
 
         
 
@@ -4173,7 +4091,7 @@ Useful for applying properties to a bigger group of nodes, while keeping the ori
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2121"><code>build&#x2F;jet.js:2121</code></a></p>
+        <a href="../files/build_jet.js.html#l2146"><code>build&#x2F;jet.js:2146</code></a></p>
 
         
 
@@ -4203,6 +4121,86 @@ Useful for applying properties to a bigger group of nodes, while keeping the ori
                 
             </div>
         </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_prepend" class="method item">
+    <h3 class="name"><code>prepend</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>appended</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <span class="flag chainable">chainable</span>
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>Defined in
+            
+        
+        <a href="../files/build_jet.js.html#l2227"><code>build&#x2F;jet.js:2227</code></a></p>
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Insert nodes to the ones in the current node list, before their first children</p>
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">appended</code>
+                        <span class="type">DOMNode | <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a> | <a href="../classes/NodeList.html" class="crosslink">NodeList</a></span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
     
 
     
@@ -4247,7 +4245,7 @@ Useful for applying properties to a bigger group of nodes, while keeping the ori
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2217"><code>build&#x2F;jet.js:2217</code></a></p>
+        <a href="../files/build_jet.js.html#l2242"><code>build&#x2F;jet.js:2242</code></a></p>
 
         
 
@@ -4319,7 +4317,7 @@ Useful for applying properties to a bigger group of nodes, while keeping the ori
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2605"><code>build&#x2F;jet.js:2605</code></a></p>
+        <a href="../files/build_jet.js.html#l2630"><code>build&#x2F;jet.js:2630</code></a></p>
 
         
 
@@ -4467,7 +4465,7 @@ Useful for applying properties to a bigger group of nodes, while keeping the ori
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2512"><code>build&#x2F;jet.js:2512</code></a></p>
+        <a href="../files/build_jet.js.html#l2537"><code>build&#x2F;jet.js:2537</code></a></p>
 
         
 
@@ -4547,7 +4545,7 @@ Useful for applying properties to a bigger group of nodes, while keeping the ori
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2459"><code>build&#x2F;jet.js:2459</code></a></p>
+        <a href="../files/build_jet.js.html#l2484"><code>build&#x2F;jet.js:2484</code></a></p>
 
         
 
@@ -4617,7 +4615,7 @@ Useful for applying properties to a bigger group of nodes, while keeping the ori
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2027"><code>build&#x2F;jet.js:2027</code></a></p>
+        <a href="../files/build_jet.js.html#l2052"><code>build&#x2F;jet.js:2052</code></a></p>
 
         
 
@@ -4681,7 +4679,7 @@ Takes multiple string parameters</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2431"><code>build&#x2F;jet.js:2431</code></a></p>
+        <a href="../files/build_jet.js.html#l2456"><code>build&#x2F;jet.js:2456</code></a></p>
 
         
 
@@ -4776,7 +4774,7 @@ Takes multiple string parameters</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2072"><code>build&#x2F;jet.js:2072</code></a></p>
+        <a href="../files/build_jet.js.html#l2097"><code>build&#x2F;jet.js:2097</code></a></p>
 
         
 
@@ -4856,7 +4854,7 @@ Takes multiple string parameters</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2475"><code>build&#x2F;jet.js:2475</code></a></p>
+        <a href="../files/build_jet.js.html#l2500"><code>build&#x2F;jet.js:2500</code></a></p>
 
         
 
@@ -4988,7 +4986,7 @@ Takes multiple string parameters</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l1993"><code>build&#x2F;jet.js:1993</code></a></p>
+        <a href="../files/build_jet.js.html#l2018"><code>build&#x2F;jet.js:2018</code></a></p>
 
         
 
@@ -5632,7 +5630,7 @@ Takes multiple string parameters</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2003"><code>build&#x2F;jet.js:2003</code></a></p>
+        <a href="../files/build_jet.js.html#l2028"><code>build&#x2F;jet.js:2028</code></a></p>
 
         
 
@@ -5689,7 +5687,7 @@ Takes multiple string parameters</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2057"><code>build&#x2F;jet.js:2057</code></a></p>
+        <a href="../files/build_jet.js.html#l2082"><code>build&#x2F;jet.js:2082</code></a></p>
 
         
 
@@ -5775,7 +5773,7 @@ Takes multiple string parameters</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2447"><code>build&#x2F;jet.js:2447</code></a></p>
+        <a href="../files/build_jet.js.html#l2472"><code>build&#x2F;jet.js:2472</code></a></p>
 
         
 
@@ -5870,7 +5868,7 @@ Takes multiple string parameters</p>
                 <p>Defined in
             
         
-        <a href="../files/build_jet.js.html#l2622"><code>build&#x2F;jet.js:2622</code></a></p>
+        <a href="../files/build_jet.js.html#l2647"><code>build&#x2F;jet.js:2647</code></a></p>
 
         
 
