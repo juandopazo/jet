@@ -11,6 +11,10 @@ $.TreeView = $.Base.create('treeview', $.Widget, [$.WidgetParent], {
 	ATTRS: {
 		defaultChildType: {
 			value: 'TreeNode'
+		},
+		multiple: {
+			value: true,
+			readOnly: true
 		}
 	}
 	/**

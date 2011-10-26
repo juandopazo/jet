@@ -86,12 +86,12 @@ $.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild]
 		},
 		defaultChildType: {
 			value: 'TreeNode'
-		},
+		}/*,
 		selectable: {
 			valueFn: function() {
 				return this.size() > 0;
 			}
-		}
+		}*/
 		
 	},
 	
@@ -168,7 +168,7 @@ $.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild]
 		if (title) {
 			this.get(CONTROL_NODE).attr(TITLE, title);
 		}
-		this._tnToggleSelectable({ newVal: this.get('selectable') });
+		//this._tnToggleSelectable({ newVal: this.get('selectable') });
 		this._uiTNSelectedChange({ newVal: expanded, prevVal: expanded });
 	},
 	

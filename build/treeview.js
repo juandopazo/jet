@@ -97,7 +97,12 @@ $.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild]
 		},
 		defaultChildType: {
 			value: 'TreeNode'
-		}
+		}/*,
+		selectable: {
+			valueFn: function() {
+				return this.size() > 0;
+			}
+		}*/
 		
 	},
 	
@@ -114,6 +119,12 @@ $.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild]
 	
 	LABEL_TEMPLATE: '<span/>',
 	CONTROL_TEMPLATE: '<span/>',
+	
+	_tnToggleSelectable: function(e) {
+		if (e.newVal) {
+			this.get(LABEL_NODE).addClass(this.getClassName(LABEL, 'selectable'));
+		}
+	},
 	
 	_uiTNLabelChange: function (e) {
 		var label = this.get(LABEL_NODE);
@@ -141,6 +152,7 @@ $.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild]
 		this.after('labelChange', this._uiTNLabelChange);
 		this.after('titleChange', this._uiTNTitleChange);
 		this.after('selectedChange', this._uiTNSelectedChange);
+		this.after('selectableChange', this._tnToggleSelectable);
 	},
 	
 	renderUI: function (boundingBox) {
@@ -167,9 +179,7 @@ $.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild]
 		if (title) {
 			this.get(CONTROL_NODE).attr(TITLE, title);
 		}
-		if (this.size() > 0) {
-			this.get(LABEL_NODE).addClass(this.getClassName(LABEL, 'selectable'));
-		}
+		//this._tnToggleSelectable({ newVal: this.get('selectable') });
 		this._uiTNSelectedChange({ newVal: expanded, prevVal: expanded });
 	},
 	
@@ -200,6 +210,10 @@ $.TreeView = $.Base.create('treeview', $.Widget, [$.WidgetParent], {
 	ATTRS: {
 		defaultChildType: {
 			value: 'TreeNode'
+		},
+		multiple: {
+			value: true,
+			readOnly: true
 		}
 	}
 	/**
