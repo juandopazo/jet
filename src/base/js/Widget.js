@@ -151,6 +151,12 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		}
 	},
 	
+	/**
+	 * @method getClassName
+	 * @description Returns a string for using as a Node classname based on Widget.CSS_PREFIX 
+	 * @return {String}
+	 * @static
+	 */
 	getClassName: function() {
 		return [$.Widget.CSS_PREFIX].concat(SLICE.call(arguments)).join('-');
 	},
@@ -406,6 +412,11 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		});
 	},
 	
+	/**
+	 * @method getClassName
+	 * @description Returns a string for using as a Node classname based on the classPrefix attribute and the widget's name
+	 * @return {String}
+	 */
 	getClassName: function () {
 		return [this.get(CLASS_PREFIX), this.constructor.NAME].concat(SLICE.call(arguments)).join('-');
 	}

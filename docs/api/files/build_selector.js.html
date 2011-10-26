@@ -660,8 +660,8 @@ var qwery = $.qwery;
 delete $.qwery;
 
 $.find = function (query, root) {
-	root = root || $.context;
-	var test, node = null;
+	root = root || $.config.doc;
+	var test, node = null, id;
 	if (query.charAt(0) === '&lt;' &amp;&amp; query.charAt(query.length - 1) === '&gt;') {
 		if (query.match(/&lt;/g).length === 1) {
 			// suport for '&lt;div/&gt;' and '&lt;div&gt;'
@@ -676,6 +676,13 @@ $.find = function (query, root) {
 			return node;
 		}
 	} else {
+		if (query.charAt(0) === '&gt;') {
+			id = root.attr('id');
+			if (!id) {
+				root.attr('id', id = $.guid());
+			}
+			query = '#' + id + ' ' + query;
+		}
 		return qwery(query, root);
 	}
 };

@@ -1771,7 +1771,7 @@ var Sizzle = window.Sizzle;
 delete window.Sizzle;
 
 $.find = function (query, root) {
-	root = root || $.context;
+	root = root || $.config.doc;
 	var test, node = null;
 	if (query.charAt(0) === '&lt;' &amp;&amp; query.charAt(query.length - 1) === '&gt;') {
 		if (query.match(/&lt;/g).length === 1) {
