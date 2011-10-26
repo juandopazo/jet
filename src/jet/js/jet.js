@@ -407,6 +407,18 @@ window.jet = function (o) {
 			}
 		});
 	});
+	
+	var givenConfig = mix({}, o);
+	if (window.jet_Config) {
+		mix(givenConfig, window.jet_Config);
+	}
+	if (!givenConfig.hasOwnProperty('combine') && givenConfig.hasOwnProperty('base')) {
+		config.combine = false;
+	}
+	
+	_Array.each(['combine', 'base', 'root', 'minify'], function(prop) {
+		config.groups.jet[prop] = config[prop];
+	});
 
 	var get = new Get(config);
 	var use = makeUse(config, get);
