@@ -1766,6 +1766,7 @@ var EventCache = Event.Cache = (function () {
 
 var makeHandler = function (callback, thisp) {
 	return function (e) {
+		e = e || $.config.win.Event;
 		e.target = e.srcElement;
 		e.preventDefault = function () {
 			e.returnValue = false;
