@@ -55,10 +55,10 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 		 * @writeOnce
 		 */
 		classPrefix: {
-			writeOnce: true,
-			getter: function (val) {
-				return val || $.Widget.CSS_PREFIX;
-			}
+			valueFn: function() {
+				return $.Widget.CSS_PREFIX;
+			},
+			writeOnce: true
 		},
 		/**
 		 * @attribute rendered
@@ -145,7 +145,14 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 			if (boundingBox && this.CONTENT_TEMPLATE) {
 				return boundingBox.first();
 			}
+		},
+		id: function () {
+			return this.get(BOUNDING_BOX).attr('id');
 		}
+	},
+	
+	getClassName: function() {
+		return [$.Widget.CSS_PREFIX].concat(SLICE.call(arguments)).join('-');
 	},
 	
 	/**
@@ -337,10 +344,10 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 	_parseHTML: function () {
 		var self = this;
 		var boundingBox = this.get(BOUNDING_BOX);
-		if (boundingBox.getDOMNode() && boundingBox.inDoc()) {
+		if (boundingBox.size() > 0 && boundingBox.inDoc()) {
 			$Array.each(this._classes, function (someClass) {
 				$Object.each(someClass.HTML_PARSER || {}, function (attr, parser) {
-					var val = parser.call(self, boundingBox);
+					var val = Lang.isString(parser) ? boundingBox.find(parser) : parser.call(self, boundingBox);
 					if (Lang.isValue(val) && (!(val instanceof $.NodeList) || val.getDOMNode())) {
 						self.set(attr, val);
 					}
@@ -368,22 +375,22 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 	},
 	
 	initializer: function () {
-		this._uid = $.guid();
+		if (!this.get(BOUNDING_BOX)) {
+			this.set(BOUNDING_BOX, this.BOUNDING_TEMPLATE);
+		}
+		this._parseHTML();
 		
 		var self = this,
-			id = this.get('id');
+			id = this._uid = this.get('id');
 			
 		if (!id) {
-			id = this._uid;
+			id = this._uid = $.guid();
 			this.set('id', id);
 		}
 		this.after('idChange', this._widgetIdChange);
 				
 		widgetInstances[id] = this;
 		
-		if (!this.get(BOUNDING_BOX)) {
-			this.set(BOUNDING_BOX, this.BOUNDING_TEMPLATE);
-		}
 		if (!this.get(CONTENT_BOX)) {
 			this.set(CONTENT_BOX, this.CONTENT_TEMPLATE || this.get(BOUNDING_BOX));
 		}
@@ -397,8 +404,6 @@ $.Widget = $.Base.create('widget', $.Base, [], {
 				self.get(BOUNDING_BOX)[size](e.newVal);
 			});
 		});
-		
-		this._parseHTML();
 	},
 	
 	getClassName: function () {

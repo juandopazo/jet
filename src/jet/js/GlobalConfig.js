@@ -87,7 +87,7 @@ var GlobalConfig = {
 					}
 				},
 				tabview: [WIDGET_PARENTCHILD, 'tabview-styles'],
-				treeview: [WIDGET_PARENTCHILD, 'treeview-styles'],
+				treeview: [WIDGET_PARENTCHILD, 'treeview-styles', 'selector'],
 				'widget-alignment': ['base'],
 				'widget-stack': ['base'],
 				'widget-parentchild': ['base'],

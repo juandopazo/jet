@@ -35,6 +35,7 @@ function WidgetParent(config) {
 	this.on('render', this._renderChildren);
 	this.after('selectionChange', this._onSelectionChange);
 	
+	this._addChildrenFromMarkup();
 	this.add(config.children || []);
 
 	this.forEach(function (child) {
@@ -131,26 +132,20 @@ $.mix(WidgetParent, {
 				return selection ? selection.get(INDEX) : -1;
 			}
 		}
-	},
-	
-	HTML_PARSER: {
-		children: function () {
-			var children;
-			//@TODO: check the use of childrenContainer
-			var childrenContainer = this.get(CONTENT_BOX);
-			childrenContainer.children().forEach(function (node) {
-				children = children || [];
-				children.push({
-					srcNode: childrenContainer,
-					boundingBox: node
-				});
-			});
-			return children;
-		}
 	}
 	
 });
 WidgetParent.prototype = {
+	
+	_addChildrenFromMarkup: function () {
+		var children = [];
+		this._childrenContainer.children().forEach(function (node) {
+			children.push({
+				boundingBox: node
+			});
+		});
+		this.add(children);
+	},
 	
 	_onSelectionChange: function (e) {
 		if (this.get(MULTIPLE)) {

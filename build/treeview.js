@@ -1,7 +1,7 @@
 /**
  * TreeView module
  * @module treeview
- * @requires base,widget-parentchild
+ * @requires base,selector,widget-parentchild
  * 
  * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
  * Code licensed under the BSD License
@@ -77,7 +77,9 @@ $.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild]
 		 * @type String|HTMLElement
 		 */
 		label: {
-			value: ''
+			valueFn: function() {
+				return this.get(LABEL_NODE).attr('innerHTML');
+			}
 		},
 		/**
 		 * @attribute controlNode
@@ -107,11 +109,21 @@ $.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild]
 	},
 	
 	HTML_PARSER: {
+		contentBox: function() {
+			if (this.CONTENT_TEMPLATE) {
+				var boundingBox = this.get(BOUNDING_BOX),
+					id = boundingBox.attr('id');
+				if (!id) {
+					boundingBox.attr('id', id = $.guid());
+				}
+				return boundingBox.find(boundingBox.find('#' + id + ' > .' + this.getClassName('content')));
+			}
+		},
 		labelNode: function () {
-			
+			return this.get(BOUNDING_BOX).find('.' + this.getClassName(LABEL)).getDOMNode()
 		},
 		controlNode: function () {
-			
+			return this.get(BOUNDING_BOX).find('.' + controlNodeClass).getDOMNode()
 		}
 	}
 	
@@ -140,14 +152,16 @@ $.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild]
 	},
 	
 	_uiTNClick: function (e) {
-		if (e.domEvent.target == this.get(LABEL_NODE)) {
-			this.set(SELECTED, !this.get(SELECTED));
-		}
+		this.set(SELECTED, !this.get(SELECTED));
 	},
 	
 	initializer: function () {
-		this.set(LABEL_NODE, this.LABEL_TEMPLATE);
-		this.set(CONTROL_NODE, this.CONTROL_TEMPLATE);
+		if (!this.get(LABEL_NODE)) {
+			this.set(LABEL_NODE, this.LABEL_TEMPLATE);
+		}
+		if (!this.get(CONTROL_NODE)) {
+			this.set(CONTROL_NODE, this.CONTROL_TEMPLATE);
+		}
 
 		this.after('labelChange', this._uiTNLabelChange);
 		this.after('titleChange', this._uiTNTitleChange);
@@ -164,13 +178,10 @@ $.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild]
 	},
 	
 	bindUI: function () {
-		var toggle = $.bind(this.toggle, this);
 		this._handlers.push(
-			this.get(LABEL_NODE).on(CLICK, toggle),
-			this.get(CONTROL_NODE).on(CLICK, toggle)
+			this.get(LABEL_NODE).on(CLICK, this._uiTNClick, this),
+			this.get(CONTROL_NODE).on(CLICK, this._uiTNClick, this)
 		);
-		
-		this.on('click', this._uiTNClick);
 	},
 	
 	syncUI: function () {

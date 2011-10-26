@@ -318,7 +318,7 @@ delete $.qwery;
 
 $.find = function (query, root) {
 	root = root || $.config.doc;
-	var test, node = null;
+	var test, node = null, id;
 	if (query.charAt(0) === '<' && query.charAt(query.length - 1) === '>') {
 		if (query.match(/</g).length === 1) {
 			// suport for '<div/>' and '<div>'
@@ -333,6 +333,13 @@ $.find = function (query, root) {
 			return node;
 		}
 	} else {
+		if (query.charAt(0) === '>') {
+			id = root.attr('id');
+			if (!id) {
+				root.attr('id', id = $.guid());
+			}
+			query = '#' + id + ' ' + query;
+		}
 		return qwery(query, root);
 	}
 };
