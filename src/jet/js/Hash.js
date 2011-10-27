@@ -21,17 +21,27 @@ function clone(o, deep) {
 
 /**
  * Utilities for working with object literals
- * Throughout jet the Object type means an object lieteral
+ * Throughout jet the Object type means an object literal
  * @class Object
  * @static
  */
-var $Object = Hash = function (proto) {
-	var F = function () {};
-	F.prototype = proto;
-	return new F();
+var $Object = Hash = function (o) {
+	return o || {};
 };
 
 mix($Object, {
+	
+	/**
+	 * Creates a new object with the provided object as a prototype
+	 * @method create
+	 * @param {Object} prototype
+	 * @return {Object}
+	 */
+	create: function(proto) {
+		function F() {}
+		F.prototype = proto;
+		return new F();
+	},
 	/**
 	 * Iterats through a hash
 	 * @method each

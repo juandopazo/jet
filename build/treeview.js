@@ -32,10 +32,13 @@ var EXPAND = "expand",
 	LABEL_NODE = 'labelNode',
 	BOUNDING_BOX = "boundingBox",
 	CONTENT_BOX = 'contentBox',
+	TREENODE = 'treenode',
 	
-	controlNodeClass = 'jet-treenode-control',
-	collapsedControlClass = controlNodeClass + '-collapsed',
-	expandedControlClass = controlNodeClass + '-expanded';
+	getClassName = $.Widget.getClassName,
+	
+	controlNodeClass = getClassName(TREENODE, 'control'),
+	collapsedControlClass = getClassName(TREENODE, 'control', 'collapsed'),
+	expandedControlClass = getClassName(TREENODE, 'control', 'expanded');
 
 /*
  * @TODO:
@@ -52,7 +55,7 @@ var EXPAND = "expand",
  * @constructor
  * @param {Object} config Object literal specifying configuration properties
  */
-$.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild], {
+$.TreeNode = $.Base.create(TREENODE, $.Widget, [$.WidgetParent, $.WidgetChild], {
 	
 	ATTRS: {
 		/**
@@ -99,44 +102,20 @@ $.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild]
 		},
 		defaultChildType: {
 			value: 'TreeNode'
-		}/*,
-		selectable: {
-			valueFn: function() {
-				return this.size() > 0;
-			}
-		}*/
+		}
 		
 	},
 	
 	HTML_PARSER: {
-		contentBox: function() {
-			if (this.CONTENT_TEMPLATE) {
-				var boundingBox = this.get(BOUNDING_BOX),
-					id = boundingBox.attr('id');
-				if (!id) {
-					boundingBox.attr('id', id = $.guid());
-				}
-				return boundingBox.find(boundingBox.find('#' + id + ' > .' + this.getClassName('content')));
-			}
-		},
-		labelNode: function () {
-			return this.get(BOUNDING_BOX).find('.' + this.getClassName(LABEL)).getDOMNode()
-		},
-		controlNode: function () {
-			return this.get(BOUNDING_BOX).find('.' + controlNodeClass).getDOMNode()
-		}
+		contentBox: '> .' + getClassName(TREENODE, 'content'),
+		labelNode: '> .' + getClassName(TREENODE, LABEL),
+		controlNode: '> .' + getClassName(TREENODE, CONTROL)
 	}
 	
 }, {
 	
 	LABEL_TEMPLATE: '<span/>',
 	CONTROL_TEMPLATE: '<span/>',
-	
-	_tnToggleSelectable: function(e) {
-		if (e.newVal) {
-			this.get(LABEL_NODE).addClass(this.getClassName(LABEL, 'selectable'));
-		}
-	},
 	
 	_uiTNLabelChange: function (e) {
 		var label = this.get(LABEL_NODE);
@@ -190,7 +169,6 @@ $.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild]
 		if (title) {
 			this.get(CONTROL_NODE).attr(TITLE, title);
 		}
-		//this._tnToggleSelectable({ newVal: this.get('selectable') });
 		this._uiTNSelectedChange({ newVal: expanded, prevVal: expanded });
 	},
 	

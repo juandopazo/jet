@@ -397,7 +397,6 @@ window.jet = function (o) {
 	Hash.each(config.groups, function (name, group) {
 		Hash.each({
 			minify: BOOLEAN,
-			combine: BOOLEAN,
 			fetchCSS: BOOLEAN,
 			root: STRING,
 			base: STRING

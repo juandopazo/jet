@@ -446,7 +446,7 @@ function Base(config) {
             $Object.each(constructor.EVENTS, $.bind(attachEvent, this, 'on'));
         }
         $Array.each(constructor.EXTS || [], function (extension) {
-            extension.apply(self, args);
+    		extension.apply(self, args);
             $Object.each(extension.EVENTS || {}, function (type, fn) {
                 self.on(type, fn);
             });
@@ -455,6 +455,7 @@ function Base(config) {
             constructor[PROTO].initializer.call(this, config);
         }
     }, this);
+    this.set('initialized', true);
 }
 $.extend(Base, Attribute, {
     
@@ -504,6 +505,9 @@ $.extend(Base, Attribute, {
             valueFn: function() {
                 return {};
             }
+        },
+        initialized: {
+        	value: false
         }
     },
     

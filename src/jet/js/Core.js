@@ -185,7 +185,7 @@ function buildJet(config) {
 				throw new Error("extend failed, verify dependencies");
 			}
 		
-			var sp = s.prototype, rp = $.Object(sp);
+			var sp = s.prototype, rp = $.Object.create(sp);
 			r.prototype = rp;
 		
 			rp.constructor = r;

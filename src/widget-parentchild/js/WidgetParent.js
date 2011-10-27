@@ -35,23 +35,25 @@ function WidgetParent(config) {
 	this.on('render', this._renderChildren);
 	this.after('selectionChange', this._onSelectionChange);
 	
-	this._addChildrenFromMarkup();
-	this.add(config.children || []);
+	this.after('initializedChange', function() {
+		this._addChildrenFromMarkup();
+		this.add(config.children || []);
 
-	this.forEach(function (child) {
-		if (child.get(SELECTED)) {
-			if (multiple) {
-				selection.push(child);
-			} else {
-				selection = child;
+		this.forEach(function (child) {
+			if (child.get(SELECTED)) {
+				if (multiple) {
+					selection.push(child);
+				} else {
+					selection = child;
+				}
 			}
+		});
+		if (selection) {
+			this.set(SELECTION, selection);
+		} else {
+			this.set(SELECTED_INDEX, 0);
 		}
 	});
-	if (selection) {
-		this.set(SELECTION, selection);
-	} else {
-		this.set(SELECTED_INDEX, 0);
-	}
 }
 $.mix(WidgetParent, {
 	

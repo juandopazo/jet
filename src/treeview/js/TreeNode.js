@@ -26,7 +26,7 @@ var EXPAND = "expand",
 	getClassName = $.Widget.getClassName,
 	
 	controlNodeClass = getClassName(TREENODE, 'control'),
-	collapsedControlClass = getClassName(TREENODE, 'control', 'collapsed')
+	collapsedControlClass = getClassName(TREENODE, 'control', 'collapsed'),
 	expandedControlClass = getClassName(TREENODE, 'control', 'expanded');
 
 /*

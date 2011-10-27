@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TreeView from JavaScript</title>
+	<style>
+.jet-reactive-treenode-selectable > .jet-treenode-control {
+	background-image: url(http://juandopazo.github.com/jet/build/treeview-control.png);
+}
+.jet-treenode-control-expanded {
+	background-position: 0px 0px;
+}
+.jet-treenode-control-collapsed {
+	background-position: -9px 0px;
+}
+.jet-reactive-treenode-content-collapsed {
+	display: none;
+}
+	</style>
+</head>
+<body>
+	<script src="../../../build/jet.js"></script>
+	<script>
+jet({
+	base: '../../../build/',
+	minify: false,
+	groups: {
+		test: {
+			modules: {
+				'reactive-treeview': {
+					fullpath: 'reactive.js',
+					requires: ['treeview']
+				}
+			}
+		}
+	}
+}).use('reactive-treeview', 'array-extras', function($) {
+	
+	var childrenData = {
+			children: [{
+			label: 'foo',
+			children: [{
+				label: 'foo1'
+			}, {
+				label: 'foo2',
+				children: [{
+					label: 'foo2-1'
+				}, {
+					label: 'foo2-2'
+				}]
+			}]
+		}, {
+			label: 'bar'
+		}, {
+			label: 'baz'
+		}]
+	};
+	
+	function setNodeId(node) {
+		if (!node.id) {
+			node.id = $.guid();
+		}
+		if (node.children) {
+			$.Array.forEach(node.children, setNodeId);
+		}
+		return node;
+	}
+	
+	function getNodeChildren(node) {
+		return $.Array.map(node.children, function(child) {
+			if (!child.id) {
+				child.id = $.guid();
+			}
+			child = $.clone(child);
+			if (child.children) {
+				child.selectable = true;
+				delete child.children;
+			}
+			return child;
+		});
+	}
+	
+	function walk(node, fn) {
+		if (fn(node) === false) {
+			return;
+		}
+		if (node.children) {
+			$.Array.forEach(node.children, function(node) {
+				return walk(node, fn);
+			});
+		}
+	}
+	
+	function getNodeById(root, id) {
+		var node;
+		walk(root, function(child) {
+			if (child.id == id) {
+				node = child;
+				return false;
+			}
+		});
+		return node;
+	}
+	
+	childrenData = setNodeId(childrenData);
+	var children = getNodeChildren(childrenData);
+	
+	var treeview = new $.ReactiveTreeView({
+		children: children,
+		getChildren: function (id) {
+			var node = getNodeById(childrenData, id);
+			if (node) {
+				return getNodeChildren(node);
+			}
+		}
+	});
+	treeview.render();
+	
+});
+	</script>
+</body>
+</html>
