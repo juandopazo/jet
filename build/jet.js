@@ -1056,6 +1056,9 @@ function buildJet(config) {
 		 */
 		find: function (query, root) {
 			root = root || $.config.doc;
+			if (root.getDOMNode) {
+				root = root.getDOMNode();
+			}
 			var c = query.charAt(0), test, node = null;
 			if (c === '<' && query.charAt(query.length - 1) === '>') {
 				if (query.match(/</g).length === 1) {

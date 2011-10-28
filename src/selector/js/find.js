@@ -5,6 +5,9 @@ delete $.qwery;
 
 $.find = function (query, root) {
 	root = root || $.config.doc;
+	if (root.getDOMNode) {
+		root = root.getDOMNode();
+	}
 	var test, node = null, id;
 	if (query.charAt(0) === '<' && query.charAt(query.length - 1) === '>') {
 		if (query.match(/</g).length === 1) {
@@ -21,9 +24,9 @@ $.find = function (query, root) {
 		}
 	} else {
 		if (query.charAt(0) === '>') {
-			id = root.attr('id');
+			id = root.id;
 			if (!id) {
-				root.attr('id', id = $.guid());
+				root.id = id = $.guid();
 			}
 			query = '#' + id + ' ' + query;
 		}
