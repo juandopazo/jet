@@ -93,8 +93,7 @@ $.TreeNode = $.Base.create(TREENODE, $.Widget, [$.WidgetParent, $.WidgetChild], 
 			value: 'TreeNode'
 		},
 		multiple: {
-			value: true,
-			readOnly: true
+			value: true
 		}
 		
 	},

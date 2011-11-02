@@ -104,8 +104,7 @@ $.TreeNode = $.Base.create(TREENODE, $.Widget, [$.WidgetParent, $.WidgetChild], 
 			value: 'TreeNode'
 		},
 		multiple: {
-			value: true,
-			readOnly: true
+			value: true
 		}
 		
 	},
@@ -205,8 +204,7 @@ $.TreeView = $.Base.create('treeview', $.Widget, [$.WidgetParent], {
 			value: 'TreeNode'
 		},
 		multiple: {
-			value: true,
-			readOnly: true
+			value: true
 		}
 	}
 	/**
