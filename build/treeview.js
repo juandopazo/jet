@@ -1,7 +1,7 @@
 /**
  * TreeView module
  * @module treeview
- * @requires base,widget-parentchild
+ * @requires base,selector,widget-parentchild
  * 
  * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
  * Code licensed under the BSD License
@@ -32,10 +32,13 @@ var EXPAND = "expand",
 	LABEL_NODE = 'labelNode',
 	BOUNDING_BOX = "boundingBox",
 	CONTENT_BOX = 'contentBox',
+	TREENODE = 'treenode',
 	
-	controlNodeClass = 'jet-treenode-control',
-	collapsedControlClass = controlNodeClass + '-collapsed',
-	expandedControlClass = controlNodeClass + '-expanded';
+	getClassName = $.Widget.getClassName,
+	
+	controlNodeClass = getClassName(TREENODE, 'control'),
+	collapsedControlClass = getClassName(TREENODE, 'control', 'collapsed'),
+	expandedControlClass = getClassName(TREENODE, 'control', 'expanded');
 
 /*
  * @TODO:
@@ -52,7 +55,7 @@ var EXPAND = "expand",
  * @constructor
  * @param {Object} config Object literal specifying configuration properties
  */
-$.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild], {
+$.TreeNode = $.Base.create(TREENODE, $.Widget, [$.WidgetParent, $.WidgetChild], {
 	
 	ATTRS: {
 		/**
@@ -77,7 +80,9 @@ $.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild]
 		 * @type String|HTMLElement
 		 */
 		label: {
-			value: ''
+			valueFn: function() {
+				return this.get(LABEL_NODE).attr('innerHTML');
+			}
 		},
 		/**
 		 * @attribute controlNode
@@ -102,12 +107,9 @@ $.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild]
 	},
 	
 	HTML_PARSER: {
-		labelNode: function () {
-			
-		},
-		controlNode: function () {
-			
-		}
+		contentBox: '> .' + getClassName(TREENODE, 'content'),
+		labelNode: '> .' + getClassName(TREENODE, LABEL),
+		controlNode: '> .' + getClassName(TREENODE, CONTROL)
 	}
 	
 }, {
@@ -129,18 +131,21 @@ $.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild]
 	},
 	
 	_uiTNClick: function (e) {
-		if (e.domEvent.target == this.get(LABEL_NODE)) {
-			this.set(SELECTED, !this.get(SELECTED));
-		}
+		this.set(SELECTED, !this.get(SELECTED));
 	},
 	
 	initializer: function () {
-		this.set(LABEL_NODE, this.LABEL_TEMPLATE);
-		this.set(CONTROL_NODE, this.CONTROL_TEMPLATE);
+		if (!this.get(LABEL_NODE)) {
+			this.set(LABEL_NODE, this.LABEL_TEMPLATE);
+		}
+		if (!this.get(CONTROL_NODE)) {
+			this.set(CONTROL_NODE, this.CONTROL_TEMPLATE);
+		}
 
 		this.after('labelChange', this._uiTNLabelChange);
 		this.after('titleChange', this._uiTNTitleChange);
 		this.after('selectedChange', this._uiTNSelectedChange);
+		this.after('selectableChange', this._tnToggleSelectable);
 	},
 	
 	renderUI: function (boundingBox) {
@@ -152,13 +157,10 @@ $.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild]
 	},
 	
 	bindUI: function () {
-		var toggle = $.bind(this.toggle, this);
 		this._handlers.push(
-			this.get(LABEL_NODE).on(CLICK, toggle),
-			this.get(CONTROL_NODE).on(CLICK, toggle)
+			this.get(LABEL_NODE).on(CLICK, this._uiTNClick, this),
+			this.get(CONTROL_NODE).on(CLICK, this._uiTNClick, this)
 		);
-		
-		this.on('click', this._uiTNClick);
 	},
 	
 	syncUI: function () {
@@ -166,9 +168,6 @@ $.TreeNode = $.Base.create('treenode', $.Widget, [$.WidgetParent, $.WidgetChild]
 		var expanded = this.get(SELECTED);
 		if (title) {
 			this.get(CONTROL_NODE).attr(TITLE, title);
-		}
-		if (this.size() > 0) {
-			this.get(LABEL_NODE).addClass(this.getClassName(LABEL, 'selectable'));
 		}
 		this._uiTNSelectedChange({ newVal: expanded, prevVal: expanded });
 	},
@@ -200,6 +199,10 @@ $.TreeView = $.Base.create('treeview', $.Widget, [$.WidgetParent], {
 	ATTRS: {
 		defaultChildType: {
 			value: 'TreeNode'
+		},
+		multiple: {
+			value: true,
+			readOnly: true
 		}
 	}
 	/**

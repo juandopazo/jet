@@ -10,8 +10,6 @@
 	
 	<target name="init">
 		<subant target="init" inheritAll="false" inheritrefs="false">
-	    	<fileset dir="../log/" includes="build.xml"/>
-	    	<fileset dir="../oop/" includes="build.xml"/>
 	    	<fileset dir="../node/" includes="build.xml"/>
 	    </subant>
 		<!-- Create the time stamp -->

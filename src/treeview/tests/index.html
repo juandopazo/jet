@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TreeView from JavaScript</title>
+</head>
+<body>
+	<script src="../../../build/jet.js"></script>
+	<script>
+jet({
+	base: '../../../build/',
+	minify: false
+}).use('treeview', function($) {
+	
+	var treeview = new $.TreeView({
+		children: [{
+			label: 'foo',
+			children: [{
+				label: 'foo1'
+			}, {
+				label: 'foo2',
+				children: [{
+					label: 'foo2-1'
+				}, {
+					label: 'foo2-2'
+				}]
+			}]
+		}, {
+			label: 'bar'
+		}, {
+			label: 'baz'
+		}]
+	});
+	treeview.render();
+	
+});
+	</script>
+</body>
+</html>

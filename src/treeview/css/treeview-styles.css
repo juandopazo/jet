@@ -17,8 +17,7 @@
 	display: inline-block;
 }
 .jet-treenode-control-expanded, .jet-treenode-control-collapsed {
-	background-image: url(/jet/src/treeview/treeview-control.png);
-	box-shadow: 0px 0px 0px #FFF;
+	background-image: url(http://juandopazo.github.com/jet/build/treeview-control.png);
 }
 .jet-treenode-control-expanded {
 	background-position: 0px 0px;

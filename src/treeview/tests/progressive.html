@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>TreeView from markup</title>
+</head>
+<body>
+	<div class="jet-treeview" id="my-treeview">
+		<div class="jet-treeview-content">
+			<div class="jet-treenode">
+				<span class="jet-treenode-label">foo</span>
+				<div class="jet-treenode-content jet-treenode-content-collapsed">
+					<div class="jet-treenode">
+						<span class="jet-treenode-label">foo1</span>
+						<div class="jet-treenode-content"></div>
+					</div>
+					<div class="jet-treenode">
+						<span class="jet-treenode-label">foo2</span>
+						<div class="jet-treenode-content jet-treenode-content-collapsed">
+							<div class="jet-treenode-selected jet-treenode">
+								<span class="jet-treenode-label">foo2-1</span>
+								<div class="jet-treenode-content"></div>
+							</div>
+							<div class="jet-treenode">
+								<span class="jet-treenode-label">foo2-2</span>
+								<div class="jet-treenode-content"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="jet-treenode">
+				<span class="jet-treenode-label">bar</span>
+				<div class="jet-treenode-content"></div>
+			</div>
+			<div class="jet-treenode">
+				<span class="jet-treenode-label">baz</span>
+				<div class="jet-treenode-content"></div>
+			</div>
+		</div>
+	</div>
+	<script src="../../../build/jet.js"></script>
+	<script type="text/javascript">
+jet({
+	base: '../../../build/',
+	minify: false
+}).use('treeview', function($) {
+
+	var treeview = new $.TreeView({
+		boundingBox: '#my-treeview'
+	});
+	treeview.render();
+
+});
+	</script>
+</body>
+</html>

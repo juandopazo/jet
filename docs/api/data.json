@@ -1085,7 +1085,7 @@
             "namespaces": {},
             "tag": "module",
             "file": "build/jet.min.js",
-            "line": 34,
+            "line": 35,
             "requires": [
                 "Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
             ]
@@ -1320,7 +1320,7 @@
             "file": "build/treeview.min.js",
             "line": 1,
             "requires": [
-                "base,widget-parentchild\n\nCopyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+                "base,selector,widget-parentchild\n\nCopyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
             ]
         },
         "vector": {
@@ -1478,7 +1478,7 @@
             "module": "node",
             "namespace": "",
             "file": "build/jet.js",
-            "line": 1952,
+            "line": 1975,
             "description": "A collection of DOM Nodes",
             "is_constructor": 1,
             "extends": "ArrayList",
@@ -1669,7 +1669,7 @@
             "module": "base",
             "namespace": "",
             "file": "build/base.js",
-            "line": 537,
+            "line": 541,
             "description": "Basic class for all utilities",
             "extends": "Base",
             "is_constructor": 1,
@@ -1692,7 +1692,7 @@
             "module": "base",
             "namespace": "",
             "file": "build/base.js",
-            "line": 567,
+            "line": 571,
             "description": "Base class for all widgets. \nProvides show, hide, render and destroy methods, the rendering process logic\nand basic attributes shared by all widgets",
             "extends": "Base",
             "is_constructor": 1,
@@ -1715,7 +1715,7 @@
             "module": "base",
             "namespace": "",
             "file": "build/base.js",
-            "line": 993,
+            "line": 1015,
             "description": "A utility for tracking the mouse movement without crashing the browser rendering engine.\nAlso allows for moving the mouse over iframes and other pesky elements",
             "is_constructor": 1,
             "extends": "Utility",
@@ -2327,7 +2327,7 @@
             "module": "io",
             "namespace": "",
             "file": "build/jet.js",
-            "line": 898,
+            "line": 909,
             "description": "Core methods",
             "static": 1
         },
@@ -2582,7 +2582,7 @@
             "module": "io",
             "namespace": "",
             "file": "build/jet.js",
-            "line": 137,
+            "line": 138,
             "description": "Provides utility methods for finding object types and other\nmethods that javascript provides in some browsers but not in others such as trim()",
             "static": 1
         },
@@ -2597,7 +2597,7 @@
             "module": "io",
             "namespace": "",
             "file": "build/jet.js",
-            "line": 347,
+            "line": 348,
             "description": "Utilities for working with Arrays",
             "static": 1
         },
@@ -2612,8 +2612,8 @@
             "module": "io",
             "namespace": "",
             "file": "build/jet.js",
-            "line": 465,
-            "description": "Utilities for working with object literals\nThroughout jet the Object type means an object lieteral",
+            "line": 466,
+            "description": "Utilities for working with object literals\nThroughout jet the Object type means an object literal",
             "static": 1
         },
         "ArrayList": {
@@ -2629,7 +2629,7 @@
             "module": "io",
             "namespace": "",
             "file": "build/jet.js",
-            "line": 526,
+            "line": 537,
             "description": "A collection of elements",
             "is_constructor": 1,
             "params": [
@@ -2651,7 +2651,7 @@
             "module": "io",
             "namespace": "",
             "file": "build/jet.js",
-            "line": 693,
+            "line": 704,
             "description": "Browser sniffing",
             "static": 1
         },
@@ -2666,7 +2666,7 @@
             "module": "io",
             "namespace": "",
             "file": "build/jet.js",
-            "line": 757,
+            "line": 768,
             "description": "Loads scripts and CSS files.\nIncluded in the jet() core",
             "static": 1
         },
@@ -2681,7 +2681,7 @@
             "module": "node",
             "namespace": "",
             "file": "build/jet.js",
-            "line": 1447,
+            "line": 1458,
             "description": "<p>Global function. Returns an object with 2 methods: use() and add().</p>\n \n<code>jet().use(\"node\", function ($) {\n\t //do something with $\n});</code>\n\n<p>This snippet will load the Node module, and when it finishes loading it'll execute\nthe function. Each module must call the jet.add() method to tell the loader\nit has finished loading:</p>\n\n<code>jet.add(\"node\", function ($) {\n\t $.method = function () {};\n});</code>\n\n<p>A variable is passed to every module and the function defined in the use() method. \nThis variable acts as a main library and is shared by each module and the main\nfunction, but not between different calls to the \"use\" method. Ie:</p>\n\n<code>jet().use(\"node\", function ($) {\n\t $.testProperty = \"test\";\n});\n\njet().use(\"node\", function ($) {\n\t alert($.testProperty); //alerts \"undefined\"\n});</code>\n\n<p>Since it is a parameter, it can have any name but it still acts the same way. Also,\neach module is called in the order defined by the \"use\" method. So:</p>\n\n<code>jet().use(\"node\", \"anim\", function (L) {\n\t // Here the L variable contains both Node and Anim\n\t // The Node module is called first on L and the Anim module after,\n\t // so it can overwrite anything Node did, extend classes, etc\n});</code>\n\n<p>New modules can be defined by passing an object literal instead of a string to the\n\"use\" method with a \"name\" property and a \"path\" or \"fullpath\" property.</p> \n\n<code>jet().use(\"node\", {name:\"myModule\", fullpath:\"http://localhost/myModule.js\"}, function ($) {\n\t //do something\n});</code>\n\n<p>If \"path\" is defined instead of \"fullpath\", the loader will append \"path\"\nto a predefined base URL. This base URL can be modified by passing\nthe jet() function an object literal with a \"base\" property:</p>\n\n <code>jet({\n\t  base: \"http://www.mydomain.com/modules/\"\n }).use(\"node\", function ($) {\n\t  //in this case the \"core\" module is loaded from http://www.mydomain.com/modules/node.min.js\n });</code>",
             "is_constructor": 1,
             "params": [
@@ -2703,7 +2703,7 @@
             "module": "node",
             "namespace": "",
             "file": "build/jet.js",
-            "line": 1641,
+            "line": 1663,
             "description": "Keeps a record of all listeners attached to the DOM in order to remove them when necessary",
             "static": 1
         },
@@ -2718,7 +2718,7 @@
             "module": "node",
             "namespace": "",
             "file": "build/jet.js",
-            "line": 1829,
+            "line": 1852,
             "description": "A collection of DOM Event handlers for later detaching",
             "is_constructor": 1,
             "params": [
@@ -2740,7 +2740,7 @@
             "module": "node",
             "namespace": "",
             "file": "build/jet.js",
-            "line": 1856,
+            "line": 1879,
             "description": "Bla",
             "static": 1
         },
@@ -3028,7 +3028,7 @@
             "module": "treeview",
             "namespace": "",
             "file": "build/treeview.js",
-            "line": 46,
+            "line": 49,
             "description": "A node in a TreeView",
             "extends": "Widget",
             "uses": [
@@ -3055,7 +3055,7 @@
             "module": "treeview",
             "namespace": "",
             "file": "build/treeview.js",
-            "line": 191,
+            "line": 190,
             "description": "A labeled tree",
             "extends": "Widget",
             "uses": [
@@ -3370,7 +3370,7 @@
             "module": "widget-parentchild",
             "namespace": "",
             "file": "build/widget-parentchild.js",
-            "line": 316,
+            "line": 313,
             "description": "An extension that turns a widget into a child widget",
             "is_constructor": 1,
             "params": [
@@ -4542,7 +4542,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 461,
+            "line": 462,
             "description": "Starts the destruction lifecycle",
             "itemtype": "method",
             "name": "destroy",
@@ -4551,7 +4551,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 466,
+            "line": 467,
             "description": "Preventing the default behavior will stop the destroy process",
             "itemtype": "event",
             "name": "destroy",
@@ -4560,7 +4560,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 490,
+            "line": 491,
             "description": "Allows quick setting of custom events in the constructor",
             "itemtype": "config",
             "name": "on",
@@ -4569,7 +4569,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 499,
+            "line": 500,
             "description": "Allows quick setting of 'after' event listeners in the constructor",
             "itemtype": "config",
             "name": "after",
@@ -4578,7 +4578,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 549,
+            "line": 553,
             "itemtype": "attribute",
             "name": "cssPrefix",
             "default": "Utility.CSS_PREFIX",
@@ -4588,7 +4588,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 578,
+            "line": 582,
             "itemtype": "property",
             "name": "CSS_PREFIX",
             "description": "Default prefix for all css classes used in widget by the getClassName() method",
@@ -4599,7 +4599,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 588,
+            "line": 592,
             "itemtype": "property",
             "name": "DOM_EVENTS",
             "description": "DOM events that are routed automatically to the widget instance",
@@ -4610,7 +4610,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 604,
+            "line": 608,
             "itemtype": "attribute",
             "name": "srcNode",
             "description": "The node to which the widget will be appended to. May be set as a \nconfiguration attribute, with a setter or as the first parameter of the render() method",
@@ -4620,7 +4620,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 614,
+            "line": 620,
             "itemtype": "attribute",
             "name": "classPrefix",
             "description": "Prefix for all CSS clases. Useful for renaming the project",
@@ -4631,7 +4631,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 626,
+            "line": 632,
             "itemtype": "attribute",
             "name": "rendered",
             "description": "Rendered status. Shouldn't be changed by anything appart from the Widget.render() method",
@@ -4642,7 +4642,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 635,
+            "line": 641,
             "description": "The bounding box contains all the parts of the widget",
             "itemtype": "attribute",
             "name": "boundingBox",
@@ -4654,7 +4654,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 645,
+            "line": 651,
             "itemtype": "attribute",
             "name": "contentBox",
             "description": "Another container inside the boundingBox added in order to have a more complex design",
@@ -4666,7 +4666,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 655,
+            "line": 661,
             "itemtype": "attribute",
             "name": "width",
             "description": "The width of the overlay",
@@ -4676,7 +4676,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 663,
+            "line": 669,
             "itemtype": "attribute",
             "name": "height",
             "description": "The height of the overlay.\nIf set to 0 (zero) the height changes with the content",
@@ -4686,7 +4686,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 672,
+            "line": 678,
             "itemtype": "attribute",
             "name": "id",
             "description": "The id of the widget",
@@ -4696,7 +4696,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 679,
+            "line": 685,
             "itemtype": "attribute",
             "name": "visible",
             "description": "The visibility status of the widget",
@@ -4707,7 +4707,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 689,
+            "line": 695,
             "itemtype": "attribute",
             "name": "disabled",
             "description": "The disabled status of the widget",
@@ -4718,7 +4718,21 @@
         },
         {
             "file": "build/base.js",
-            "line": 714,
+            "line": 723,
+            "itemtype": "method",
+            "name": "getClassName",
+            "description": "Returns a string for using as a Node classname based on Widget.CSS_PREFIX",
+            "return": {
+                "description": "",
+                "type": "String"
+            },
+            "static": 1,
+            "class": "Widget",
+            "module": "base"
+        },
+        {
+            "file": "build/base.js",
+            "line": 733,
             "itemtype": "method",
             "name": "getByNode",
             "description": "Returns a widget instance based on a node",
@@ -4728,7 +4742,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 740,
+            "line": 759,
             "description": "Shows the widget",
             "itemtype": "method",
             "name": "show",
@@ -4738,7 +4752,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 748,
+            "line": 767,
             "description": "Hides the widget",
             "itemtype": "method",
             "name": "hide",
@@ -4748,7 +4762,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 756,
+            "line": 775,
             "description": "Enables the widget",
             "itemtype": "method",
             "name": "enable",
@@ -4758,7 +4772,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 764,
+            "line": 783,
             "description": "Disables the widget",
             "itemtype": "method",
             "name": "enable",
@@ -4768,7 +4782,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 772,
+            "line": 791,
             "description": "Focuses the widget",
             "itemtype": "method",
             "name": "focus",
@@ -4778,7 +4792,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 780,
+            "line": 799,
             "description": "Blurrs the element",
             "itemtype": "method",
             "name": "blur",
@@ -4788,7 +4802,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 855,
+            "line": 874,
             "description": "Starts the rendering process. The rendering process is based on custom events.\nThe widget class fires a 'render' event to which all subclasses must subscribe.\nThis way all listeners are fired in the order of the inheritance chain. ie:\nIn the Overlay class, the render process is:\n<code>render() method -> Module listener -> Overlay listener -> rest of the render() method (appends the boundingBox to the srcNode)</code>\nThis helps to use an easy pattern of OOP CSS: each subclass adds a CSS class name to the boundingBox,\nfor example resulting in <div class=\"jet-module jet-overlay jet-panel\"></div>. That way\na panel can inherit css properties from module and overlay.",
             "itemtype": "method",
             "name": "render",
@@ -4805,7 +4819,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 874,
+            "line": 893,
             "description": "Render event. Preventing the default behavior will stop the rendering process",
             "itemtype": "event",
             "name": "render",
@@ -4817,7 +4831,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 884,
+            "line": 903,
             "description": "Fires after the render lifecycle finished. It is also fired after a timeout of 0 milliseconds, \nso it is added to the execution queue rather than fired synchronously",
             "itemtype": "event",
             "name": "afterRender",
@@ -4826,7 +4840,20 @@
         },
         {
             "file": "build/base.js",
-            "line": 1004,
+            "line": 984,
+            "itemtype": "method",
+            "name": "getClassName",
+            "description": "Returns a string for using as a Node classname based on the classPrefix attribute and the widget's name",
+            "return": {
+                "description": "",
+                "type": "String"
+            },
+            "class": "Widget",
+            "module": "base"
+        },
+        {
+            "file": "build/base.js",
+            "line": 1026,
             "description": "Frequency at which the tracker updates",
             "itemtype": "attribute",
             "name": "frequency",
@@ -4837,7 +4864,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 1013,
+            "line": 1035,
             "description": "Tracking status. Set it to true to start tracking",
             "itemtype": "attribute",
             "name": "tracking",
@@ -4848,7 +4875,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 1110,
+            "line": 1132,
             "description": "Fires when the mouse button is released",
             "itemtype": "event",
             "name": "mouseup",
@@ -4857,7 +4884,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 1124,
+            "line": 1146,
             "description": "Fires not when the mouse moves, but in an interval defined by the frequency attribute\nThis way you can track the mouse position without breakin the browser's rendering engine\nbecause the native mousemove event fires too quickly",
             "itemtype": "event",
             "name": "move",
@@ -4866,7 +4893,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 1146,
+            "line": 1168,
             "description": "Start tracking. Equivalent to setting the tracking attribute to true.\nSimulates the mousedown event",
             "itemtype": "method",
             "name": "down",
@@ -4876,7 +4903,7 @@
         },
         {
             "file": "build/base.js",
-            "line": 1155,
+            "line": 1177,
             "description": "Stop tracking. Equivalent to setting the tracking attribute to false\nSimulates the mouseup event",
             "itemtype": "method",
             "name": "up",
@@ -6669,7 +6696,7 @@
             "line": 390,
             "itemtype": "method",
             "name": "abort",
-            "description": "Aborts the request if available (doesn't work on JSONP transactions)",
+            "description": "Aborts the request if available (doesn't work on JSONP requests)",
             "chainable": 1,
             "class": "IO",
             "module": "io"
@@ -6724,7 +6751,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 170,
+            "line": 171,
             "description": "Returns if o is a number",
             "itemtype": "method",
             "name": "isNumber",
@@ -6740,7 +6767,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 178,
+            "line": 179,
             "description": "Returns if o is a string",
             "itemtype": "method",
             "name": "isString",
@@ -6756,7 +6783,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 186,
+            "line": 187,
             "description": "Returns if o is an array",
             "itemtype": "method",
             "name": "isArray",
@@ -6772,7 +6799,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 194,
+            "line": 195,
             "description": "Returns if o is a function",
             "itemtype": "method",
             "name": "isFunction",
@@ -6788,7 +6815,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 206,
+            "line": 207,
             "description": "Returns if o is a boolean",
             "itemtype": "method",
             "name": "isBoolean",
@@ -6804,7 +6831,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 214,
+            "line": 215,
             "description": "Returns if o is undefined",
             "itemtype": "method",
             "name": "isUndefined",
@@ -6820,7 +6847,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 222,
+            "line": 223,
             "description": "Returns the type of the object",
             "itemtype": "method",
             "name": "type",
@@ -6836,7 +6863,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 228,
+            "line": 229,
             "description": "Returns whether the function is a native function or not",
             "itemtype": "method",
             "name": "isNative",
@@ -6852,7 +6879,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 234,
+            "line": 235,
             "description": "Returns false if o is undefined, null, NaN or Infinity. In any other case, return true",
             "itemtype": "method",
             "name": "isValue",
@@ -6868,7 +6895,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 256,
+            "line": 257,
             "description": "Returns a string without any leading or trailing whitespace.\nCode by Steven Levithan\nhttp://blog.stevenlevithan.com/archives/faster-trim-javascript",
             "itemtype": "method",
             "name": "trim",
@@ -6888,7 +6915,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 279,
+            "line": 280,
             "description": "A more traditional random function. Returns a random integer between 0 and num-1",
             "itemtype": "method",
             "name": "random",
@@ -6904,7 +6931,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 288,
+            "line": 289,
             "description": "A shim for ES5's Date.now()",
             "itemtype": "method",
             "name": "now",
@@ -6917,7 +6944,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 367,
+            "line": 368,
             "description": "Iterates through an array",
             "itemtype": "method",
             "name": "each",
@@ -6943,7 +6970,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 388,
+            "line": 389,
             "description": "Searchs an haystack and removes the needle if found",
             "itemtype": "method",
             "name": "remove",
@@ -6964,7 +6991,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 406,
+            "line": 407,
             "description": "Returns the index of the first occurence of needle",
             "itemtype": "method",
             "name": "indexOf",
@@ -6989,7 +7016,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 427,
+            "line": 428,
             "description": "Calls a given function on all items of an array and returns a new array with the return value of each call",
             "params": [
                 {
@@ -7010,6 +7037,26 @@
         {
             "file": "build/jet.js",
             "line": 478,
+            "description": "Creates a new object with the provided object as a prototype",
+            "itemtype": "method",
+            "name": "create",
+            "params": [
+                {
+                    "name": "prototype",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Object"
+            },
+            "class": "Object",
+            "module": "io"
+        },
+        {
+            "file": "build/jet.js",
+            "line": 489,
             "description": "Iterats through a hash",
             "itemtype": "method",
             "name": "each",
@@ -7036,7 +7083,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 495,
+            "line": 506,
             "description": "Returns an array with all the keys of a hash",
             "itemtype": "method",
             "name": "keys",
@@ -7056,7 +7103,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 508,
+            "line": 519,
             "description": "Returns an array with all the valus of a hash",
             "itemtype": "method",
             "name": "values",
@@ -7076,7 +7123,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 536,
+            "line": 547,
             "description": "Creates a new ArrayList with the results of calling a provided function on every element in this array",
             "itemtype": "method",
             "name": "map",
@@ -7093,26 +7140,28 @@
                 }
             ],
             "return": {
-                "description": "ArrayList"
+                "description": "",
+                "type": "ArrayList"
             },
             "class": "ArrayList",
             "module": "io"
         },
         {
             "file": "build/jet.js",
-            "line": 563,
+            "line": 574,
             "description": "Returns the length of this ArrayList",
             "itemtype": "method",
             "name": "size",
             "return": {
-                "description": "Number"
+                "description": "",
+                "type": "Number"
             },
             "class": "ArrayList",
             "module": "io"
         },
         {
             "file": "build/jet.js",
-            "line": 571,
+            "line": 582,
             "itemtype": "method",
             "name": "item",
             "description": "Returns the nth element of the current list",
@@ -7124,14 +7173,15 @@
                 }
             ],
             "return": {
-                "description": "ArrayList"
+                "description": "",
+                "type": "ArrayList"
             },
             "class": "ArrayList",
             "module": "io"
         },
         {
             "file": "build/jet.js",
-            "line": 580,
+            "line": 591,
             "itemtype": "method",
             "name": "concat",
             "params": [
@@ -7150,7 +7200,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 604,
+            "line": 615,
             "itemtype": "method",
             "name": "pop",
             "return": {
@@ -7162,7 +7212,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 609,
+            "line": 620,
             "itemtype": "method",
             "name": "push",
             "params": [
@@ -7177,7 +7227,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 614,
+            "line": 625,
             "itemtype": "method",
             "name": "shift",
             "return": {
@@ -7189,7 +7239,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 619,
+            "line": 630,
             "itemtype": "method",
             "name": "slice",
             "params": [
@@ -7213,7 +7263,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 630,
+            "line": 641,
             "itemtype": "method",
             "name": "splice",
             "params": [
@@ -7237,7 +7287,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 639,
+            "line": 650,
             "itemtype": "method",
             "name": "push",
             "params": [
@@ -7252,7 +7302,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 647,
+            "line": 658,
             "itemtype": "method",
             "name": "indexOf",
             "description": "Returns the index of the searched item or -1 if it didn't find it",
@@ -7264,14 +7314,15 @@
                 }
             ],
             "return": {
-                "description": "Number"
+                "description": "",
+                "type": "Number"
             },
             "class": "ArrayList",
             "module": "io"
         },
         {
             "file": "build/jet.js",
-            "line": 654,
+            "line": 665,
             "description": "Returns a new ArrayList with only the elements for which the provided function returns true",
             "itemtype": "method",
             "name": "filter",
@@ -7283,14 +7334,15 @@
                 }
             ],
             "return": {
-                "description": "ArrayList"
+                "description": "",
+                "type": "ArrayList"
             },
             "class": "ArrayList",
             "module": "io"
         },
         {
             "file": "build/jet.js",
-            "line": 661,
+            "line": 672,
             "description": "Iterates through the ArrayList\nThe callback is passed a reference to the element and an iteration index.",
             "itemtype": "method",
             "name": "forEach",
@@ -7307,7 +7359,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 710,
+            "line": 721,
             "description": "true if the browser uses the Webkit rendering engine (ie: Safari, Chrome)",
             "itemtype": "property",
             "name": "webkit",
@@ -7316,7 +7368,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 715,
+            "line": 726,
             "description": "If the browser is Internet Explorer, this property is equal to the IE version. If not, it is false",
             "itemtype": "property",
             "name": "ie",
@@ -7325,7 +7377,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 720,
+            "line": 731,
             "description": "true if the browser is Opera",
             "itemtype": "property",
             "name": "opera",
@@ -7334,7 +7386,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 725,
+            "line": 736,
             "description": "true if the browser is based on the Gecko rendering engine (ie: Firefox)",
             "itemtype": "property",
             "name": "gecko",
@@ -7343,7 +7395,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 730,
+            "line": 741,
             "description": "true if the operating system is Windows",
             "itemtype": "property",
             "name": "win",
@@ -7352,7 +7404,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 735,
+            "line": 746,
             "description": "true if the operating system is Apple OSX",
             "itemtype": "property",
             "name": "mac",
@@ -7361,7 +7413,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 772,
+            "line": 783,
             "description": "Loads a script asynchronously",
             "itemtype": "method",
             "name": "script",
@@ -7378,7 +7430,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 852,
+            "line": 863,
             "description": "Loads a CSS file",
             "itemtype": "method",
             "name": "css",
@@ -7395,7 +7447,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 905,
+            "line": 916,
             "description": "Walks through the DOM tree starting in th branch that derives from node",
             "itemtype": "method",
             "name": "walkTheDOM",
@@ -7416,7 +7468,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 946,
+            "line": 957,
             "description": "The global object is a finder method that finds HTML elements.\nThe query string allows for different simple searches: \"#foo\" (get elemnet by id), \".foo\" (gets elements by class), \"foo\" (get elements by tag) or an array of html elements\nFor more complex queries, take a look at the Sizzle module",
             "itemtype": "method",
             "name": "$",
@@ -7441,7 +7493,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 985,
+            "line": 996,
             "description": "A wrapper for setTimeout that allows you to optionally set a context to the callback",
             "itemtype": "method",
             "name": "wait",
@@ -7469,7 +7521,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1005,
+            "line": 1016,
             "description": "Returns a unique id with the following signature: 'jet_' + Date.now() + '_' + counter",
             "return": {
                 "description": "",
@@ -7480,7 +7532,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1011,
+            "line": 1022,
             "description": "Checks if a certain object is an instance of a certain constructor\nWrapper for the instanceof operator which leaks when used on the global object",
             "params": [
                 {
@@ -7503,7 +7555,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1022,
+            "line": 1033,
             "description": "Returns a new function bounded to the provided context\nSee https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function/bind",
             "params": [
                 {
@@ -7523,7 +7575,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1030,
+            "line": 1041,
             "description": "Checks if a certain object exists as a property of $ and if not, it creates it",
             "params": [
                 {
@@ -7541,7 +7593,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1039,
+            "line": 1050,
             "description": "Does all the work behind the $() function\nYou shouldn't overwrite it unless you know what you're doing",
             "access": "protected",
             "tagname": "",
@@ -7562,7 +7614,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1069,
+            "line": 1080,
             "description": "Allows for an inheritance strategy based on prototype chaining.\nWhen exteiding a class with extend, you keep all prototypic methods from all superclasses",
             "itemtype": "method",
             "name": "extend",
@@ -7593,7 +7645,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1107,
+            "line": 1118,
             "description": "Creates a copy of the provided object",
             "itemtype": "method",
             "name": "clone",
@@ -7614,7 +7666,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1115,
+            "line": 1126,
             "description": "Copies all properties from B to A.\nDoesn't overwrite properties unless the overwrite parameter is true",
             "itemtype": "method",
             "name": "mix",
@@ -7641,7 +7693,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1125,
+            "line": 1136,
             "description": "Adds properties to the $ object (shortcut for adding classes)",
             "itemtype": "method",
             "name": "add",
@@ -7657,7 +7709,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1144,
+            "line": 1155,
             "description": "Parsed Jet configuration object",
             "itemtype": "property",
             "name": "config",
@@ -7667,7 +7719,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1170,
+            "line": 1181,
             "description": "Checks the state of each queue. If a queue has finished loading it executes it",
             "access": "private",
             "tagname": "",
@@ -7676,7 +7728,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1511,
+            "line": 1522,
             "itemtype": "attribute",
             "name": "base",
             "description": "prefix for all script and css urls",
@@ -7687,7 +7739,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1518,
+            "line": 1529,
             "itemtype": "attribute",
             "name": "base",
             "description": "defines whether predefined modules should be minified or not",
@@ -7698,7 +7750,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1525,
+            "line": 1536,
             "itemtype": "attribute",
             "name": "fetchCSS",
             "description": "If true, css modules are loaded",
@@ -7709,7 +7761,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1532,
+            "line": 1543,
             "itemtype": "attribute",
             "name": "modules",
             "description": "Allows to define your own modules. Currently the same as using object literals in the use() method",
@@ -7719,16 +7771,16 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1538,
+            "line": 1549,
             "itemtype": "attribute",
             "name": "win",
-            "description": "A reference to the global object that is accesible later with $.win",
+            "description": "A reference to the global object that is accesible later with $.config.win",
             "class": "jet",
             "module": "io"
         },
         {
             "file": "build/jet.js",
-            "line": 1543,
+            "line": 1554,
             "itemtype": "attribute",
             "name": "doc",
             "description": "A reference to the document that is accesible later with $.doc",
@@ -7737,7 +7789,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1549,
+            "line": 1560,
             "itemtype": "attribute",
             "name": "before",
             "description": "id of a node before which to insert all scripts and css files",
@@ -7746,7 +7798,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1582,
+            "line": 1604,
             "description": "Allows to load modules and obtain a unique reference to the library augmented by the requested modules \n\nThis method works by overloading its parameters. It takes names (String) of predefined modules\nor objects defining name and path/fullpath of a module. The last parameter must be a function \nthat contains the main logic of the application.",
             "itemtype": "method",
             "name": "use",
@@ -7755,7 +7807,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1593,
+            "line": 1615,
             "description": "Adds a module to the loaded module list and calls update() to check if a queue is ready to fire\nThis method must be called from a module to register it",
             "itemtype": "method",
             "name": "add",
@@ -7777,7 +7829,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1670,
+            "line": 1692,
             "description": "Adds a listener to the cache",
             "itemtype": "method",
             "name": "add",
@@ -7803,7 +7855,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1687,
+            "line": 1709,
             "description": "Removes a method from the cache, but doesn't do anything to the node's listener",
             "itemtype": "method",
             "name": "remove",
@@ -7829,7 +7881,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1706,
+            "line": 1728,
             "description": "Removes all listeners from a node",
             "itemtype": "method",
             "name": "clear",
@@ -7845,7 +7897,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1740,
+            "line": 1762,
             "description": "Removes all listeners from all nodes recorded in the cache",
             "itemtype": "method",
             "name": "flush",
@@ -7854,7 +7906,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1839,
+            "line": 1862,
             "description": "Unbinds all event handlers from their hosts",
             "itemtype": "method",
             "name": "detach",
@@ -7863,7 +7915,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1862,
+            "line": 1885,
             "description": "Returns the window object to which the current document belongs",
             "itemtype": "method",
             "name": "getWindowFromDocument",
@@ -7879,7 +7931,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1871,
+            "line": 1894,
             "description": "Gets the scrolling width or makes the browser scroll",
             "itemtype": "method",
             "name": "scrollLeft",
@@ -7896,7 +7948,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1887,
+            "line": 1910,
             "description": "Gets the scrolling height or makes the browser scroll",
             "itemtype": "method",
             "name": "scrollTop",
@@ -7913,7 +7965,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1903,
+            "line": 1926,
             "description": "Returns the inner size of the screen",
             "itemtype": "method",
             "name": "screenSize",
@@ -7922,7 +7974,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 1916,
+            "line": 1939,
             "description": "Returns the complete size of the page",
             "itemtype": "method",
             "name": "pageSize",
@@ -7931,7 +7983,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2004,
+            "line": 2027,
             "description": "Hides all nodes",
             "itemtype": "method",
             "name": "hide",
@@ -7941,7 +7993,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2018,
+            "line": 2041,
             "description": "Shows all nodes",
             "itemtype": "method",
             "name": "show",
@@ -7951,7 +8003,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2028,
+            "line": 2051,
             "description": "If a node in the collection is hidden, it shows it. If it is visible, it hides it.",
             "itemtype": "method",
             "name": "toggle",
@@ -7961,7 +8013,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2043,
+            "line": 2066,
             "description": "Returns true if the first node in the collection has the className CSS class",
             "itemtype": "method",
             "name": "hasClass",
@@ -7978,7 +8030,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2052,
+            "line": 2075,
             "description": "Removes a number of classes from all nodes in the collection.\nTakes multiple string parameters",
             "itemtype": "method",
             "name": "removeClass",
@@ -7988,7 +8040,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2066,
+            "line": 2089,
             "description": "Adds a number of classes to all nodes in the collection\nTakes multiple string parameters",
             "itemtype": "method",
             "name": "addClass",
@@ -7998,7 +8050,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2082,
+            "line": 2105,
             "description": "Adds/removes a certain class from all nodes in the collection",
             "itemtype": "method",
             "name": "toggleClass",
@@ -8015,7 +8067,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2097,
+            "line": 2120,
             "description": "Sets the class name of all nodes in the collection",
             "itemtype": "method",
             "name": "setClass",
@@ -8032,7 +8084,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2146,
+            "line": 2169,
             "description": "Returns an object literal containing:\n<ul>\n<li><strong>top</strong>: top position in px</li>\n<li><strong>left</strong>: left position in px</li>\n</ul>",
             "itemtype": "method",
             "name": "position",
@@ -8045,7 +8097,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2184,
+            "line": 2207,
             "description": "Returns a new NodeList with all the offset parents of this one",
             "itemtype": "method",
             "name": "offsetParent",
@@ -8057,7 +8109,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2204,
+            "line": 2227,
             "description": "Appends nodes to the ones in the current node list",
             "itemtype": "method",
             "name": "append",
@@ -8074,7 +8126,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2217,
+            "line": 2240,
             "description": "Appends all nodes in the current collection to the target node",
             "itemtype": "method",
             "name": "appendTo",
@@ -8091,7 +8143,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2227,
+            "line": 2250,
             "description": "Insert nodes to the ones in the current node list, before their first children",
             "itemtype": "method",
             "name": "prepend",
@@ -8108,7 +8160,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2242,
+            "line": 2265,
             "description": "Inserts all nodes in the current collection before the first child of the target node",
             "itemtype": "method",
             "name": "prependTo",
@@ -8125,7 +8177,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2252,
+            "line": 2275,
             "description": "Inserts all nodes in the current node list before the target node",
             "itemtype": "method",
             "name": "insertBefore",
@@ -8142,7 +8194,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2264,
+            "line": 2287,
             "description": "Returns whether the first node in this NodeList is inserted in the document",
             "itemtype": "method",
             "name": "inDoc",
@@ -8161,7 +8213,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2281,
+            "line": 2304,
             "description": "Returns a new NodeList with all the parents of the current nodes",
             "itemtype": "method",
             "name": "parent",
@@ -8174,7 +8226,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2293,
+            "line": 2316,
             "description": "Looks for a parent by walking up the DOM and executing a function on all nodes",
             "itemtype": "method",
             "name": "ancestor",
@@ -8187,7 +8239,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2309,
+            "line": 2332,
             "description": "Returns a new NodeList with all the first children of the nodes in the collection",
             "itemtype": "method",
             "name": "first",
@@ -8200,7 +8252,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2317,
+            "line": 2340,
             "description": "Returns a new NodeList with all the last children of the nodes in the collection",
             "itemtype": "method",
             "name": "first",
@@ -8213,7 +8265,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2325,
+            "line": 2348,
             "description": "Gets or sets the innerHTML of all the nodes in the node list",
             "itemtype": "method",
             "name": "html",
@@ -8230,7 +8282,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2336,
+            "line": 2359,
             "description": "Gets or sets tag attributes to the nodes in the collection",
             "itemtype": "method",
             "name": "attr",
@@ -8253,7 +8305,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2359,
+            "line": 2382,
             "description": "Gets or sets CSS styles",
             "itemtype": "method",
             "name": "css",
@@ -8276,7 +8328,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2390,
+            "line": 2413,
             "description": "Finds all the nodes below the ones in the current collection that match the search query",
             "itemtype": "method",
             "name": "find",
@@ -8296,7 +8348,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2401,
+            "line": 2424,
             "description": "Returns a new NodeList with all the children of the current nodes",
             "itemtype": "method",
             "name": "children",
@@ -8316,7 +8368,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2433,
+            "line": 2456,
             "description": "Adds an event listener to all the nods in the list",
             "itemtype": "method",
             "name": "on",
@@ -8346,7 +8398,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2456,
+            "line": 2479,
             "description": "Removes an event listener from all the nodes",
             "itemtype": "method",
             "name": "removeListener",
@@ -8368,7 +8420,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2472,
+            "line": 2495,
             "description": "Fires an event as if it was created from a user interaction",
             "itemtype": "method",
             "name": "trigger",
@@ -8390,7 +8442,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2484,
+            "line": 2507,
             "description": "Removes all the nodes from the DOM tree and removes all event listeners from the nodes",
             "itemtype": "method",
             "name": "remove",
@@ -8407,7 +8459,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2500,
+            "line": 2523,
             "description": "Sets the innerHTML of the nodelist by safely removing all children first",
             "itemtype": "method",
             "name": "setContent",
@@ -8424,7 +8476,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2515,
+            "line": 2538,
             "description": "Returns a new NodeList with all the documents of all the nodes in the collection that are Iframes",
             "itemtype": "method",
             "name": "contentDoc",
@@ -8437,7 +8489,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2527,
+            "line": 2550,
             "description": "Returns the computed style of the first node in the collection",
             "itemtype": "method",
             "name": "currentStyle",
@@ -8450,7 +8502,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2537,
+            "line": 2560,
             "description": "Executes a callback when the DOM to which the first node in the collection belongs is ready",
             "itemtype": "method",
             "name": "ready",
@@ -8467,7 +8519,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2544,
+            "line": 2567,
             "description": "Returns a new NodeList containing all the nodes in the current list and the ones in the new one\nUseful for applying properties to a bigger group of nodes, while keeping the original references",
             "itemtype": "method",
             "name": "link",
@@ -8487,7 +8539,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2563,
+            "line": 2586,
             "description": "Sets or returns the value of the node. Useful mostly for form elements",
             "params": [
                 {
@@ -8502,7 +8554,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2571,
+            "line": 2594,
             "description": "Returns true if the nodelist contains a certain node or selector",
             "params": [
                 {
@@ -8520,7 +8572,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2605,
+            "line": 2628,
             "description": "Fires the blur event",
             "itemtype": "method",
             "name": "blur",
@@ -8530,7 +8582,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2610,
+            "line": 2633,
             "description": "Fires the focus event",
             "itemtype": "method",
             "name": "focus",
@@ -8540,7 +8592,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2625,
+            "line": 2648,
             "description": "Returns a new NodeList with all the next siblings of the nodes in the collection",
             "itemtype": "method",
             "name": "next",
@@ -8553,7 +8605,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2630,
+            "line": 2653,
             "description": "Returns a new NodeList with all the previous siblings of the nodes in the collection",
             "itemtype": "method",
             "name": "previous",
@@ -8566,7 +8618,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2647,
+            "line": 2670,
             "description": "Gets/sets the width of all the nodes in the collection",
             "itemtype": "method",
             "name": "width",
@@ -8585,7 +8637,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2654,
+            "line": 2677,
             "description": "Gets/sets the height of all the nodes in the collection",
             "itemtype": "method",
             "name": "height",
@@ -8603,7 +8655,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2676,
+            "line": 2699,
             "description": "Gets/sets the position of the first node in the collection",
             "itemtype": "method",
             "name": "offsetTop",
@@ -8620,7 +8672,7 @@
         },
         {
             "file": "build/jet.js",
-            "line": 2682,
+            "line": 2705,
             "description": "Gets/sets the position of the first node in the collection",
             "itemtype": "method",
             "name": "offsetLeft",
@@ -9561,7 +9613,7 @@
         },
         {
             "file": "build/treeview.js",
-            "line": 58,
+            "line": 61,
             "itemtype": "attribute",
             "name": "type",
             "description": "Type of the node. Available types are 'text'",
@@ -9571,7 +9623,7 @@
         },
         {
             "file": "build/treeview.js",
-            "line": 66,
+            "line": 69,
             "itemtype": "attribute",
             "name": "title",
             "description": "Title attribute for the node",
@@ -9581,7 +9633,7 @@
         },
         {
             "file": "build/treeview.js",
-            "line": 74,
+            "line": 77,
             "itemtype": "attribute",
             "name": "label",
             "description": "This node's label or title",
@@ -9591,7 +9643,7 @@
         },
         {
             "file": "build/treeview.js",
-            "line": 82,
+            "line": 87,
             "itemtype": "attribute",
             "name": "controlNode",
             "description": "Node that expands/collapses this TreeNode",
@@ -9601,7 +9653,7 @@
         },
         {
             "file": "build/treeview.js",
-            "line": 90,
+            "line": 95,
             "itemtype": "attribute",
             "name": "labelNode",
             "description": "Node that holds this TreeNode's title/label",
@@ -9611,7 +9663,7 @@
         },
         {
             "file": "build/treeview.js",
-            "line": 205,
+            "line": 208,
             "itemtype": "event",
             "name": "node:expand",
             "description": "Fires when a node is expanded. Preventing the default behavior will\nstop the node from expanding",
@@ -9627,7 +9679,7 @@
         },
         {
             "file": "build/treeview.js",
-            "line": 211,
+            "line": 214,
             "itemtype": "event",
             "name": "node:collapse",
             "description": "Fires when a node is collapsed. Preventing the default behavior will\nstop the node from collapsing",
@@ -10278,7 +10330,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 70,
+            "line": 73,
             "itemtype": "attribute",
             "name": "childType",
             "description": "Constructor reference to the default type of the children managed by this Widget. The default value is taken from defaultChildType",
@@ -10287,7 +10339,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 82,
+            "line": 85,
             "itemtype": "attribute",
             "name": "defaultChildType",
             "description": "default value used when a childType is not provided. This attribute is used mostly by classes using WidgetParent.",
@@ -10297,7 +10349,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 91,
+            "line": 94,
             "itemtype": "attribute",
             "name": "children",
             "description": "An array of instances or configuration objects representing the widget's children",
@@ -10308,7 +10360,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 104,
+            "line": 107,
             "itemtype": "attribute",
             "name": "selection",
             "description": "Returns the currently selected child Widget. If the mulitple attribte is set to true will return an Y.ArrayList instance containing the currently selected children. If no children are selected, will return null",
@@ -10319,7 +10371,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 114,
+            "line": 117,
             "itemtype": "attribute",
             "name": "multiple",
             "description": "Boolean indicating if multiple children can be selected at once. Whether or not multiple selection is enabled is always delegated to the value of the multiple attribute of the root widget in the object hierarchy",
@@ -10329,7 +10381,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 124,
+            "line": 127,
             "itemtype": "attribute",
             "name": "selectedIndex",
             "description": "The index of the currently selected item",
@@ -10339,7 +10391,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 238,
+            "line": 235,
             "itemtype": "method",
             "name": "addChild",
             "description": "Adds a Widget as a child. If the specified Widget already has a parent it will be removed from its current parent before being added as a child",
@@ -10362,7 +10414,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 260,
+            "line": 257,
             "itemtype": "method",
             "name": "add",
             "description": "Same as addChild, but chainable",
@@ -10382,7 +10434,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 272,
+            "line": 269,
             "itemtype": "method",
             "name": "remove",
             "description": "Removes a child",
@@ -10399,7 +10451,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 289,
+            "line": 286,
             "itemtype": "method",
             "name": "first",
             "class": "WidgetParent",
@@ -10407,7 +10459,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 295,
+            "line": 292,
             "itemtype": "method",
             "name": "last",
             "class": "WidgetParent",
@@ -10415,7 +10467,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 301,
+            "line": 298,
             "itemtype": "method",
             "name": "removeAll",
             "chainable": 1,
@@ -10424,7 +10476,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 330,
+            "line": 327,
             "itemtype": "attribute",
             "name": "selected",
             "description": "Boolean indicating if the Widget is selected",
@@ -10435,7 +10487,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 340,
+            "line": 337,
             "itemtype": "attribute",
             "name": "index",
             "description": "Number representing the Widget's ordinal position in its parent Widget",
@@ -10446,7 +10498,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 350,
+            "line": 347,
             "itemtype": "attribute",
             "name": "parent",
             "description": "Retrieves the parent of the Widget in the object hierarchy",
@@ -10456,7 +10508,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 358,
+            "line": 355,
             "itemtype": "attribute",
             "name": "root",
             "description": "Retrieves the root parent of the Widget",
@@ -10466,7 +10518,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 397,
+            "line": 394,
             "itemtype": "method",
             "name": "select",
             "description": "Selects this widget",
@@ -10476,7 +10528,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 406,
+            "line": 403,
             "itemtype": "method",
             "name": "select",
             "description": "Unselects this widget",
@@ -10486,7 +10538,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 415,
+            "line": 412,
             "itemtype": "method",
             "name": "toggle",
             "description": "Selects/unselects this widget",
@@ -10496,7 +10548,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 424,
+            "line": 421,
             "itemtype": "method",
             "name": "next",
             "description": "Returns the Widget's next sibling",
@@ -10508,7 +10560,7 @@
         },
         {
             "file": "build/widget-parentchild.js",
-            "line": 433,
+            "line": 430,
             "itemtype": "method",
             "name": "previous",
             "description": "Returns the Widget's previous sibling",

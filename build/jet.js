@@ -99,7 +99,7 @@ var GlobalConfig = {
 					}
 				},
 				tabview: [WIDGET_PARENTCHILD, 'tabview-styles'],
-				treeview: [WIDGET_PARENTCHILD, 'treeview-styles'],
+				treeview: [WIDGET_PARENTCHILD, 'treeview-styles', 'selector'],
 				'widget-alignment': ['base'],
 				'widget-stack': ['base'],
 				'widget-parentchild': ['base'],
@@ -465,17 +465,27 @@ function clone(o, deep) {
 
 /**
  * Utilities for working with object literals
- * Throughout jet the Object type means an object lieteral
+ * Throughout jet the Object type means an object literal
  * @class Object
  * @static
  */
-var $Object = Hash = function (proto) {
-	var F = function () {};
-	F.prototype = proto;
-	return new F();
+var $Object = Hash = function (o) {
+	return o || {};
 };
 
 mix($Object, {
+	
+	/**
+	 * Creates a new object with the provided object as a prototype
+	 * @method create
+	 * @param {Object} prototype
+	 * @return {Object}
+	 */
+	create: function(proto) {
+		function F() {}
+		F.prototype = proto;
+		return new F();
+	},
 	/**
 	 * Iterats through a hash
 	 * @method each
@@ -539,7 +549,7 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 	 * @method map
 	 * @param {Function} callback Function that produces an element of the new Array from an element of the current one
 	 * @param {Object} thisp Object to use as 'this' when executing 'callback'
-	 * @return ArrayList
+	 * @return {ArrayList}
 	 */
 	map: function (fn, thisp) {
 		var results = [];
@@ -564,7 +574,7 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 	/**
 	 * Returns the length of this ArrayList
 	 * @method size
-	 * @return Number
+	 * @return {Number}
 	 */
 	size: function () {
 		return this._items.length;
@@ -573,7 +583,7 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 	 * @method item
 	 * @description Returns the nth element of the current list
 	 * @param {Number} nth
-	 * @return ArrayList
+	 * @return {ArrayList}
 	 */
 	item: function (index) {
 		return this._items[index || 0];
@@ -649,14 +659,14 @@ ArrayHelperMethods = {
 	 * @method indexOf
 	 * @description Returns the index of the searched item or -1 if it didn't find it
 	 * @param {Object} item Some object
-	 * @return Number
+	 * @return {Number}
 	 */
 	indexOf: 2,
 	/**
 	 * Returns a new ArrayList with only the elements for which the provided function returns true
 	 * @method filter
 	 * @param {Function} fn
-	 * @return ArrayList
+	 * @return {ArrayList}
 	 */
 	filter: 1,
 	/**
@@ -1082,7 +1092,7 @@ function buildJet(config) {
 				throw new Error("extend failed, verify dependencies");
 			}
 		
-			var sp = s.prototype, rp = $.Object(sp);
+			var sp = s.prototype, rp = $.Object.create(sp);
 			r.prototype = rp;
 		
 			rp.constructor = r;
@@ -1555,7 +1565,6 @@ window.jet = function (o) {
 	Hash.each(config.groups, function (name, group) {
 		Hash.each({
 			minify: BOOLEAN,
-			combine: BOOLEAN,
 			fetchCSS: BOOLEAN,
 			root: STRING,
 			base: STRING
@@ -1564,6 +1573,18 @@ window.jet = function (o) {
 				group[prop] = config[prop];
 			}
 		});
+	});
+	
+	var givenConfig = mix({}, o);
+	if (window.jet_Config) {
+		mix(givenConfig, window.jet_Config);
+	}
+	if (!givenConfig.hasOwnProperty('combine') && givenConfig.hasOwnProperty('base')) {
+		config.combine = false;
+	}
+	
+	_Array.each(['combine', 'base', 'root', 'minify'], function(prop) {
+		config.groups.jet[prop] = config[prop];
 	});
 
 	var get = new Get(config);
@@ -1754,6 +1775,7 @@ var EventCache = Event.Cache = (function () {
 
 var makeHandler = function (callback, thisp) {
 	return function (e) {
+		e = e || $.config.win.Event;
 		e.target = e.srcElement;
 		e.preventDefault = function () {
 			e.returnValue = false;

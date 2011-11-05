@@ -17,7 +17,7 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 	 * @method map
 	 * @param {Function} callback Function that produces an element of the new Array from an element of the current one
 	 * @param {Object} thisp Object to use as 'this' when executing 'callback'
-	 * @return ArrayList
+	 * @return {ArrayList}
 	 */
 	map: function (fn, thisp) {
 		var results = [];
@@ -42,7 +42,7 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 	/**
 	 * Returns the length of this ArrayList
 	 * @method size
-	 * @return Number
+	 * @return {Number}
 	 */
 	size: function () {
 		return this._items.length;
@@ -51,7 +51,7 @@ ARRAYLIST_PROTO = ArrayList.prototype = {
 	 * @method item
 	 * @description Returns the nth element of the current list
 	 * @param {Number} nth
-	 * @return ArrayList
+	 * @return {ArrayList}
 	 */
 	item: function (index) {
 		return this._items[index || 0];
@@ -127,14 +127,14 @@ ArrayHelperMethods = {
 	 * @method indexOf
 	 * @description Returns the index of the searched item or -1 if it didn't find it
 	 * @param {Object} item Some object
-	 * @return Number
+	 * @return {Number}
 	 */
 	indexOf: 2,
 	/**
 	 * Returns a new ArrayList with only the elements for which the provided function returns true
 	 * @method filter
 	 * @param {Function} fn
-	 * @return ArrayList
+	 * @return {ArrayList}
 	 */
 	filter: 1,
 	/**
