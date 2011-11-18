@@ -47,8 +47,6 @@ var UA = (function () {
 		 */
 		mac: p ? /mac/.test(p) : /mac/.test(ua),
 		
-		support: {
-			fixed: !ie || ie === 7 || (ie > 7 && document.documentMode > 6)
-		}
+		support: {}
 	};
 }());
