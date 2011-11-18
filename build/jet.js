@@ -749,9 +749,7 @@ var UA = (function () {
 		 */
 		mac: p ? /mac/.test(p) : /mac/.test(ua),
 		
-		support: {
-			fixed: !ie || ie === 7 || (ie > 7 && document.documentMode > 6)
-		}
+		support: {}
 	};
 }());
 var domReady = function (fn, lib, _doc) {
@@ -991,6 +989,12 @@ function buildJet(config) {
 		return ['jet', Lang.now(), Env.guidCount++].join('_');
 	}
 	Env.guidCount = 0;
+    
+    $.UA = clone(UA);
+    
+    $.UA.support = {
+        fixed: !UA.ie || (UA.ie === 7 && $.config.doc.compatMode === 'CSS1Compat') || (UA.ie > 7 && $.config.doc.documentMode > 6)
+    };
 	
 	add({
 		/**
@@ -1160,9 +1164,7 @@ function buildJet(config) {
 		 * @property config
 		 * @type {Object}
 		 */
-		config: config,
-		
-		UA: UA
+		config: config
 		
 	});
 	
