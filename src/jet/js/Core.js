@@ -84,6 +84,12 @@ function buildJet(config) {
 		return ['jet', Lang.now(), Env.guidCount++].join('_');
 	}
 	Env.guidCount = 0;
+    
+    $.UA = clone(UA);
+    
+    $.UA.support = {
+        fixed: !UA.ie || (UA.ie === 7 && $.config.doc.compatMode === 'CSS1Compat') || (UA.ie > 7 && $.config.doc.documentMode > 6)
+    };
 	
 	add({
 		/**
@@ -253,9 +259,7 @@ function buildJet(config) {
 		 * @property config
 		 * @type {Object}
 		 */
-		config: config,
-		
-		UA: UA
+		config: config
 		
 	});
 	

@@ -3,10 +3,10 @@ var combo = require('combohandler'),
     
     app = express.createServer();
     
-//app.get('/jet', combo.combine({rootPath: 'build/'}), function (req, res) {
-//  res.send(res.body, 200);
-//});
-//
+app.get('/combo', combo.combine({rootPath: 'build/'}), function (req, res) {
+  res.send(res.body, 200);
+});
+
 app.get('/', function(request, response) {
   response.send('Hello World!', 200);
 });
