@@ -993,7 +993,7 @@ function buildJet(config) {
     $.UA = clone(UA);
     
     $.UA.support = {
-        fixed: !UA.ie || (UA.ie === 7 && $.config.doc.compatMode === 'CSS1Compat') || (UA.ie > 7 && $.config.doc.documentMode > 6)
+        fixed: !UA.ie || (UA.ie === 7 && config.doc.compatMode === 'CSS1Compat') || (UA.ie > 7 && config.doc.documentMode > 6)
     };
 	
 	add({
