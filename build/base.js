@@ -1042,10 +1042,6 @@ $.Mouse = $.Base.create('mouse', $.Utility, [], {
 			value: false,
 			validator: Lang.isBoolean
 		},
-		capturing: {
-			value: false,
-			validator: Lang.isBoolean
-		},
 		shields: {
 			readOnly: true,
 			getter: '_buildShim'
@@ -1088,7 +1084,7 @@ $.Mouse = $.Base.create('mouse', $.Utility, [], {
 		var self = this;
 		var value = e.newVal;
 		if (value) {
-			if (!this.get('capturing')) {
+			if (!_capturing) {
 				if (this.get('shim')) {
 					this.shim.show();
 				}
@@ -1106,26 +1102,28 @@ $.Mouse = $.Base.create('mouse', $.Utility, [], {
 						});
 					}
 				}, this.get(FREQUENCY));
-				this.set('capturing', true);
+				this._capturing = true;
 			}
 		} else {
 			this.shim.hide();
 			clearInterval(this.interval);
-			this.set('capturing', false);
+			this._capturing = false;
 		}
 	},
 	
 	_onSelectStart: function (e) {
-		if (this.get('capturing')) {
+		if (this._capturing) {
 			e.preventDefault();
 		}
 	},
 	
 	_onMouseMove: function (e) {
-		this.set({
-			clientX: e.clientX,
-			clientY: e.clientY
-		});
+		if (this._capturing) {
+			this.set({
+				clientX: e.clientX,
+				clientY: e.clientY
+			});
+		}
 	},
 	
 	_onMouseUp: function () {
@@ -1140,6 +1138,8 @@ $.Mouse = $.Base.create('mouse', $.Utility, [], {
 		this.set('pageSize', $.DOM.pageSize());
 		
 		var shim = this.shim = this._buildShim();
+		
+		this._capturing = false;
 		
 		this.after('trackingChange', this._onTrackingChange);
 		

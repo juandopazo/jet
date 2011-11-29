@@ -452,7 +452,7 @@ function clone(o, deep) {
 				n[i] = deep ? clone(val, deep) : val;
 			});
 		}
-	} else if (o && o.hasOwnProperty && Lang.isObject(o, true)) {
+	} else if (o && o.hasOwnProperty && Lang.isObject(o, true) && !o.hasOwnProperty('ownerDocument')) {
 		n = {};
 		Hash.each(o, function (prop, val) {
 			n[prop] = deep ? clone(val, deep) : val;
@@ -496,10 +496,8 @@ mix($Object, {
 	each: function (hash, fn, thisp) {
 		hash = hash || {};
 		for (var x in hash) {
-			if (hash.hasOwnProperty(x)) {
-				if (fn.call(thisp || hash, x, hash[x], hash) === false) {
-					break;
-				}
+			if (hash.hasOwnProperty(x) && fn.call(thisp || hash, x, hash[x], hash) === false) {
+				break;
 			}
 		}
 	},
