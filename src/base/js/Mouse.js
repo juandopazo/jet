@@ -71,7 +71,7 @@ $.Mouse = $.Base.create('mouse', $.Utility, [], {
 		var self = this;
 		var value = e.newVal;
 		if (value) {
-			if (!_capturing) {
+			if (!this._capturing) {
 				if (this.get('shim')) {
 					this.shim.show();
 				}
