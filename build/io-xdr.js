@@ -8,6 +8,7 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('io-xdr', function ($) {
+"use strict";
 
 			
 var IO = $.IO;

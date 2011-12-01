@@ -8,6 +8,7 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('layout', function ($) {
+"use strict";
 
 			
 var Resize = $.Resize;

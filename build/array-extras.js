@@ -8,6 +8,7 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('array-extras', function ($) {
+"use strict";
 
 			
 var AP = Array.prototype,

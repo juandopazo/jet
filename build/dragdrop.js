@@ -8,6 +8,7 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('dragdrop', function ($) {
+"use strict";
 
 			
 var $Array = $.Array,

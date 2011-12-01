@@ -23,6 +23,7 @@ $.CheckBox = $.Base.create('checkbox', $.FormField, [], {
 }, {
 	initializer: function () {
 		this.after('checkedChange', this._syncAttr2Dom);
+		this.after('selectedChange', this._uiCheckBoxSelect);
 	},
 	
 	bindUI: function () {
@@ -33,9 +34,5 @@ $.CheckBox = $.Base.create('checkbox', $.FormField, [], {
 	
 	syncUI: function() {
 		this._inputNode.attr('checked', this.get('checked'));
-	},
-	
-	initializer: function () {
-		this.after('selectedChange', this._uiCheckBoxSelect);
 	}
 });

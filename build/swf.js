@@ -8,6 +8,7 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('swf', function ($) {
+"use strict";
 
 			
 var FSCOMMAND_EVENT = 'FSCommand';

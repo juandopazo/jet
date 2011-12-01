@@ -8,6 +8,7 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('touch', function ($) {
+"use strict";
 
 			var x1, x2, y1, y2,
 	FLICK = 'flick',

@@ -8,6 +8,7 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('progressbar', function ($) {
+"use strict";
 
 			
 var CONTENT_BOX = 'contentBox',

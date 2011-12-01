@@ -8,6 +8,7 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('selector', function ($) {
+"use strict";
 
 			/*!
   * Qwery - A Blazing Fast query selector engine

@@ -1,13 +1,14 @@
 /**
  * Animations
  * @module anim
- * @requires node, node-deferred;
+ * @requires node,node-deferred
  * 
  * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
  * Code licensed under the BSD License
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('anim', function ($) {
+"use strict";
 
 			
 var Lang = $.Lang,
@@ -434,9 +435,7 @@ var Tween = Base.create('tween', Base, [], {
 	 * @chainable
 	 */
 	fadeIn: function (duration, easing, callback) {
-		return this.animate({
-			opacity: 1 
-		}, duration, easing, callback);
+		return this.animate({ opacity: 1 }, duration, easing, callback);
 	},
 	/**
 	 * @method fadeOut
@@ -448,9 +447,7 @@ var Tween = Base.create('tween', Base, [], {
 	 * @chainable
 	 */
 	fadeOut: function (duration, easing, callback) {
-		return this.animate({
-			opacity: 0
-		}, duration, easing, callback);
+		return this.animate({ opacity: 0 }, duration, easing, callback);
 	},
 	/**
 	 * @method fadeToggle
@@ -507,9 +504,7 @@ var Tween = Base.create('tween', Base, [], {
 	slideUp: function (duration, easing, callback) {
 		var myself = this;
 		var overflow = myself.css('overflow');
-		return myself.css('overflow', 'hidden').animate({
-			height: 0
-		}, duration, easing, function () {
+		return myself.css('overflow', 'hidden').animate({ height: 0 }, duration, easing, function () {
 			myself.css('overflow', overflow);
 			callback.call(myself);
 		});

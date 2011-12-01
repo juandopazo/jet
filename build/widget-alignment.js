@@ -8,6 +8,7 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('widget-alignment', function ($) {
+"use strict";
 
 			
 var UA_SUPPORTS_FIXED = $.UA.support.fixed,

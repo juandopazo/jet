@@ -8,6 +8,7 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('escape', function ($) {
+"use strict";
 
 			/**
  * Copyright © 2011 Yahoo! Inc. All rights reserved 

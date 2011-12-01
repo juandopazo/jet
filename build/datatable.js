@@ -8,6 +8,7 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('datatable', function ($) {
+"use strict";
 
 			
 var Hash = $.Hash,

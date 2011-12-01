@@ -8,6 +8,7 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('imageloader', function ($) {
+"use strict";
 
 			
 var Lang = $.Lang,

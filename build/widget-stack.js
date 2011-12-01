@@ -8,6 +8,7 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('widget-stack', function ($) {
+"use strict";
 
 			
 var Lang = $.Lang,

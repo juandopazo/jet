@@ -8,6 +8,7 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('sizzle', function ($) {
+"use strict";
 
 			/*!
  * Sizzle CSS Selector Engine

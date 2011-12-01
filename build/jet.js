@@ -1650,6 +1650,7 @@ jet.namespace = function (ns) {
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('node', function ($) {
+"use strict";
 
 			
 var ON = 'on',

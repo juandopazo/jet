@@ -8,6 +8,7 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('menu', function ($) {
+"use strict";
 
 			
 $.MenuItem = $.Base.create('menuitem', $.Widget, [$.WidgetChild, $.WidgetParent, $.WidgetAlignment], {

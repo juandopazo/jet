@@ -1,0 +1,1088 @@
+/**
+ * Node collections and DOM abstraction
+ * @module node
+ * @requires 
+ * 
+ * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
+ * Code licensed under the BSD License
+ * https://github.com/juandopazo/jet/blob/master/LICENSE.md
+*/
+jet.add('node', function ($) {
+"use strict";
+
+			
+var ON = 'on',
+	Lang = $.Lang,
+	$Object = $.Object,
+	$Array = $.Array,
+	AP = Array.prototype,
+	SLICE = AP.slice,
+	NONE = 'none',
+	rroot = /^(?:body|html)$/i,
+	PROTO;
+
+var Event = $.namespace('Event');
+/**
+ * Keeps a record of all listeners attached to the DOM in order to remove them when necessary
+ * @class Event.Cache
+ * @static
+ */
+var EventCache = Event.Cache = (function () {
+	var cache = {};
+	
+	var getCache = function (type) {
+		if (!cache[type]) {
+			cache[type] = [];
+		}
+		return cache[type];
+	};
+	
+	var detachEvent = function (obj, type, fn) {
+		if (obj.detachEvent) {
+			detachEvent = function (obj, type, fn) {
+				obj.detachEvent(ON + type, fn);
+			};
+		} else {
+			detachEvent = function (obj, type, fn) {
+				obj.removeEventListener(type, fn, false);
+			};
+		}
+		detachEvent(obj, type, fn);
+	};
+	
+	return {
+		/**
+		 * Adds a listener to the cache
+		 * @method add
+		 * @param {DOMNode} obj
+		 * @param {String} type
+		 * @param {Function} fn
+		 */
+		add: function (obj, type, callback, listener) {
+			if (obj.nodeType) {
+				var c = getCache(type);
+				c[c.length] = {
+					obj: obj,
+					callback: callback,
+					listener: listener
+				};
+			}
+		},
+		/**
+		 * Removes a method from the cache, but doesn't do anything to the node's listener
+		 * @method remove
+		 * @param {DOMNode} obj
+		 * @param {String} type
+		 * @param {Function} fn
+		 */
+		remove: function (obj, type, callback) {
+			var c = getCache(type),
+			i = 0;
+			while (i < c.length) {
+				if (c[i].obj == obj && c[i].callback == callback) {
+					detachEvent(obj, type, c[i].listener);
+					c.splice(i, 1);
+				} else {
+					i++;
+				}
+			}
+		},
+		/**
+		 * Removes all listeners from a node
+		 * @method clear
+		 * @param {DOMNode} obj
+		 */
+		clear: function (obj, type) {
+			var c, i = 0;
+			if (type) {
+				c = getCache(type);
+				while (i < c.length) {
+					if (c[i].obj == obj) {
+						detachEvent(obj, type, c[i].listener);
+						c.splice(i, 1);
+					} else {
+						i++;
+					}
+				}
+			} else {
+				for (type in cache) {
+					if (cache.hasOwnProperty(type)) {
+						c = cache[type];
+						i = 0;
+						while (i < c.length) {
+							if (c[i].obj == obj) {
+								detachEvent(obj, type, c[i].listener);
+								c.splice(i, 1);
+							} else {
+								i++;
+							}
+						}
+					}
+				}
+			}
+		},
+		/**
+		 * Removes all listeners from all nodes recorded in the cache
+		 * @method flush
+		 */
+		flush: function () {
+			for (var o in cache) {
+				if (cache.hasOwnProperty(o)) {
+					EventCache.clear(o);
+				}
+			}
+		}
+	};
+}());
+
+var makeHandler = function (callback, thisp) {
+	return function (e) {
+		e = e || $.config.win.Event;
+		e.target = e.srcElement;
+		e.preventDefault = function () {
+			e.returnValue = false;
+		};
+		e.stopPropagation = function () {
+			e.cancelBubble = true;
+		};
+		e.halt = function() {
+			e.stopPropagation();
+			e.preventDefault();
+		};
+		callback.call(thisp || e.srcElement, e);
+	};
+};
+
+// adds a DOM event and provides event object normalization
+var addEvent = function (obj, type, callback, thisp) {
+	if (obj.addEventListener) {
+		addEvent = function (obj, type, callback, thisp) {
+			var handlerFn = function(e) {
+				e.halt = function() {
+					e.stopPropagation();
+					e.preventDefault();
+				};
+				callback.call(thisp || this, e);
+			}
+			obj.addEventListener(type, handlerFn, false);
+			EventCache.add(obj, type, callback, handlerFn);
+			return {
+				obj: obj,
+				type: type,
+				fn: handlerFn
+			};
+		};
+	} else if (obj.attachEvent) {
+		addEvent = function (obj, type, callback, thisp) {
+			// Use makeHandler to prevent the handler function from having obj in its scope
+			var handlerFn = makeHandler(callback, thisp);
+			obj.attachEvent(ON + type, handlerFn);
+			EventCache.add(obj, type, callback, handlerFn);
+			return {
+				obj: obj,
+				type: type,
+				fn: handlerFn
+			};
+		};
+	}
+	return addEvent(obj, type, callback, thisp);
+};
+
+var triggerEvent = function (node, type, data) {
+	var doc = $.config.doc;
+	if (doc.createEvent) {
+		triggerEvent = function (node, type, data) {
+			var e = node.ownerDocument.createEvent('Events');
+			e.initEvent(event, true, true)
+			$.mix(e, data);
+			node.dispatchEvent(e);
+		};
+	} else {
+		triggerEvent = function (node, type, data) {
+			var e = node.ownerDocument.createEventObject();
+			$.mix(e, data);
+			node.fireEvent(ON + type, e);
+		};
+	}
+	triggerEvent(node, type, data);
+};
+
+if ($.UA.ie && $.UA.ie < 7) {
+    addEvent($.config.win, 'unload', EventCache.flush);
+}
+
+/**
+ * A collection of DOM Event handlers for later detaching
+ * @class DOMEventHandler
+ * @constructor
+ * @param {Array} handlers
+ */
+function DOMEventHandler(handlers) {
+	this._handlers = handlers || [];
+}
+$.DOMEventHandler = $.mix(DOMEventHandler.prototype, {
+	/**
+	 * Unbinds all event handlers from their hosts
+	 * @method detach
+	 */
+	detach: function () {
+		for (var handlers = this._handlers, i = 0, length = handlers.length; i < length; i++) {
+			EventCache.remove(handlers[i].obj, handlers[i].type, handlers[i].callback);
+		}
+		this._handlers = [];
+	}
+});
+
+
+var DOCUMENT_ELEMENT = "documentElement";
+var GET_COMPUTED_STYLE = "getComputedStyle";
+var CURRENT_STYLE = "currentStyle";
+
+/**
+ * Bla
+ * @class DOM
+ * @static
+ */
+var DOM = $.DOM = {
+	/**
+	 * Returns the window object to which the current document belongs
+	 * @method getWindowFromDocument
+	 * @param {Document} document
+	 */
+	getWindowFromDocument: function (doc) {
+		doc = doc || $.config.doc;
+		return doc.defaultView || doc.parentWindow || $.config.win;
+	},
+	/**
+	 * Gets the scrolling width or makes the browser scroll
+	 * @method scrollLeft
+	 * @param {Number} value
+	 * @chainable
+	 */
+	scrollLeft: function (value) {
+		if (Lang.isValue(value)) {
+			$.config.win.scrollTo(value, this.scrollTop());
+		} else {
+			var doc = $.config.doc;
+			var dv = doc.defaultView;
+	        return Math.max(doc[DOCUMENT_ELEMENT].scrollLeft, doc.body.scrollLeft, (dv) ? dv.pageXOffset : 0);
+		}
+		return this;
+	},
+	/**
+	 * Gets the scrolling height or makes the browser scroll
+	 * @method scrollTop
+	 * @param {Number} value
+	 * @chainable
+	 */
+	scrollTop: function (value) {
+		if (Lang.isValue(value)) {
+			$.config.win.scrollTo(this.scrollTop(), value);
+		} else {
+			var doc = $.config.doc;
+			var dv = doc.defaultView;
+	        return Math.max(doc[DOCUMENT_ELEMENT].scrollTop, doc.body.scrollTop, (dv) ? dv.pageYOffset : 0);
+		}
+		return this;
+	},
+	/**
+	 * Returns the inner size of the screen
+	 * @method screenSize
+	 */
+	screenSize: function (win) {
+		var doc = win ? win.document : $.config.doc,
+			de = doc.documentElement,
+			db = doc.body;
+		return {
+			height: de.clientHeight || $.config.win.innerHeight || db.clientHeight,
+			width: de.clientWidth || $.config.win.innerWidth || db.clientWidth
+		};
+	},
+	/**
+	 * Returns the complete size of the page
+	 * @method pageSize
+	 */
+	pageSize: function (win) {
+		win = win || $.config.win;
+		var doc = win.document,
+			compatMode = doc.compatMode != "CSS1Compat",
+			innerWidth = win.innerWidth,
+			innerHeight = win.innerHeight,
+			root = compatMode ? doc.body : doc.documentElement;
+		if (doc.compatMode && !$.UA.opera) {
+			innerWidth = root.clientWidth;
+			innerHeight = root.clientHeight;
+		}
+		return {
+			width: Math.max(root.scrollWidth, innerWidth),
+			height: Math.max(root.scrollHeight, innerHeight)
+		};
+	}
+};
+var ready = function (fn) {
+	var node = this.getDOMNode();
+	if ((node.ownerDocument || node).body) {
+		fn.call(this);
+	} else {
+		setTimeout(function () {
+			ready(fn);
+		}, 13);
+	}
+	return this;
+};
+
+function classRE(name) {
+	return new RegExp('(^|\\s)' + name + '(\\s|$)');
+}
+/**
+ * A collection of DOM Nodes
+ * @class NodeList
+ * @constructor
+ * @extends ArrayList
+ * @param {Array|DOMCollection|DOMNode} nodes
+ * @param {DOMNode|Document} root
+ */
+function NodeList(nodes, root) {
+	NodeList.superclass.constructor.apply(this, arguments);
+	
+	var i = 0, length, tmp;
+	root = root || $.config.doc;
+	nodes = Lang.isValue(nodes) ? nodes : [];
+	if (Lang.isArray(nodes._items)) {
+		nodes = nodes._items;
+	} else if (Lang.isString(nodes)) {
+		nodes = [root.createElement(nodes)];
+	} else if (nodes.nodeType || nodes.body || nodes.navigator) {
+		nodes = [nodes];
+	} else if (Lang.isArray(nodes)) {
+		while (i < nodes.length) {
+			if (!nodes[i] || !(nodes[i].nodeType || nodes[i].body || nodes[i].navigator)) {
+				nodes.splice(i, 1);
+			} else {
+				i++;
+			}
+		}
+	} else if (Lang.isNumber(nodes.length)) {
+		tmp = [];
+		for (i = 0; i < nodes.length; i++) {
+			tmp[i] = nodes[i];
+		}
+		nodes = tmp;
+	} else {
+		//$.error('Wrong argument for NodeList');
+	}
+	this._items = nodes;
+}
+$.NodeList = $.extend(NodeList, $.ArrayList, {
+	
+	item: function (index) {
+		return new (this.constructor)([this._items[index]]);
+	},
+	
+	getDOMNodes: function () {
+		return this._items;
+	},
+	
+	getDOMNode: function (index) {
+		return this._items[index || 0];
+	},
+	/**
+	 * Hides all nodes
+	 * @method hide
+	 * @chainable
+	 */
+	hide: function () {
+		return this.each(function (node) {
+			var display = node.style.display;
+			if (!node.JET_oDisplay && display != NONE) {
+				node.JET_oDisplay = display;
+			}
+			node.style.display = NONE;
+		});
+	},
+	/**
+	 * Shows all nodes
+	 * @method show
+	 * @chainable
+	 */
+	show: function () {
+		return this.each(function (node) {
+			node.style.display = node.JET_oDisplay || '';
+		});
+	},
+	/**
+	 * If a node in the collection is hidden, it shows it. If it is visible, it hides it.
+	 * @method toggle
+	 * @chainable
+	 */
+	toggle: function (showHide) {
+		return this.each(function (node) {
+			var ns = node.style;
+			var oDisplay = node.LIB_oDisplay || '';
+			ns.display = Lang.isBoolean(showHide) ? (showHide ? oDisplay : NONE) :
+						ns.display != NONE ? NONE :
+						oDisplay ? oDisplay :
+						'';
+		});
+	},
+	/**
+	 * Returns true if the first node in the collection has the className CSS class
+	 * @method hasClass
+	 * @param {String} className
+	 * @chainable
+	 */
+	hasClass: function (className) {
+		return classRE(className).test(this.getDOMNode().className);
+	},
+	/**
+	 * Removes a number of classes from all nodes in the collection.
+	 * Takes multiple string parameters
+	 * @method removeClass
+	 * @chainable
+	 */
+	removeClass: function () {
+		var args = arguments;
+		return this.each(function (el) {
+			$Array.forEach(SLICE.call(args), function (name) {
+				el.className = Lang.trim(el.className.replace(classRE(name), ' '));
+			});
+		});
+	},
+	/**
+	 * Adds a number of classes to all nodes in the collection
+	 * Takes multiple string parameters
+	 * @method addClass
+	 * @chainable
+	 */
+	addClass: function () {
+		var args = arguments;
+		return this.each(function (el) {
+			$Array.forEach(SLICE.call(args), function (name) {
+				if (!classRE(name).test(el.className)) {
+					el.className += (el.className ? ' ' : '') + name;
+				}
+			});
+		});
+	},
+	/**
+	 * Adds/removes a certain class from all nodes in the collection
+	 * @method toggleClass
+	 * @param {String} className
+	 * @chainable
+	 */
+	toggleClass: function (className, addOrRemove) {
+		return this.each(function (node) {
+			node = $(node);
+			if (!Lang.isBoolean(addOrRemove)) {
+				addOrRemove = !node.hasClass(className);
+			}
+			node[addOrRemove ? 'addClass' : 'removeClass'](className);
+		});
+	},
+	/**
+	 * Sets the class name of all nodes in the collection
+	 * @method setClass
+	 * @param {String} sClass
+	 * @chainable
+	 */
+	setClass: function (name) {
+		return this.each(function (node) {
+			node.className = name;
+		});
+	},
+	_getPosition: function() {
+		var node = this.getDOMNode();
+		var offset = {
+			left: 0,
+			top: 0
+		};
+		var doc = node.ownerDocument;
+		try {
+			if (node.getBoundingClientRect) {
+				var box  = node.getBoundingClientRect();
+				var body = doc.body;
+				var de = doc[DOCUMENT_ELEMENT];
+				offset.left = box.left + DOM.scrollLeft() - (de.clientLeft || body.clientLeft || 0);
+				offset.top = box.top + DOM.scrollTop() - (de.clientTop || body.clientTop || 0);
+			} else if (node.offsetParent) {
+				// Not interested in supporting other browsers very well
+				do {
+					offset.left += node.offsetLeft;
+					offset.top += node.offsetTop;
+					node = node.offsetParent;
+				} while (node);
+			}
+		} catch (e) {}
+		
+		return offset;
+	},
+	_setPosition: function(left, top) {
+		return this.each(function (domNode) {
+			var node = $(domNode);
+			var parentOffset = node.offsetParent().position();
+			if (Lang.isNumber(left)) {
+				node.css('left', left - parentOffset.left);
+			}
+			if (Lang.isNumber(top)) {
+				node.css('top', top - parentOffset.top);
+			}
+		});
+	},
+	/**
+	 * Returns an object literal containing:
+	 * <ul>
+	 * <li><strong>top</strong>: top position in px</li>
+	 * <li><strong>left</strong>: left position in px</li>
+	 * </ul>
+	 * @method position
+	 * @return {Object}
+	 */
+	position: function (left, top) {
+		return (Lang.isNumber(left) || Lang.isNumber(top)) ? this._setPosition(left, top) : this._getPosition();
+	},
+	offset: function () {
+		return $.mix(this.position(), {
+			width: this.width(),
+			height: this.height()
+		});
+	},
+	width: function (width) {
+		var node = this.getDOMNode();
+		if (Lang.isNumber(width)) {
+			width += 'px';
+		}
+		if (Lang.isString(width)) {
+			return this.css('width', width);
+		}
+		return node.offsetWidth;
+	},
+	height: function (height) {
+		var node = this.getDOMNode();
+		if (Lang.isNumber(height)) {
+			height += 'px';
+		}
+		if (Lang.isString(height)) {
+			return this.css('height', height);
+		}
+		return node.offsetHeight;
+	},
+	/**
+	 * Returns a new NodeList with all the offset parents of this one
+	 * @method offsetParent
+	 * @return NodeList
+	 */
+	offsetParent: function () {
+		return this.map(function(node) {
+			var offsetParent;
+			try {
+				offsetParent = node.offsetParent;
+			} catch (e) {}
+			if (!offsetParent) {
+				offsetParent = $.config.doc.body;
+			}
+			while (offsetParent && !rroot.test(offsetParent.nodeName) && $(offsetParent).css('position') === 'static') {
+				offsetParent = offsetParent.offsetParent;
+			}
+			return offsetParent;
+		});
+	},
+	/**
+	 * Appends nodes to the ones in the current node list
+	 * @method append
+	 * @param {DOMNode|Array|NodeList} appended
+	 * @chainable
+	 */
+	append: function (appended) {
+		var node = this.getDOMNode();
+		$(appended).each(function (app) {
+			node.appendChild(app);
+		});
+		return this;
+	},
+	/**
+	 * Appends all nodes in the current collection to the target node
+	 * @method appendTo
+	 * @param {DOMNode|NodeList} target
+	 * @chainable
+	 */
+	appendTo: function (target) {
+		$(target).append(this);
+		return this;
+	},
+	/**
+	 * Insert nodes to the ones in the current node list, before their first children
+	 * @method prepend
+	 * @param {DOMNode|Array|NodeList} appended
+	 * @chainable
+	 */
+	prepend: function (prepended) {
+		var node = this.getDOMNode();
+		prepended = $(prepended);
+		prepended.getDOMNodes().reverse();
+		prepended.each(function (prep) {
+			node.insertBefore(prep, node.firstChild);
+		});
+		return this;
+	},
+	/**
+	 * Inserts all nodes in the current collection before the first child of the target node
+	 * @method prependTo
+	 * @param {DOMNode|NodeList} target
+	 * @chainable
+	 */
+	prependTo: function (target) {
+		$(target).prepend(this);
+		return this;
+	},
+	/**
+	 * Inserts all nodes in the current node list before the target node
+	 * @method insertBefore
+	 * @param {DOMNode|NodeList} before
+	 * @chainable
+	 */
+	insertBefore: function (target) {
+		target = $(target).getDOMNode();
+		return this.each(function (node) {
+			target.parentNode.insertBefore(node, target);
+		});
+	},
+	/**
+	 * Returns whether the first node in this NodeList is inserted in the document
+	 * @method inDoc
+	 * @param {Document} doc
+	 * @return Boolean
+	 */
+	inDoc: function () {
+		var de = this.getDOMNode().ownerDocument.documentElement;
+		var parent = this.parent();
+		while (parent.getDOMNode()) {
+			if (parent.getDOMNode().nodeName.toLowerCase() == 'html') {
+				return true;
+			}
+			parent = parent.parent();
+		}
+		return false;
+	},
+	/**
+	 * Returns a new NodeList with all the parents of the current nodes
+	 * @method parent
+	 * @return {NodeList}
+	 */
+	parent: function () {
+		return this.map(function (node) {
+			if (node.parentNode) {
+				return node.parentNode;
+			}
+		});
+	},
+	/**
+	 * Looks for a parent by walking up the DOM and executing a function on all nodes
+	 * @method ancestor
+	 * @return {NodeList}
+	 */
+	ancestor: function (fn) {
+		return this.map(function (parent) {
+			while (parent) {
+				if (fn(parent)) {
+					break;
+				}
+				parent = parent.parentNode;
+			}
+			return parent;
+		});
+	},
+	/**
+	 * Returns a new NodeList with all the first children of the nodes in the collection
+	 * @method first
+	 * @return {NodeList}
+	 */
+	first: function () {
+		return this.children(0);
+	},
+	/**
+	 * Returns a new NodeList with all the last children of the nodes in the collection
+	 * @method first
+	 * @return {NodeList}
+	 */
+	last: function () {
+		return this.children().getDOMNodes().shift();
+	},
+	/**
+	 * Gets or sets the innerHTML of all the nodes in the node list
+	 * @method html
+	 * @param {String} html
+	 * @chainable
+	 */
+	html: function (html) {
+		return Lang.isValue(html) ? this.each(function (node) {
+			node.innerHTML = html;
+		}) : this.getDOMNode() ? this.getDOMNode().innerHTML : '';
+	},
+	/**
+	 * Gets or sets tag attributes to the nodes in the collection
+	 * @method attr
+	 * @param {String|Object} key
+	 * @param {String} [value]
+	 * @chainable
+	 */
+	attr: function (key, value) {
+		key = key || {};
+		var attrs = {};
+		if (Lang.isObject(key)) {
+			attrs = key;
+		} else if (Lang.isValue(value)) {
+			attrs[key] = value;
+		} else {
+			return this.getDOMNode()[key];
+		}
+		return this.each(function (node) {
+			$Object.each(attrs, function (name, val) {
+				node[name] = val;
+			});
+		});
+	},
+	/**
+	 * Gets or sets CSS styles
+	 * @method css
+	 * @param {String|Object} key
+	 * @param {String} [value]
+	 * @chainable
+	 */
+	css: function (key, value) {
+		var css = {};
+		if (Lang.isObject(key)) {
+			css = key;
+		} else if (Lang.isValue(value)) {
+			css[key] = value;
+		} else {
+			return $(this.getDOMNode()).currentStyle()[key];
+		}
+		return this.each(function (node) {
+			$Object.each(css, function (prop, value) {
+				if (prop == 'opacity' && $.UA.ie) {
+					node.style.filter = 'alpha(opacity=' + Math.ceil(value * 100) + ')';
+				} else {
+					if (Lang.isNumber(value)) {
+						value += (prop != 'zIndex' && prop != 'zoom' && prop != 'opacity') ? 'px' : '';
+					}
+					if (Lang.isString(value)) {
+						node.style[prop] = value;
+					}
+				}
+			});
+		});
+	},
+	/**
+	 * Finds all the nodes below the ones in the current collection that match the search query
+	 * @method find
+	 * @param {String} query
+	 * @return {NodeList}
+	 */
+	find: function (query) {
+		return this.map(function (node) {
+			return $(query, node);
+		});
+	},
+	/**
+	 * Returns a new NodeList with all the children of the current nodes
+	 * @method children
+	 * @param {String|Number} filter Return only the children that match the tag or index in this parameter
+	 * @return {NodeList}
+	 */
+	children: function (filter) {
+		filter = !Lang.isValue(filter) ? false :
+				  Lang.isString(filter) ? filter.toUpperCase() : filter;
+		var result = [];
+		this.each(function (node) {
+			var children = node.childNodes;
+			var newChildren = [];
+			var length = children.length;
+			for (var i = 0; i < length; i++) {
+				if (children[i].nodeType === 1) {
+					newChildren[newChildren.length] = children[i];
+				}
+			}
+			if (filter !== false) {
+				length = newChildren.length;
+				for (i = 0; i < length; i++) {
+					if (i == filter || newChildren[i].nodeName == filter) {
+						result.push(newChildren[i]);
+					}
+				}
+			} else {
+				result.push.apply(result, newChildren);
+			}
+		});
+		return new this.constructor(result);
+	},
+	/**
+	 * Adds an event listener to all the nods in the list
+	 * @method on
+	 * @param {String} type
+	 * @param {Function} callback
+	 * @param {Object} thisp
+	 * @return {DOMEventHandler} handler
+	 */
+	on: function (type, callback, thisp) {
+		var handlers = [];
+		if (Lang.isObject(type, true)) {
+			$Object.each(type, function (evType, fn) {
+				this.each(function (node) {
+					handlers.push(addEvent(node, evType, fn, thisp));
+				});
+			}, this);
+		} else {
+			this.each(function (node) {
+				handlers.push(addEvent(node, type, callback, thisp));
+			});
+		}
+		return new DOMEventHandler(handlers);
+	},
+	/**
+	 * Removes an event listener from all the nodes
+	 * @method removeListener
+	 * @param {String} type
+	 * @param {Function} callback
+	 * @chainable
+	 */
+	removeListener: function (type, callback) {
+		return this.each(function (node) {
+			if (callback) {
+				EventCache.remove(node, type, callback);
+			} else {
+				EventCache.clear(node, type);
+			}
+		});
+	},
+	/**
+	 * Fires an event as if it was created from a user interaction
+	 * @method trigger
+	 * @param {String} type
+	 * @param {Object} data optional. Extra data to pass in the event
+	 * @chainable
+	 */
+	trigger: function (type, data) {
+		return this.each(function (node) {
+			triggerEvent(node, type, data);
+		});
+	},
+	/**
+	 * Removes all the nodes from the DOM tree and removes all event listeners from the nodes
+	 * @method remove
+	 * @param {Boolean} unbind Set to true to remove all event listeners
+	 * @chainable
+	 */
+	remove: function (unbind) {
+		return this.each(function (node) {
+			if (unbind) {
+				$.walkTheDOM(node, EventCache.clear);
+			}
+			if (node.parentNode) {
+				node.parentNode.removeChild(node);
+			}
+		});
+	},
+	/**
+	 * Sets the innerHTML of the nodelist by safely removing all children first
+	 * @method setContent
+	 * @param {String} content
+	 * @chainable
+	 */
+	setContent: function (content) {
+		this.children().removeListener().remove();
+		return this.html(content);
+	},
+	ownerDoc: function () {
+		return this.map(function (node) {
+			return node.ownerDocument;
+		});
+	},
+	/**
+	 * Returns a new NodeList with all the documents of all the nodes in the collection that are Iframes
+	 * @method contentDoc
+	 * @return {NodeList}
+	 */
+	contentDoc: function () {
+		return this.map(function (node) {
+			if (node.nodeName == 'IFRAME') {
+				return node.contentDocument || node.contentWindow.document || node.document;
+			}
+		});
+	},
+	/**
+	 * Returns the computed style of the first node in the collection
+	 * @method currentStyle
+	 * @return {CSSDeclaration}
+	 */
+	currentStyle: function () {
+		var node = this.getDOMNode();
+		return $.config.win[GET_COMPUTED_STYLE] ? $.config.win[GET_COMPUTED_STYLE](node, null) : 
+				node[CURRENT_STYLE] ? node[CURRENT_STYLE] : node.style;
+	},
+	/**
+	 * Executes a callback when the DOM to which the first node in the collection belongs is ready
+	 * @method ready
+	 * @param {Function} callback
+	 * @chainable
+	 */
+	ready: ready,
+	/**
+	 * Returns a new NodeList containing all the nodes in the current list and the ones in the new one
+	 * Useful for applying properties to a bigger group of nodes, while keeping the original references
+	 * @method link
+	 * @param {NodeList} nodelist
+	 * @return {NodeList}
+	 */
+	link: function () {
+		var result = [];
+		this.each(function (node) {
+			result.push(node);
+		});
+		$Array.forEach(SLICE.call(arguments), function (nodelist) {
+			$(nodelist).each(function (node) {
+				result.push(node);
+			});
+		});
+		return new this.constructor(result);
+	},
+	/**
+	 * Sets or returns the value of the node. Useful mostly for form elements
+	 * @param {String} value - optional
+	 * @chainable
+	 */
+	value: function (val) {
+		return this.attr('value', val);
+	},
+	/**
+	 * Returns true if the nodelist contains a certain node or selector
+	 * @param {Node|String} node or selector
+	 * @return {Boolean}
+	 */
+	contains: function(selector) {
+		if (Lang.isString(selector)) {
+			return this.find(selector).size() > 0;
+		} else {
+			selector = $(selector).getDOMNode();
+			if (selector.nodeType) {
+				var contains = false;
+				this.children().each(function (node) {
+					$.walkTheDOM(node, function(n) {
+						if (n === selector) {
+							contains = true;
+							return false;
+						}
+					});
+					if (contains) {
+						return false;
+					}
+				});
+				return contains;
+			}
+		}
+		return false;
+	}
+});
+
+NodeList.prototype.unbind = NodeList.prototype.removeListener
+
+PROTO = NodeList.prototype;
+
+	/**
+	 * Fires the blur event
+	 * @method blur
+	 * @chainable
+	 */
+	/**
+	 * Fires the focus event
+	 * @method focus
+	 * @chainable
+	 */
+$Array.forEach(['blur', 'focus'], function (method) {
+	PROTO[method] = function () {
+		return this.each(function (node) {
+			try {
+				node[method]();
+			} catch (e) {}
+		});
+	};
+});
+
+	/**
+	 * Returns a new NodeList with all the next siblings of the nodes in the collection
+	 * @method next
+	 * @return {NodeList}
+	 */
+	/**
+	 * Returns a new NodeList with all the previous siblings of the nodes in the collection
+	 * @method previous
+	 * @return {NodeList}
+	 */
+$Array.forEach(['next', 'previous'], function (method) {
+	PROTO[method] = function () {
+		return this.map(function (node) {
+			do {
+				node = node[method + 'Sibling'];
+			}
+			while (node && node.nodeType !== 1);
+			return node;
+		});
+	};
+});
+
+	/**
+	 * Gets/sets the width of all the nodes in the collection
+	 * @method width
+	 * @param {String|Number} [width]
+	 * @memberOf NodeList
+	 * @chainable
+	 */
+	/**
+	 * Gets/sets the height of all the nodes in the collection
+	 * @method height
+	 * @param {String|Number} [height]
+	 * @chainable
+	 */
+$Array.forEach(['Width', 'Height'], function (size) {
+	var method = size.toLowerCase();
+	PROTO[method] = function (value) {
+		if (Lang.isValue(value)) {
+			if (Lang.isNumber(value) && value < 0) {
+				value = 0;
+			}
+			value = Lang.isString(value) ? value : value + 'px';
+			return this.each(function (node) {
+				node.style[method] = value;
+			});
+		}
+		return this.getDOMNode() ? this.getDOMNode()['offset' + size] : null;
+	}
+});
+
+	/**
+	 * Gets/sets the position of the first node in the collection
+	 * @method offsetTop
+	 * @param {Number} top
+	 * @chainable
+	 */
+	/**
+	 * Gets/sets the position of the first node in the collection
+	 * @method offsetLeft
+	 * @param {Number} left
+	 * @chainable
+	 */
+$Array.forEach(['Left', 'Top'], function (direction) {
+	PROTO['offset' + direction] = function (val) {
+		if (Lang.isValue(val)) {
+			return direction == 'Left' ? this.offset(val) : this.offset(null, val);
+		} else {
+			return this.offset()[direction.toLowerCase()];
+		}
+	};
+});
+
+$.pxToFloat = function (px) {
+	return Lang.isNumber(parseFloat(px)) ? parseFloat(px) :
+		   Lang.isString(px) ? parseFloat(px.substr(0, px.length - 2)) : px;
+};
+			
+});

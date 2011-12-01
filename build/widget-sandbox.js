@@ -8,6 +8,7 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('widget-sandbox', function ($) {
+"use strict";
 
 			
 var A = $.Array,

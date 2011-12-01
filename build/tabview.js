@@ -8,6 +8,7 @@
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
 jet.add('tabview', function ($) {
+"use strict";
 
 			
 var SELECTED = 'selected',
