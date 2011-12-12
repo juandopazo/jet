@@ -162,7 +162,7 @@ function makeUse(config, get) {
 			 */
 			if (Lang.isString(module)) {
 				request[i] = module = getModuleFromString(module, config);
-				group = config.groups[module.group];
+				group = config.groups[module.group] || config.groups.jet;
 				module.type = module.type || 'js';
 				if (!module.path) {
 					module.path = module.name + (group.minify ? '.min.' : '.') + module.type; 
@@ -256,7 +256,7 @@ var buildConfig = function (config, next) {
 		}
 	});
 	Hash.each(next, function (name, opts) {
-		if (Lang.isObject(opts) && name != 'win' && name != 'doc' && opts.hasOwnProperty) {
+		if (Lang.isObject(opts, true) && name != 'win' && name != 'doc' && opts.hasOwnProperty) {
 			if (!Lang.isObject(config[name])) {
 				config[name] = {};
 			}
