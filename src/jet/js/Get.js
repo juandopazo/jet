@@ -72,7 +72,11 @@ Get.prototype = {
 		});
 		var interval, count = 0, stylesheets = this._doc.styleSheets;
 		this._insert(node);
-		if (UA.ie) {
+		if ('onload' in node) {
+			node.onload = function () {
+				callback(node);
+			};
+		} else if ('onreadystatechange' in node) {
 			node.onreadystatechange = function () {
 				var readyState = this.readyState;
 				if (readyState === 'loaded' || readyState === 'complete') {
@@ -95,14 +99,10 @@ Get.prototype = {
 					callback(node);
 				}
 			}, 50);
-		} else if (UA.gecko) {
+		} else {
 			setTimeout(function () {
 				callback(node);
 			}, 80)
-		} else {
-			node.onload = function () {
-				callback(node);
-			};
 		}
 	},
 	/**
