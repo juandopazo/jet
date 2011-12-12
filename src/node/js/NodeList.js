@@ -93,13 +93,14 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	/**
 	 * If a node in the collection is hidden, it shows it. If it is visible, it hides it.
 	 * @method toggle
+	 * @param {Boolean} [forceShow] If true, the node will be shown. If false, the node will be hidden. If not provided, then it'll be toggled normally.
 	 * @chainable
 	 */
-	toggle: function (showHide) {
+	toggle: function (forceShow) {
 		return this.each(function (node) {
 			var ns = node.style;
 			var oDisplay = node.LIB_oDisplay || '';
-			ns.display = Lang.isBoolean(showHide) ? (showHide ? oDisplay : NONE) :
+			ns.display = Lang.isBoolean(forceShow) ? (forceShow ? oDisplay : NONE) :
 						ns.display != NONE ? NONE :
 						oDisplay ? oDisplay :
 						'';
