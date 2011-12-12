@@ -1,11 +1,11 @@
 
 var CONTENT_BOX = 'contentBox',
 	BOUNDING_BOX = 'boundingBox',
-	WIDTH = "width",
-	HEIGHT = "height",
-	BAR = "bar",
-	PROGRESS = "progress",
-	END = "end";
+	WIDTH = 'width',
+	HEIGHT = 'height',
+	BAR = 'bar',
+	PROGRESS = 'progress',
+	END = 'end';
 	
 var A = $.Array;
 
@@ -50,12 +50,12 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 		},
 		/**
 		 * @attribute direction
-		 * @description Direction in which the progressbar increases its size. May be "ltr", "ttb" or "btt"
-		 * @default "ltr"
+		 * @description Direction in which the progressbar increases its size. May be 'ltr', 'ttb' or 'btt'
+		 * @default 'ltr'
 		 * @writeOnce
 		 */
 		direction: {
-			value: "ltr",
+			value: 'ltr',
 			writeOnce: true
 		},
 		/**
@@ -93,38 +93,37 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 		 */
 		bar: {
 			readOnly: true,
-			value: $("<span/>")
-		}
-	},
-	
-	EVENTS: {
-		valueChange: function (e) {
-			if (this.fire(PROGRESS, { value: e.newVal })) {
-				this._update(e.newVal);
-			} else {
-				e.preventDefault();
-			}
-			
-		},
-		
-		directionChange: function (e, newVal, oldVal) {
-			this.get(BOUNDING_BOX).removeClass(this.getClassName(oldVal)).addClass(this.getClassName(newVal));
-		},
-		
-		render: function () {
-			var direction = this.get('direction');
-			var bar = this.get(BAR).appendTo(this.get(CONTENT_BOX)).addClass(this.getClassName(BAR));
-			this.get(BOUNDING_BOX).addClass(this.getClassName(direction));
-			if (direction == "ltr") {
-				bar.height(this.get(HEIGHT));
-			} else {
-				bar.width(this.get(WIDTH));
-			}
-			
+			value: $('<span/>')
 		}
 	}
 	
 }, {
+	
+	_afterValueChange: function (e) {
+		if (this.fire(PROGRESS, { value: e.newVal })) {
+			this._update(e.newVal);
+		} else {
+			e.preventDefault();
+		}
+	},
+	
+	_afterDirectionChange: function (e) {
+		this.get(BOUNDING_BOX).removeClass(this.getClassName(e.prevVal)).addClass(this.getClassName(e.newVal));
+	},
+	
+	renderUI: function (boundingBox, contentBox) {
+		var direction = this.get('direction');
+		var bar = this.get(BAR).appendTo(contentBox).addClass(this.getClassName(BAR));
+		this._text.addClass(this.getClassName('text')).appendTo(contentBox);
+		
+		boundingBox.addClass(this.getClassName(direction));
+		if (direction == 'ltr') {
+			bar.height(this.get(HEIGHT));
+		} else {
+			bar.width(this.get(WIDTH));
+		}
+	},
+
 	_onTween: function (e) {
 		if (!this.fire(PROGRESS, { value: e.value })) {
 			e.preventDefault();
@@ -137,14 +136,15 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 	
 	_update: function (value) {
 		var self = this;
-		var min = this.get("minValue");
-		var newSize = (value - min) / (this.get("maxValue") - min);
+		var min = this.get('minValue');
+		var newSize = (value - min) / (this.get('maxValue') - min);
 		var bar = this.get(BAR);
 		var width = this.get(WIDTH), height = this.get(HEIGHT);
-		var direction = this.get("direction");
-		var easing = this.get("easing");
-		var duration = this.get("duration");
-		if (this.get("animate")) {
+		var direction = this.get('direction');
+		var easing = this.get('easing');
+		var duration = this.get('duration');
+		this._text.html(Math.round(newSize * 100) + '%');
+		if (this.get('animate')) {
 			if (this._tween) {
 				this._tween.unbind('tween', this._onTween);
 				this._tween.unbind('end', this._onTweenEnd);
@@ -158,22 +158,22 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 			tween.on('tween', this._onTween, this);
 			tween.on('end', this._onTweenEnd, this);
 			switch (direction) {
-				case "ttb":
-				case "btt":
-					tween.set("to", {
+				case 'ttb':
+				case 'btt':
+					tween.set('to', {
 						height: height * newSize
 					});
 					break;
 				default:
-					tween.set("to", {
+					tween.set('to', {
 						width: width * newSize
 					});
 			}
 			tween.play();
 		} else {
 			switch (direction) {
-				case "ttb":
-				case "btt":
+				case 'ttb':
+				case 'btt':
 					newSize *= height;
 					bar.height(newSize);
 					break;
@@ -184,5 +184,13 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 			this.fire(PROGRESS, { value: newSize });
 			this.fire(END);
 		}
+	},
+	
+	initializer: function() {
+		this._text = $('<span/>').html('0%');
+		
+		this.after('valueChange', this._afterValueChange);
+		this.after('directionChange', this._afterDirectionChange);
+		this.after('textChange', this._afterTextChange);
 	}
 });

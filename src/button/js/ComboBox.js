@@ -74,10 +74,6 @@ $.ComboBox = Base.create('combobox', Widget, [WidgetParent], {
 			value: false,
 			readOnly: true
 		},
-		atLeastOne: {
-			value: true,
-			readOnly: true
-		},
 		displayNode: {
 			value: '<span/>',
 			setter: $
@@ -144,6 +140,8 @@ $.ComboBox = Base.create('combobox', Widget, [WidgetParent], {
 		this.set('arrowContainer', this.get('arrowContainer'));
 		this.set('arrow', this.get('arrow'));
 		
+		this._labelNode = $('<label/>');
+		
 		this.after('addChild', this._setMinWidth);
 		this.on('afterRender', this._setMinWidth);
 	},
@@ -151,12 +149,13 @@ $.ComboBox = Base.create('combobox', Widget, [WidgetParent], {
 	renderUI: function (boundingBox, contentBox) {
 		this.get('displayNode').addClass(this.getClassName('display')).prependTo(boundingBox);
 		var arrowContainer = this.get('arrowContainer').addClass(this.getClassName('arrow', 'container')).prependTo(boundingBox);
-		this.get('arrow').addClass(this.getClassName('arrow')).appendTo(arrowContainer);
-		this.get('inputNode').attr({
+		var inputNode = this.get('inputNode').attr({
 			type: 'hidden',
 			id: this.getClassName('input', this._uid)
 		}).appendTo(boundingBox);
+		this.get('arrow').addClass(this.getClassName('arrow')).appendTo(arrowContainer);
 		contentBox.addClass(this.getClassName('collapsed')).on('click', this._uiContentHide, this);
+		this._labelNode.html(this.get('label')).prependTo(contentBox).getDOMNode().setAttribute('for', inputNode.attr('id'));
 	},
 	
 	bindUI: function () {
@@ -167,8 +166,11 @@ $.ComboBox = Base.create('combobox', Widget, [WidgetParent], {
 	},
 	
 	syncUI: function (boundingBox, contentBox) {
-		this.get('displayNode').html(this.get('selection').get('text'));
-		this.get('inputNode').attr('value', this.get('selection').get('value'));
+		var selection = this.get('selection');
+		if (selection) {
+			this.get('displayNode').html(selection.get('text'));
+			this.get('inputNode').attr('value', selection.get('value'));
+		}
 		this._setMinWidth();
 	}
 });

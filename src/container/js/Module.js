@@ -125,6 +125,22 @@ $.Module = Base.create('module', Widget, [], {
 		this.set(HEADER, this.get(HEADER));
 		this.set(BODY, this.get(BODY));
 		this.set(FOOTER, this.get(FOOTER));
+
+		A.each([HEADER, BODY, FOOTER], function (name) {
+			var value = this.get(name + 'Content'),
+				node = this.get(name);
+				
+			if (Lang.isValue(value)) {
+				if (value.nodeType) {
+					value = $(value);
+				}
+				if (value instanceof $.NodeList) {
+					node.append(value);
+				} else {
+					node.html(value);
+				}
+			}
+		}, this);
 	},
 	
 	_uiHeaderChange: function (e) {
@@ -145,14 +161,6 @@ $.Module = Base.create('module', Widget, [], {
 				node = this.get(name).addClass(name);
 				
 			if (Lang.isValue(value)) {
-				if (value.nodeType) {
-					value = $(value);
-				}
-				if (value instanceof $.NodeList) {
-					node.append(value);
-				} else {
-					node.html(value);
-				}
 				node.appendTo(contentBox);
 			}
 		}, this);
