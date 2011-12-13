@@ -823,7 +823,11 @@ Get.prototype = {
 		});
 		var interval, count = 0, stylesheets = this._doc.styleSheets;
 		this._insert(node);
-		if (UA.ie) {
+		if ('onload' in node) {
+			node.onload = function () {
+				callback(node);
+			};
+		} else if ('onreadystatechange' in node) {
 			node.onreadystatechange = function () {
 				var readyState = this.readyState;
 				if (readyState === 'loaded' || readyState === 'complete') {
@@ -846,14 +850,10 @@ Get.prototype = {
 					callback(node);
 				}
 			}, 50);
-		} else if (UA.gecko) {
+		} else {
 			setTimeout(function () {
 				callback(node);
 			}, 80)
-		} else {
-			node.onload = function () {
-				callback(node);
-			};
 		}
 	},
 	/**
@@ -1333,7 +1333,7 @@ function makeUse(config, get) {
 			 */
 			if (Lang.isString(module)) {
 				request[i] = module = getModuleFromString(module, config);
-				group = config.groups[module.group];
+				group = config.groups[module.group] || config.groups.jet;
 				module.type = module.type || 'js';
 				if (!module.path) {
 					module.path = module.name + (group.minify ? '.min.' : '.') + module.type; 
@@ -1427,7 +1427,7 @@ var buildConfig = function (config, next) {
 		}
 	});
 	Hash.each(next, function (name, opts) {
-		if (Lang.isObject(opts) && name != 'win' && name != 'doc' && opts.hasOwnProperty) {
+		if (Lang.isObject(opts, true) && name != 'win' && name != 'doc' && opts.hasOwnProperty) {
 			if (!Lang.isObject(config[name])) {
 				config[name] = {};
 			}
@@ -2055,13 +2055,14 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	/**
 	 * If a node in the collection is hidden, it shows it. If it is visible, it hides it.
 	 * @method toggle
+	 * @param {Boolean} [forceShow] If true, the node will be shown. If false, the node will be hidden. If not provided, then it'll be toggled normally.
 	 * @chainable
 	 */
-	toggle: function (showHide) {
+	toggle: function (forceShow) {
 		return this.each(function (node) {
 			var ns = node.style;
 			var oDisplay = node.LIB_oDisplay || '';
-			ns.display = Lang.isBoolean(showHide) ? (showHide ? oDisplay : NONE) :
+			ns.display = Lang.isBoolean(forceShow) ? (forceShow ? oDisplay : NONE) :
 						ns.display != NONE ? NONE :
 						oDisplay ? oDisplay :
 						'';
