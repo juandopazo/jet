@@ -122,9 +122,9 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	removeClass: function () {
-		var args = arguments;
+		var args = SLICE.call(arguments);
 		return this.each(function (el) {
-			$Array.forEach(SLICE.call(args), function (name) {
+			$Array.forEach(args, function (name) {
 				el.className = Lang.trim(el.className.replace(classRE(name), ' '));
 			});
 		});
@@ -136,9 +136,9 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	addClass: function () {
-		var args = arguments;
+		var args = SLICE.call(arguments);
 		return this.each(function (el) {
-			$Array.forEach(SLICE.call(args), function (name) {
+			$Array.forEach(args, function (name) {
 				if (!classRE(name).test(el.className)) {
 					el.className += (el.className ? ' ' : '') + name;
 				}
