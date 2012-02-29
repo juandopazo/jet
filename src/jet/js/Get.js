@@ -72,19 +72,7 @@ Get.prototype = {
 		});
 		var interval, count = 0, stylesheets = this._doc.styleSheets;
 		this._insert(node);
-		if ('onload' in node) {
-			node.onload = function () {
-				callback(node);
-			};
-		} else if ('onreadystatechange' in node) {
-			node.onreadystatechange = function () {
-				var readyState = this.readyState;
-				if (readyState === 'loaded' || readyState === 'complete') {
-					this.onreadystatechange = null;
-					callback(node);
-				}
-			};
-		} else if (UA.webkit) {
+		if (UA.webkit) {
 			url = node.href;
 			interval = setInterval(function () {
 				for (var i = 0, length = stylesheets.length; i < length; i++) {
@@ -99,6 +87,18 @@ Get.prototype = {
 					callback(node);
 				}
 			}, 50);
+		} else if ('onload' in node) {
+			node.onload = function () {
+				callback(node);
+			};
+		} else if ('onreadystatechange' in node) {
+			node.onreadystatechange = function () {
+				var readyState = this.readyState;
+				if (readyState === 'loaded' || readyState === 'complete') {
+					this.onreadystatechange = null;
+					callback(node);
+				}
+			};
 		} else {
 			setTimeout(function () {
 				callback(node);

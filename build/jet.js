@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
+Copyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.
 Code licensed under the BSD License
 https://github.com/juandopazo/jet/blob/master/LICENSE.md
 
@@ -823,19 +823,7 @@ Get.prototype = {
 		});
 		var interval, count = 0, stylesheets = this._doc.styleSheets;
 		this._insert(node);
-		if ('onload' in node) {
-			node.onload = function () {
-				callback(node);
-			};
-		} else if ('onreadystatechange' in node) {
-			node.onreadystatechange = function () {
-				var readyState = this.readyState;
-				if (readyState === 'loaded' || readyState === 'complete') {
-					this.onreadystatechange = null;
-					callback(node);
-				}
-			};
-		} else if (UA.webkit) {
+		if (UA.webkit) {
 			url = node.href;
 			interval = setInterval(function () {
 				for (var i = 0, length = stylesheets.length; i < length; i++) {
@@ -850,6 +838,18 @@ Get.prototype = {
 					callback(node);
 				}
 			}, 50);
+		} else if ('onload' in node) {
+			node.onload = function () {
+				callback(node);
+			};
+		} else if ('onreadystatechange' in node) {
+			node.onreadystatechange = function () {
+				var readyState = this.readyState;
+				if (readyState === 'loaded' || readyState === 'complete') {
+					this.onreadystatechange = null;
+					callback(node);
+				}
+			};
 		} else {
 			setTimeout(function () {
 				callback(node);
@@ -1645,7 +1645,7 @@ jet.namespace = function (ns) {
  * @module node
  * @requires 
  * 
- * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
+ * Copyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.
  * Code licensed under the BSD License
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
@@ -2084,9 +2084,9 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	removeClass: function () {
-		var args = arguments;
+		var args = SLICE.call(arguments);
 		return this.each(function (el) {
-			$Array.forEach(SLICE.call(args), function (name) {
+			$Array.forEach(args, function (name) {
 				el.className = Lang.trim(el.className.replace(classRE(name), ' '));
 			});
 		});
@@ -2098,9 +2098,9 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	 * @chainable
 	 */
 	addClass: function () {
-		var args = arguments;
+		var args = SLICE.call(arguments);
 		return this.each(function (el) {
-			$Array.forEach(SLICE.call(args), function (name) {
+			$Array.forEach(args, function (name) {
 				if (!classRE(name).test(el.className)) {
 					el.className += (el.className ? ' ' : '') + name;
 				}
