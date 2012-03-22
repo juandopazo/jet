@@ -163,7 +163,15 @@ $.mix(EventTarget.prototype, {
 	 * @chainable
 	 */
 	after: function (eventType, callback, thisp) {
-		return this.on.apply(this, ['after' + eventType.charAt(0).toUpperCase() + eventType.substr(1)].concat(SLICE.call(arguments, 1)));
+		var events = {};
+		if (Lang.isObject(eventType)) {
+			$Object.each(eventType, function (name, fn) {
+				events['after' + Lang.capitalize(name)] = fn;
+			});
+		} else {
+			events[eventType] = callback;
+		}
+		return this.on(events, thisp);
 	},
 	/**
 	 * Removes and event listener
