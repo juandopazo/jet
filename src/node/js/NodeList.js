@@ -386,7 +386,8 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	 * @return {NodeList}
 	 */
 	last: function () {
-		return this.children().getDOMNodes().shift();
+		var children = this.children();
+		return children.item(children.size() - 1);
 	},
 	/**
 	 * Gets or sets the innerHTML of all the nodes in the node list

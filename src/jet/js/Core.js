@@ -165,7 +165,7 @@ function buildJet(config) {
 					return root.createElement(query.substr(1, query.length - (query.charAt(query.length - 2) === '/' ? 3 : 2)));
 				} else {
 					// Check for strings like "<div><span><a/></span></div>"
-					test = query.match(/<([a-z]+)>(.+)<\/([a-z]+)>/i);
+					test = query.match(/<([a-z1-6]+)>(.+)<\/([a-z1-6]+)>/i);
 					if (test.length == 4 && test[1] == test[3]) {
 						node = root.createElement(test[1]);
 						node.innerHTML = test[2];
