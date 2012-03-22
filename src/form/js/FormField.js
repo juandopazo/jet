@@ -95,5 +95,12 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 	syncUI: function() {
 		this._syncLabel({ newVal: this.get('label') });
 		this._ffDisabledChange({ newVal: this.get('disabled') });
+	},
+	
+	toJSON: function () {
+		return {
+			id: this.get("id"),
+			value: this.get("value")
+		};
 	}
 });

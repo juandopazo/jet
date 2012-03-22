@@ -40,5 +40,11 @@ $.Form = $.Base.create('form', $.Widget, [$.WidgetParent], {
 	},
 	syncUI: function() {
 		this.get('contentBox').attr('action', this.get('action'));
+	},
+	
+	toJSON: function () {
+		return this.map(function (field) {
+			return field.toJSON();
+		});
 	}
 });

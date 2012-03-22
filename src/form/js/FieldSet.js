@@ -22,16 +22,6 @@ $.FieldSet = $.Base.create('fieldset', $.Widget, [$.WidgetChild, $.WidgetParent]
 		 */
 		legend: {
 			value: ''
-		},
-		/**
-		 * @config buttons
-		 * @description A list of buttons for a ButtonGroup inside the FieldSet
-		 * @default []
-		 */
-		buttons: {
-			valueFn: function() {
-				return [];
-			}
 		}
 	}
 }, {
@@ -41,22 +31,37 @@ $.FieldSet = $.Base.create('fieldset', $.Widget, [$.WidgetChild, $.WidgetParent]
 	 * @default '<fieldset/>'
 	 */
 	BOUNDING_TEMPLATE: '<fieldset/>',
+	CONTENT_TEMPLATE: null,
 	/**
-	 * @property CONTENT_TEMPLATE
+	 * @property LEGEND_TEMPLATE
 	 * @type String
 	 * @default '<legend/>'
 	 */
-	CONTENT_TEMPLATE: '<legend/>',
+	LEGEND_TEMPLATE: '<legend/>',
+	
+	_afterLegendChange: function (e) {
+		var legendNode = this._legendNode,
+			appended = legendNode.parent().size() > 0;
+		if (e.newVal) {
+			legendNode.html(e.newVal);
+			if (!appended) {
+				legendNode.prependTo(this.get('boundingBox'));
+			}
+		} else if (appended) {
+			legendNode.remove();
+		}
+	},
 	
 	initializer: function() {
-		this._buttons = new $.ButtonGroup({
-			children: this.get('buttons')
-		});
-	},
-	renderUI: function(boundingBox, contentBox) {
-		this._buttons.render(contentBox);
+		this._legendNode = $(this.LEGEND_TEMPLATE);
 	},
 	syncUI: function() {
-		this.get('contentBox').html(this.get('legend'));
+		this._afterLegendChange({ newVal: this.get('legend') });
+	},
+	
+	toJSON: function () {
+		return this.map(function (field) {
+			return field.toJSON();
+		});
 	}
 });
