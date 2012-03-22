@@ -102,6 +102,9 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 	_afterValueChange: function (e) {
 		if (this.fire(PROGRESS, { value: e.newVal })) {
 			this._update(e.newVal);
+			if (e.newVal == this.get("maxValue")) {
+				this.fire("complete");
+			}
 		} else {
 			e.preventDefault();
 		}

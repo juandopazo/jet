@@ -141,6 +141,10 @@ $.Module = Base.create('module', Widget, [], {
 				}
 			}
 		}, this);
+
+		A.each(['Header', 'Body', 'Footer'], function (section) {
+			this.after(section.toLowerCase() + 'ContentChange', this['_ui' + section + 'Change']);
+		}, this);
 	},
 	
 	_uiHeaderChange: function (e) {
@@ -163,12 +167,6 @@ $.Module = Base.create('module', Widget, [], {
 			if (Lang.isValue(value)) {
 				node.appendTo(contentBox);
 			}
-		}, this);
-	},
-	
-	bindUI: function () {
-		A.each(['Header', 'Body', 'Footer'], function (section) {
-			this.after(section.toLowerCase() + 'ContentChange', this['_ui' + section + 'Change']);
 		}, this);
 	}
 });
