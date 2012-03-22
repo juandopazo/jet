@@ -31,35 +31,69 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 	/**
 	 * @property CONTENT_TEMPLATE
 	 * @type String
-	 * @default '<label/>'
+	 * @default '<input/>'
 	 */
-	CONTENT_TEMPLATE: '<label/>',
+	CONTENT_TEMPLATE: '<input/>',
 	
+	_ffDisabledChange: function (e) {
+		this.get("contentBox").getDOMNode().disabled = e.newVal;
+	},
+	_ffFocusedChange: function (e) {
+		var fieldNode = this.get("contentBox").getDOMNode();
+		if (e.newVal) {
+			fieldNode.focus();
+		} else {
+			fieldNode.blur();
+		}
+	},
+	_insertLabel: function () {
+		this._labelNode.prependTo(this.get("boundingBox"));
+	},
+	_syncLabel: function (e) {
+		var labelNode = this._labelNode,
+			appended = labelNode.parent().size() > 0;
+		if (e.newVal) {
+			labelNode.html(e.newVal);
+			if (!appended) {
+				this._insertLabel();
+			}
+		} else if (appended) {
+			labelNode.remove();
+		}
+	},
 	_syncDom2Attr: function(attrName) {
-		this.set(attrName, this._inputNode.attr(attrName));
+		this.set(attrName, this.get("contentBox").attr(attrName));
 	},
 	_syncAttr2Dom: function(e) {
-		this._inputNode.attr(e.attrName, e.newVal);
+		this.get("contentBox").attr(e.attrName, e.newVal);
 	},
 	
 	initializer: function() {
-		this._inputNode = $('<input/>').attr({
-			id: this.get('id') + '_input'
-		});
+		this._labelNode = $('<label/>');
 		
-		this.after('valueChange', this._syncAttr2Dom);
-		this.after('legendChange', this.syncUI);
+		this.after({
+			valueChange: this._syncAttr2Dom,
+			labelChange: this._syncLabel,
+			disabledChange: this._ffDisabledChange,
+			focusedChange: this._ffFocusedChange
+		});
 	},
 	renderUI: function(boundingBox, contentBox) {
-		this._inputNode.attr('type', this.get('htmlType')).value(this.get('value')).prependTo(boundingBox);
-		contentBox.attr('htmlFor', this._inputNode.attr('id'));
+		var btnId = this.get('id') + '_input'
+		contentBox.attr({
+			type: this.get('htmlType'),
+			id: btnId,
+			value: this.get('value')
+		});
+		this._labelNode.attr('htmlFor', btnId);
 	},
-	bindUI: function() {
+	bindUI: function(boundingBox, contentBox) {
 		this._handlers.push(
-			this._inputNode.on('change', $.bind(this._syncDom2Attr, this, 'value'))
+			contentBox.on('change', $.bind(this._syncDom2Attr, this, 'value'))
 		);
 	},
 	syncUI: function() {
-		this.get('contentBox').html(this.get('label'));
+		this._syncLabel({ newVal: this.get('label') });
+		this._ffDisabledChange({ newVal: this.get('disabled') });
 	}
 });

@@ -1,8 +1,4 @@
 
-if (!Lang.isNumber(ButtonNS.radio)) {
-	ButtonNS.radio = 0;
-}
-
 /**
  * A radio button
  * @class RadioButton
@@ -10,21 +6,22 @@ if (!Lang.isNumber(ButtonNS.radio)) {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.RadioButton = Base.create('radio', Button, [], {}, {
+$.RadioButton = $.Base.create('radio', $.FormField, [], {}, {
 	CONTENT_TEMPLATE: '<input/>',
 	
 	_rbSelectionChange: function (e) {
 		this.get(CONTENT_BOX).getDOMNode().checked = !!e.newVal;
 	},
-	
-	initializer: function () {
-		this.after('selectionChange', this._rbSelectionChange);
+	_insertLabel: function () {
+		this._labelNode.appendTo(this.get("boundingBox"));
 	},
-	
-	renderUI: function (bb, contentBox) {
+	initializer: function () {
+		this.after("selectionChange", this._rbSelectionChange);
+	},
+	renderUI: function (boundingBox, contentBox) {
 		contentBox.attr({
 			type: 'radio',
-			name: this.get(PARENT).get(NAME)
+			name: this.get("parent").get("name")
 		});
 	}
 });
@@ -37,7 +34,7 @@ $.RadioButton = Base.create('radio', Button, [], {}, {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.RadioGroup = Base.create('radio-group', Widget, [WidgetParent], {
+$.RadioGroup = $.Base.create('radio-group', $.Widget, [$.WidgetParent], {
 	ATTRS: {
 		/**
 		 * @attribute multiple
@@ -55,14 +52,32 @@ $.RadioGroup = Base.create('radio-group', Widget, [WidgetParent], {
 		 * @readOnly
 		 */
 		name: {
-			writeOnce: true
+			writeOnce: true,
+			valueFn: function () {
+				return this.get("id");
+			}
 		},
 		defaultChildType: {
 			value: $.RadioButton
+		},
+		value: {
+			getter: function () {
+				return this.get("selection").get("value");
+			}
 		}
 	}
 }, {
+	_syncRadioSelection: function (e) {
+		if (e.newVal) {
+			e.newVal.get("contentBox").getDOMNode().checked = true;
+		}
+	},
 	initializer: function () {
-		this.set(NAME, this.getClassName(++ButtonNS.radio));
+		this.after("selectionChange", this._syncRadioSelection);
+	},
+	syncUI: function () {
+		this._syncRadioSelection({
+			newVal: this.get("selection")
+		});
 	}
 });

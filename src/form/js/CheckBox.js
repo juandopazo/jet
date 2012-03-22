@@ -21,18 +21,19 @@ $.CheckBox = $.Base.create('checkbox', $.FormField, [], {
 		}
 	}
 }, {
+	_insertLabel: function () {
+		this._labelNode.appendTo(this.get("boundingBox"));
+	},
 	initializer: function () {
 		this.after('checkedChange', this._syncAttr2Dom);
 		this.after('selectedChange', this._uiCheckBoxSelect);
 	},
-	
-	bindUI: function () {
+	bindUI: function (boundingBox, contentBox) {
 		this._handlers.push(
-			this._inputNode.on('click', $.bind(this._syncDom2Attr, this, 'checked'))
+			contentBox.on('click', $.bind(this._syncDom2Attr, this, 'checked'))
 		);
 	},
-	
 	syncUI: function() {
-		this._inputNode.attr('checked', this.get('checked'));
+		this.get("contentBox").attr('checked', this.get('checked'));
 	}
 });
