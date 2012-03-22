@@ -7,7 +7,7 @@
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.ComboOption = Base.create('combo-option', Widget, [WidgetChild], {
+$.ComboOption = $.Base.create('combo-option', $.Widget, [$.WidgetChild], {
 	ATTRS: {
 		/**
 		 * @attribute value
@@ -65,7 +65,7 @@ $.ComboOption = Base.create('combo-option', Widget, [WidgetChild], {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.ComboBox = Base.create('combobox', Widget, [WidgetParent], {
+$.ComboBox = $.Base.create('combobox', $.Widget, [$.WidgetParent], {
 	ATTRS: {
 		defaultChildType: {
 			value: 'ComboOption'
@@ -162,7 +162,9 @@ $.ComboBox = Base.create('combobox', Widget, [WidgetParent], {
 		this.after('selectionChange', this._uiComboSelectionChange);
 		this.on('click', this._toggleContent);
 		
-		this._handlers.push($($.config.doc).on('click', this._uiComboHide, this));
+		this._handlers.push(
+			$($.config.doc).on('click', this._uiComboHide, this)
+		);
 	},
 	
 	syncUI: function (boundingBox, contentBox) {

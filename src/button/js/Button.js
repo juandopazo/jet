@@ -84,6 +84,10 @@ var Button = $.Button = Base.create('button', Widget, [WidgetChild], {
 	CONTENT_TEMPLATE: '<button/>',
 	LABEL_TEMPLATE: '<label/>',
 	
+	_reportPressed: function (e) {
+		this.fire("pressed", { domEvent: e });
+	},
+	
 	_uiFocusedChange: function (e) {
 		this.get(BOUNDING_BOX).toggleClass(this.getClassName(FOCUS), e.newVal);
 		this.get(CONTENT_BOX)[e.newVal ? 'focus' : 'blur']();
@@ -136,7 +140,8 @@ var Button = $.Button = Base.create('button', Widget, [WidgetChild], {
 	bindUI: function (bb, contentBox) {
 		this._handlers.push(
 			contentBox.on(FOCUS, this.focus, this),
-			contentBox.on(BLUR, this.blur, this)
+			contentBox.on(BLUR, this.blur, this),
+			contentBox.on("click", this._reportPressed, this)
 		);
 	},
 	
