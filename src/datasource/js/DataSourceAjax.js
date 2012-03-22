@@ -20,12 +20,15 @@ DataSource.Ajax = Base.create('datasource-ajax', DataSource, [], {
 	}
 }, {
 	handleRequest: function (request, success, failure) {
-		$.ajax({
-			url: this.get(URL),
+		var url = this.get(URL),
+			type = this.get(RESPONSE_TYPE);
+		$.ajax(url, {
 			data: request,
-			dataType: this.get(RESPONSE_TYPE),
-			success: success,
-			error: failure
+			dataType: type,
+			on: {
+				success: success,
+				failure: failure
+			}
 		});
 	}
 });

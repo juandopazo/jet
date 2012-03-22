@@ -69,11 +69,10 @@ var TRANSACTION_METHODS = {
 
 $Object.each(TRANSACTION_METHODS, Request.addMethod);
 
-$Object.each(TRANSACTION_METHODS, function (method) {
-	
-	$[method] = function () {
+$Object.each(TRANSACTION_METHODS, function (name, fn) {
+	$[name] = function () {
 		var request = new $.Request();
-		return request[method].apply(request, arguments);
+		fn.apply(request, arguments);
+		return request;
 	};
-	
 });

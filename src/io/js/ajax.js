@@ -136,28 +136,29 @@ var getResultByContentType = function (xhr, dataType, onError) {
  * @param {Object} settings
  */
 function ajax(url, settings) {
+	var self = this;
 	var xhr = getAjaxObject();
    
-	var success = settings.success,
-
-	result = null;
+	var result = null;
 	
 	var dataType		= settings.dataType;
 	var timeout			= settings.timeout || 10000; /* Tiempo que tarda en cancelarse la transaccion */
 	var method			= settings.method || "GET"; /* Metodo para enviar informacion al servidor */
 	var async			= settings.async || true;
-	var complete		= settings.complete || function () {};
+	var on				= settings.on || {};
+	var complete		= on.complete || function () {};
+	var success			= on.success;
 	var onSuccess		= function () {
 		if (success) {
-			success.apply($, arguments);
+			success.apply(self, arguments);
 		}
-		complete.apply($, arguments);
+		complete.apply(self, arguments);
 	};
 	var onError			= function (a, b, c) {
-		if (settings.failure) {
-			settings.failure(a, b, c);
+		if (on.failure) {
+			on.failure(a, b, c);
 		}
-		complete.apply($, arguments);
+		complete.apply(self, arguments);
 	};
 
 	if (xhr) {

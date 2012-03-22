@@ -162,6 +162,11 @@ var DataSource = Base.create('datasource', $.Utility, [], {
 					});
 				});
 			} else {
+				/**
+				 * Error while parsing data
+				 * @event parserError
+				 * @param {message} Error message
+				 */
 				this.fire("parserError", { message: "Result list not found" });
 			}
 		}
@@ -185,7 +190,7 @@ var DataSource = Base.create('datasource', $.Utility, [], {
 			resultNode.children().each(function (node) {
 				var record = {};
 				A.each(responseSchema.fields, function (field) {
-					var value = node.nodeName != field.node ? $(node).find(field.node)[0] : node;
+					var value = node.nodeName != field.node ? $(node).find(field.node).getDOMNode() : node;
 					var tmp;
 					if (value) {
 						if (field.attr) {
@@ -238,6 +243,12 @@ var DataSource = Base.create('datasource', $.Utility, [], {
 				tempData = self._parser(self.get(TEMP_DATA));
 			}
 			self.set('recordSet', tempData);
+			/**
+			 * Fired when new data is available
+			 * @event update
+			 * @param {Object} data New data
+			 * @param {Object} data request
+			 */
 			self.fire('update', { data: tempData, request: request });
 			/*Hash.each(tempData, function (key, val) {
 				if (!recordSet[key]) {
