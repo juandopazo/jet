@@ -9,20 +9,30 @@
 $.RadioButton = $.Base.create('radio', $.FormField, [], {}, {
 	CONTENT_TEMPLATE: '<input/>',
 	
-	_rbSelectionChange: function (e) {
-		this.get(CONTENT_BOX).getDOMNode().checked = !!e.newVal;
+	_rbSelectedChange: function (e) {
+		if (e.newVal && e.src != 'dom') {
+			this.get('contentBox').getDOMNode().checked = true;
+		}
+	},
+	_rbCheckedChange: function () {
+		this.set('selected', this.get('contentBox').getDOMNode().checked, { src: 'dom' });
 	},
 	_insertLabel: function () {
-		this._labelNode.appendTo(this.get("boundingBox"));
+		this._labelNode.appendTo(this.get('boundingBox'));
 	},
 	initializer: function () {
-		this.after("selectionChange", this._rbSelectionChange);
+		this.after('selectedChange', this._rbSelectedChange);
 	},
 	renderUI: function (boundingBox, contentBox) {
 		contentBox.attr({
 			type: 'radio',
-			name: this.get("parent").get("name")
+			name: this.get('parent').get('name')
 		});
+	},
+	bindUI: function (boundingBox, contentBox) {
+		this._handlers.push(
+			contentBox.on('click', this._rbCheckedChange, this)
+		);
 	}
 });
 
@@ -54,7 +64,7 @@ $.RadioGroup = $.Base.create('radio-group', $.Widget, [$.WidgetParent], {
 		name: {
 			writeOnce: true,
 			valueFn: function () {
-				return this.get("id");
+				return this.get('id');
 			}
 		},
 		defaultChildType: {
@@ -62,22 +72,22 @@ $.RadioGroup = $.Base.create('radio-group', $.Widget, [$.WidgetParent], {
 		},
 		value: {
 			getter: function () {
-				return this.get("selection").get("value");
+				return this.get('selection').get('value');
 			}
 		}
 	}
 }, {
 	_syncRadioSelection: function (e) {
 		if (e.newVal) {
-			e.newVal.get("contentBox").getDOMNode().checked = true;
+			e.newVal.get('contentBox').getDOMNode().checked = true;
 		}
 	},
 	initializer: function () {
-		this.after("selectionChange", this._syncRadioSelection);
+		this.after('selectionChange', this._syncRadioSelection);
 	},
 	syncUI: function () {
 		this._syncRadioSelection({
-			newVal: this.get("selection")
+			newVal: this.get('selection')
 		});
 	}
 });
