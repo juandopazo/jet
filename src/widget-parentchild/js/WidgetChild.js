@@ -55,6 +55,14 @@ $.mix(WidgetChild, {
 				}
 				return parent;
 			}
+		},
+		type: {
+			setter: function (val) {
+				if (Lang.isString(val)) {
+					val = $[val];
+				}
+				return val;
+			}
 		}
 	},
 	

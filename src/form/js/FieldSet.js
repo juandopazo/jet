@@ -22,6 +22,11 @@ $.FieldSet = $.Base.create('fieldset', $.Widget, [$.WidgetChild, $.WidgetParent]
 		 */
 		legend: {
 			value: ''
+		},
+		name: {
+			getter: function () {
+				return this.get('id');
+			}
 		}
 	}
 }, {
@@ -60,8 +65,10 @@ $.FieldSet = $.Base.create('fieldset', $.Widget, [$.WidgetChild, $.WidgetParent]
 	},
 	
 	toJSON: function () {
-		return this.map(function (field) {
-			return field.toJSON();
+		var result = {};
+		this.each(function (field) {
+			result[field.get("name")] = field.toJSON();
 		});
+		return result;
 	}
 });

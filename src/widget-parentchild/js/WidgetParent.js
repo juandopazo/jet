@@ -196,7 +196,10 @@ WidgetParent.prototype = {
 	},
 	
 	_add: function (child, index) {
-		var ChildType = child.childType || this.get('childType');
+		var ChildType = child.type || this.get('childType');
+		if (Lang.isString(ChildType)) {
+			ChildType = $[ChildType];
+		}
 		
 		if (child && this.fire('addChild', { child: child, index: index })) {
 			

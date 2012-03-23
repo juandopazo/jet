@@ -92,6 +92,7 @@ var GlobalConfig = {
 				'widget-stack': ['base'],
 				'widget-parentchild': ['base'],
 				'widget-sandbox': ['base'],
+				'widget-form': ['base', 'form'],
 				menu: [WIDGET_PARENTCHILD, 'container'],
 				vector: ['anim'],
 				layout: ['resize', WIDGET_PARENTCHILD],

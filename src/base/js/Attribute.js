@@ -143,11 +143,16 @@ $.extend(Attribute, EventTarget, {
 	 * @method getAttrs
 	 * @return {$Object}
 	 */
-	getAttrs: function () {
-		var result = {};
-		var self = this;
+	getAttrs: function (list) {
+		var result = {},
+			self = this;
+		if (!Lang.isArray(list)) {
+			list = false;
+		}
 		$Object.each(this._state, function (key) {
-			result[key] = self.get(key);
+			if (!list || $.Array.indexOf(list, key) > -1) {
+				result[key] = self.get(key);
+			}
 		});
 		return result;
 	}

@@ -23,11 +23,15 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 		label: {
 			value: ''
 		},
+		title: {
+			value: ''
+		},
 		htmlType: {
 			value: 'text'
 		}
 	}
 }, {
+	BOUNDING_TEMPLATE: '<span/>',
 	/**
 	 * @property CONTENT_TEMPLATE
 	 * @type String
@@ -36,10 +40,10 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 	CONTENT_TEMPLATE: '<input/>',
 	
 	_ffDisabledChange: function (e) {
-		this.get("contentBox").getDOMNode().disabled = e.newVal;
+		this.get('contentBox').getDOMNode().disabled = e.newVal;
 	},
 	_ffFocusedChange: function (e) {
-		var fieldNode = this.get("contentBox").getDOMNode();
+		var fieldNode = this.get('contentBox').getDOMNode();
 		if (e.newVal) {
 			fieldNode.focus();
 		} else {
@@ -47,7 +51,7 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 		}
 	},
 	_insertLabel: function () {
-		this._labelNode.prependTo(this.get("boundingBox"));
+		this._labelNode.prependTo(this.get('boundingBox'));
 	},
 	_syncLabel: function (e) {
 		var labelNode = this._labelNode,
@@ -62,10 +66,10 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 		}
 	},
 	_syncDom2Attr: function(attrName) {
-		this.set(attrName, this.get("contentBox").attr(attrName));
+		this.set(attrName, this.get('contentBox').attr(attrName));
 	},
 	_syncAttr2Dom: function(e) {
-		this.get("contentBox").attr(e.attrName, e.newVal);
+		this.get('contentBox').attr(e.attrName, e.newVal);
 	},
 	
 	initializer: function() {
@@ -94,13 +98,11 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 	},
 	syncUI: function() {
 		this._syncLabel({ newVal: this.get('label') });
+		this._labelNode.attr('title', this.get('title'));
 		this._ffDisabledChange({ newVal: this.get('disabled') });
 	},
 	
 	toJSON: function () {
-		return {
-			id: this.get("id"),
-			value: this.get("value")
-		};
+		return this.getAttrs(['id', 'name', 'value']);
 	}
 });

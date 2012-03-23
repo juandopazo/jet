@@ -12,7 +12,7 @@ $.Form = $.Base.create('form', $.Widget, [$.WidgetParent], {
 		 * @default 'FieldSet'
 		 */
 		defaultChildType: {
-			value: 'FieldSet'
+			value: 'FormField'
 		},
 		/**
 		 * @attribute action
@@ -29,9 +29,22 @@ $.Form = $.Base.create('form', $.Widget, [$.WidgetParent], {
 	_relaySubmit: function(e) {
 		this.fire('submit', { domEvent: e });
 	},
+	_registerField: function (e) {
+		var field = e.child;
+		if (field.get('type') === $.FieldSet) {
+			field.each(function (child) {
+				this._registerField({ child: child });
+			}, this);
+		} else {
+			this._fields[field.get('name')] = field;
+		}
+	},
 	
 	initializer: function() {
-		this.after('actionChange', this.syncUI)
+		this.after('actionChange', this.syncUI);
+		
+		this._fields = {};
+		this.on('afterAddChild', this._registerField);
 	},
 	bindUI: function(boundingBox, contentBox) {
 		this._handlers.push(
@@ -42,9 +55,9 @@ $.Form = $.Base.create('form', $.Widget, [$.WidgetParent], {
 		this.get('contentBox').attr('action', this.get('action'));
 	},
 	
-	toJSON: function () {
-		return this.map(function (field) {
-			return field.toJSON();
-		});
-	}
+	getField: function (name) {
+		return this._fields[name];
+	},
+	
+	toJSON: $.FieldSet.prototype.toJSON
 });

@@ -31,7 +31,7 @@ $.RadioButton = $.Base.create('radio', $.FormField, [], {}, {
 	},
 	bindUI: function (boundingBox, contentBox) {
 		this._handlers.push(
-			contentBox.on('click', this._rbCheckedChange, this)
+			contentBox.on('change', this._rbCheckedChange, this)
 		);
 	}
 });
@@ -75,19 +75,5 @@ $.RadioGroup = $.Base.create('radio-group', $.Widget, [$.WidgetParent], {
 				return this.get('selection').get('value');
 			}
 		}
-	}
-}, {
-	_syncRadioSelection: function (e) {
-		if (e.newVal) {
-			e.newVal.get('contentBox').getDOMNode().checked = true;
-		}
-	},
-	initializer: function () {
-		this.after('selectionChange', this._syncRadioSelection);
-	},
-	syncUI: function () {
-		this._syncRadioSelection({
-			newVal: this.get('selection')
-		});
 	}
 });
