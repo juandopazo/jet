@@ -83,9 +83,12 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 		});
 	},
 	renderUI: function(boundingBox, contentBox) {
-		var btnId = this.get('id') + '_input'
+		var btnId = this.get('id') + '_input';
+		var htmlType = this.get('htmlType');
+		if ($.Lang.isString(htmlType)) {
+			contentBox.attr('type', htmlType);
+		}
 		contentBox.attr({
-			type: this.get('htmlType'),
 			id: btnId,
 			value: this.get('value')
 		});
@@ -98,7 +101,7 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 	},
 	syncUI: function() {
 		this._syncLabel({ newVal: this.get('label') });
-		this._labelNode.attr('title', this.get('title'));
+		this.get('boundingBox').attr('title', this.get('title'));
 		this._ffDisabledChange({ newVal: this.get('disabled') });
 	},
 	

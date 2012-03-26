@@ -77,6 +77,9 @@ $.SelectField = $.Base.create('select-field', $.FormField, [], {
 				var selected = this.get('selected');
 				return selected && (selected.value ? selected.value : selected.text);
 			}
+		},
+		htmlType: {
+			value: null
 		}
 	}
 }, {
