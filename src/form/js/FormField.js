@@ -61,7 +61,9 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 	_ffFocusedChange: function (e) {
 		var fieldNode = this.get('contentBox').getDOMNode();
 		if (e.newVal) {
-			fieldNode.focus();
+			try {
+				fieldNode.focus();
+			} catch (_) {}
 		} else {
 			fieldNode.blur();
 		}

@@ -15,9 +15,6 @@ $.CheckBoxField = $.Base.create('checkbox', $.FormField, [], {
 		 */
 		checked: {
 			value: false
-		},
-		htmlType: {
-			value: 'checkbox'
 		}
 	}
 }, {
@@ -27,8 +24,7 @@ $.CheckBoxField = $.Base.create('checkbox', $.FormField, [], {
 	initializer: function () {
 		this.after('checkedChange', this._syncAttr2Dom);
 		this.after('selectedChange', this._uiCheckBoxSelect);
-	},
-	renderUI: function () {
+
 		this.get('contentBox').attr('type', 'checkbox');
 	},
 	bindUI: function () {

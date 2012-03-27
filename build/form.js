@@ -73,7 +73,9 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 	_ffFocusedChange: function (e) {
 		var fieldNode = this.get('contentBox').getDOMNode();
 		if (e.newVal) {
-			fieldNode.focus();
+			try {
+				fieldNode.focus();
+			} catch (_) {}
 		} else {
 			fieldNode.blur();
 		}
@@ -163,9 +165,6 @@ $.CheckBoxField = $.Base.create('checkbox', $.FormField, [], {
 		 */
 		checked: {
 			value: false
-		},
-		htmlType: {
-			value: 'checkbox'
 		}
 	}
 }, {
@@ -175,8 +174,7 @@ $.CheckBoxField = $.Base.create('checkbox', $.FormField, [], {
 	initializer: function () {
 		this.after('checkedChange', this._syncAttr2Dom);
 		this.after('selectedChange', this._uiCheckBoxSelect);
-	},
-	renderUI: function () {
+
 		this.get('contentBox').attr('type', 'checkbox');
 	},
 	bindUI: function () {
@@ -314,11 +312,11 @@ $.SelectField = $.Base.create('select-field', $.FormField, [], {
 		options: {
 			value: []
 		},
-		selected: {
+		selection: {
 			validator: $.Lang.isNumber,
 			getter: function () {
 				var combo = this.get('contentBox').getDOMNode(); 
-				return combo.options[combo.selectedIndex];
+				return combo.selectedIndex >= 0 ? combo.options[combo.selectedIndex] : null;
 			},
 			setter: function (val) {
 				var combo = this.get('contentBox').getDOMNode();
@@ -337,8 +335,8 @@ $.SelectField = $.Base.create('select-field', $.FormField, [], {
 		value: {
 			readOnly: true,
 			getter: function () {
-				var selected = this.get('selected');
-				return selected && (selected.value ? selected.value : selected.text);
+				var selection = this.get('selection');
+				return selection && (selection.value ? selection.value : selection.text);
 			}
 		}
 	}
@@ -432,17 +430,17 @@ $.SelectField = $.Base.create('select-field', $.FormField, [], {
 	 * @chainable
 	 */
 	select: function (index) {
-		return this.set('selected', index);
+		return this.set('selection', index);
 	},
 	
 	toJSON: function () {
-		var selected = this.get('selected'),
+		var selection = this.get('selection'),
 			result = {
 				id: this.get('id'),
-				text: selected.text
+				text: selection.text
 			};
-		if (selected.value) {
-			result.value = selected.value;
+		if (selection.value) {
+			result.value = selection.value;
 		}
 		return result;
 	}
@@ -471,12 +469,11 @@ $.RadioButton = $.Base.create('radio', $.FormField, [], {}, {
 	},
 	initializer: function () {
 		this.after('selectedChange', this._rbSelectedChange);
+		
+		this.get('contentBox').attr('type', 'radio');
 	},
 	renderUI: function () {
-		this.get('contentBox').attr({
-			type: 'radio',
-			name: this.get('parent').get('name')
-		});
+		this.get('contentBox').attr('name', this.get('parent').get('name'));
 	},
 	bindUI: function () {
 		this._handlers.push(
