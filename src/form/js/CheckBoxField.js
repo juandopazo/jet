@@ -36,7 +36,7 @@ $.CheckBoxField = $.Base.create('checkbox', $.FormField, [], {
 			this.get('contentBox').on('click', $.bind(this._syncDom2Attr, this, 'checked'))
 		);
 	},
-	syncUI: function() {
+	syncUI: function () {
 		this.get("contentBox").attr('checked', this.get('checked'));
 	}
 });

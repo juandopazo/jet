@@ -57,10 +57,10 @@ $.FieldSet = $.Base.create('fieldset', $.Widget, [$.WidgetChild, $.WidgetParent]
 		}
 	},
 	
-	initializer: function() {
+	initializer: function () {
 		this._legendNode = $(this.LEGEND_TEMPLATE);
 	},
-	syncUI: function() {
+	syncUI: function () {
 		this._afterLegendChange({ newVal: this.get('legend') });
 	},
 	

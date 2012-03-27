@@ -26,7 +26,7 @@ $.Form = $.Base.create('form', $.Widget, [$.WidgetParent], {
 }, {
 	CONTENT_TEMPLATE: '<form/>',
 	
-	_relaySubmit: function(e) {
+	_relaySubmit: function (e) {
 		this.fire('submit', { domEvent: e });
 	},
 	_registerField: function (e) {
@@ -40,18 +40,18 @@ $.Form = $.Base.create('form', $.Widget, [$.WidgetParent], {
 		}
 	},
 	
-	initializer: function() {
+	initializer: function () {
 		this.after('actionChange', this.syncUI);
 		
 		this._fields = {};
 		this.on('afterAddChild', this._registerField);
 	},
-	bindUI: function(boundingBox, contentBox) {
+	bindUI: function () {
 		this._handlers.push(
-			contentBox.on('submit', this._relaySubmit, this)
+			this.get('contentBox').on('submit', this._relaySubmit, this)
 		);
 	},
-	syncUI: function() {
+	syncUI: function () {
 		this.get('contentBox').attr('action', this.get('action'));
 	},
 	

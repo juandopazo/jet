@@ -81,17 +81,17 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 			labelNode.remove();
 		}
 	},
-	_syncDom2Attr: function(attrName) {
+	_syncDom2Attr: function (attrName) {
 		this.set(attrName, this.get('contentBox').attr(attrName));
 	},
-	_syncAttr2Dom: function(e) {
+	_syncAttr2Dom: function (e) {
 		this.get('contentBox').attr(e.attrName, e.newVal);
 	},
 	_setFieldValue: function (value) {
 		this.get('contentBox').attr('value', value);
 	},
 	
-	initializer: function() {
+	initializer: function () {
 		this._labelNode = $('<label/>');
 		
 		this.after({
@@ -101,18 +101,18 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 			focusedChange: this._ffFocusedChange
 		});
 	},
-	renderUI: function() {
+	renderUI: function () {
 		var fieldId = this.get('id') + '_field';
 		this.get('contentBox').attr('id', fieldId);
 		this._setFieldValue(this.get('value'));
 		this._labelNode.attr('htmlFor', fieldId);
 	},
-	bindUI: function(boundingBox, contentBox) {
+	bindUI: function () {
 		this._handlers.push(
-			contentBox.on('change', $.bind(this._syncDom2Attr, this, 'value'))
+			this.get('contentBox').on('change', $.bind(this._syncDom2Attr, this, 'value'))
 		);
 	},
-	syncUI: function() {
+	syncUI: function () {
 		this._syncLabel({ newVal: this.get('label') });
 		this.get('boundingBox').attr('title', this.get('title'));
 		this._ffDisabledChange({ newVal: this.get('disabled') });

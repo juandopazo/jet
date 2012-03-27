@@ -23,15 +23,15 @@ $.RadioButton = $.Base.create('radio', $.FormField, [], {}, {
 	initializer: function () {
 		this.after('selectedChange', this._rbSelectedChange);
 	},
-	renderUI: function (boundingBox, contentBox) {
-		contentBox.attr({
+	renderUI: function () {
+		this.get('contentBox').attr({
 			type: 'radio',
 			name: this.get('parent').get('name')
 		});
 	},
-	bindUI: function (boundingBox, contentBox) {
+	bindUI: function () {
 		this._handlers.push(
-			contentBox.on('change', this._rbCheckedChange, this)
+			this.get('contentBox').on('change', this._rbCheckedChange, this)
 		);
 	}
 });
