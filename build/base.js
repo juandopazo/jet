@@ -3,7 +3,7 @@
  * @module base
  * @requires node
  * 
- * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
+ * Copyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.
  * Code licensed under the BSD License
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
@@ -175,7 +175,15 @@ $.mix(EventTarget.prototype, {
 	 * @chainable
 	 */
 	after: function (eventType, callback, thisp) {
-		return this.on.apply(this, ['after' + eventType.charAt(0).toUpperCase() + eventType.substr(1)].concat(SLICE.call(arguments, 1)));
+		var events = {};
+		if (Lang.isObject(eventType)) {
+			$Object.each(eventType, function (name, fn) {
+				events['after' + Lang.capitalize(name)] = fn;
+			});
+		} else {
+			events[eventType] = callback;
+		}
+		return this.on(events, thisp);
 	},
 	/**
 	 * Removes and event listener
@@ -397,11 +405,16 @@ $.extend(Attribute, EventTarget, {
 	 * @method getAttrs
 	 * @return {$Object}
 	 */
-	getAttrs: function () {
-		var result = {};
-		var self = this;
+	getAttrs: function (list) {
+		var result = {},
+			self = this;
+		if (!Lang.isArray(list)) {
+			list = false;
+		}
 		$Object.each(this._state, function (key) {
-			result[key] = self.get(key);
+			if (!list || $.Array.indexOf(list, key) > -1) {
+				result[key] = self.get(key);
+			}
 		});
 		return result;
 	}

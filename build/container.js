@@ -3,7 +3,7 @@
  * @module container
  * @requires base,widget-alignment,widget-stack
  * 
- * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
+ * Copyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.
  * Code licensed under the BSD License
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
@@ -153,6 +153,10 @@ $.Module = Base.create('module', Widget, [], {
 				}
 			}
 		}, this);
+
+		A.each(['Header', 'Body', 'Footer'], function (section) {
+			this.after(section.toLowerCase() + 'ContentChange', this['_ui' + section + 'Change']);
+		}, this);
 	},
 	
 	_uiHeaderChange: function (e) {
@@ -175,12 +179,6 @@ $.Module = Base.create('module', Widget, [], {
 			if (Lang.isValue(value)) {
 				node.appendTo(contentBox);
 			}
-		}, this);
-	},
-	
-	bindUI: function () {
-		A.each(['Header', 'Body', 'Footer'], function (section) {
-			this.after(section.toLowerCase() + 'ContentChange', this['_ui' + section + 'Change']);
 		}, this);
 	}
 });

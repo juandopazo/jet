@@ -3,7 +3,7 @@
  * @module datasource
  * @requires base
  * 
- * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
+ * Copyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.
  * Code licensed under the BSD License
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
@@ -345,6 +345,11 @@ var DataSource = Base.create('datasource', $.Utility, [], {
 					});
 				});
 			} else {
+				/**
+				 * Error while parsing data
+				 * @event parserError
+				 * @param {message} Error message
+				 */
 				this.fire("parserError", { message: "Result list not found" });
 			}
 		}
@@ -368,7 +373,7 @@ var DataSource = Base.create('datasource', $.Utility, [], {
 			resultNode.children().each(function (node) {
 				var record = {};
 				A.each(responseSchema.fields, function (field) {
-					var value = node.nodeName != field.node ? $(node).find(field.node)[0] : node;
+					var value = node.nodeName != field.node ? $(node).find(field.node).getDOMNode() : node;
 					var tmp;
 					if (value) {
 						if (field.attr) {
@@ -421,6 +426,12 @@ var DataSource = Base.create('datasource', $.Utility, [], {
 				tempData = self._parser(self.get(TEMP_DATA));
 			}
 			self.set('recordSet', tempData);
+			/**
+			 * Fired when new data is available
+			 * @event update
+			 * @param {Object} data New data
+			 * @param {Object} data request
+			 */
 			self.fire('update', { data: tempData, request: request });
 			/*Hash.each(tempData, function (key, val) {
 				if (!recordSet[key]) {
@@ -541,12 +552,15 @@ DataSource.Ajax = Base.create('datasource-ajax', DataSource, [], {
 	}
 }, {
 	handleRequest: function (request, success, failure) {
-		$.ajax({
-			url: this.get(URL),
+		var url = this.get(URL),
+			type = this.get(RESPONSE_TYPE);
+		$.ajax(url, {
 			data: request,
-			dataType: this.get(RESPONSE_TYPE),
-			success: success,
-			error: failure
+			dataType: type,
+			on: {
+				success: success,
+				failure: failure
+			}
 		});
 	}
 });

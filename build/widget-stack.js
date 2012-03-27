@@ -3,7 +3,7 @@
  * @module widget-stack
  * @requires base
  * 
- * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
+ * Copyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.
  * Code licensed under the BSD License
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */

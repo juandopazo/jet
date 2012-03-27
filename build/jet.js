@@ -104,6 +104,7 @@ var GlobalConfig = {
 				'widget-stack': ['base'],
 				'widget-parentchild': ['base'],
 				'widget-sandbox': ['base'],
+				'widget-form': ['base', 'form'],
 				menu: [WIDGET_PARENTCHILD, 'container'],
 				vector: ['anim'],
 				layout: ['resize', WIDGET_PARENTCHILD],
@@ -1068,7 +1069,7 @@ function buildJet(config) {
 					return root.createElement(query.substr(1, query.length - (query.charAt(query.length - 2) === '/' ? 3 : 2)));
 				} else {
 					// Check for strings like "<div><span><a/></span></div>"
-					test = query.match(/<([a-z]+)>(.+)<\/([a-z]+)>/i);
+					test = query.match(/<([a-z1-6]+)>(.+)<\/([a-z1-6]+)>/i);
 					if (test.length == 4 && test[1] == test[3]) {
 						node = root.createElement(test[1]);
 						node.innerHTML = test[2];
@@ -2348,7 +2349,8 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	 * @return {NodeList}
 	 */
 	last: function () {
-		return this.children().getDOMNodes().shift();
+		var children = this.children();
+		return children.item(children.size() - 1);
 	},
 	/**
 	 * Gets or sets the innerHTML of all the nodes in the node list

@@ -3,7 +3,7 @@
  * @module button
  * @requires base
  * 
- * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
+ * Copyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.
  * Code licensed under the BSD License
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
@@ -96,6 +96,10 @@ var Button = $.Button = Base.create('button', Widget, [WidgetChild], {
 	CONTENT_TEMPLATE: '<button/>',
 	LABEL_TEMPLATE: '<label/>',
 	
+	_reportPressed: function (e) {
+		this.fire("pressed", { domEvent: e });
+	},
+	
 	_uiFocusedChange: function (e) {
 		this.get(BOUNDING_BOX).toggleClass(this.getClassName(FOCUS), e.newVal);
 		this.get(CONTENT_BOX)[e.newVal ? 'focus' : 'blur']();
@@ -148,7 +152,8 @@ var Button = $.Button = Base.create('button', Widget, [WidgetChild], {
 	bindUI: function (bb, contentBox) {
 		this._handlers.push(
 			contentBox.on(FOCUS, this.focus, this),
-			contentBox.on(BLUR, this.blur, this)
+			contentBox.on(BLUR, this.blur, this),
+			contentBox.on("click", this._reportPressed, this)
 		);
 	},
 	
@@ -210,248 +215,6 @@ $.ButtonGroup = Base.create('button-group', Widget, [WidgetParent], {
 	
 	renderUI: function (boundingBox) {
 		boundingBox.toggleClass(this.getClassName(PILL), this.get(PILL));
-	}
-});
-/**
- * An option of a <select> element
- * @class ComboOption
- * @extends Widget
- * @uses WidgetChild
- * @constructor
- * @param {Object} config Object literal specifying widget configuration properties
- */
-$.ComboOption = Base.create('combo-option', Widget, [WidgetChild], {
-	ATTRS: {
-		/**
-		 * @attribute value
-		 * @description Sets/returns the value of the option
-		 */
-		value: {
-			getter: function (val) {
-				return val || this.get('text');
-			}
-		},
-		/**
-		 * @attribute text
-		 * @description Sets/returns the text of the option
-		 */
-		text: {
-			value: ''
-		}
-	}
-}, {
-	BOUNDING_TEMPLATE: '<li/>',
-	CONTENT_TEMPLATE: '<span/>',
-	
-	_uiTextChange: function (e) {
-		this.get('contentBox').html(e.newVal);
-	},
-	
-	_uiOptHover: function (e) {
-		this.get('boundingBox').addClass(this.getClassName('hover'));
-	},
-	_uiOptOut: function (e) {
-		this.get('boundingBox').removeClass(this.getClassName('hover'));
-	},
-	
-	initializer: function () {
-		this.after('textChange', this._uiTextChange);
-	},
-	
-	bindUI: function (boundingBox, contentBox) {
-		boundingBox.on('click', this.select, this);
-		
-		this.on('mouseover', this._uiOptHover);
-		this.on('mouseout', this._uiOptOut);
-	},
-	
-	syncUI: function (bb, contentBox) {
-		contentBox.html(this.get('text'));
-	}
-});
-
-/**
- * A ComboBox is a select html element
- * @class ComboBox
- * @extends Button
- * @uses WidgetParent
- * @constructor
- * @param {Object} config Object literal specifying widget configuration properties
- */
-$.ComboBox = Base.create('combobox', Widget, [WidgetParent], {
-	ATTRS: {
-		defaultChildType: {
-			value: 'ComboOption'
-		},
-		multiple: {
-			value: false,
-			readOnly: true
-		},
-		displayNode: {
-			value: '<span/>',
-			setter: $
-		},
-		inputNode: {
-			value: '<input/>',
-			setter: $
-		},
-		arrowContainer: {
-			value: '<span/>',
-			setter: $
-		},
-		arrow: {
-			value: '<b/>',
-			setter: $
-		}
-	}
-}, {
-	BOUNDING_TEMPLATE: '<span/>',
-	CONTENT_TEMPLATE: '<ul/>',
-	
-	_uiComboSelectionChange: function (e) {
-		if (e.newVal) {
-			this.get('displayNode').html(e.newVal.get('text'));
-			this.get('inputNode').attr('value', e.newVal.get('value'));
-			setTimeout($.bind(this._setMinWidth, this), 0);
-		}
-	},
-	
-	_setMinWidth: function () {
-		var contentBox = this.get('contentBox');
-		var boundingWidth = this.get('boundingBox').width();
-		if (contentBox.width() < boundingWidth) {
-			contentBox.width(boundingWidth);
-		}
-	},
-	
-	_toggleContent: function (e) {
-		var contentBox = this.get('contentBox').getDOMNode();
-		if ($(e.domEvent.target).ancestor(function (node) {
-			return node == contentBox;
-		}).size() === 0) {
-			this.get('boundingBox').toggleClass(this.getClassName('expanded'));
-		}
-	},
-	
-	_uiComboHide: function (e) {
-		var boundingBox = this.get('boundingBox');
-		var ancestor = $(e.target).ancestor(function (node) {
-			return node == boundingBox.getDOMNode();
-		});
-		if (ancestor.size() === 0) {
-			boundingBox.removeClass(this.getClassName('expanded'));
-		}
-	},
-	
-	_uiContentHide: function () {
-		this.get('boundingBox').removeClass(this.getClassName('expanded'));
-	},
-	
-	initializer: function () {
-		this.set('displayNode', this.get('displayNode'));
-		this.set('inputNode', this.get('inputNode'));
-		this.set('arrowContainer', this.get('arrowContainer'));
-		this.set('arrow', this.get('arrow'));
-		
-		this._labelNode = $('<label/>');
-		
-		this.after('addChild', this._setMinWidth);
-		this.on('afterRender', this._setMinWidth);
-	},
-	
-	renderUI: function (boundingBox, contentBox) {
-		this.get('displayNode').addClass(this.getClassName('display')).prependTo(boundingBox);
-		var arrowContainer = this.get('arrowContainer').addClass(this.getClassName('arrow', 'container')).prependTo(boundingBox);
-		var inputNode = this.get('inputNode').attr({
-			type: 'hidden',
-			id: this.getClassName('input', this._uid)
-		}).appendTo(boundingBox);
-		this.get('arrow').addClass(this.getClassName('arrow')).appendTo(arrowContainer);
-		contentBox.addClass(this.getClassName('collapsed')).on('click', this._uiContentHide, this);
-		this._labelNode.html(this.get('label')).prependTo(contentBox).getDOMNode().setAttribute('for', inputNode.attr('id'));
-	},
-	
-	bindUI: function () {
-		this.after('selectionChange', this._uiComboSelectionChange);
-		this.on('click', this._toggleContent);
-		
-		this._handlers.push($($.config.doc).on('click', this._uiComboHide, this));
-	},
-	
-	syncUI: function (boundingBox, contentBox) {
-		var selection = this.get('selection');
-		if (selection) {
-			this.get('displayNode').html(selection.get('text'));
-			this.get('inputNode').attr('value', selection.get('value'));
-		}
-		this._setMinWidth();
-	}
-});
-if (!Lang.isNumber(ButtonNS.radio)) {
-	ButtonNS.radio = 0;
-}
-
-/**
- * A radio button
- * @class RadioButton
- * @extends Button
- * @constructor
- * @param {Object} config Object literal specifying widget configuration properties
- */
-$.RadioButton = Base.create('radio', Button, [], {}, {
-	CONTENT_TEMPLATE: '<input/>',
-	
-	_rbSelectionChange: function (e) {
-		this.get(CONTENT_BOX).getDOMNode().checked = !!e.newVal;
-	},
-	
-	initializer: function () {
-		this.after('selectionChange', this._rbSelectionChange);
-	},
-	
-	renderUI: function (bb, contentBox) {
-		contentBox.attr({
-			type: 'radio',
-			name: this.get(PARENT).get(NAME)
-		});
-	}
-});
-
-/**
- * A group of radio buttons that interact together
- * @class RadioGroup
- * @extends Widget
- * @uses WidgetParent
- * @constructor
- * @param {Object} config Object literal specifying widget configuration properties
- */
-$.RadioGroup = Base.create('radio-group', Widget, [WidgetParent], {
-	ATTRS: {
-		/**
-		 * @attribute multiple
-		 * @description Boolean indicating if multiple children can be selected at once. Whether or not multiple selection is enabled is always delegated to the value of the multiple attribute of the root widget in the object hierarchy
-		 * @default false
-		 * @readOnly
-		 */
-		multiple: {
-			value: false,
-			readOnly: true
-		},
-		/**
-		 * @attribute name
-		 * @description Name attribute of all radio buttons in the group
-		 * @readOnly
-		 */
-		name: {
-			writeOnce: true
-		},
-		defaultChildType: {
-			value: $.RadioButton
-		}
-	}
-}, {
-	initializer: function () {
-		this.set(NAME, this.getClassName(++ButtonNS.radio));
 	}
 });
 			

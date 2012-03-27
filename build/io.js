@@ -3,7 +3,7 @@
  * @module io
  * @requires deferred
  * 
- * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
+ * Copyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.
  * Code licensed under the BSD License
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
@@ -148,28 +148,29 @@ var getResultByContentType = function (xhr, dataType, onError) {
  * @param {Object} settings
  */
 function ajax(url, settings) {
+	var self = this;
 	var xhr = getAjaxObject();
    
-	var success = settings.success,
-
-	result = null;
+	var result = null;
 	
 	var dataType		= settings.dataType;
 	var timeout			= settings.timeout || 10000; /* Tiempo que tarda en cancelarse la transaccion */
 	var method			= settings.method || "GET"; /* Metodo para enviar informacion al servidor */
 	var async			= settings.async || true;
-	var complete		= settings.complete || function () {};
+	var on				= settings.on || {};
+	var complete		= on.complete || function () {};
+	var success			= on.success;
 	var onSuccess		= function () {
 		if (success) {
-			success.apply($, arguments);
+			success.apply(self, arguments);
 		}
-		complete.apply($, arguments);
+		complete.apply(self, arguments);
 	};
 	var onError			= function (a, b, c) {
-		if (settings.failure) {
-			settings.failure(a, b, c);
+		if (on.failure) {
+			on.failure(a, b, c);
 		}
-		complete.apply($, arguments);
+		complete.apply(self, arguments);
 	};
 
 	if (xhr) {
@@ -447,13 +448,12 @@ var TRANSACTION_METHODS = {
 
 $Object.each(TRANSACTION_METHODS, Request.addMethod);
 
-$Object.each(TRANSACTION_METHODS, function (method) {
-	
-	$[method] = function () {
+$Object.each(TRANSACTION_METHODS, function (name, fn) {
+	$[name] = function () {
 		var request = new $.Request();
-		return request[method].apply(request, arguments);
+		fn.apply(request, arguments);
+		return request;
 	};
-	
 });
 			
 });

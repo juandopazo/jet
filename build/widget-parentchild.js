@@ -3,7 +3,7 @@
  * @module widget-parentchild
  * @requires base
  * 
- * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
+ * Copyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.
  * Code licensed under the BSD License
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
@@ -208,7 +208,10 @@ WidgetParent.prototype = {
 	},
 	
 	_add: function (child, index) {
-		var ChildType = child.childType || this.get('childType');
+		var ChildType = child.type || this.get('childType');
+		if (Lang.isString(ChildType)) {
+			ChildType = $[ChildType];
+		}
 		
 		if (child && this.fire('addChild', { child: child, index: index })) {
 			
@@ -366,6 +369,14 @@ $.mix(WidgetChild, {
 					parent = parent.get(PARENT);
 				}
 				return parent;
+			}
+		},
+		type: {
+			setter: function (val) {
+				if (Lang.isString(val)) {
+					val = $[val];
+				}
+				return val;
 			}
 		}
 	},

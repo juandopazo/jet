@@ -3,7 +3,7 @@
  * @module progressbar
  * @requires base
  * 
- * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
+ * Copyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.
  * Code licensed under the BSD License
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
@@ -114,6 +114,9 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 	_afterValueChange: function (e) {
 		if (this.fire(PROGRESS, { value: e.newVal })) {
 			this._update(e.newVal);
+			if (e.newVal == this.get("maxValue")) {
+				this.fire("complete");
+			}
 		} else {
 			e.preventDefault();
 		}
