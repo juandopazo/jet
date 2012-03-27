@@ -44,7 +44,7 @@ $.RadioButton = $.Base.create('radio', $.FormField, [], {}, {
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.RadioGroup = $.Base.create('radio-group', $.Widget, [$.WidgetParent], {
+$.RadioField = $.Base.create('radio-group', $.Widget, [$.WidgetParent], {
 	ATTRS: {
 		/**
 		 * @attribute multiple

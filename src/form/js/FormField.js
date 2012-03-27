@@ -23,12 +23,28 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 		label: {
 			value: ''
 		},
+		/**
+		 * @attribute title
+		 * @description Title to apply to the bounding box
+		 * @default ''
+		 */
 		title: {
 			value: ''
 		},
-		htmlType: {
-			value: 'text'
+		type: {
+			setter: function (value) {
+				return $.FormField.ALIASES[value] || value;
+			}
 		}
+	},
+	ALIASES: {
+		checkbox: 'CheckBoxField',
+		fieldset: 'FieldSet',
+		radio: 'RadioField',
+		select: 'SelectField',
+		textarea: 'TextareaField',
+		text: 'TextField',
+		password: 'PasswordField'
 	}
 }, {
 	BOUNDING_TEMPLATE: '<span/>',
@@ -71,6 +87,9 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 	_syncAttr2Dom: function(e) {
 		this.get('contentBox').attr(e.attrName, e.newVal);
 	},
+	_setFieldValue: function (value) {
+		this.get('contentBox').attr('value', value);
+	},
 	
 	initializer: function() {
 		this._labelNode = $('<label/>');
@@ -82,17 +101,11 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 			focusedChange: this._ffFocusedChange
 		});
 	},
-	renderUI: function(boundingBox, contentBox) {
-		var btnId = this.get('id') + '_input';
-		var htmlType = this.get('htmlType');
-		if ($.Lang.isString(htmlType)) {
-			contentBox.attr('type', htmlType);
-		}
-		contentBox.attr({
-			id: btnId,
-			value: this.get('value')
-		});
-		this._labelNode.attr('htmlFor', btnId);
+	renderUI: function() {
+		var fieldId = this.get('id') + '_field';
+		this.get('contentBox').attr('id', fieldId);
+		this._setFieldValue(this.get('value'));
+		this._labelNode.attr('htmlFor', fieldId);
 	},
 	bindUI: function(boundingBox, contentBox) {
 		this._handlers.push(

@@ -6,7 +6,7 @@
  * @constructor
  * @param {Object} config Object literal specifying widget configuration properties
  */
-$.CheckBox = $.Base.create('checkbox', $.FormField, [], {
+$.CheckBoxField = $.Base.create('checkbox', $.FormField, [], {
 	ATTRS: {
 		/**
 		 * @attribute checked
@@ -28,9 +28,12 @@ $.CheckBox = $.Base.create('checkbox', $.FormField, [], {
 		this.after('checkedChange', this._syncAttr2Dom);
 		this.after('selectedChange', this._uiCheckBoxSelect);
 	},
-	bindUI: function (boundingBox, contentBox) {
+	renderUI: function () {
+		this.get('contentBox').attr('type', 'checkbox');
+	},
+	bindUI: function () {
 		this._handlers.push(
-			contentBox.on('click', $.bind(this._syncDom2Attr, this, 'checked'))
+			this.get('contentBox').on('click', $.bind(this._syncDom2Attr, this, 'checked'))
 		);
 	},
 	syncUI: function() {

@@ -77,9 +77,6 @@ $.SelectField = $.Base.create('select-field', $.FormField, [], {
 				var selected = this.get('selected');
 				return selected && (selected.value ? selected.value : selected.text);
 			}
-		},
-		htmlType: {
-			value: null
 		}
 	}
 }, {
@@ -101,6 +98,10 @@ $.SelectField = $.Base.create('select-field', $.FormField, [], {
 		combo.options.length = 0;
 		this._setOptions(combo, e.newVal);
 	},
+	_setFieldValue: function () {
+		
+	},
+	
 	initializer: function () {
 		this.after('optionsChange', this._afterOptionsChange);
 	},
