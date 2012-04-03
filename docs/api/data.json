@@ -1,0 +1,3241 @@
+{
+    "project": {
+        "name": "Jet",
+        "description": "JavaScript Extensible Toolkit",
+        "version": "0.1.2",
+        "url": "http://github.com/juandopazo/jet/",
+        "dependencies": {
+            "combohandler": "0.1.2",
+            "express": "2.4.6"
+        }
+    },
+    "files": {
+        "build\\array-extras.js": {
+            "name": "build\\array-extras.js",
+            "modules": {
+                "array-extras": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\button.js": {
+            "name": "build\\button.js",
+            "modules": {
+                "button": 1
+            },
+            "classes": {
+                "Button": 1,
+                "ToggleButton": 1,
+                "ButtonGroup": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\cookie.js": {
+            "name": "build\\cookie.js",
+            "modules": {
+                "cookie": 1
+            },
+            "classes": {
+                "Cookie": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\datasource.js": {
+            "name": "build\\datasource.js",
+            "modules": {
+                "datasource": 1
+            },
+            "classes": {
+                "Record": 1,
+                "RecordSet": 1,
+                "DataSource": 1,
+                "DataSource.Get": 1,
+                "DataSource.Ajax": 1,
+                "DataSource.XDR": 1,
+                "DataSource.Local": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\deferred.js": {
+            "name": "build\\deferred.js",
+            "modules": {
+                "deferred": 1
+            },
+            "classes": {
+                "Promise": 1
+            },
+            "fors": {
+                "$": 1,
+                "Promise": 1
+            },
+            "namespaces": {}
+        },
+        "build\\escape.js": {
+            "name": "build\\escape.js",
+            "modules": {
+                "escape": 1
+            },
+            "classes": {
+                "Escape": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\form.js": {
+            "name": "build\\form.js",
+            "modules": {
+                "form": 1
+            },
+            "classes": {
+                "FormField": 1,
+                "CheckBox": 1,
+                "FieldSet": 1,
+                "SelectField": 1,
+                "RadioButton": 1,
+                "RadioGroup": 1,
+                "Form": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\io-xdr.js": {
+            "name": "build\\io-xdr.js",
+            "modules": {
+                "io-xdr": 1
+            },
+            "classes": {},
+            "fors": {
+                "IO": 1
+            },
+            "namespaces": {}
+        },
+        "build\\io.js": {
+            "name": "build\\io.js",
+            "modules": {
+                "io": 1
+            },
+            "classes": {
+                "IO": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\json.js": {
+            "name": "build\\json.js",
+            "modules": {
+                "json": 1
+            },
+            "classes": {
+                "JSON": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\layout.js": {
+            "name": "build\\layout.js",
+            "modules": {
+                "layout": 1
+            },
+            "classes": {
+                "LayoutPanelBase": 1,
+                "LayoutPanel": 1,
+                "Layout": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\log.js": {
+            "name": "build\\log.js",
+            "modules": {
+                "log": 1
+            },
+            "classes": {
+                "Log": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\menu.js": {
+            "name": "build\\menu.js",
+            "modules": {
+                "menu": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\node-deferred.js": {
+            "name": "build\\node-deferred.js",
+            "modules": {
+                "node-deferred": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\paginator.js": {
+            "name": "build\\paginator.js",
+            "modules": {
+                "paginator": 1
+            },
+            "classes": {
+                "Paginator": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\progressbar.js": {
+            "name": "build\\progressbar.js",
+            "modules": {
+                "progressbar": 1
+            },
+            "classes": {
+                "ProgressBar": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\selector.js": {
+            "name": "build\\selector.js",
+            "modules": {
+                "selector": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\swf.js": {
+            "name": "build\\swf.js",
+            "modules": {
+                "swf": 1
+            },
+            "classes": {
+                "SWF": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\touch.js": {
+            "name": "build\\touch.js",
+            "modules": {
+                "touch": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\treeview.js": {
+            "name": "build\\treeview.js",
+            "modules": {
+                "treeview": 1
+            },
+            "classes": {
+                "TreeNode": 1,
+                "TreeView": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\widget-form.js": {
+            "name": "build\\widget-form.js",
+            "modules": {
+                "widget-form": 1
+            },
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "build\\widget-parentchild.js": {
+            "name": "build\\widget-parentchild.js",
+            "modules": {
+                "widget-parentchild": 1
+            },
+            "classes": {
+                "WidgetParent": 1,
+                "WidgetChild": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {
+        "array-extras": {
+            "name": "array-extras",
+            "submodules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\array-extras.js",
+            "line": 1,
+            "description": "Array extras based on ES5",
+            "requires": [
+                "Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "button": {
+            "name": "button",
+            "submodules": {},
+            "classes": {
+                "Button": 1,
+                "ToggleButton": 1,
+                "ButtonGroup": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\button.js",
+            "line": 1,
+            "description": "Different kinds of buttons and form elements",
+            "requires": [
+                "base\n\nCopyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "cookie": {
+            "name": "cookie",
+            "submodules": {},
+            "classes": {
+                "Cookie": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\cookie.js",
+            "line": 1,
+            "description": "Provides abstracion for easier use of cookies",
+            "requires": [
+                "jet\n\nCopyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "datasource": {
+            "name": "datasource",
+            "submodules": {},
+            "classes": {
+                "Record": 1,
+                "RecordSet": 1,
+                "DataSource": 1,
+                "DataSource.Get": 1,
+                "DataSource.Ajax": 1,
+                "DataSource.XDR": 1,
+                "DataSource.Local": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\datasource.js",
+            "line": 1,
+            "description": "DataSources are different ways of accessing data and parsing it into an schema",
+            "requires": [
+                "base\n\nCopyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "deferred": {
+            "name": "deferred",
+            "submodules": {},
+            "classes": {
+                "Promise": 1,
+                "$": 1
+            },
+            "fors": {
+                "$": 1,
+                "Promise": 1
+            },
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\deferred.js",
+            "line": 1,
+            "description": "Provides an extension that makes a class deferrable",
+            "requires": [
+                "oop\n\nCopyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "escape": {
+            "name": "escape",
+            "submodules": {},
+            "classes": {
+                "Escape": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\escape.js",
+            "line": 19,
+            "description": "Provides utility methods for escaping strings.",
+            "requires": [
+                "Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ],
+            "static": 1,
+            "since": "3.3.0"
+        },
+        "form": {
+            "name": "form",
+            "submodules": {},
+            "classes": {
+                "FormField": 1,
+                "CheckBox": 1,
+                "FieldSet": 1,
+                "SelectField": 1,
+                "RadioButton": 1,
+                "RadioGroup": 1,
+                "Form": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\form.js",
+            "line": 1,
+            "description": "A Form widget",
+            "requires": [
+                "widget\n\nCopyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "io-xdr": {
+            "name": "io-xdr",
+            "submodules": {},
+            "classes": {},
+            "fors": {
+                "IO": 1
+            },
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\io-xdr.js",
+            "line": 1,
+            "description": "Adds functionality to make cross-domain ajax calls",
+            "requires": [
+                "base,io\n\nCopyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "io": {
+            "name": "io",
+            "submodules": {},
+            "classes": {
+                "IO": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\io.js",
+            "line": 1,
+            "description": "Handles AJAX, JSONP and XSLT requests",
+            "requires": [
+                "deferred\n\nCopyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "json": {
+            "name": "json",
+            "submodules": {},
+            "classes": {
+                "JSON": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\json.js",
+            "line": 1,
+            "description": "Adds JSON support when needed. If JSON is found natively, this module is not loaded but the $.JSON object is still found if needed",
+            "requires": [
+                "jet\n\nCopyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "layout": {
+            "name": "layout",
+            "submodules": {},
+            "classes": {
+                "LayoutPanelBase": 1,
+                "LayoutPanel": 1,
+                "Layout": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\layout.js",
+            "line": 1,
+            "description": "Creates a resizable layout",
+            "requires": [
+                "base,resize,widget-parentchild\n\nCopyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "log": {
+            "name": "log",
+            "submodules": {},
+            "classes": {
+                "Log": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\log.js",
+            "line": 1,
+            "description": "Base structure for logging",
+            "requires": [
+                "jet\n\nCopyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "menu": {
+            "name": "menu",
+            "submodules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\menu.js",
+            "line": 1,
+            "description": "OS-like menus for navigation",
+            "requires": [
+                "base,widget-parentchild,widget-alignment\n\nCopyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "node-deferred": {
+            "name": "node-deferred",
+            "submodules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\node-deferred.js",
+            "line": 1,
+            "description": "Adds promises to Node",
+            "requires": [
+                "deferred\n\nCopyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "paginator": {
+            "name": "paginator",
+            "submodules": {},
+            "classes": {
+                "Paginator": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\paginator.js",
+            "line": 1,
+            "description": "Paginator widget",
+            "requires": [
+                "base\n\nCopyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "progressbar": {
+            "name": "progressbar",
+            "submodules": {},
+            "classes": {
+                "ProgressBar": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\progressbar.js",
+            "line": 1,
+            "description": "A progressbar for informing the user of the status of loading resources. Other uses include equalizers, ratings, etc",
+            "requires": [
+                "base\n\nCopyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "selector": {
+            "name": "selector",
+            "submodules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\selector.js",
+            "line": 1,
+            "description": "Small selector engine powered by Qwery",
+            "requires": [
+                "Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "swf": {
+            "name": "swf",
+            "submodules": {},
+            "classes": {
+                "SWF": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\swf.js",
+            "line": 1,
+            "description": "SWFObject adapted to Jet",
+            "requires": [
+                "Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "touch": {
+            "name": "touch",
+            "submodules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\touch.js",
+            "line": 1,
+            "description": "Touch events",
+            "requires": [
+                "node\n\nCopyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "treeview": {
+            "name": "treeview",
+            "submodules": {},
+            "classes": {
+                "TreeNode": 1,
+                "TreeView": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\treeview.js",
+            "line": 1,
+            "description": "TreeView module",
+            "requires": [
+                "base,selector,widget-parentchild\n\nCopyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "widget-form": {
+            "name": "widget-form",
+            "submodules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\widget-form.js",
+            "line": 1,
+            "description": "Provides a WidgetForm extension",
+            "requires": [
+                "base,form\n\nCopyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        },
+        "widget-parentchild": {
+            "name": "widget-parentchild",
+            "submodules": {},
+            "classes": {
+                "WidgetParent": 1,
+                "WidgetChild": 1
+            },
+            "fors": {},
+            "namespaces": {},
+            "tag": "module",
+            "file": "build\\widget-parentchild.js",
+            "line": 1,
+            "description": "A module declaring extensions for parent/child relationships between nodes",
+            "requires": [
+                "base\n\nCopyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.\nCode licensed under the BSD License\nhttps://github.com/juandopazo/jet/blob/master/LICENSE.md"
+            ]
+        }
+    },
+    "classes": {
+        "Button": {
+            "name": "Button",
+            "shortname": "Button",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "button",
+            "namespace": "",
+            "file": "build\\button.js",
+            "line": 36,
+            "description": "A button widget",
+            "extends": "Widget",
+            "uses": [
+                "WidgetChild"
+            ],
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "ToggleButton": {
+            "name": "ToggleButton",
+            "shortname": "ToggleButton",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "button",
+            "namespace": "",
+            "file": "build\\button.js",
+            "line": 169,
+            "description": "A button widget that selects/unselects itself when clicked",
+            "extends": "Button",
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "ButtonGroup": {
+            "name": "ButtonGroup",
+            "shortname": "ButtonGroup",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "button",
+            "namespace": "",
+            "file": "build\\button.js",
+            "line": 182,
+            "description": "A group of buttons that can be styled as a pill",
+            "extends": "Widget",
+            "uses": [
+                "WidgetParent"
+            ],
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "Cookie": {
+            "name": "Cookie",
+            "shortname": "Cookie",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "cookie",
+            "namespace": "",
+            "file": "build\\cookie.js",
+            "line": 14,
+            "description": "Provides abstracion for easier use of cookies",
+            "static": 1
+        },
+        "Record": {
+            "name": "Record",
+            "shortname": "Record",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "datasource",
+            "namespace": "",
+            "file": "build\\datasource.js",
+            "line": 46,
+            "description": "A record is a Hash width a unique id",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "An",
+                    "description": "object literal",
+                    "type": "Object"
+                }
+            ]
+        },
+        "RecordSet": {
+            "name": "RecordSet",
+            "shortname": "RecordSet",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "datasource",
+            "namespace": "",
+            "file": "build\\datasource.js",
+            "line": 90,
+            "description": "A collections of Records",
+            "extends": "EventTarget",
+            "uses": [
+                ""
+            ],
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "data",
+                    "description": "If data is passed, it is converted into several Records",
+                    "type": "Array"
+                }
+            ]
+        },
+        "DataSource": {
+            "name": "DataSource",
+            "shortname": "DataSource",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "datasource",
+            "namespace": "",
+            "file": "build\\datasource.js",
+            "line": 185,
+            "description": "Base class for all data sources. The DataSource class shouldn't be used directly",
+            "extends": "Utility",
+            "access": "protected",
+            "tagname": "",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "DataSource.Get": {
+            "name": "DataSource.Get",
+            "shortname": "DataSource.Get",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "datasource",
+            "namespace": "",
+            "file": "build\\datasource.js",
+            "line": 482,
+            "description": "A Get DataSource that uses JSON for getting data across domains",
+            "extends": "DataSource",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "DataSource.Ajax": {
+            "name": "DataSource.Ajax",
+            "shortname": "DataSource.Ajax",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "datasource",
+            "namespace": "",
+            "file": "build\\datasource.js",
+            "line": 534,
+            "description": "An AJAX DataSource",
+            "extends": "DataSource",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "DataSource.XDR": {
+            "name": "DataSource.XDR",
+            "shortname": "DataSource.XDR",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "datasource",
+            "namespace": "",
+            "file": "build\\datasource.js",
+            "line": 567,
+            "description": "Cross-domain data source",
+            "extends": "DataSource",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "DataSource.Local": {
+            "name": "DataSource.Local",
+            "shortname": "DataSource.Local",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "datasource",
+            "namespace": "",
+            "file": "build\\datasource.js",
+            "line": 598,
+            "description": "A Local DataSource uses local variables",
+            "extends": "DataSource",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "Promise": {
+            "name": "Promise",
+            "shortname": "Promise",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "deferred",
+            "namespace": "",
+            "file": "build\\deferred.js",
+            "line": 44,
+            "description": "A deferred keeps two lists of callbacks, one for the success scenario and another for the failure case.\nIt runs these callbacks once a call to resolve() or reject() is made.\n\nThis class is designed to augment others",
+            "is_constructor": 1
+        },
+        "$": {
+            "name": "$",
+            "shortname": "$",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "deferred",
+            "namespace": ""
+        },
+        "Escape": {
+            "name": "Escape",
+            "shortname": "Escape",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "escape",
+            "namespace": "",
+            "file": "build\\escape.js",
+            "line": 19,
+            "description": "Provides utility methods for escaping strings."
+        },
+        "FormField": {
+            "name": "FormField",
+            "shortname": "FormField",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "form",
+            "namespace": "",
+            "file": "build\\form.js",
+            "line": 14,
+            "extends": "Widget",
+            "uses": [
+                "WidgetChild"
+            ],
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "CheckBox": {
+            "name": "CheckBox",
+            "shortname": "CheckBox",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "form",
+            "namespace": "",
+            "file": "build\\form.js",
+            "line": 152,
+            "description": "A Checkbox",
+            "extends": "FormField",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "FieldSet": {
+            "name": "FieldSet",
+            "shortname": "FieldSet",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "form",
+            "namespace": "",
+            "file": "build\\form.js",
+            "line": 189,
+            "extends": "Widget",
+            "uses": [
+                "WidgetParent",
+                "WidgetChild"
+            ],
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "SelectField": {
+            "name": "SelectField",
+            "shortname": "SelectField",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "form",
+            "namespace": "",
+            "file": "build\\form.js",
+            "line": 303,
+            "description": "A SelectField is a select html element",
+            "extends": "Button",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "RadioButton": {
+            "name": "RadioButton",
+            "shortname": "RadioButton",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "form",
+            "namespace": "",
+            "file": "build\\form.js",
+            "line": 449,
+            "description": "A radio button",
+            "extends": "Button",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "RadioGroup": {
+            "name": "RadioGroup",
+            "shortname": "RadioGroup",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "form",
+            "namespace": "",
+            "file": "build\\form.js",
+            "line": 485,
+            "description": "A group of radio buttons that interact together",
+            "extends": "Widget",
+            "uses": [
+                "WidgetParent"
+            ],
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "Form": {
+            "name": "Form",
+            "shortname": "Form",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "form",
+            "namespace": "",
+            "file": "build\\form.js",
+            "line": 530,
+            "extends": "Widget",
+            "uses": [
+                "WidgetParent"
+            ],
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "IO": {
+            "name": "IO",
+            "shortname": "IO",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "io",
+            "namespace": "",
+            "file": "build\\io.js",
+            "line": 140,
+            "description": "Handles AJAX and JSONP requests",
+            "static": 1
+        },
+        "JSON": {
+            "name": "JSON",
+            "shortname": "JSON",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "json",
+            "namespace": "",
+            "file": "build\\json.js",
+            "line": 14,
+            "description": "JSON parsing",
+            "static": 1
+        },
+        "LayoutPanelBase": {
+            "name": "LayoutPanelBase",
+            "shortname": "LayoutPanelBase",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [
+                "LayoutPanel",
+                "Layout"
+            ],
+            "module": "layout",
+            "namespace": "",
+            "file": "build\\layout.js",
+            "line": 16,
+            "description": "Base class used to create both the Layout and LayoutPanel classes.\nProvides functionality to resize panels keeping the declared layout structure",
+            "is_constructor": 1
+        },
+        "LayoutPanel": {
+            "name": "LayoutPanel",
+            "shortname": "LayoutPanel",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "layout",
+            "namespace": "",
+            "file": "build\\layout.js",
+            "line": 183,
+            "description": "A Layout Panel is a resizable block which size is constrained by the other blocks in the same container",
+            "uses": [
+                "LayoutPanelBase",
+                "WidgetParent",
+                "WidgetChild"
+            ],
+            "extends": "Widget",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "Layout": {
+            "name": "Layout",
+            "shortname": "Layout",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "layout",
+            "namespace": "",
+            "file": "build\\layout.js",
+            "line": 199,
+            "description": "A Layout is a container of Layout Panels",
+            "uses": [
+                "LayoutPanelBase",
+                "WidgetParent"
+            ],
+            "extends": "Widget",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "Log": {
+            "name": "Log",
+            "shortname": "Log",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "log",
+            "namespace": "",
+            "file": "build\\log.js",
+            "line": 14,
+            "description": "Adds the following methods to the $ object",
+            "static": 1
+        },
+        "Paginator": {
+            "name": "Paginator",
+            "shortname": "Paginator",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "paginator",
+            "namespace": "",
+            "file": "build\\paginator.js",
+            "line": 26,
+            "description": "A simple paginator that works on top of a data source",
+            "extends": "Widget",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "ProgressBar": {
+            "name": "ProgressBar",
+            "shortname": "ProgressBar",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "progressbar",
+            "namespace": "",
+            "file": "build\\progressbar.js",
+            "line": 24,
+            "description": "A progressbar for informing the user of the status of loading resources.\nOther uses include equalizers, ratings, etc",
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "SWF": {
+            "name": "SWF",
+            "shortname": "SWF",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "swf",
+            "namespace": "",
+            "file": "build\\swf.js",
+            "line": 28,
+            "description": "A widget based Flash implementation. Does not work with progressive enhancement yet",
+            "extends": "Widget",
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "TreeNode": {
+            "name": "TreeNode",
+            "shortname": "TreeNode",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "treeview",
+            "namespace": "",
+            "file": "build\\treeview.js",
+            "line": 50,
+            "description": "A node in a TreeView",
+            "extends": "Widget",
+            "uses": [
+                "WidgetParent",
+                "WidgetChild"
+            ],
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "TreeView": {
+            "name": "TreeView",
+            "shortname": "TreeView",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "module": "treeview",
+            "namespace": "",
+            "file": "build\\treeview.js",
+            "line": 194,
+            "description": "A labeled tree",
+            "extends": "Widget",
+            "uses": [
+                "WidgetParent"
+            ],
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "WidgetParent": {
+            "name": "WidgetParent",
+            "shortname": "WidgetParent",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [
+                "ButtonGroup",
+                "FieldSet",
+                "RadioGroup",
+                "Form",
+                "LayoutPanel",
+                "Layout",
+                "TreeNode",
+                "TreeView"
+            ],
+            "module": "widget-parentchild",
+            "namespace": "",
+            "file": "build\\widget-parentchild.js",
+            "line": 31,
+            "description": "A widget extension that makes the current widget contein child widgets",
+            "uses": [
+                "ArrayList"
+            ],
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        },
+        "WidgetChild": {
+            "name": "WidgetChild",
+            "shortname": "WidgetChild",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [
+                "Button",
+                "FormField",
+                "FieldSet",
+                "LayoutPanel",
+                "TreeNode"
+            ],
+            "module": "widget-parentchild",
+            "namespace": "",
+            "file": "build\\widget-parentchild.js",
+            "line": 317,
+            "description": "An extension that turns a widget into a child widget",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "config",
+                    "description": "Object literal specifying widget configuration properties",
+                    "type": "Object"
+                }
+            ]
+        }
+    },
+    "classitems": [
+        {
+            "file": "build\\array-extras.js",
+            "line": 82,
+            "description": "Creates a new array with the results of calling a provided function on every element in this array",
+            "itemtype": "method",
+            "name": "map",
+            "params": [
+                {
+                    "name": "arr",
+                    "description": "The Array to map",
+                    "type": "Array"
+                },
+                {
+                    "name": "callback",
+                    "description": "Function that produces an element of the new Array from an element of the current one",
+                    "type": "Function"
+                },
+                {
+                    "name": "thisp",
+                    "description": "Object to use as 'this' when executing 'callback'",
+                    "type": "Object"
+                }
+            ],
+            "class": "Button",
+            "module": "array-extras"
+        },
+        {
+            "file": "build\\button.js",
+            "line": 46,
+            "itemtype": "attribute",
+            "name": "enabled",
+            "description": "Enabled status of the button",
+            "type": "Boolean",
+            "default": "true",
+            "class": "Button",
+            "module": "button"
+        },
+        {
+            "file": "build\\button.js",
+            "line": 56,
+            "itemtype": "attribute",
+            "name": "labelNode",
+            "description": "Pointer to the <label> node related to this button",
+            "type": "NodeList",
+            "readonly": "",
+            "class": "Button",
+            "module": "button"
+        },
+        {
+            "file": "build\\button.js",
+            "line": 66,
+            "itemtype": "attribute",
+            "name": "labelContent",
+            "description": "Text of this button's label",
+            "type": "String",
+            "default": "null",
+            "class": "Button",
+            "module": "button"
+        },
+        {
+            "file": "build\\button.js",
+            "line": 76,
+            "itemtype": "attribute",
+            "name": "text",
+            "description": "Text inside the button",
+            "default": "''",
+            "class": "Button",
+            "module": "button"
+        },
+        {
+            "file": "build\\button.js",
+            "line": 195,
+            "itemtype": "attribute",
+            "name": "pill",
+            "description": "Whether this button group should be styled as a pill",
+            "type": "Boolean",
+            "default": "false",
+            "class": "ButtonGroup",
+            "module": "button"
+        },
+        {
+            "file": "build\\cookie.js",
+            "line": 20,
+            "description": "Sets the value of a cookie variable",
+            "itemtype": "method",
+            "name": "set",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "value",
+                    "description": "",
+                    "type": "String"
+                },
+                {
+                    "name": "optional",
+                    "description": "- duration of the variable in days",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "Cookie",
+            "module": "cookie"
+        },
+        {
+            "file": "build\\cookie.js",
+            "line": 39,
+            "description": "Get the value of a cookie",
+            "itemtype": "method",
+            "name": "get",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "class": "Cookie",
+            "module": "cookie"
+        },
+        {
+            "file": "build\\cookie.js",
+            "line": 61,
+            "description": "Removes a cookie",
+            "itemtype": "method",
+            "name": "unset",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "chainable": 1,
+            "class": "Cookie",
+            "module": "cookie"
+        },
+        {
+            "file": "build\\cookie.js",
+            "line": 70,
+            "description": "Returns whether a cookir variable is set",
+            "itemtype": "method",
+            "name": "isSet",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "class": "Cookie",
+            "module": "cookie"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 55,
+            "description": "Returns the id of the record. Each record has a unique id globally.alert\nThis allows for easy filtering, ordering, etc of records.alert",
+            "itemtype": "method",
+            "name": "getId",
+            "return": {
+                "description": "Number"
+            },
+            "class": "Record",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 64,
+            "description": "Returns the data of the record. Must be an object literal",
+            "itemtype": "method",
+            "name": "getData",
+            "class": "Record",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 71,
+            "description": "Shortcut for getting a value from the record's data",
+            "itemtype": "method",
+            "name": "get",
+            "params": [
+                {
+                    "name": "key",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "class": "Record",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 80,
+            "description": "Returns if an object is a Record",
+            "itemtype": "method",
+            "name": "hasInstance",
+            "static": 1,
+            "params": [
+                {
+                    "name": "o",
+                    "description": "The object to check",
+                    "type": "Object"
+                }
+            ],
+            "class": "Record",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 135,
+            "description": "Replaces all records with new data",
+            "itemtype": "method",
+            "name": "replace",
+            "params": [
+                {
+                    "name": "data",
+                    "description": "",
+                    "type": "Array"
+                }
+            ],
+            "chainable": 1,
+            "class": "RecordSet",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 157,
+            "description": "Sorts the records based on a key of the data they hold",
+            "itemtype": "method",
+            "name": "sortBy",
+            "params": [
+                {
+                    "name": "key",
+                    "description": "The data key that will be sorted",
+                    "type": "String"
+                },
+                {
+                    "name": "order",
+                    "description": "the order in which to sort. May be \"asc\" or \"desc\"",
+                    "type": "String"
+                }
+            ],
+            "chainable": 1,
+            "class": "RecordSet",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 195,
+            "itemtype": "attribute",
+            "name": "recordSet",
+            "description": "This datasource's associated recordset",
+            "type": "RecordSet",
+            "writeonce": "",
+            "class": "DataSource",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 204,
+            "itemtype": "attribute",
+            "name": "responseType",
+            "description": "The expected response type ('xml', 'jsarray', 'json', 'text')",
+            "required": "",
+            "class": "DataSource",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 212,
+            "itemtype": "attribute",
+            "name": "responseSchema",
+            "description": "<p>The schema by which to parse the response data. May be:</p>\n<p><strong>DataSource.responseType.JSARRAY schema</strong><br/>\nA JSARRAY response type assumes the following response shape:</p>\n<code>//All records are listed as an array<br/>\n[<br/>\n&nbsp;&nbsp;&nbsp;&nbsp;['value1', 'value2', 'value3'], //one record<br/>\n&nbsp;&nbsp;&nbsp;&nbsp;['another1', 'another2', 'another3'] //another record<br/>\n]</code>\n<p></p>\n<p><strong>DataSource.responseType.TEXT schema</strong><br/>\nThis schema essentially splits the string and then acts as if it where a DataSource.responseType.JSARRAY.<br/>\nMust define a <strong>fieldDelim</strong> property. Example (comma separated value):</p>\n<code>responseSchema: {<br/>\n&nbsp;&nbsp;&nbsp;&nbsp;fieldDelim: \",\"<br/>\n&nbsp;&nbsp;&nbsp;&nbsp;fields: [\"firstField\", \"secondField\"]<br/>\n}</code>\n<p></p>\n<p><strong>DataSource.responseType.JSON schema</strong><br/>\nExample:</p>\n<code>responseSchema = {<br/>\n&nbsp;&nbsp;&nbsp;&nbsp;resultList : \"Response.Results\", // String pointer to result data<br/>\n&nbsp;&nbsp;&nbsp;&nbsp;// Field order doesn't matter and not all data is required to have a field<br/>\n&nbsp;&nbsp;&nbsp;&nbsp;fields : [<br/>\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ key: \"id\" },                    // simple location<br/>\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ key: \"obj\" }<br/>\n&nbsp;&nbsp;&nbsp;&nbsp;]<br/>\n}</code>\n<p></p>\n<p><strong>DataSource.responseType.XML schema</strong><br/>\nExample:</p> \n<code>responseSchema: {<br/>\n&nbsp;&nbsp;&nbsp;&nbsp;resultNode: \"rootNode\", // every result field will be looked for between this node's children<br/>\n&nbsp;&nbsp;&nbsp;&nbsp;fields: [<br/>\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ key: \"keyName\", node: \"nodeName\" }, // in this case, the value of the field will be the node's value<br/>\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ key: \"otherKey\", node: \"otherNode\", attr: \"type\" }, // in this other case, the field value will be the \"type\" attribute<br/>\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ key: \"aNumber\", node: \"someNode\", parser: \"parseFloat\" } // this value will be parsed as a Float<br/>\n&nbsp;&nbsp;&nbsp;&nbsp;]<br/>\n}</code>",
+            "type": "Hash",
+            "required": "",
+            "class": "DataSource",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 258,
+            "itemtype": "attribute",
+            "name": "initialRequest",
+            "description": "Data to send in the automatic initial request",
+            "type": "Object",
+            "class": "DataSource",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 348,
+            "description": "Error while parsing data",
+            "itemtype": "event",
+            "name": "parserError",
+            "params": [
+                {
+                    "name": "Error",
+                    "description": "message",
+                    "type": "Message"
+                }
+            ],
+            "class": "DataSource",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 412,
+            "description": "Sends a request",
+            "itemtype": "method",
+            "name": "sendRequest",
+            "params": [
+                {
+                    "name": "request",
+                    "description": "",
+                    "type": "Object"
+                },
+                {
+                    "name": "ignoreCache",
+                    "description": "",
+                    "type": "Boolean"
+                }
+            ],
+            "chainable": 1,
+            "class": "DataSource",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 429,
+            "description": "Fired when new data is available",
+            "itemtype": "event",
+            "name": "update",
+            "params": [
+                {
+                    "name": "data",
+                    "description": "New data",
+                    "type": "Object"
+                },
+                {
+                    "name": "data",
+                    "description": "request",
+                    "type": "Object"
+                }
+            ],
+            "class": "DataSource",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 455,
+            "itemtype": "method",
+            "name": "handleRequest",
+            "description": "The logic for the chosen source type. Should be overwritten when extending the DataSourceClass",
+            "class": "DataSource",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 463,
+            "description": "Adds an event listener to the \"beforeParse\" event",
+            "itemtype": "method",
+            "name": "onBeforeParse",
+            "params": [
+                {
+                    "name": "callback",
+                    "description": "",
+                    "type": "Function"
+                }
+            ],
+            "chainable": 1,
+            "class": "DataSource",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 491,
+            "itemtype": "attribute",
+            "name": "jsonCallbackParam",
+            "description": "Name of the URL parameter that defines the name of the JSONP callback",
+            "type": "String",
+            "default": "\"p\"",
+            "class": "DataSource.Get",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 500,
+            "itemtype": "attribute",
+            "name": "timeout",
+            "description": "Ms after which the request is considered to have timed out",
+            "type": "Number",
+            "default": "10000",
+            "class": "DataSource.Get",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 509,
+            "itemtype": "attribute",
+            "name": "url",
+            "description": "Url from which to fetch the data",
+            "type": "String",
+            "required": "",
+            "class": "DataSource.Get",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 543,
+            "itemtype": "attribute",
+            "name": "url",
+            "description": "Url from which to fetch the data",
+            "type": "String",
+            "required": "",
+            "class": "DataSource.Ajax",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 576,
+            "itemtype": "attribute",
+            "name": "url",
+            "description": "Url from which to fetch the data",
+            "type": "String",
+            "required": "",
+            "class": "DataSource.XDR",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\datasource.js",
+            "line": 607,
+            "itemtype": "attribute",
+            "name": "localData",
+            "description": "The object to use as a datasource",
+            "required": "",
+            "class": "DataSource.Local",
+            "module": "datasource"
+        },
+        {
+            "file": "build\\deferred.js",
+            "line": 60,
+            "itemtype": "method",
+            "name": "then",
+            "description": "Adds callbacks to the list of callbacks tracked by the promise",
+            "params": [
+                {
+                    "name": "doneCallbacks",
+                    "description": "A function or array of functions to run when the promise is resolved",
+                    "type": "Function|Array"
+                },
+                {
+                    "name": "failCallbacks",
+                    "description": "A function or array of functions to run when the promise is rejected",
+                    "type": "Function|Array"
+                }
+            ],
+            "chainable": 1,
+            "class": "Promise",
+            "module": "deferred"
+        },
+        {
+            "file": "build\\deferred.js",
+            "line": 91,
+            "itemtype": "method",
+            "name": "done",
+            "description": "Listens to the 'success' event",
+            "params": [
+                {
+                    "name": "doneCallbacks",
+                    "description": "Takes any number of functions or arrays of functions to run when the promise is resolved",
+                    "type": "Function|Array"
+                }
+            ],
+            "chainable": 1,
+            "class": "Promise",
+            "module": "deferred"
+        },
+        {
+            "file": "build\\deferred.js",
+            "line": 101,
+            "itemtype": "method",
+            "name": "fail",
+            "description": "Listens to the 'failure' event",
+            "params": [
+                {
+                    "name": "failCallbacks",
+                    "description": "Takes any number of functions or arrays of functions to run when the promise is rejected",
+                    "type": "Function|Array"
+                }
+            ],
+            "chainable": 1,
+            "class": "Promise",
+            "module": "deferred"
+        },
+        {
+            "file": "build\\deferred.js",
+            "line": 111,
+            "itemtype": "method",
+            "name": "always",
+            "description": "Listens to the 'complete' event",
+            "params": [
+                {
+                    "name": "callbacks",
+                    "description": "Takes any number of functions or arrays of functions to run when the promise is rejected or resolved",
+                    "type": "Function|Array"
+                }
+            ],
+            "chainable": 1,
+            "class": "Promise",
+            "module": "deferred"
+        },
+        {
+            "file": "build\\deferred.js",
+            "line": 122,
+            "itemtype": "method",
+            "name": "resolve",
+            "description": "Resolves the promise and notifies all callbacks",
+            "params": [
+                {
+                    "name": "o",
+                    "description": "Any number of arguments that will be passed to the success callbacks",
+                    "type": "Object"
+                }
+            ],
+            "chainable": 1,
+            "class": "Promise",
+            "module": "deferred"
+        },
+        {
+            "file": "build\\deferred.js",
+            "line": 133,
+            "itemtype": "method",
+            "name": "reject",
+            "description": "Rejects the promise and notifies all callbacks",
+            "params": [
+                {
+                    "name": "o",
+                    "description": "Any number of arguments that will be passed to the failure callbacks",
+                    "type": "Object"
+                }
+            ],
+            "chainable": 1,
+            "class": "Promise",
+            "module": "deferred"
+        },
+        {
+            "file": "build\\deferred.js",
+            "line": 160,
+            "itemtype": "method",
+            "name": "defer",
+            "description": "Returns a new promise. This method will be mostly used by implementors that extend this class to create\nadditional asynchronous functionalityu. For example:\n<pre><code>\nwait: function (delay) {\n\t\treturn this.defer(function (promise) {\n\t\t$.later(delay || 0, promise, promise.resolve);\n});\n}</code></pre>",
+            "return": {
+                "description": "",
+                "type": "Deferred"
+            },
+            "class": "Promise",
+            "module": "deferred"
+        },
+        {
+            "file": "build\\deferred.js",
+            "line": 181,
+            "description": "Returns a promise for a (possibly) asynchronous call.\nCalls a given function that receives the new promise as parameter and must call resolve()\nor reject() at a certain point",
+            "itemtype": "method",
+            "name": "defer",
+            "params": [
+                {
+                    "name": "fn",
+                    "description": "A function that encloses an async call.",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "Promise"
+            },
+            "class": "$",
+            "module": "deferred"
+        },
+        {
+            "file": "build\\deferred.js",
+            "line": 196,
+            "description": "Returns a promise that will be resolved a number of milliseconds later",
+            "itemtype": "method",
+            "name": "delay",
+            "params": [
+                {
+                    "name": "ms",
+                    "description": "Milliseconds to wait",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Promise"
+            },
+            "class": "$",
+            "module": "deferred"
+        },
+        {
+            "file": "build\\deferred.js",
+            "line": 203,
+            "description": "Returns a promise that will be resolved a number of milliseconds later",
+            "itemtype": "method",
+            "name": "delay",
+            "params": [
+                {
+                    "name": "ms",
+                    "description": "Milliseconds to wait",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Promise"
+            },
+            "class": "Promise",
+            "module": "deferred"
+        },
+        {
+            "file": "build\\deferred.js",
+            "line": 218,
+            "description": "Calls a number of functions separated by a certain time",
+            "itemtype": "method",
+            "name": "queue",
+            "params": [
+                {
+                    "name": "fns",
+                    "description": "Array of functions to add to the queue",
+                    "type": "Array"
+                },
+                {
+                    "name": "ms",
+                    "description": "Milliseconds to wait between each function call",
+                    "type": "Number"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "Promise"
+            },
+            "class": "$",
+            "module": "deferred"
+        },
+        {
+            "file": "build\\deferred.js",
+            "line": 238,
+            "itemtype": "method",
+            "name": "when",
+            "description": "Waits for a series of asynchronous calls to be completed",
+            "params": [
+                {
+                    "name": "deferred",
+                    "description": "Any number of Deferred instances or arrays of instances",
+                    "type": "Deferred|Array"
+                }
+            ],
+            "return": {
+                "description": "Promise"
+            },
+            "class": "$",
+            "module": "deferred"
+        },
+        {
+            "file": "build\\escape.js",
+            "line": 13,
+            "description": "Copyright © 2011 Yahoo! Inc. All rights reserved \nCode licensed under the BSD License\nhttp://yuilibrary.com/license/",
+            "class": "Escape",
+            "module": "escape"
+        },
+        {
+            "file": "build\\escape.js",
+            "line": 41,
+            "description": "Returns a copy of the specified string with special HTML characters\nescaped. The following characters will be converted to their\ncorresponding character entities:\n\n    & < > \" ' / `\n\nThis implementation is based on the [OWASP HTML escaping\nrecommendations][1]. In addition to the characters in the OWASP\nrecommendations, we also escape the <code>&#x60;</code> character, since IE\ninterprets it as an attribute delimiter.\n\nIf _string_ is not already a string, it will be coerced to a string.\n\n[1]: http://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet",
+            "itemtype": "method",
+            "name": "html",
+            "params": [
+                {
+                    "name": "string",
+                    "description": "String to escape.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "Escaped string.",
+                "type": "String"
+            },
+            "static": 1,
+            "class": "Escape",
+            "module": "escape"
+        },
+        {
+            "file": "build\\escape.js",
+            "line": 66,
+            "description": "Returns a copy of the specified string with special regular expression\ncharacters escaped, allowing the string to be used safely inside a regex.\nThe following characters, and all whitespace characters, are escaped:\n\n    - # $ ^ * ( ) + [ ] { } | \\ , . ?\n\nIf _string_ is not already a string, it will be coerced to a string.",
+            "itemtype": "method",
+            "name": "regex",
+            "params": [
+                {
+                    "name": "string",
+                    "description": "String to escape.",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "Escaped string.",
+                "type": "String"
+            },
+            "static": 1,
+            "class": "Escape",
+            "module": "escape"
+        },
+        {
+            "file": "build\\escape.js",
+            "line": 86,
+            "description": "Regex replacer for HTML escaping.",
+            "itemtype": "method",
+            "name": "_htmlReplacer",
+            "params": [
+                {
+                    "name": "match",
+                    "description": "Matched character (must exist in HTML_CHARS).",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "HTML entity.",
+                "type": "String"
+            },
+            "static": 1,
+            "access": "protected",
+            "tagname": "",
+            "class": "Escape",
+            "module": "escape"
+        },
+        {
+            "file": "build\\form.js",
+            "line": 22,
+            "itemtype": "attribute",
+            "name": "value",
+            "description": "value of the input node",
+            "default": "''",
+            "class": "FormField",
+            "module": "form"
+        },
+        {
+            "file": "build\\form.js",
+            "line": 30,
+            "itemtype": "attribute",
+            "name": "label",
+            "description": "Label for the input node",
+            "default": "''",
+            "class": "FormField",
+            "module": "form"
+        },
+        {
+            "file": "build\\form.js",
+            "line": 38,
+            "itemtype": "attribute",
+            "name": "title",
+            "description": "Title to apply to the bounding box",
+            "default": "''",
+            "class": "FormField",
+            "module": "form"
+        },
+        {
+            "file": "build\\form.js",
+            "line": 63,
+            "itemtype": "property",
+            "name": "CONTENT_TEMPLATE",
+            "type": "String",
+            "default": "'<input/>'",
+            "class": "FormField",
+            "module": "form"
+        },
+        {
+            "file": "build\\form.js",
+            "line": 161,
+            "itemtype": "attribute",
+            "name": "checked",
+            "description": "Maps to the DOM attribute",
+            "default": "false",
+            "class": "CheckBox",
+            "module": "form"
+        },
+        {
+            "file": "build\\form.js",
+            "line": 198,
+            "itemtype": "attribute",
+            "name": "defaultChildType",
+            "default": "FormField",
+            "class": "FieldSet",
+            "module": "form"
+        },
+        {
+            "file": "build\\form.js",
+            "line": 205,
+            "itemtype": "attribute",
+            "name": "legend",
+            "description": "A title for a fieldset, using a <legend> tag",
+            "default": "''",
+            "class": "FieldSet",
+            "module": "form"
+        },
+        {
+            "file": "build\\form.js",
+            "line": 220,
+            "itemtype": "property",
+            "name": "BOUNDING_TEMPLATE",
+            "type": "String",
+            "default": "'<fieldset/>'",
+            "class": "FieldSet",
+            "module": "form"
+        },
+        {
+            "file": "build\\form.js",
+            "line": 227,
+            "itemtype": "property",
+            "name": "LEGEND_TEMPLATE",
+            "type": "String",
+            "default": "'<legend/>'",
+            "class": "FieldSet",
+            "module": "form"
+        },
+        {
+            "file": "build\\form.js",
+            "line": 382,
+            "itemtype": "method",
+            "name": "add",
+            "description": "Adds options to the combo box",
+            "params": [
+                {
+                    "name": "The",
+                    "description": "text value of the option, or alternatively \na hash which key is the text and the value is the option's value",
+                    "type": "String | Object"
+                },
+                {
+                    "name": "value",
+                    "description": "optional - The value of the option",
+                    "type": "String"
+                }
+            ],
+            "chainable": 1,
+            "class": "SelectField",
+            "module": "form"
+        },
+        {
+            "file": "build\\form.js",
+            "line": 402,
+            "itemtype": "method",
+            "name": "fill",
+            "description": "Adds several options to the select",
+            "params": [
+                {
+                    "name": "values",
+                    "description": "An array of text values that behave like the 'text' parameter of the add() method",
+                    "type": "Array"
+                }
+            ],
+            "chainable": 1,
+            "class": "SelectField",
+            "module": "form"
+        },
+        {
+            "file": "build\\form.js",
+            "line": 418,
+            "itemtype": "method",
+            "name": "clear",
+            "description": "Removes all options from the combo box",
+            "chainable": 1,
+            "class": "SelectField",
+            "module": "form"
+        },
+        {
+            "file": "build\\form.js",
+            "line": 426,
+            "itemtype": "method",
+            "name": "select",
+            "description": "Selects a certain option based on an index",
+            "params": [
+                {
+                    "name": "index",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "SelectField",
+            "module": "form"
+        },
+        {
+            "file": "build\\form.js",
+            "line": 495,
+            "itemtype": "attribute",
+            "name": "multiple",
+            "description": "Boolean indicating if multiple children can be selected at once. Whether or not multiple selection is enabled is always delegated to the value of the multiple attribute of the root widget in the object hierarchy",
+            "default": "false",
+            "readonly": "",
+            "class": "RadioGroup",
+            "module": "form"
+        },
+        {
+            "file": "build\\form.js",
+            "line": 505,
+            "itemtype": "attribute",
+            "name": "name",
+            "description": "Name attribute of all radio buttons in the group",
+            "readonly": "",
+            "class": "RadioGroup",
+            "module": "form"
+        },
+        {
+            "file": "build\\form.js",
+            "line": 538,
+            "itemtype": "attribute",
+            "name": "defaultChildType",
+            "default": "'FieldSet'",
+            "class": "Form",
+            "module": "form"
+        },
+        {
+            "file": "build\\form.js",
+            "line": 545,
+            "itemtype": "attribute",
+            "name": "action",
+            "description": "The target URL for the form",
+            "class": "Form",
+            "module": "form"
+        },
+        {
+            "file": "build\\io-xdr.js",
+            "line": 37,
+            "itemtype": "method",
+            "name": "flajax",
+            "description": "Makes a cross-domain ajax call based on a Flash engine. <strong>Requires the io-xsl submodule</strong>",
+            "params": [
+                {
+                    "name": "settings",
+                    "description": "",
+                    "type": "Hash"
+                }
+            ],
+            "class": "IO",
+            "module": "io-xdr"
+        },
+        {
+            "file": "build\\io.js",
+            "line": 145,
+            "description": "Makes an ajax request",
+            "itemtype": "method",
+            "name": "ajax",
+            "params": [
+                {
+                    "name": "settings",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "class": "IO",
+            "module": "io"
+        },
+        {
+            "file": "build\\io.js",
+            "line": 317,
+            "itemtype": "method",
+            "name": "xsl",
+            "description": "Makes a XSL transformation. Loads the files with Ajax if needed. <strong>Requires the io-xsl submodule</strong>",
+            "params": [
+                {
+                    "name": "settings",
+                    "description": "",
+                    "type": "Object"
+                }
+            ],
+            "class": "IO",
+            "module": "io"
+        },
+        {
+            "file": "build\\io.js",
+            "line": 392,
+            "itemtype": "method",
+            "name": "abort",
+            "description": "Aborts the request if available (doesn't work on JSONP requests)",
+            "chainable": 1,
+            "class": "IO",
+            "module": "io"
+        },
+        {
+            "file": "build\\io.js",
+            "line": 404,
+            "itemtype": "method",
+            "name": "ajax",
+            "description": "Calls $.ajax and returns a new Request",
+            "params": [
+                {
+                    "name": "url",
+                    "description": "The url for the io request",
+                    "type": "String"
+                },
+                {
+                    "name": "config",
+                    "description": "Config options for the io request (see $.io)",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "Request"
+            },
+            "class": "IO",
+            "module": "io"
+        },
+        {
+            "file": "build\\io.js",
+            "line": 412,
+            "itemtype": "method",
+            "name": "jsonp",
+            "description": "Calls $.jsonp and returns a new Request",
+            "params": [
+                {
+                    "name": "url",
+                    "description": "The url for the jsonp request",
+                    "type": "String"
+                },
+                {
+                    "name": "config",
+                    "description": "Config options for the jsonp request (see $.io)",
+                    "type": "Object"
+                }
+            ],
+            "return": {
+                "description": "Request"
+            },
+            "class": "IO",
+            "module": "io"
+        },
+        {
+            "file": "build\\json.js",
+            "line": 19,
+            "description": "Takes a string and parses it into an object literal",
+            "itemtype": "method",
+            "name": "parse",
+            "params": [
+                {
+                    "name": "json",
+                    "description": "string",
+                    "type": "String"
+                }
+            ],
+            "class": "JSON",
+            "module": "json"
+        },
+        {
+            "file": "build\\json.js",
+            "line": 24,
+            "description": "Takes an object literal and serialices it into a string",
+            "itemtype": "method",
+            "name": "stringify",
+            "params": [
+                {
+                    "name": "an",
+                    "description": "object literal",
+                    "type": "Object"
+                }
+            ],
+            "class": "JSON",
+            "module": "json"
+        },
+        {
+            "file": "build\\layout.js",
+            "line": 33,
+            "itemtype": "config",
+            "name": "direction",
+            "description": "Direction in which this panel can be resized",
+            "default": "LayoutPanelBase.Vertical",
+            "writeonce": "",
+            "class": "LayoutPanelBase",
+            "module": "layout"
+        },
+        {
+            "file": "build\\layout.js",
+            "line": 43,
+            "itemtype": "config",
+            "name": "minSize",
+            "description": "Minimum size the panel can acquire. Applies to width or height depending on the 'direction' attribute",
+            "default": "0",
+            "writeonce": "",
+            "class": "LayoutPanelBase",
+            "module": "layout"
+        },
+        {
+            "file": "build\\layout.js",
+            "line": 53,
+            "itemtype": "config",
+            "name": "shim",
+            "description": "Whether the resize utility should use a shim to protect the mouse movements",
+            "default": "false",
+            "writeonce": "",
+            "class": "LayoutPanelBase",
+            "module": "layout"
+        },
+        {
+            "file": "build\\layout.js",
+            "line": 63,
+            "itemtype": "config",
+            "name": "defaultChildType",
+            "description": "Default type to apply to children",
+            "default": "LayoutPanel",
+            "class": "LayoutPanelBase",
+            "module": "layout"
+        },
+        {
+            "file": "build\\log.js",
+            "line": 31,
+            "itemtype": "method",
+            "name": "error",
+            "description": "Logs an error",
+            "class": "Log",
+            "module": "log"
+        },
+        {
+            "file": "build\\log.js",
+            "line": 38,
+            "itemtype": "method",
+            "name": "warning",
+            "description": "Logs a warning",
+            "class": "Log",
+            "module": "log"
+        },
+        {
+            "file": "build\\log.js",
+            "line": 45,
+            "itemtype": "method",
+            "name": "log",
+            "description": "Logs a message",
+            "class": "Log",
+            "module": "log"
+        },
+        {
+            "file": "build\\menu.js",
+            "line": 16,
+            "itemtype": "attribute",
+            "name": "labelNode",
+            "description": "A pointer to the node containing the label",
+            "default": "<span/>",
+            "class": "Paginator",
+            "module": "menu"
+        },
+        {
+            "file": "build\\menu.js",
+            "line": 25,
+            "itemtype": "attribute",
+            "name": "label",
+            "description": "The content of the Menu's label",
+            "class": "Paginator",
+            "module": "menu"
+        },
+        {
+            "file": "build\\paginator.js",
+            "line": 36,
+            "itemtype": "attribute",
+            "name": "recordSet",
+            "description": "A RecordSet with the data the paginator should handle",
+            "required": "",
+            "type": "RecordSet",
+            "class": "Paginator",
+            "module": "paginator"
+        },
+        {
+            "file": "build\\paginator.js",
+            "line": 45,
+            "itemtype": "attribute",
+            "name": "recordsPerPage",
+            "description": "Number of records each page should show",
+            "type": "Number",
+            "default": "10",
+            "class": "Paginator",
+            "module": "paginator"
+        },
+        {
+            "file": "build\\paginator.js",
+            "line": 54,
+            "itemtype": "attribute",
+            "name": "firstLast",
+            "description": "Wheter the 'First' and 'Last' buttons should appear",
+            "type": "Boolean",
+            "default": "true",
+            "class": "Paginator",
+            "module": "paginator"
+        },
+        {
+            "file": "build\\paginator.js",
+            "line": 63,
+            "itemtype": "attribute",
+            "name": "prevNext",
+            "description": "Wheter the 'previous' and 'next' buttons should appear",
+            "type": "Boolean",
+            "default": "true",
+            "class": "Paginator",
+            "module": "paginator"
+        },
+        {
+            "file": "build\\paginator.js",
+            "line": 72,
+            "itemtype": "attribute",
+            "name": "pagesShown",
+            "description": "Number of pages that should be listed in the paginator (1, 2, 3...)",
+            "type": "Number",
+            "default": "5",
+            "class": "Paginator",
+            "module": "paginator"
+        },
+        {
+            "file": "build\\paginator.js",
+            "line": 81,
+            "itemtype": "attribute",
+            "name": "firstText",
+            "description": "The text of the 'first' button",
+            "writeonce": "",
+            "default": "'<< first'",
+            "type": "String",
+            "class": "Paginator",
+            "module": "paginator"
+        },
+        {
+            "file": "build\\paginator.js",
+            "line": 92,
+            "itemtype": "attribute",
+            "name": "prevText",
+            "description": "The text of the 'previous' button",
+            "writeonce": "",
+            "default": "'< prev'",
+            "type": "String",
+            "class": "Paginator",
+            "module": "paginator"
+        },
+        {
+            "file": "build\\paginator.js",
+            "line": 103,
+            "itemtype": "attribute",
+            "name": "nextText",
+            "description": "The text of the 'next' button",
+            "writeonce": "",
+            "default": "'next >'",
+            "type": "String",
+            "class": "Paginator",
+            "module": "paginator"
+        },
+        {
+            "file": "build\\paginator.js",
+            "line": 114,
+            "itemtype": "attribute",
+            "name": "lastText",
+            "description": "The text of the 'last' button",
+            "writeonce": "",
+            "default": "'last >>'",
+            "type": "String",
+            "class": "Paginator",
+            "module": "paginator"
+        },
+        {
+            "file": "build\\paginator.js",
+            "line": 129,
+            "itemtype": "attribute",
+            "name": "currentPage",
+            "description": "The current selected page. If set in the config, \nthe paginator will go directly to that page when rendered",
+            "writeonce": "",
+            "type": "Number",
+            "class": "Paginator",
+            "module": "paginator"
+        },
+        {
+            "file": "build\\paginator.js",
+            "line": 140,
+            "itemtype": "attribute",
+            "name": "pageCount",
+            "description": "The number of pages in the paginator",
+            "readonly": "",
+            "type": "Number",
+            "class": "Paginator",
+            "module": "paginator"
+        },
+        {
+            "file": "build\\paginator.js",
+            "line": 165,
+            "description": "Go to a certain page",
+            "itemtype": "method",
+            "name": "goTo",
+            "params": [
+                {
+                    "name": "page",
+                    "description": "",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "Paginator",
+            "module": "paginator"
+        },
+        {
+            "file": "build\\progressbar.js",
+            "line": 33,
+            "itemtype": "attribute",
+            "name": "minMvalue",
+            "description": "Minimum value that the progressbar data will take",
+            "default": "0",
+            "class": "ProgressBar",
+            "module": "progressbar"
+        },
+        {
+            "file": "build\\progressbar.js",
+            "line": 41,
+            "itemtype": "attribute",
+            "name": "maxMvalue",
+            "description": "Maximum value that the progressbar data will take",
+            "default": "100",
+            "class": "ProgressBar",
+            "module": "progressbar"
+        },
+        {
+            "file": "build\\progressbar.js",
+            "line": 49,
+            "itemtype": "attribute",
+            "name": "value",
+            "description": "Current value the progressbar is taking",
+            "default": "0",
+            "class": "ProgressBar",
+            "module": "progressbar"
+        },
+        {
+            "file": "build\\progressbar.js",
+            "line": 63,
+            "itemtype": "attribute",
+            "name": "direction",
+            "description": "Direction in which the progressbar increases its size. May be 'ltr', 'ttb' or 'btt'",
+            "default": "'ltr'",
+            "writeonce": "",
+            "class": "ProgressBar",
+            "module": "progressbar"
+        },
+        {
+            "file": "build\\progressbar.js",
+            "line": 73,
+            "itemtype": "attribute",
+            "name": "animate",
+            "description": "Whether to animate the progressbar progress. The Anim module must be present",
+            "default": "false",
+            "writeonce": "",
+            "class": "ProgressBar",
+            "module": "progressbar"
+        },
+        {
+            "file": "build\\progressbar.js",
+            "line": 86,
+            "itemtype": "attribute",
+            "name": "easing",
+            "description": "Easing to use when animating",
+            "default": "linear",
+            "class": "ProgressBar",
+            "module": "progressbar"
+        },
+        {
+            "file": "build\\progressbar.js",
+            "line": 93,
+            "itemtype": "attribute",
+            "name": "duration",
+            "description": "Duration of the animation in case it is being used",
+            "default": "500 ms",
+            "class": "ProgressBar",
+            "module": "progressbar"
+        },
+        {
+            "file": "build\\progressbar.js",
+            "line": 101,
+            "itemtype": "attribute",
+            "name": "bar",
+            "description": "The DOM element that represents the bar in the progressbar",
+            "readonly": "",
+            "class": "ProgressBar",
+            "module": "progressbar"
+        },
+        {
+            "file": "build\\swf.js",
+            "line": 36,
+            "itemtype": "config",
+            "name": "src",
+            "description": "The URL of the Flash to create",
+            "required": "",
+            "class": "SWF",
+            "module": "swf"
+        },
+        {
+            "file": "build\\swf.js",
+            "line": 44,
+            "itemtype": "config",
+            "name": "swfNode",
+            "description": "A pointer to the Flash node",
+            "readonly": "",
+            "class": "SWF",
+            "module": "swf"
+        },
+        {
+            "file": "build\\swf.js",
+            "line": 54,
+            "itemtype": "config",
+            "name": "wmode",
+            "description": "Type of WMode to apply to the flash. May be 'transparent', 'window' or 'opaque'",
+            "type": "String",
+            "default": "'transparent'",
+            "class": "SWF",
+            "module": "swf"
+        },
+        {
+            "file": "build\\swf.js",
+            "line": 63,
+            "itemtype": "config",
+            "name": "nodeType",
+            "description": "Type attribute for the Flash node",
+            "type": "String",
+            "default": "'application/x-shockwave-flash'",
+            "class": "SWF",
+            "module": "swf"
+        },
+        {
+            "file": "build\\swf.js",
+            "line": 72,
+            "itemtype": "config",
+            "name": "flashvars",
+            "description": "An object literal with variables to pass as flashvars to the SWF",
+            "class": "SWF",
+            "module": "swf"
+        },
+        {
+            "file": "build\\swf.js",
+            "line": 84,
+            "itemtype": "config",
+            "name": "allowFullscreen",
+            "description": "Parameter to pass to the flash node that indicates if it can go into fullscreen mode or not",
+            "type": "Boolean",
+            "default": "true",
+            "class": "SWF",
+            "module": "swf"
+        },
+        {
+            "file": "build\\swf.js",
+            "line": 97,
+            "itemtype": "config",
+            "name": "name",
+            "description": "Name SWF attribute. The SWF node's id will be the same as the name",
+            "class": "SWF",
+            "module": "swf"
+        },
+        {
+            "file": "build\\swf.js",
+            "line": 104,
+            "itemtype": "config",
+            "name": "allowScriptAccess",
+            "description": "allowScriptAccess SWF attribute",
+            "type": "String",
+            "default": "'always'",
+            "class": "SWF",
+            "module": "swf"
+        },
+        {
+            "file": "build\\swf.js",
+            "line": 114,
+            "itemtype": "property",
+            "name": "OBJECT_INLINE_ATTRS",
+            "description": "Attributes that are applied as tag attributes in an <object> instead of as <param> tags",
+            "static": 1,
+            "class": "SWF",
+            "module": "swf"
+        },
+        {
+            "file": "build\\swf.js",
+            "line": 127,
+            "itemtype": "property",
+            "name": "SWF_ATTRS",
+            "description": "Class attributes that are applied to the Flash",
+            "static": 1,
+            "class": "SWF",
+            "module": "swf"
+        },
+        {
+            "file": "build\\swf.js",
+            "line": 190,
+            "description": "Set a SWF attribute normalizing cross-browser behaviors.\nUse this to set attributes not defined as class attributes",
+            "itemtype": "method",
+            "name": "setAttr",
+            "params": [
+                {
+                    "name": "name",
+                    "description": "Attribute name",
+                    "type": "String"
+                },
+                {
+                    "name": "value",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "chainable": 1,
+            "class": "SWF",
+            "module": "swf"
+        },
+        {
+            "file": "build\\swf.js",
+            "line": 204,
+            "description": "Set multiple SWF parameters",
+            "itemtype": "method",
+            "name": "setAttrs",
+            "params": [
+                {
+                    "name": "attrs",
+                    "description": "Object literal containing multiple parameters",
+                    "type": "Object"
+                }
+            ],
+            "chainable": 1,
+            "class": "SWF",
+            "module": "swf"
+        },
+        {
+            "file": "build\\treeview.js",
+            "line": 62,
+            "itemtype": "attribute",
+            "name": "type",
+            "description": "Type of the node. Available types are 'text'",
+            "default": "\"text\"",
+            "class": "TreeNode",
+            "module": "treeview"
+        },
+        {
+            "file": "build\\treeview.js",
+            "line": 70,
+            "itemtype": "attribute",
+            "name": "title",
+            "description": "Title attribute for the node",
+            "type": "String",
+            "class": "TreeNode",
+            "module": "treeview"
+        },
+        {
+            "file": "build\\treeview.js",
+            "line": 78,
+            "itemtype": "attribute",
+            "name": "label",
+            "description": "This node's label or title",
+            "type": "String|HTMLElement",
+            "class": "TreeNode",
+            "module": "treeview"
+        },
+        {
+            "file": "build\\treeview.js",
+            "line": 88,
+            "itemtype": "attribute",
+            "name": "controlNode",
+            "description": "Node that expands/collapses this TreeNode",
+            "writeonce": "",
+            "class": "TreeNode",
+            "module": "treeview"
+        },
+        {
+            "file": "build\\treeview.js",
+            "line": 96,
+            "itemtype": "attribute",
+            "name": "labelNode",
+            "description": "Node that holds this TreeNode's title/label",
+            "writeonce": "",
+            "class": "TreeNode",
+            "module": "treeview"
+        },
+        {
+            "file": "build\\treeview.js",
+            "line": 211,
+            "itemtype": "event",
+            "name": "node:expand",
+            "description": "Fires when a node is expanded. Preventing the default behavior will\nstop the node from expanding",
+            "params": [
+                {
+                    "name": "The",
+                    "description": "node that initiated the action",
+                    "type": "Node"
+                }
+            ],
+            "class": "TreeView",
+            "module": "treeview"
+        },
+        {
+            "file": "build\\treeview.js",
+            "line": 217,
+            "itemtype": "event",
+            "name": "node:collapse",
+            "description": "Fires when a node is collapsed. Preventing the default behavior will\nstop the node from collapsing",
+            "params": [
+                {
+                    "name": "The",
+                    "description": "node that initiated the action",
+                    "type": "Node"
+                }
+            ],
+            "class": "TreeView",
+            "module": "treeview"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 74,
+            "itemtype": "attribute",
+            "name": "childType",
+            "description": "Constructor reference to the default type of the children managed by this Widget. The default value is taken from defaultChildType",
+            "class": "WidgetParent",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 86,
+            "itemtype": "attribute",
+            "name": "defaultChildType",
+            "description": "default value used when a childType is not provided. This attribute is used mostly by classes using WidgetParent.",
+            "default": "WidgetChild",
+            "class": "WidgetParent",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 95,
+            "itemtype": "attribute",
+            "name": "children",
+            "description": "An array of instances or configuration objects representing the widget's children",
+            "type": "Array",
+            "default": "[]",
+            "class": "WidgetParent",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 108,
+            "itemtype": "attribute",
+            "name": "selection",
+            "description": "Returns the currently selected child Widget. If the mulitple attribte is set to true will return an Y.ArrayList instance containing the currently selected children. If no children are selected, will return null",
+            "default": "null",
+            "type": "Widget|Array",
+            "class": "WidgetParent",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 118,
+            "itemtype": "attribute",
+            "name": "multiple",
+            "description": "Boolean indicating if multiple children can be selected at once. Whether or not multiple selection is enabled is always delegated to the value of the multiple attribute of the root widget in the object hierarchy",
+            "default": "false",
+            "class": "WidgetParent",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 128,
+            "itemtype": "attribute",
+            "name": "selectedIndex",
+            "description": "The index of the currently selected item",
+            "type": "Number",
+            "class": "WidgetParent",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 239,
+            "itemtype": "method",
+            "name": "addChild",
+            "description": "Adds a Widget as a child. If the specified Widget already has a parent it will be removed from its current parent before being added as a child",
+            "params": [
+                {
+                    "name": "child",
+                    "description": "<Widget|Object> The Widget instance, or configuration object for the Widget to be added as a child"
+                },
+                {
+                    "name": "index",
+                    "description": "<Number> (Optional.) Number representing the position at which the child should be inserted"
+                }
+            ],
+            "return": {
+                "description": "child",
+                "type": "Widget"
+            },
+            "class": "WidgetParent",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 261,
+            "itemtype": "method",
+            "name": "add",
+            "description": "Same as addChild, but chainable",
+            "params": [
+                {
+                    "name": "child",
+                    "description": "<Widget|Object> The Widget instance, or configuration object for the Widget to be added as a child"
+                },
+                {
+                    "name": "index",
+                    "description": "<Number> (Optional.) Number representing the position at which the child should be inserted"
+                }
+            ],
+            "chainable": 1,
+            "class": "WidgetParent",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 273,
+            "itemtype": "method",
+            "name": "remove",
+            "description": "Removes a child",
+            "params": [
+                {
+                    "name": "child",
+                    "description": "The child widget or its index",
+                    "type": "WidgetChild|Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "WidgetParent",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 290,
+            "itemtype": "method",
+            "name": "first",
+            "class": "WidgetParent",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 296,
+            "itemtype": "method",
+            "name": "last",
+            "class": "WidgetParent",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 302,
+            "itemtype": "method",
+            "name": "removeAll",
+            "chainable": 1,
+            "class": "WidgetParent",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 331,
+            "itemtype": "attribute",
+            "name": "selected",
+            "description": "Boolean indicating if the Widget is selected",
+            "type": "Boolean",
+            "default": "false",
+            "class": "WidgetChild",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 341,
+            "itemtype": "attribute",
+            "name": "index",
+            "description": "Number representing the Widget's ordinal position in its parent Widget",
+            "default": "0",
+            "type": "Number",
+            "class": "WidgetChild",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 351,
+            "itemtype": "attribute",
+            "name": "parent",
+            "description": "Retrieves the parent of the Widget in the object hierarchy",
+            "default": "null",
+            "class": "WidgetChild",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 359,
+            "itemtype": "attribute",
+            "name": "root",
+            "description": "Retrieves the root parent of the Widget",
+            "readonly": "",
+            "class": "WidgetChild",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 406,
+            "itemtype": "method",
+            "name": "select",
+            "description": "Selects this widget",
+            "chainable": 1,
+            "class": "WidgetChild",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 415,
+            "itemtype": "method",
+            "name": "select",
+            "description": "Unselects this widget",
+            "chainable": 1,
+            "class": "WidgetChild",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 424,
+            "itemtype": "method",
+            "name": "toggle",
+            "description": "Selects/unselects this widget",
+            "chainable": 1,
+            "class": "WidgetChild",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 433,
+            "itemtype": "method",
+            "name": "next",
+            "description": "Returns the Widget's next sibling",
+            "return": {
+                "description": "Widget Widget instance"
+            },
+            "class": "WidgetChild",
+            "module": "widget-parentchild"
+        },
+        {
+            "file": "build\\widget-parentchild.js",
+            "line": 442,
+            "itemtype": "method",
+            "name": "previous",
+            "description": "Returns the Widget's previous sibling",
+            "return": {
+                "description": "Widget Widget instance"
+            },
+            "class": "WidgetChild",
+            "module": "widget-parentchild"
+        }
+    ]
+}
