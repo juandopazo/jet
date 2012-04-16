@@ -505,7 +505,7 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	 * @param {Object} thisp
 	 * @return {DOMEventHandler} handler
 	 */
-	on: function (type, callback, thisp) {
+	addListener: function (type, callback, thisp) {
 		var handlers = [];
 		if (Lang.isObject(type, true)) {
 			$Object.each(type, function (evType, fn) {
@@ -665,9 +665,19 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	}
 });
 
-NodeList.prototype.unbind = NodeList.prototype.removeListener
-
 PROTO = NodeList.prototype;
+
+/**
+ * Alias for <a href="#method_addListener">addListener</a>
+ * @method on
+ */
+/**
+ * Alias for <a href="#method_removeListener">removeListener</a>
+ * @method off
+ */
+$.Object.each({ addListener: 'on', removeListener: 'off' }, function (method, alias) {
+	PROTO[alias] = PROTO[method];
+});
 
 	/**
 	 * Fires the blur event

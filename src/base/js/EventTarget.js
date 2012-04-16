@@ -241,11 +241,11 @@ $.mix(EventTarget.prototype, {
 EventTarget.prototype.on = EventTarget.prototype.addListener;
 /**
  * Alias for <a href="#method_removeListener">removeListener</a>
- * @method unbind
+ * @method off
  * @param {String} eventType
  * @param {Function} callback
  * @chainable
  */
-EventTarget.prototype.unbind = EventTarget.prototype.removeListener;
+EventTarget.prototype.off = EventTarget.prototype.removeListener;
 
 $.EventTarget = EventTarget;
