@@ -169,7 +169,7 @@ $.mix(EventTarget.prototype, {
 				events['after' + Lang.capitalize(name)] = fn;
 			});
 		} else {
-			events[eventType] = callback;
+			events['after' + Lang.capitalize(eventType)] = callback;
 		}
 		return this.on(events, thisp);
 	},
