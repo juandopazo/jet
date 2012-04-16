@@ -77,8 +77,8 @@ mix(_Array, {
 	/**
 	 * Returns the index of the first occurence of needle
 	 * @method indexOf
-	 * @param {Object} needle
 	 * @param {Array} haystack
+	 * @param {Object} needle
 	 * @return {Number}
 	 */
 	indexOf: AP.indexOf ? function (haystack, needle) {
