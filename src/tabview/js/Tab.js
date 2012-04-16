@@ -91,7 +91,7 @@ $.Tab = Base.create('tab', Widget, [$.WidgetChild], {
 	PANEL_TEMPLATE: DIV,
 	
 	_uiTriggerEventChange: function (e) {
-		this.unbind(e.prevVal, this._selectHandler).on(e.newVal, this._selectHandler);
+		this.off(e.prevVal, this._selectHandler).on(e.newVal, this._selectHandler);
 	},
 	
 	_uiTabLabelContentChange: function (e) {

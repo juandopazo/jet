@@ -207,11 +207,11 @@ function buildJet(config) {
 		
 			// add prototype overrides
 			if (px) {
-				$.mix(rp, px, true);
+				$.mix(rp, px, true, false, ['constructor']);
 			}
 			// add attributes
 			if (ax) {
-				$.mix(r, ax, true);
+				$.mix(r, ax, true, false, ['prototype']);
 			}
 			
 			return r;

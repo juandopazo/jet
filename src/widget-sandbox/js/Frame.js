@@ -312,7 +312,7 @@ var Frame = $.Frame = $.Base.create('frame', $.Base, [], {
 	destructor: function() {
 		var inst = this.getInstance();
 
-		inst(inst.config.doc).unbind();
+		inst(inst.config.doc).off();
 		inst = null;
 		this._iframe.remove(true);
 	},

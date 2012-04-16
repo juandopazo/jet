@@ -1,5 +1,17 @@
+var indexOf = AP.indexOf ? function (haystack, needle) {
+	return haystack.indexOf(needle);
+} : function (haystack, needle) {
+	var i,
+		length = haystack.length;
+	for (i = 0; i < length; i = i + 1) {
+		if (haystack[i] == needle) {
+			return i;
+		}
+	}
+	return -1;
+}
 
-function mix(a, b, overwrite, clonefirst) {
+function mix(a, b, overwrite, clonefirst, blacklist) {
 	a = a || {};
 	b = b || {};
 	if (clonefirst) {
@@ -7,13 +19,13 @@ function mix(a, b, overwrite, clonefirst) {
 	}
 	if (b.hasOwnProperty) {
 		for (var x in b) {
-			if (b.hasOwnProperty(x) && (!a.hasOwnProperty(x) || overwrite)) {
+			if (b.hasOwnProperty(x) && (!a.hasOwnProperty(x) || overwrite) && (!blacklist || indexOf(blacklist, x) === -1)) {
 				a[x] = b[x];
 			}
 		}
 	}
 	return a;
-};
+}
 
 /**
  * Utilities for working with Arrays
@@ -81,20 +93,7 @@ mix(_Array, {
 	 * @param {Object} needle
 	 * @return {Number}
 	 */
-	indexOf: AP.indexOf ? function (haystack, needle) {
-		
-		return haystack.indexOf(needle);
-		
-	} : function (haystack, needle) {
-		var i,
-			length = haystack.length;
-		for (i = 0; i < length; i = i + 1) {
-			if (haystack[i] == needle) {
-				return i;
-			}
-		}
-		return -1;
-	},
+	indexOf: indexOf,
 	/**
 	 * Calls a given function on all items of an array and returns a new array with the return value of each call
 	 * @param {Array} array Array to map

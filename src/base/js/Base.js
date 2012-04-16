@@ -73,7 +73,7 @@ $.extend(Base, Attribute, {
                 }
             });
             
-            this.unbind();
+            this.off();
         }
     }
     

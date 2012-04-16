@@ -149,7 +149,9 @@ $.Mouse = $.Base.create('mouse', $.Utility, [], {
 		context.on(MOUSEMOVE, this._onMouseMove, this);
 		context.on(MOUSEUP, this._onMouseUp, this);
 
-		this.on('destroy', shim.unbindAll, shim);
+		this.on('destroy', function () {
+			this.off();
+		}, shim);
 	},
 	
 	/**
@@ -197,7 +199,7 @@ $.Mouse = $.Base.create('mouse', $.Utility, [], {
 		}
 	});
 	
-	$Array.each(['on', 'once', 'fire', 'unbind'], function (eventMethod) {
+	$Array.each(['on', 'once', 'fire', 'off'], function (eventMethod) {
 		$[eventMethod] = $.bind($_event[eventMethod], $_event);
 	});
 	
