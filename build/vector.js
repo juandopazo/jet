@@ -3,7 +3,7 @@
  * @module vector
  * @requires base,anim
  * 
- * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
+ * Copyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.
  * Code licensed under the BSD License
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
@@ -318,7 +318,7 @@ var Vector = $.Vector = Base.create('vector', $.Attribute, [], {
 		if (node.parentNode) {
 			node.parentNode.removeChild(node);
 		}
-		$(node).unbindAll();
+		$(node).off();
 		return this;
 	},
 	/**
@@ -465,19 +465,13 @@ var Vector = $.Vector = Base.create('vector', $.Attribute, [], {
  * @chainable
  */
 /**
- * @method unbind
+ * @method off
  * @description Remove an event listeners from the vector node
  * @param {String} eventType
  * @param {Function} callback
  * @chainable
  */
-/**
- * @method unbindAll
- * @description Removes all event listeners of a certain type from the vector node
- * @param {String} eventType
- * @chainable
- */
-A.each(['on', 'unbind', 'unbindAll'], function (method) {
+A.each(['on', 'off'], function (method) {
 	Vector.prototype[method] = function (type, fn) {
 		$(this.get('node'))[method](type, fn);
 		return this;

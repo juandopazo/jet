@@ -181,7 +181,7 @@ $.mix(EventTarget.prototype, {
 				events['after' + Lang.capitalize(name)] = fn;
 			});
 		} else {
-			events[eventType] = callback;
+			events['after' + Lang.capitalize(eventType)] = callback;
 		}
 		return this.on(events, thisp);
 	},
@@ -253,12 +253,12 @@ $.mix(EventTarget.prototype, {
 EventTarget.prototype.on = EventTarget.prototype.addListener;
 /**
  * Alias for <a href="#method_removeListener">removeListener</a>
- * @method unbind
+ * @method off
  * @param {String} eventType
  * @param {Function} callback
  * @chainable
  */
-EventTarget.prototype.unbind = EventTarget.prototype.removeListener;
+EventTarget.prototype.off = EventTarget.prototype.removeListener;
 
 $.EventTarget = EventTarget;
 /**
@@ -495,7 +495,7 @@ $.extend(Base, Attribute, {
                 }
             });
             
-            this.unbind();
+            this.off();
         }
     }
     
@@ -1176,7 +1176,9 @@ $.Mouse = $.Base.create('mouse', $.Utility, [], {
 		context.on(MOUSEMOVE, this._onMouseMove, this);
 		context.on(MOUSEUP, this._onMouseUp, this);
 
-		this.on('destroy', shim.unbindAll, shim);
+		this.on('destroy', function () {
+			this.off();
+		}, shim);
 	},
 	
 	/**
@@ -1224,7 +1226,7 @@ $.Mouse = $.Base.create('mouse', $.Utility, [], {
 		}
 	});
 	
-	$Array.each(['on', 'once', 'fire', 'unbind'], function (eventMethod) {
+	$Array.each(['on', 'once', 'fire', 'off'], function (eventMethod) {
 		$[eventMethod] = $.bind($_event[eventMethod], $_event);
 	});
 	

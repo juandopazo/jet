@@ -122,7 +122,8 @@ var OP = Object.prototype,
 	SP = String.prototype,
 	SLICE = AP.slice,
 	TOSTRING = OP.toString,
-	_Array, Hash;
+	_Array, Hash,
+	NATIVE_FN_REGEX = /\{\s*\[(?:native code|function)\]\s*\}/i;;
 
  //A couple of functions of this module are used throughout the Loader.
  //Should this be defined as any other module with the jet.add() method?
@@ -294,12 +295,21 @@ var Lang = (function () {
 		 */
 		now: function() {
 			return (new Date).getTime();
+		},
+		/**
+		 * Checks if the function is a native function or it was declared by a script
+		 * @method isNative
+		 * @param {Function} fn
+		 * @return {Boolean}
+		 */
+		isNative: function (fn) {
+			return NATIVE_FN_REGEX.test(fn);
 		}
 	};
 }());
 
 var bind;
-if (Function.prototype.bind) {
+if (Lang.isNative(Function.prototype.bind)) {
 	bind = function (fn) {
 		return Function.prototype.bind.apply(fn, SLICE.call(arguments, 1));
 	};
@@ -329,8 +339,20 @@ function namespace(o, name) {
 	}
 	return o;
 }
+var indexOf = Lang.isNative(AP.indexOf) ? function (haystack, needle) {
+	return haystack.indexOf(needle);
+} : function (haystack, needle) {
+	var i,
+		length = haystack.length;
+	for (i = 0; i < length; i = i + 1) {
+		if (haystack[i] == needle) {
+			return i;
+		}
+	}
+	return -1;
+}
 
-function mix(a, b, overwrite, clonefirst) {
+function mix(a, b, overwrite, clonefirst, blacklist) {
 	a = a || {};
 	b = b || {};
 	if (clonefirst) {
@@ -338,13 +360,13 @@ function mix(a, b, overwrite, clonefirst) {
 	}
 	if (b.hasOwnProperty) {
 		for (var x in b) {
-			if (b.hasOwnProperty(x) && (!a.hasOwnProperty(x) || overwrite)) {
+			if (b.hasOwnProperty(x) && (!a.hasOwnProperty(x) || overwrite) && (!blacklist || indexOf(blacklist, x) === -1)) {
 				a[x] = b[x];
 			}
 		}
 	}
 	return a;
-};
+}
 
 /**
  * Utilities for working with Arrays
@@ -374,7 +396,7 @@ mix(_Array, {
 	 * @param {Object} thisp sets up the <b>this</b> keyword inside the callback
 	 */
 	// check for native support
-	forEach: AP.forEach ? function (arr, fn, thisp) {
+	forEach: Lang.isNative(AP.forEach) ? function (arr, fn, thisp) {
 		
 		AP.slice.call(Lang.isValue(arr) ? arr : []).forEach(fn, thisp);
 		
@@ -408,31 +430,18 @@ mix(_Array, {
 	/**
 	 * Returns the index of the first occurence of needle
 	 * @method indexOf
-	 * @param {Object} needle
 	 * @param {Array} haystack
+	 * @param {Object} needle
 	 * @return {Number}
 	 */
-	indexOf: AP.indexOf ? function (haystack, needle) {
-		
-		return haystack.indexOf(needle);
-		
-	} : function (haystack, needle) {
-		var i,
-			length = haystack.length;
-		for (i = 0; i < length; i = i + 1) {
-			if (haystack[i] == needle) {
-				return i;
-			}
-		}
-		return -1;
-	},
+	indexOf: indexOf,
 	/**
 	 * Calls a given function on all items of an array and returns a new array with the return value of each call
 	 * @param {Array} array Array to map
 	 * @param {Function} fn Function to call on each item
 	 * @pram {Object} thisp Optional context to apply to the given function
 	 */
-	map: AP.map ? function (arr, fn, thisp) {
+	map: Lang.isNative(AP.map) ? function (arr, fn, thisp) {
 		return arr.map(fn, thisp);
 	} : function (arr, fn, thisp) {
 		var result = [];
@@ -1111,11 +1120,11 @@ function buildJet(config) {
 		
 			// add prototype overrides
 			if (px) {
-				$.mix(rp, px, true);
+				$.mix(rp, px, true, false, ['constructor']);
 			}
 			// add attributes
 			if (ax) {
-				$.mix(r, ax, true);
+				$.mix(r, ax, true, false, ['prototype']);
 			}
 			
 			return r;
@@ -2468,7 +2477,7 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	 * @param {Object} thisp
 	 * @return {DOMEventHandler} handler
 	 */
-	on: function (type, callback, thisp) {
+	addListener: function (type, callback, thisp) {
 		var handlers = [];
 		if (Lang.isObject(type, true)) {
 			$Object.each(type, function (evType, fn) {
@@ -2628,9 +2637,19 @@ $.NodeList = $.extend(NodeList, $.ArrayList, {
 	}
 });
 
-NodeList.prototype.unbind = NodeList.prototype.removeListener
-
 PROTO = NodeList.prototype;
+
+/**
+ * Alias for <a href="#method_addListener">addListener</a>
+ * @method on
+ */
+/**
+ * Alias for <a href="#method_removeListener">removeListener</a>
+ * @method off
+ */
+$.Object.each({ addListener: 'on', removeListener: 'off' }, function (method, alias) {
+	PROTO[alias] = PROTO[method];
+});
 
 	/**
 	 * Fires the blur event

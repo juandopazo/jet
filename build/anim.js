@@ -3,7 +3,7 @@
  * @module anim
  * @requires node,node-deferred
  * 
- * Copyright (c) 2011, Juan Ignacio Dopazo. All rights reserved.
+ * Copyright (c) 2012, Juan Ignacio Dopazo. All rights reserved.
  * Code licensed under the BSD License
  * https://github.com/juandopazo/jet/blob/master/LICENSE.md
 */
@@ -373,7 +373,7 @@ var Tween = Base.create('tween', Base, [], {
 		this.set('playing', false);
 		var timeframe = jet.TimeFrame;
 		timeframe.removeTween(this);
-		timeframe.unbind(ENTER_FRAME, this._enterFrame);
+		timeframe.off(ENTER_FRAME, this._enterFrame);
 		this.set('previousTime', 0);
 		return this.set('startTime', 0);
 	},
@@ -386,7 +386,7 @@ var Tween = Base.create('tween', Base, [], {
 		this.set('playing', false)
 		var timeframe = jet.TimeFrame;
 		timeframe.removeTween(this);
-		timeframe.unbind(ENTER_FRAME, this._enterFrame);
+		timeframe.off(ENTER_FRAME, this._enterFrame);
 		return this.set('previousTime', (new Date()).getTime() - this.get('startTime'));
 	},
 	/**

@@ -161,8 +161,8 @@ $.ProgressBar = $.Base.create('progressbar', $.Widget, [], {
 		this._text.html(Math.round(newSize * 100) + '%');
 		if (this.get('animate')) {
 			if (this._tween) {
-				this._tween.unbind('tween', this._onTween);
-				this._tween.unbind('end', this._onTweenEnd);
+				this._tween.off('tween', this._onTween);
+				this._tween.off('end', this._onTweenEnd);
 				this._tween.destroy();
 			}
 			var tween = this._tween = new $.Tween({
