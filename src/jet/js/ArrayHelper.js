@@ -1,4 +1,4 @@
-var indexOf = AP.indexOf ? function (haystack, needle) {
+var indexOf = Lang.isNative(AP.indexOf) ? function (haystack, needle) {
 	return haystack.indexOf(needle);
 } : function (haystack, needle) {
 	var i,
@@ -55,7 +55,7 @@ mix(_Array, {
 	 * @param {Object} thisp sets up the <b>this</b> keyword inside the callback
 	 */
 	// check for native support
-	forEach: AP.forEach ? function (arr, fn, thisp) {
+	forEach: Lang.isNative(AP.forEach) ? function (arr, fn, thisp) {
 		
 		AP.slice.call(Lang.isValue(arr) ? arr : []).forEach(fn, thisp);
 		
@@ -100,7 +100,7 @@ mix(_Array, {
 	 * @param {Function} fn Function to call on each item
 	 * @pram {Object} thisp Optional context to apply to the given function
 	 */
-	map: AP.map ? function (arr, fn, thisp) {
+	map: Lang.isNative(AP.map) ? function (arr, fn, thisp) {
 		return arr.map(fn, thisp);
 	} : function (arr, fn, thisp) {
 		var result = [];

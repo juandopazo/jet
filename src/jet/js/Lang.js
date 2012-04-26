@@ -4,7 +4,8 @@ var OP = Object.prototype,
 	SP = String.prototype,
 	SLICE = AP.slice,
 	TOSTRING = OP.toString,
-	_Array, Hash;
+	_Array, Hash,
+	NATIVE_FN_REGEX = /\{\s*\[(?:native code|function)\]\s*\}/i;;
 
  //A couple of functions of this module are used throughout the Loader.
  //Should this be defined as any other module with the jet.add() method?
@@ -176,12 +177,21 @@ var Lang = (function () {
 		 */
 		now: function() {
 			return (new Date).getTime();
+		},
+		/**
+		 * Checks if the function is a native function or it was declared by a script
+		 * @method isNative
+		 * @param {Function} fn
+		 * @return {Boolean}
+		 */
+		isNative: function (fn) {
+			return NATIVE_FN_REGEX.test(fn);
 		}
 	};
 }());
 
 var bind;
-if (Function.prototype.bind) {
+if (Lang.isNative(Function.prototype.bind)) {
 	bind = function (fn) {
 		return Function.prototype.bind.apply(fn, SLICE.call(arguments, 1));
 	};
