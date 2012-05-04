@@ -30,21 +30,7 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 		 */
 		title: {
 			value: ''
-		},
-		type: {
-			setter: function (value) {
-				return $.FormField.ALIASES[value] || value;
-			}
 		}
-	},
-	ALIASES: {
-		checkbox: 'CheckBoxField',
-		fieldset: 'FieldSet',
-		radio: 'RadioField',
-		select: 'SelectField',
-		textarea: 'TextareaField',
-		text: 'TextField',
-		password: 'PasswordField'
 	}
 }, {
 	BOUNDING_TEMPLATE: '<span/>',

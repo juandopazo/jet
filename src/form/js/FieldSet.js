@@ -59,6 +59,7 @@ $.FieldSet = $.Base.create('fieldset', $.Widget, [$.WidgetChild, $.WidgetParent]
 	
 	initializer: function () {
 		this._legendNode = $(this.LEGEND_TEMPLATE);
+		this.on('addChild', $.Form.prototype._setChildType);
 	},
 	syncUI: function () {
 		this._afterLegendChange({ newVal: this.get('legend') });

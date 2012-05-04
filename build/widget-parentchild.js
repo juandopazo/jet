@@ -72,18 +72,6 @@ $.mix(WidgetParent, {
 	ATTRS: {
 			
 		/**
-		 * @attribute childType
-		 * @description Constructor reference to the default type of the children managed by this Widget. The default value is taken from defaultChildType
-		 */
-		childType: {
-			getter: function (val) {
-				if (!val) {
-					val = this.get('defaultChildType');
-				}
-				return Lang.isString(val) ? $[val] : val;
-			}
-		},
-		/**
 		 * @attribute defaultChildType
 		 * @description default value used when a childType is not provided. This attribute is used mostly by classes using WidgetParent.
 		 * @default WidgetChild
@@ -208,12 +196,13 @@ WidgetParent.prototype = {
 	},
 	
 	_add: function (child, index) {
-		var ChildType = child.type || this.get('childType');
-		if (Lang.isString(ChildType)) {
-			ChildType = $[ChildType];
-		}
+		var ChildType;
 		
 		if (child && this.fire('addChild', { child: child, index: index })) {
+	 		ChildType = child.childType || this.get('defaultChildType');
+			if (Lang.isString(ChildType)) {
+				ChildType = $[ChildType];
+			}
 			
 			if (!$.instanceOf(child, $.Widget)) {
 				child.parent = this;
@@ -370,15 +359,10 @@ $.mix(WidgetChild, {
 				}
 				return parent;
 			}
-		},
-		type: {
-			setter: function (val) {
-				if (Lang.isString(val)) {
-					val = $[val];
-				}
-				return val;
-			}
 		}
+		/**
+		 * @config childType 
+		 */
 	},
 	
 	EVENTS: {

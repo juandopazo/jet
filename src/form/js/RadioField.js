@@ -25,7 +25,7 @@ $.RadioButton = $.Base.create('radio', $.FormField, [], {}, {
 	},
 	renderUI: function () {
 		this.get('contentBox').attr({
-			type: 'radio',
+			childType: 'radio',
 			name: this.get('parent').get('name')
 		});
 	},

@@ -42,21 +42,7 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 		 */
 		title: {
 			value: ''
-		},
-		type: {
-			setter: function (value) {
-				return $.FormField.ALIASES[value] || value;
-			}
 		}
-	},
-	ALIASES: {
-		checkbox: 'CheckBoxField',
-		fieldset: 'FieldSet',
-		radio: 'RadioField',
-		select: 'SelectField',
-		textarea: 'TextareaField',
-		text: 'TextField',
-		password: 'PasswordField'
 	}
 }, {
 	BOUNDING_TEMPLATE: '<span/>',
@@ -248,6 +234,7 @@ $.FieldSet = $.Base.create('fieldset', $.Widget, [$.WidgetChild, $.WidgetParent]
 	
 	initializer: function () {
 		this._legendNode = $(this.LEGEND_TEMPLATE);
+		this.on('addChild', $.Form.prototype._setChildType);
 	},
 	syncUI: function () {
 		this._afterLegendChange({ newVal: this.get('legend') });
@@ -474,7 +461,7 @@ $.RadioButton = $.Base.create('radio', $.FormField, [], {}, {
 	},
 	renderUI: function () {
 		this.get('contentBox').attr({
-			type: 'radio',
+			childType: 'radio',
 			name: this.get('parent').get('name')
 		});
 	},
@@ -553,6 +540,15 @@ $.Form = $.Base.create('form', $.Widget, [$.WidgetParent], {
 		action: {
 			value: ''
 		}
+	},
+	ALIASES: {
+		checkbox: 'CheckBoxField',
+		fieldset: 'FieldSet',
+		radio: 'RadioField',
+		select: 'SelectField',
+		textarea: 'TextareaField',
+		text: 'TextField',
+		password: 'PasswordField'
 	}
 }, {
 	CONTENT_TEMPLATE: '<form/>',
@@ -570,11 +566,17 @@ $.Form = $.Base.create('form', $.Widget, [$.WidgetParent], {
 			this._fields[field.get('name')] = field;
 		}
 	},
+	_setChildType: function (e) {
+		if ($.Form.ALIASES[e.child.childType]) {
+			e.child.childType = $.Form.ALIASES[e.child.childType];
+		}
+	},
 	
 	initializer: function () {
 		this.after('actionChange', this.syncUI);
 		
 		this._fields = {};
+		this.on('addChild', this._setChildType);
 		this.on('afterAddChild', this._registerField);
 	},
 	bindUI: function () {
