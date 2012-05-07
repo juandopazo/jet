@@ -1,6 +1,6 @@
 
 $.PasswordField = $.Base.create('password', $.FormField, [], {}, {
-	renderUI: function () {
+	initializer: function () {
 		this.get('contentBox').attr('type', 'password');
 	}
 });

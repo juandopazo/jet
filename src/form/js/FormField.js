@@ -46,11 +46,13 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 	},
 	_ffFocusedChange: function (e) {
 		var fieldNode = this.get('contentBox').getDOMNode();
-		if (e.newVal) {
-			fieldNode.focus();
-		} else {
-			fieldNode.blur();
-		}
+		try {
+			if (e.newVal) {
+				fieldNode.focus();
+			} else {
+				fieldNode.blur();
+			}
+		} catch (_) {}
 	},
 	_insertLabel: function () {
 		this._labelNode.prependTo(this.get('boundingBox'));

@@ -1,6 +1,6 @@
 
 $.TextField = $.Base.create('textfield', $.FormField, [], {}, {
-	renderUI: function () {
+	initializer: function () {
 		this.get('contentBox').attr('type', 'text');
 	}
 });

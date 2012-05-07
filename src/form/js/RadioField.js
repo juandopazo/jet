@@ -22,10 +22,8 @@ $.RadioButton = $.Base.create('radio', $.FormField, [], {}, {
 	},
 	initializer: function () {
 		this.after('selectedChange', this._rbSelectedChange);
-	},
-	renderUI: function () {
 		this.get('contentBox').attr({
-			childType: 'radio',
+			type: 'radio',
 			name: this.get('parent').get('name')
 		});
 	},

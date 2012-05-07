@@ -58,11 +58,13 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 	},
 	_ffFocusedChange: function (e) {
 		var fieldNode = this.get('contentBox').getDOMNode();
-		if (e.newVal) {
-			fieldNode.focus();
-		} else {
-			fieldNode.blur();
-		}
+		try {
+			if (e.newVal) {
+				fieldNode.focus();
+			} else {
+				fieldNode.blur();
+			}
+		} catch (_) {}
 	},
 	_insertLabel: function () {
 		this._labelNode.prependTo(this.get('boundingBox'));
@@ -122,13 +124,13 @@ $.FormField = $.Base.create('formfield', $.Widget, [$.WidgetChild], {
 });
 
 $.TextField = $.Base.create('textfield', $.FormField, [], {}, {
-	renderUI: function () {
+	initializer: function () {
 		this.get('contentBox').attr('type', 'text');
 	}
 });
 
 $.PasswordField = $.Base.create('password', $.FormField, [], {}, {
-	renderUI: function () {
+	initializer: function () {
 		this.get('contentBox').attr('type', 'password');
 	}
 });
@@ -161,8 +163,6 @@ $.CheckBoxField = $.Base.create('checkbox', $.FormField, [], {
 	initializer: function () {
 		this.after('checkedChange', this._syncAttr2Dom);
 		this.after('selectedChange', this._uiCheckBoxSelect);
-	},
-	renderUI: function () {
 		this.get('contentBox').attr('type', 'checkbox');
 	},
 	bindUI: function () {
@@ -458,10 +458,8 @@ $.RadioButton = $.Base.create('radio', $.FormField, [], {}, {
 	},
 	initializer: function () {
 		this.after('selectedChange', this._rbSelectedChange);
-	},
-	renderUI: function () {
 		this.get('contentBox').attr({
-			childType: 'radio',
+			type: 'radio',
 			name: this.get('parent').get('name')
 		});
 	},
