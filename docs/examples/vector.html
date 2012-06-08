@@ -1,0 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" 
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<title>Vector</title>
+	<style type="text/css">
+		body {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+</head>
+<body>
+<script type="text/javascript" src="../../build/jet.js"></script>
+<script type="text/javascript">
+	jet({
+		base: "../../build"
+	}).use('vector', function ($) {
+		
+		var v = new $.VectorView({
+			width: 800,
+			height: 400
+		});
+		v.render(document.body);
+		
+	});
+</script>
+</body>
+</html>

@@ -90,11 +90,6 @@ inputNode.on('focus', function () {
     focusManager.set('activeDescendant', inputNode);
 });
 
-// Update all tabview links to resolved URLs.
-tabview.get('panelNode').all('a').each(function (link) {
-    link.setAttribute('href', link.get('href'));
-});
-
 // -- Private Functions --------------------------------------------------------
 function getFilterResultNode() {
     return filter.get('queryType') === 'classes' ? classesNode : modulesNode;
@@ -111,7 +106,7 @@ function onFilterResults(e) {
         YArray.each(e.results, function (result) {
             frag.append(Lang.sub(LIST_ITEM_TEMPLATE, {
                 rootPath    : APIList.rootPath,
-                displayName : filter.getDisplayName(result.highlighted),
+                displayName : result.highlighted,
                 name        : result.text,
                 typePlural  : typePlural,
                 typeSingular: typeSingular

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Deferred test</title>
+</head>
+<body>
+	<script src="http://jet.nodester.com/jet?jet.js"></script>
+	<script>
+		jet({
+			minify: false
+		}).use('io', 'deferred', function ($) {
+			
+			$.when($.get('container.html'), $.get('class.html'), $.get('alignment.html')).then(function (args) {
+				console.log(args);
+			});
+				
+		});
+	</script>
+</body>
+</html>
