@@ -5,8 +5,10 @@ Jet is a JavaScript UI toolkit based on two premises:
 * Lower compatibility but small size and great performance
 * Not every feature out-of-the-box but great scalability
 
+**Note**: This project is archived for posterity. Its goal was experimentation and learning, so feel free to use any part of Jet in your projects at your own risk.
+
 ## Compatibility
-Jet is currently a one-man project. Given these limited resources, it is only tested against IE 6, 7 and 8, and the latest versions of Firefox, Chrome, Safari and Opera. Older versions and other browsers aren't guaranteed to work at all. The goal of this project is experimentation and learning, so feel free to use any part of Jet in your projects at your own risk.
+Jet is only tested against IE 6, 7 and 8, and the latest versions of Firefox, Chrome, Safari and Opera. Older versions and other browsers aren't guaranteed to work at all. 
 
 The status of the library is *under development*, not even an alpha stage. And since it is a learning project, you are very much welcome to provide suggestions, code and graphic design.
 
